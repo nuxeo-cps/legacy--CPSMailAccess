@@ -52,19 +52,15 @@ class MailMessageEdit(BrowserView):
         # XXX todo manage a list of editing message in case of multiediting
         mailbox.getCurrentEditorMessage()
 
-    def sendMessage(self, msg_from, msg_to, msg_subject, msg_body,
-            msg_attachments=[], came_from=None):
+    def sendMessage(self, msg_from, msg_subject, msg_body, came_from=None):
         """ calls MailTool
         """
         # call mail box to send a message and to copy it to "send" section
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
 
-        msg.setHeader('From', msg_from)
-        msg.setHeader('To', msg_to)
-        msg.setHeader('Subject', msg_subject)
-
-        # XX todo load body according to attached parts
+        msg.addHeader('Subject', msg_subject)
+        msg.addHeader('From', msg_from)
         msg.setPart(0, msg_body)
 
         # using the message instance that might have attached files already
@@ -75,7 +71,7 @@ class MailMessageEdit(BrowserView):
                 self.request.response.redirect(came_from)
             else:
                 #XXXX need to redirect to an error screen here later
-                psm ='Message Sent'
+                psm ='Message sent.'
                 self.request.response.redirect('view?portal_status_message=%s' % psm)
 
     def getIdentitites(self):
@@ -143,7 +139,11 @@ class MailMessageEdit(BrowserView):
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
         # XXX should be inside message and called thru an api
-        res = msg.getPart(0)
+        try:
+            res = msg.getPart(0)
+        except IndexError:
+            res = ''
+
         if type(res) is str:
             return res
         else:
@@ -156,10 +156,10 @@ class MailMessageEdit(BrowserView):
         msg = mailbox.getCurrentEditorMessage()
         # XXX should be inside message and called thru an api
         res = msg.getHeader('Subject')
-        if res is None:
+        if res is None or res == []:
             return ''
         #msg_viewer = MailMessageView(msg, self.request)
-        return decodeHeader(res)
+        return decodeHeader(res[0])
 
     def getDestList(self):
         """ returns dest list
@@ -167,14 +167,11 @@ class MailMessageEdit(BrowserView):
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
         res = []
-
         for part in ('To', 'Cc', 'BCc'):
-
             content = msg.getHeader(part)
-            if content is not None:
-                content = content.split(' ')
-                for cpart in content:
-                    res.append({'value' : decodeHeader(cpart),
+            if content is not None and content <> []:
+                for element in content:
+                    res.append({'value' : decodeHeader(element),
                         'type' : part})
         return res
 
@@ -206,16 +203,8 @@ class MailMessageEdit(BrowserView):
             type = 'To'
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
-        List = msg.getHeader(type)
-        if List is None:
-            List = []
-        else:
-            List = List.split(' ')
 
-        if content in List:
-            List.remove(content)
-            result = ' '.join(List)
-            msg.setHeader(type, result)
+        msg.removeHeader(type, value)
 
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
@@ -231,14 +220,8 @@ class MailMessageEdit(BrowserView):
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
         List = msg.getHeader(type)
-        if List is None:
-            List = []
-        else:
-            List = List.split(' ')
         if content not in List:
-            List.append(content)
-            result = ' '.join(List)
-            msg.setHeader(type, result)
+            msg.addHeader(type, content)
 
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
@@ -257,12 +240,9 @@ class MailMessageEdit(BrowserView):
         if action == 'remove_recipient':
             self.removeRecipient(kw['msg_to'], kw['sent_type'])
         elif action == 'send':
-            if not kw.has_key('msg_attachments'):
-                kw['msg_attachments'] = []
-
-            if not kw.has_key('came_from'):
-                kw['came_from'] = []
-
-            self.sendMessage(kw['msg_from'], kw['msg_to'], kw['msg_subject'],
-                kw['msg_attachments'], kw['came_from'])
+            if kw.has_key('came_from'):
+                came_from = kw['came_from']
+            else:
+                came_from = None
+            self.sendMessage(kw['msg_from'], kw['msg_subject'], kw['msg_body'], came_from)
 

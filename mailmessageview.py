@@ -47,10 +47,10 @@ class MailMessageView(BaseMailMessageView):
         """
         if self.context is not None:
             date = self.context.getHeader('Date')
-            if date is None:
+            if date is None or date == []:
                 date = '?'
             else:
-                date = decodeHeader(date)
+                date = decodeHeader(date[0])
         else:
             date = '?'
         date = localizeDateString(date)
@@ -61,10 +61,10 @@ class MailMessageView(BaseMailMessageView):
         """
         if self.context is not None:
             date = self.context.getHeader('Date')
-            if date is None:
+            if date is None or date == []:
                 date = '?'
             else:
-                date = decodeHeader(date)
+                date = decodeHeader(date[0])
         else:
             date = '?'
         date = localizeDateString(date, 3)
@@ -75,10 +75,10 @@ class MailMessageView(BaseMailMessageView):
         """
         if self.context is not None:
             subject = self.context.getHeader('Subject')
-            if subject is None:
+            if subject is None or subject == []:
                 subject = '?'
             else:
-                subject = decodeHeader(subject)
+                subject = decodeHeader(subject[0])
         else:
             subject = '?'
         return subject
@@ -88,10 +88,10 @@ class MailMessageView(BaseMailMessageView):
         """
         if self.context is not None:
             froms = self.context.getHeader('From')
-            if froms is None:
+            if froms is None or froms==[]:
                 froms = '?'
             else:
-                froms = decodeHeader(froms)
+                froms = decodeHeader(froms[0])
         else:
             froms = '?'
         return froms
@@ -101,10 +101,13 @@ class MailMessageView(BaseMailMessageView):
         """
         if self.context is not None:
             tos = self.context.getHeader('To')
-            if tos is None:
+            if tos is None or tos == []:
                 tos = '?'
             else:
-                tos = decodeHeader(tos)
+                decoded = []
+                for to in tos:
+                    decoded.append(decodeHeader(to))
+                return ' '.join(decoded)
         else:
             tos = '?'
         return tos
@@ -171,8 +174,14 @@ class MailMessageView(BaseMailMessageView):
 
         msg = mailbox.getCurrentEditorMessage()
         msg.setPart(0, reply_content)
-        msg.setHeader('To', self.context.getHeader('From'))
-        msg.setHeader('Subject', 'Re: '+self.context.getHeader('Subject'))
+        froms = self.context.getHeader('From')
+        if froms is None or froms == []:
+            froms = ['']
+        msg.addHeader('To', froms[0])
+        subjects = self.context.getHeader('Subject')
+        if subjects is None or subjects == []:
+            subjects = ['']
+        msg.addHeader('Subject', 'Re: '+subjects[0])
 
         if self.request is not None:
             came_from = self.context.absolute_url()
