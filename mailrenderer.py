@@ -74,10 +74,6 @@ class MailRenderer:
         else:
             ptype = 'text/plain'
 
-        if ptypes.has_key('format'):
-            pformat = ptypes['format'].lower()
-        else:
-            pformat = ''
         if ptypes.has_key('charset'):
             pcharset = ptypes['charset']
         else:
