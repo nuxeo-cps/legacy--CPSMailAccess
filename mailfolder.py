@@ -28,10 +28,10 @@ from Acquisition import aq_parent
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
-
 from utils import uniqueId, makeId
 from Products.CPSMailAccess.mailmessage import MailMessage
 from interfaces import IMailFolder, IMailMessage, IMailBox
+from Globals import InitializeClass
 
 class MailFolder(Folder):
     """A container of mail messages and other mail folders.
@@ -42,10 +42,12 @@ class MailFolder(Folder):
     >>> IMailFolder.providedBy(f)
     True
     """
+    meta_type = "CPSMailAccess Folder"
+
     implements(IMailFolder)
-    server_name = FieldProperty(IMailFolder['server_name'])    
+    server_name = FieldProperty(IMailFolder['server_name'])
     mail_prefix = FieldProperty(IMailFolder['mail_prefix'])
-    
+
     def __init__(self, uid=None, server_name='', **kw):
         """
         >>> f = MailFolder('ok', 'Open.INBOX.Stuffs')
@@ -55,46 +57,46 @@ class MailFolder(Folder):
         Folder.__init__(self, uid)
         self.mail_prefix = 'msg_'
         self.setServerName(server_name)
-        
+
     def getMailBox(self):
         """See interfaces.IMailFolder
         """
         current = self
         while current is not None and not IMailBox.providedBy(current):
             current = aq_parent(current)
-        return current    
-    
+        return current
+
     def getMailMessages(self, list_folder=True, list_messages=True, recursive=False):
         """See interfaces.IMailFolder
-        
+
         >>> f = MailFolder()
         >>> f.getMailMessages()
         []
         """
         providers = ()
         result = []
-        
+
         if list_folder:
             providers = providers+ (IMailFolder,)
-            
+
         if list_messages:
             providers = providers+ (IMailMessage,)
-            
+
         for element in self.objectValues():
             for provider in providers :
                 if provider.providedBy(element):
                     result.append(provider(element))
-                    
+
             if recursive:
                 if IMailFolder.providedBy(element):
-                    result.extend(element.getMailMessages(list_folder, 
-                        list_messages, recursive))                        
-            
+                    result.extend(element.getMailMessages(list_folder,
+                        list_messages, recursive))
+
         return result
-    
+
     def getMailMessagesCount(self, count_folder=True, count_messages=True, recursive=False):
         """See interfaces.IMailFolder
-        examples of calls : 
+        examples of calls :
         >>> f = MailFolder()
         >>> f.getMailMessagesCount()
         0
@@ -104,16 +106,16 @@ class MailFolder(Folder):
         0
         """
         providers = ()
-        
+
         if count_folder:
             providers = providers+ (IMailFolder,)
-                
+
         if count_messages:
             providers = providers+ (IMailMessage,)
-            
+
         count = 0
-        
-        if len(providers) > 0:            
+
+        if len(providers) > 0:
             for element in self.objectValues():
                 for provider in providers :
                     if provider.providedBy(element):
@@ -121,21 +123,16 @@ class MailFolder(Folder):
                 if recursive:
                     if IMailFolder.providedBy(element):
                         count += element.getMailMessagesCount(count_folder,
-                            count_messages, recursive)                                       
+                            count_messages, recursive)
         return count
-    
-    def checkMessages(self):
-        """See interfaces.IMailFolder     
-        """
-        raise NotImplementedError        
-    
+
     def getServerName(self):
-        """"See interfaces.IMailFolder      
+        """"See interfaces.IMailFolder
         """
         return self.server_name
-        
+
     def setServerName(self, server_name):
-        """"See interfaces.IMailFolder      
+        """"See interfaces.IMailFolder
         >>> f = MailFolder()
         >>> f.setServerName('INBOX.trash')
         >>> f.getServerName()
@@ -143,61 +140,69 @@ class MailFolder(Folder):
         """
         # useful if we need some action when renaming server_name
         # typically resync
-        self.server_name = server_name 
-    
+        self.server_name = server_name
+
     def _addMessage(self, uid='', msg_key=''):
-        """"See interfaces.IMailFolder              
+        """"See interfaces.IMailFolder
         """
         if uid == '':
             uid = uniqueId(self, self.mail_prefix)
-        else:                                
-            uid = makeId(uid)                    
-            
+        else:
+            uid = makeId(uid)
+
         new_msg = MailMessage(uid, uid, msg_key)
         self._setObject(new_msg.getId(), new_msg)
         return new_msg
-        
-    def _addFolder(self, uid='', server_name=''):  
-        """"See interfaces.IMailFolder      
+
+    def _addFolder(self, uid='', server_name=''):
+        """"See interfaces.IMailFolder
         """
         if uid == '':
             uid = uniqueId(self, 'folder_')
-        else:                                
-            uid = makeId(uid) 
-        
+        else:
+            uid = makeId(uid)
+
         new_folder = MailFolder(uid, server_name)
         self._setObject(new_folder.getId(), new_folder)
-        return new_folder 
+        return new_folder
 
     def findMessage(self, msg_key, recursive=True):
-        """ See interfaces.IMailFolder      
+        """ See interfaces.IMailFolder
         """
-        # XXX see for caching here        
+        # XXX see for caching here
         message_list = self.getMailMessages(False, True, recursive)
-        
+
         for message in message_list:
             if message.msg_key == msg_key:
                 return message
-        
+
         return None
-        
-    def childFoldersCount(self):     
-        """ See interfaces.IMailFolder      
+
+    def childFoldersCount(self):
+        """ See interfaces.IMailFolder
         """
         return self.getMailMessagesCount(True, False, False)
-       
+
     def _synchronizeFolder(self):
-        """ See interfaces.IMailFolder      
+        """ See interfaces.IMailFolder
         """
+        # XXXX using pass for unit testing
         pass
-      
+
+    def checkMessages(self):
+        """See interfaces.IMailFolder
+        """
+        raise NotImplementedError
+
 """ classic Zope 2 interface for class registering
-"""        
-manage_addMailFolder = PageTemplateFile(
+"""
+InitializeClass(MailFolder)
+
+manage_addMailFolderForm = PageTemplateFile(
     "www/zmi_addmailfolder", globals(),
     __name__ = 'manage_addMailFolder')
-    
-def manage_addMailFolder(container, id=None, server_name ='', 
+
+def manage_addMailFolder(container, id=None, server_name ='',
         REQUEST=None, **kw):
     """Add a box to a container (self).
     >>> from OFS.Folder import Folder
@@ -205,7 +210,7 @@ def manage_addMailFolder(container, id=None, server_name ='',
     >>> manage_addMailFolder(f, 'inbox')
     >>> f.inbox.getId()
     'inbox'
-    
+
     """
     container = container.this()
     ob = MailFolder(id, server_name, **kw)
@@ -213,4 +218,3 @@ def manage_addMailFolder(container, id=None, server_name ='',
     if REQUEST is not None:
         ob = container._getOb(ob.getId())
         REQUEST.RESPONSE.redirect(ob.absolute_url()+'/manage_main')
-        
