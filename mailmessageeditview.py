@@ -325,9 +325,8 @@ class MailMessageEdit(BrowserView):
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
 
-    def addRecipient(self, content, type):
-        """ add a recipient
-        """
+    def addRecipient(self, content, type, redirect=''):
+        """ add a recipient """
         content = content.strip()
         if content == '':
             return
@@ -346,7 +345,10 @@ class MailMessageEdit(BrowserView):
                 msg.addHeader(type, mail)
 
         if self.request is not None:
-            self.request.response.redirect('editMessage.html')
+            if redirect is not None:
+                self.request.response.redirect(redirect)
+            else:
+                self.request.response.redirect('editMessage.html')
 
 
     def editAction(self, action, **kw):
