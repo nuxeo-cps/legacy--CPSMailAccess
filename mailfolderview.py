@@ -27,13 +27,11 @@ class MailFolderView(BaseMailMessageView):
     def __init__(self, context, request):
         BaseMailMessageView.__init__(self, context, request)
 
-    def rename(self, new_name, fullname):
-        """ action called to rename the
-            current folder
-        """
+    def rename(self, new_name):
+        """ action called to rename the current folder """
         mailfolder = self.context
         mailbox = mailfolder.getMailBox()
-        max_folder_size = int(mailbox.connection_params['max_folder_size'])
+        max_folder_size = int(mailbox.getConnectionParams()['max_folder_size'])
         if len(new_name) > max_folder_size:
             new_name = new_name[:max_folder_size]
 
@@ -55,13 +53,16 @@ class MailFolderView(BaseMailMessageView):
         if len(new_name) > max_folder_size:
             new_name = new_name[:max_folder_size]
 
-        renamed = mailfolder.rename(new_name, fullname)
+        renamed = mailfolder.rename(new_name)
+
+        fullname = mailfolder.server_name
+
+        folder = getFolder(mailbox, fullname)
 
         if self.request is not None and renamed is not None:
-            folder = getFolder(mailbox, new_name)
-            if folder is None:
-                folder = mailbox
             self.request.response.redirect(folder.absolute_url()+'/view')
+        else:
+            return folder
 
     def delete(self):
         """ action called to rename the current folder
