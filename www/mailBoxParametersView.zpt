@@ -1,4 +1,12 @@
 <html metal:use-macro="here/main_template/macros/master">
+  <metal:block fill-slot="css_slot">
+    <style type="text/css" media="all"
+      tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
+    <style type="text/css" media="all"
+      tal:content="string:@import
+           url(${context/portal_url}/++resource++calendar/calendar-win2k-1.css);"/>
+  </metal:block>
+
   <metal:block metal:fill-slot="main"
       tal:define="first_time request/first_time|nothing">
     <div class="message" tal:condition="first_time">
@@ -6,63 +14,47 @@
       you launched it, blalalalalala (texte à externaliser)
     </div>
 
-    <h2>MailBox Managment tasks</h2>
-    <form action="reindexMailCatalog.html">
-      <input type="submit" name="reindex" value="reindex mail catalog"/>
-    </form>
+    <h2>
+      <img src="cpsma_configure.png"/>&#160;Mailbox configuration
+    </h2>
 
+    <h4>MailBox parameters</h4>
 
-    <h2>MailBox parameters</h2>
     <form name="parameters" action="editParameters.html" method="post">
-      <table width="100%">
+      <div class="manageGroup">
+        <table width="100%">
 
-        <tal:block tal:repeat="parameter view/renderParametersForm">
-        <tr>
-          <td width="50%" align="right">
-            <tal:block tal:replace="parameter/name"/>
-          </td>
-          <td width="50%" align="left">
-            <input tal:attributes="type parameter/type;
-                                   name python:parameter['name']+':'+parameter['ptype'];
-                                   value parameter/value;"/>
-          </td>
-        </tr>
-        </tal:block>
-        <tr>
-          <td align="center" colspan="2">
-            <br/>
-            <input type="submit" name="submit" value="submit" i18n:translate="value"/>
-          </td>
-        </tr>
-      </table>
+          <tal:block tal:repeat="parameter view/renderParametersForm">
+          <tr>
+            <td width="50%" align="right">
+              <div class="dlabel">
+                <tal:block tal:replace="parameter/name"/> :
+              </div>
+            </td>
+            <td width="50%" align="left">
+              <input tal:attributes="type parameter/type;
+                                name python:parameter['name']+':'+parameter['ptype'];
+                                value parameter/value;"/>
+            </td>
+          </tr>
+          </tal:block>
+        </table>
+      </div>
+      <input type="submit" class="standalone"
+         name="submit" value="submit" i18n:translate="value"/>
+   </form>
+   <br/>
 
+
+    <h4>MailBox Managment tasks</h4>
+    <div class="manageGroup">
+    <form action="reindexMailCatalog.html">
+      <input type="submit" name="reindex"
+        class="standalone"
+          value="reindex mail catalog"/>
     </form>
-    <br/>
-    <h2>Adding a field</h2>
-    <form name="add_parameter" action="addParameter.html" method="post">
-      <table width="100%">
-        <tal:block tal:repeat="parameter view/renderAddParamForm">
-        <tr>
-          <td width="50%" align="right">
-            <tal:block tal:replace="parameter/name"/>
-          </td>
-          <td width="50%" align="left">
-            <input tal:attributes="type parameter/type;
-                                   name parameter/name;
-                                   value parameter/value;"/>
-          </td>
-        </tr>
+    </div>
 
-        </tal:block>
-        <tr>
-          <td align="center" colspan="2">
-            <br/>
-            <input type="submit" name="submit" value="submit" i18n:translate="value"/>
-          </td>
-        </tr>
-
-      </table>
-    </form>
 
   </metal:block>
 </html>

@@ -19,8 +19,8 @@
                        privates python:here.getEntries()[1];">
     <div style="width :100%">
       <div style="clear:both"/>
-        <div style="float:left;width :49%;padding:4px;">
-          <h3><img src="cpsma_users.png"/>&#160;Personal address book</h3>
+        <div class="privateBook">
+          <h2><img src="cpsma_users.png"/>&#160;Personal address book</h2>
           <div tal:repeat="private privates" style="margin-top:8px;">
             <tal:block tal:define="email python:private[1]['email'];
                                     fullname python:private[1]['fullname'];
@@ -38,16 +38,16 @@
                 </a>
             </tal:block>
           </div>
-          <div style="margin-top:8px">
+          <div style="margin-top:15px;margin-left: 4px">
             <a tal:attributes="href
                 python:base_url+'/cpsdirectory_entry_search_form?dirname=.addressbook'">
             All entries
             </a>
           </div>
         </div>
-        <div style="float:left;width :49%">
+        <div class="publicBook">
 
-        <h3><img src="cpsma_users.png"/>&#160;Global address book</h3>
+        <h2><img src="cpsma_users.png"/>&#160;Global address book</h2>
         <div tal:repeat="public publics" style="margin-top:8px;">
             <tal:block tal:define="email python:public[1]['email'];
                                     fullname python:public[1]['fullname'];
@@ -65,7 +65,7 @@
                 </a>
             </tal:block>
           </div>
-          <div style="margin-top:8px">
+          <div style="margin-top:15px">
             <a tal:attributes="href
                 python:base_url+'/cpsdirectory_entry_search_form?dirname=addressbook'">
             All entries
