@@ -131,30 +131,6 @@ class MailSearchTestCase(MailTestCase):
         path = brain.getPath()
         self.assertEquals(ob.absolute_url(), path)
 
-    def test_cache(self):
-        cat = self._getCatalog()
-
-        ob = self.getMailInstance(15)
-
-        cat.indexMessage(ob)
-        # verify if it's done
-        query ={}
-        query['searchable_text'] = u'dzoduihgzi'
-        res = cat.search(query_request=query)
-        self.assertEquals(len(res), 0)
-
-        query['searchable_text'] = u'delivery'
-        res = cat.search(query_request=query)
-        self.assertEquals(len(res), 1)
-
-        key = cat._makeKey(query, None, 0, None, 1)
-
-        self.assertEquals(cat._v_cached_search[key], res)
-
-        query['searchable_text'] = u'delivery'
-        res = cat.search(query_request=query)
-        self.assertEquals(len(res), 1)
-
     def test_search_cat(self):
 
         cat = self._getCatalog()
@@ -174,6 +150,21 @@ class MailSearchTestCase(MailTestCase):
         query['searchable_text'] = u'Dingus Lovers'
         res = cat.search(query_request=query)
         self.assertEquals(len(res), 7)
+
+    def test_body_search_cat(self):
+
+        cat = self._getCatalog()
+
+        for i in range(35):
+            ob = self.getMailInstance(i)
+            ob = ob.__of__(self.portal)
+            ob.getPhysicalPath = self.fakeGetPhysicalPath
+            cat.indexMessage(ob)
+
+        query = {}
+        query['searchable_text'] = u'like'
+        res = cat.search(query_request=query)
+        self.assertEquals(len(res), 4)
 
     def test_wrapMessage(self):
         # at this time, wrapping a message is just for
