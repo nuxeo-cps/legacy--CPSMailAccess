@@ -186,7 +186,7 @@ class MailActionsView(BaseMailMessageView):
         search = {'icon' : base_url + '/cspma_mail_find.png',
                    'title' : 'search messages',
                    'long_title' : 'searchin messages',
-                   'action' : root + '/searchMessage.html'}
+                   'action' : root + '/zemanticSearchMessage.html'}
 
         write   = {'icon' : base_url + '/cpsma_writemail.png',
                    'title' : 'write message',
