@@ -21,13 +21,10 @@ import unittest
 
 from Testing.ZopeTestCase import user_name, folder_name
 from Testing.ZopeTestCase import installProduct
-
-from objectinteractiontestcase import ObjectInteractionInstaller, \
-    setupPortal, ObjectInteractionTestCase
-
 from CPSMailAccess.mailbox import manage_addMailBox
 from CPSMailAccess.mailtool import manage_addMailTool
 from CPSMailAccess.mailfolder import MailFolder, MailContainerError
+from CPSMailAccess.utils import uniqueId
 from CPSDefault.tests import CPSDefaultTestCase
 
 installProduct('CPSMailAccess')
@@ -109,6 +106,20 @@ class ObjectInteractionTest(CPSDefaultTestCase.CPSDefaultTestCase):
                 ob._addMessage(key, key)
 
         mailbox.synchronize()
+
+    def test_uniqueId(self):
+        """ testing unique ID
+        """
+        mailbox = self._getMailBox()
+        id = uniqueId(mailbox, 'folder_', use_primary=False)
+        self.assertEquals(hasattr(mailbox, id), False)
+
+        mailbox._addFolder(id, id)
+
+        id = uniqueId(mailbox, 'folder_', use_primary=False)
+        self.assertEquals(hasattr(mailbox, id), False)
+
+
 
 def test_suite():
     return unittest.TestSuite((
