@@ -317,10 +317,10 @@ class HTMLMailSanitizer(HTMLSanitizer):
     """
     tags_to_keep = ('a', 'b', 'i', 'strong', 'br', 'p', 'h1', 'h2', 'h3',
                     'h4', 'h5', 'div', 'span', 'table', 'tr', 'th', 'td',
-                    'font', 'style')
+                    'font', 'style', 'img')
 
     tolerant_tags = ('br', 'p')
-    attributes_to_keep = ('size', 'face', 'class')
+    attributes_to_keep = ('size', 'face', 'class', 'src', 'href')
     attributes_to_remove = ('accesskey', 'onclick')
 
 def sanitizeHTML(content):
