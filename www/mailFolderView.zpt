@@ -99,7 +99,9 @@
       <tal:block tal:condition="not:show_content_toolbar">
         <metal:block use-macro="here/messagelist_macros/messagelist"/>
       </tal:block>
-
+      <script langage="javascript">
+        truncateFields(32);
+      </script>
     </div>
   </metal:block>
 </html>
