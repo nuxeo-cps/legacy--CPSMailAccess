@@ -87,6 +87,12 @@ class IMAP4:
     def partial(self, message_num, message_part, start, length):
         return ('OK', '')
 
+    def rename(self, oldmailbox, newmailbox):
+        return ('OK', '')
+
+    def uid(self, command, *args):
+        return ('OK', '')
+
 class IMAP4_SSL(IMAP4):
     pass
 
