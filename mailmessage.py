@@ -57,9 +57,9 @@ class MailMessage(Folder):
 
     uid = '' # server uid
     digest = ''
-    message_cache = ''
     store = None
     sync_state = False
+    cache_level = 1
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
@@ -74,22 +74,30 @@ class MailMessage(Folder):
     def _getStore(self):
         """
         >>> f = MailMessage()
+        >>> f.cache_level = 0
         >>> f.loadMessage('ok')
         >>> store = f._getStore()
         >>> store <> None
         True
         """
         if self.store is None:
-            ### XXX we'll do different load level here
-            self.store = message_from_string(self.message_cache)
-
+            self.loadMessage('')
         return self.store
 
     def loadMessage(self, raw_msg):
         """ See interfaces.IMailMessage
         """
-        self.message_cache = raw_msg
-        self.store = message_from_string(raw_msg)
+        ### XXX we'll do different load level here
+        if self.cache_level == 0:
+            # todo
+            self.store = Message.Message()
+        elif self.cache_level == 1:
+            # todo fill headers
+            self.store = Message.Message()
+            for key in raw_msg.keys():
+                self.store[key] = raw_msg[key]
+        else:
+            self.store = message_from_string(raw_msg)
 
     def getPartCount(self):
         """ See interfaces.IMailMessage
@@ -141,6 +149,7 @@ class MailMessage(Folder):
     def isMultipart(self):
         """ See interfaces.IMailMessage
         >>> f = MailMessage()
+        >>> f.cache_level = 0
         >>> f.loadMessage('mmdclkdshkdjg')
         >>> f.isMultipart()
         False
@@ -227,7 +236,8 @@ class MailMessage(Folder):
     def getHeader(self, name):
         """Get a message header.
         """
-        return self._getStore().get(name)
+        store = self._getStore()
+        return store[name]
 
     def setHeader(self, name, value):
         """Set a message header.
