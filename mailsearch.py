@@ -45,7 +45,7 @@ class MailCatalog(ZCatalog):
     def __init__(self, id, user_id='', title='', vocab_id=None, container=None):
         ZCatalog.__init__(self, id, title, vocab_id, container)
         self.user_id = user_id
-        self.addIndex('searchable_text', 'TextIndexNG')
+        self.addIndex('searchable_text', 'TextIndexNG2')
         indexer = self.Indexes['searchable_text']
         # options, TODO : externalize as parameters
         indexer.indexed_fields = ['searchable_text']
@@ -123,38 +123,3 @@ class MailCatalog(ZCatalog):
             reverse, limit, merge)
 
 InitializeClass(MailCatalog)
-
-# catalog dictonnary
-class MailCatalogDict(Folder):
-    def __init__(self):
-        Folder.__init__(self)
-
-    def createCatalogId(self, user_id):
-        """ creates an id """
-
-        return '..' + user_id
-
-    def getCatalog(self, user_id):
-        """ get a catalog entry """
-
-        user_id = makeId(user_id)
-        folder_id = self.createCatalogId(user_id)
-        if hasattr(self, folder_id):
-            return getattr(self, folder_id)
-        return None
-
-    def addCatalog(self, user_id):
-        """ sets a catalog entry """
-
-        user_id = makeId(user_id)
-        folder_id = self.createCatalogId(user_id)
-        if not hasattr(self, folder_id):
-            catalog = MailCatalog(folder_id, user_id, user_id)
-            self._setObject(folder_id, catalog)
-            catalog = getattr(self, folder_id)
-
-""" classic Zope 2 interface for class registering
-"""
-InitializeClass(MailCatalogDict)
-
-
