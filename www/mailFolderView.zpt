@@ -1,7 +1,15 @@
 <html metal:use-macro="here/main_template/macros/master">
   <metal:block metal:fill-slot="main">
     <div id="maillist">
-      <tal:block tal:replace="structure view/renderMailList" />
+      <tal:block tal:define="messages view/renderMailList" >
+        <div id="folder_content">
+          <div tal:repeat="message messages">
+            <a tal:attributes="href message/url">
+               <span tal:replace="message/title"/>
+            </a>
+          </div>
+        </div>
+      </tal:block>
     </div>
   </metal:block>
 </html>
