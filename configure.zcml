@@ -198,6 +198,13 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxView"
+      name="synchronize"
+      attribute="synchronize"
+      permission="zope2.View"
+      />
 
   <browser:page
       for=".interfaces.IMailBox"
@@ -252,6 +259,38 @@
       class=".mailbox.MailMessageEdit"
       name="is_editor"
       attribute="is_editor"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      name="bodyvalue"
+      attribute="getBodyValue"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      name="tos"
+      attribute="getDestList"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      name="subject"
+      attribute="getSubject"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      name="saveMessageForm"
+      attribute="saveMessageForm"
       permission="zope2.View"
       />
 
