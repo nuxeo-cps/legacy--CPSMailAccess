@@ -263,6 +263,15 @@ class MailFolder(BTreeFolder2):
         msg = getattr(to_mailbox, id)
         return msg
 
+    def _copyMessage(self, uid, to_mailbox):
+        """ copies a message
+        """
+        id = self.getIdFromUid(uid)
+        msg = self[id]
+        new_uid = to_mailbox.getNextMessageUid()
+        msg_copy = to_mailbox._addMessage(new_uid, msg.digest)
+        msg_copy.copyFrom(msg)
+
     def _deleteMessage(self, uid):
         """ see interfaces ImailFolder
         """
@@ -591,16 +600,48 @@ class MailFolder(BTreeFolder2):
         """
         mailbox = self.getMailBox()
 
+        if has_connection:
+            connector = self._getconnector()
+            res = connector.copy(self.server_name, new_mailbox.server_name, uid)
+            connector.setFlags(self.server_name, uid, {'deleted': 1})
+            if not res:
+                return False
+        # XXX todo : check if is the same msg uid
+        return self._moveMessage(uid, new_mailbox) is not None
+
+    def copyMessage(self, uid, to_mailbox):
+        """ make a copy
+        """
+        mailbox = self.getMailBox()
+
+        if has_connection:
+            connector = self._getconnector()
+            res = connector.copy(self.server_name, to_mailbox.server_name, uid)
+            if not res:
+                return False
+        # XXX todo : check if is the same msg uid
+        return self._copyMessage(uid, to_mailbox) is not None
+
+    def deleteMessage(self, uid):
+        """ moves the message on the server,
+            then on the zodb (no sync)
+        """
+        mailbox = self.getMailBox()
+
         trash_name = mailbox.getTrashFolderName()
         if has_connection:
             connector = self._getconnector()
+            connector.setFlags(self.server_name, uid, {'deleted': 1})
             res = connector.copy(self.server_name, trash_name, uid)
             if not res:
                 return False
         # XXX todo : check if is the same msg uid
         trash = mailbox.getTrashFolder()
-        return self._moveMessage(uid, trash) is not None
-
+        msg = self._moveMessage(uid, trash)
+        if msg:
+            msg.deleted = 1
+        else:
+            return False
 
 """ classic Zope 2 interface for class registering
 """
