@@ -306,6 +306,8 @@ class MailFolder(BTreeFolder2):
             flag = flag.capitalize()
             kw = {flag: value}
             connector.setFlags(self.server_name, msg.uid, kw)
+        # invalidate cache
+        self._cache.invalidate(self.server_name)
 
     def _addMessage(self, uid, digest, index=True):
         """ See interfaces.IMailFolder """
@@ -412,6 +414,7 @@ class MailFolder(BTreeFolder2):
 
         for uid in uids:
             sync_id = '%s.%s' % (self.server_name, uid)
+            LOG('synchro', INFO, sync_id)
             msg = self.findMessageByUid(uid)
 
             if msg is not None:
@@ -426,17 +429,19 @@ class MailFolder(BTreeFolder2):
             except ConnectionError:
                 mailfailed = True
 
-            # msg_flags = fetched[0]
+            msg_flags = fetched[0]
             msg_size = fetched[1]
             if not mailfailed:
                 msg_headers = fetched[2]
 
                 digest = self._createKey(msg_headers)
                 msg = mailbox.getMailFromCache(digest, remove=True)
+
                 raw_msg = ''
 
             if msg is None and not mailfailed:
                 msg = self._addMessage(uid, digest, index=False)
+
                 raw_msg = ''
                 skip = False
                 # Message is not in cache
@@ -489,6 +494,8 @@ class MailFolder(BTreeFolder2):
                                 % (uid, self.server_name))
 
             sync_states[sync_id] = True
+            self._checkFlags(msg, msg_flags)
+
             #total = time.time() - start
             #LOG('synchro', INFO, '  %0.2f' % (total))
             # print '%s.%s' % (str(self.server_name), str(uid))
@@ -511,6 +518,10 @@ class MailFolder(BTreeFolder2):
             return log
         else:
             return []
+
+    def _checkFlags(self, msg, flags):
+        if flags is not None:
+            msg.setFlags(flags)
 
     def checkMessages(self):
         """See interfaces.IMailFolder
@@ -716,22 +727,23 @@ class MailFolder(BTreeFolder2):
         current_depth = self.depth()
         return current_depth + 1 <=  max_depth
 
-    def addMailListToCache(self, elements):
+    def addMailListToCache(self, elements, page, nb_items, sort_with,
+                           sort_asc):
         """ to be extern. in mailfolder """
         if not hasattr(self, '_cache'):
             self._cache = RAMCache()
 
-        folder_id = self.server_name
-        self._cache.set(elements, folder_id)
+        page_id = '%d.%d.%s.%d' % (page, nb_items, sort_with, sort_asc)
+        self._cache.set(elements, page_id)
 
-    def getMailListFromCache(self):
+    def getMailListFromCache(self, page, nb_items, sort_with, sort_asc):
         """ to be extern. in mailfolder """
         if not hasattr(self, '_cache'):
             self._cache = RAMCache()
             return None
 
-        folder_id = self.server_name
-        elements = self._cache.query(folder_id)
+        page_id = '%d.%d.%s.%d' % (page, nb_items, sort_with, sort_asc)
+        elements = self._cache.query(page_id)
         return elements
 
 
