@@ -114,244 +114,244 @@ function prepareTableSorting()
 
 function initTable(obj)
 {
-        // Local variables
-        var countCol;
-        var nChildNodes;
-        var innerMostNode;
-        var nColSpan, nRowSpannedTitleCol, colPos;
-        var cell, cellText;
-        var titleFound = false;
-        var rNRowSpan, rNColSpan;
+    // Local variables
+    var countCol;
+    var nChildNodes;
+    var innerMostNode;
+    var nColSpan, nRowSpannedTitleCol, colPos;
+    var cell, cellText;
+    var titleFound = false;
+    var rNRowSpan, rNColSpan;
 
-        // Initializing global table object variable
-        if (obj.tagName == "TABLE")
+    // Initializing global table object variable
+    if (obj.tagName == "TABLE")
+    {
+            // Assumes that the obj is THE OBJECT
+            table = obj;
+    }
+    else
+    {
+            // Assumes that the obj is the id of the object
+            table = document.getElementById(obj);
+    }
+
+    // Check whether it's an object
+    if (table == null) return;
+
+    // Check whether it's a table
+    if (table.tagName != "TABLE") return;
+
+    // Initializing the max col number with the size of last data row
+    maxNCol = table.rows[table.rows.length-1].cells.length;
+
+    // Initializing arrays
+    rowArray = new Array();
+    colSpanArray = new Array();
+    colTitleFilled = new Array();
+    titleRowArray = new Array();
+    titleRowCellArray = new Array();
+
+    for (var i=0; i<maxNCol; i++)
+            colTitleFilled[i] = false;
+
+    // Setting the number of rows
+    nRow = table.rows.length;
+
+    // Should have at least 1 row
+    if (nRow < 1) return;
+
+    // Initialization of local variables
+    actualNRow = 0;                 // Number of actual data rows
+    rNRowSpan = 0;                  // Remaining rows in the row span
+    rNColSpan = 0;                  // Remaining cols in the col span
+    nRowSpannedTitleCol = 0;        // Number of title cols from row span
+
+    // Loop through rows
+    for (var i=0; i<nRow; i++)
+    {
+        nColSpan = 1, colPos = 0;
+        // Loop through columns
+        // Initializing
+        for (var j=0; j<table.rows[i].cells.length; j++)
         {
-                // Assumes that the obj is THE OBJECT
-                table = obj;
+            // Do this iff title has not been found
+            if (titleFound == false)
+            {
+                    if (table.rows[i].cells[j].rowSpan > 1)
+                    {
+                            if (table.rows[i].cells[j].colSpan < 2)
+                            {
+                                    titleSpanCellArray[colPos] =
+                                            table.rows[i].cells[j];
+                                    colTitleFilled[colPos] = true;
+                                    nRowSpannedTitleCol++;
+                            }
+                            if (table.rows[i].cells[j].rowSpan - 1
+                                    > rNRowSpan)
+                            {
+                                    rNRowSpan =
+                                            table.
+                                            rows[i].cells[j].
+                                            rowSpan - 1;
+
+                                    if (table.rows[i].
+                                            cells[j].colSpan > 1)
+                                            rNColSpan =
+                                                    rNRowSpan + 1;
+                            }
+                    }
+            }
+            if (table.rows[i].cells[j].colSpan > 1 &&
+                    rNColSpan == 0)
+            {
+                    nColSpan = table.rows[i].cells[j].colSpan;
+                    colPos += nColSpan;
+            }
+            else
+            {
+                    colPos++;
+            }
+        }
+
+        // Setting up the title cells
+        if (titleFound == false && nColSpan == 1 &&
+                rNRowSpan == 0 && rNColSpan == 0 && titleFound == false)
+        {
+            colSpanArray[i] = true;
+            titleFound = true;
+
+            // Using indivisual cell as an array element
+            countCol = 0;
+            for (var j=0;
+                    j<table.rows[i].cells.length
+                            + nRowSpannedTitleCol; j++)
+            {
+                    if (colTitleFilled[j] != true)
+                    {
+                            titleRowCellArray[j] =
+                                    table.rows[i].cells[countCol];
+                            countCol++;
+                    }
+                    else
+                    {
+                            titleRowCellArray[j] =
+                                    titleSpanCellArray[j];
+                    }
+            }
+        }
+        // Setting up the data rows
+        else if (titleFound == true && nColSpan == 1 && rNRowSpan == 0)
+        {
+            for (var j=0; j<table.rows[i].cells.length; j++)
+            {
+                // Can't have row span in record rows ...
+                if (table.rows[i].cells[j].rowSpan > 1) return;
+                /*
+                nChildNodes =
+                        table.rows[i].
+                        cells[j].firstChild.childNodes.
+                        length;
+                */
+                innerMostNode =
+                        table.rows[i].
+                        cells[j].firstChild;
+
+                for (var k=0; k<table.rows[i].cells[j].childNodes.length; k++)
+                {
+                    if (table.rows[i].cells[j].childNodes[k].id == "sorter")
+                    {
+                    innerMostNode = table.rows[i].cells[j].childNodes[k];
+                    }
+                }
+
+                /*
+                while ( nChildNodes != 0)
+                {
+                        innerMostNode =
+                                innerMostNode.
+                                firstChild;
+                        nChildNodes =
+                                innerMostNode.
+                                childNodes.
+                                length;
+                }
+                */
+                if (j==0)
+                {
+                    rowArray[actualNRow] = new Array(table.rows[i].cells.length);
+                }
+                onecell = new Array(2);
+                onecell[0] = innerMostNode.value;
+                onecell[1] = table.rows[i].cells[j].innerHTML;
+                rowArray[actualNRow][j] = onecell;
+            }
+            // Inconsistent col lengh for data rows
+            if (table.rows[i].cells.length > maxNCol)
+                    return;
+            actualNRow++;
+            colSpanArray[i] = false;
+        }
+        else if (nColSpan == 1 && rNRowSpan == 0 &&
+                rNColSpan == 0 && titleFound == false)
+        {
+            colSpanArray[i] = false;
         }
         else
         {
-                // Assumes that the obj is the id of the object
-                table = document.getElementById(obj);
+             colSpanArray[i] = true;
         }
 
-        // Check whether it's an object
-        if (table == null) return;
+        // Counters for row/column spans
+        if (rNRowSpan > 0) rNRowSpan--;
+        if (rNColSpan > 0) rNColSpan--;
+    }
 
-        // Check whether it's a table
-        if (table.tagName != "TABLE") return;
+    // If the row number is < 1, no need to do anything ...
+    if (actualNRow < 1) return;
 
-        // Initializing the max col number with the size of last data row
-        maxNCol = table.rows[table.rows.length-1].cells.length;
-
-        // Initializing arrays
-        rowArray = new Array();
-        colSpanArray = new Array();
-        colTitleFilled = new Array();
-        titleRowArray = new Array();
-        titleRowCellArray = new Array();
-
-        for (var i=0; i<maxNCol; i++)
-                colTitleFilled[i] = false;
-
-        // Setting the number of rows
-        nRow = table.rows.length;
-
-        // Should have at least 1 row
-        if (nRow < 1) return;
-
-        // Initialization of local variables
-        actualNRow = 0;                 // Number of actual data rows
-        rNRowSpan = 0;                  // Remaining rows in the row span
-        rNColSpan = 0;                  // Remaining cols in the col span
-        nRowSpannedTitleCol = 0;        // Number of title cols from row span
-
-        // Loop through rows
-        for (var i=0; i<nRow; i++)
+    // Re-drawing the title row
+    for (var j=0; j<maxNCol; j++)
+    {
+        // If for some reason, the rows do NOT have any child, then
+        // simply return ...
+        if (titleRowCellArray[j].childNodes.length == 0) return;
+        if (titleRowCellArray[j].firstChild != null)
         {
-                nColSpan = 1, colPos = 0;
-                // Loop through columns
-                // Initializing
-                for (var j=0; j<table.rows[i].cells.length; j++)
+                nChildNodes =
+                        titleRowCellArray[j].
+                        firstChild.childNodes.length;
+                innerMostNode =
+                        titleRowCellArray[j].firstChild;
+
+                while ( nChildNodes != 0)
                 {
-                        // Do this iff title has not been found
-                        if (titleFound == false)
-                        {
-                                if (table.rows[i].cells[j].rowSpan > 1)
-                                {
-                                        if (table.rows[i].cells[j].colSpan < 2)
-                                        {
-                                                titleSpanCellArray[colPos] =
-                                                        table.rows[i].cells[j];
-                                                colTitleFilled[colPos] = true;
-                                                nRowSpannedTitleCol++;
-                                        }
-                                        if (table.rows[i].cells[j].rowSpan - 1
-                                                > rNRowSpan)
-                                        {
-                                                rNRowSpan =
-                                                        table.
-                                                        rows[i].cells[j].
-                                                        rowSpan - 1;
-
-                                                if (table.rows[i].
-                                                        cells[j].colSpan > 1)
-                                                        rNColSpan =
-                                                                rNRowSpan + 1;
-                                        }
-                                }
-                        }
-                        if (table.rows[i].cells[j].colSpan > 1 &&
-                                rNColSpan == 0)
-                        {
-                                nColSpan = table.rows[i].cells[j].colSpan;
-                                colPos += nColSpan;
-                        }
-                        else
-                        {
-                                colPos++;
-                        }
-                }
-
-                // Setting up the title cells
-                if (titleFound == false && nColSpan == 1 &&
-                        rNRowSpan == 0 && rNColSpan == 0 && titleFound == false)
-                {
-                        colSpanArray[i] = true;
-                        titleFound = true;
-
-                        // Using indivisual cell as an array element
-                        countCol = 0;
-                        for (var j=0;
-                                j<table.rows[i].cells.length
-                                        + nRowSpannedTitleCol; j++)
-                        {
-                                if (colTitleFilled[j] != true)
-                                {
-                                        titleRowCellArray[j] =
-                                                table.rows[i].cells[countCol];
-                                        countCol++;
-                                }
-                                else
-                                {
-                                        titleRowCellArray[j] =
-                                                titleSpanCellArray[j];
-                                }
-                        }
-                }
-                // Setting up the data rows
-                else if (titleFound == true && nColSpan == 1 && rNRowSpan == 0)
-                {
-                        for (var j=0; j<table.rows[i].cells.length; j++)
-                        {
-                                // Can't have row span in record rows ...
-                                if (table.rows[i].cells[j].rowSpan > 1) return;
-                                /*
-                                nChildNodes =
-                                        table.rows[i].
-                                        cells[j].firstChild.childNodes.
-                                        length;
-                                */
-                                innerMostNode =
-                                        table.rows[i].
-                                        cells[j].firstChild;
-
-                                for (var k=0; k<table.rows[i].cells[j].childNodes.length; k++)
-                                {
-                                  if (table.rows[i].cells[j].childNodes[k].id == "sorter")
-                                  {
-                                    innerMostNode = table.rows[i].cells[j].childNodes[k];
-                                  }
-                                }
-
-                                /*
-                                while ( nChildNodes != 0)
-                                {
-                                        innerMostNode =
-                                                innerMostNode.
-                                                firstChild;
-                                        nChildNodes =
-                                                innerMostNode.
-                                                childNodes.
-                                                length;
-                                }
-                                */
-                                if (j==0)
-                                {
-                                  rowArray[actualNRow] = new Array(table.rows[i].cells.length);
-                                }
-                                onecell = new Array(2);
-                                onecell[0] = innerMostNode.value;
-                                onecell[1] = table.rows[i].cells[j].innerHTML;
-                                rowArray[actualNRow][j] = onecell;
-                        }
-                        // Inconsistent col lengh for data rows
-                        if (table.rows[i].cells.length > maxNCol)
-                                return;
-                        actualNRow++;
-                        colSpanArray[i] = false;
-                }
-                else if (nColSpan == 1 && rNRowSpan == 0 &&
-                        rNColSpan == 0 && titleFound == false)
-                {
-                        colSpanArray[i] = false;
-                }
-                else
-                {
-                        colSpanArray[i] = true;
-                }
-
-                // Counters for row/column spans
-                if (rNRowSpan > 0) rNRowSpan--;
-                if (rNColSpan > 0) rNColSpan--;
-        }
-
-        // If the row number is < 1, no need to do anything ...
-        if (actualNRow < 1) return;
-
-        // Re-drawing the title row
-        for (var j=0; j<maxNCol; j++)
-        {
-                // If for some reason, the rows do NOT have any child, then
-                // simply return ...
-                if (titleRowCellArray[j].childNodes.length == 0) return;
-                if (titleRowCellArray[j].firstChild != null)
-                {
-                        nChildNodes =
-                                titleRowCellArray[j].
-                                firstChild.childNodes.length;
                         innerMostNode =
-                                titleRowCellArray[j].firstChild;
-
-                        while ( nChildNodes != 0)
-                        {
-                                innerMostNode =
-                                        innerMostNode.firstChild;
-                                nChildNodes =
-                                        innerMostNode.
-                                        childNodes.
-                                        length;
-                        }
-                        cellText = innerMostNode.data;
+                                innerMostNode.firstChild;
+                        nChildNodes =
+                                innerMostNode.
+                                childNodes.
+                                length;
                 }
-                else
-                {
-                        cellText = "column(" + j + ")";
-                }
-                titleRowArray[j] = cellText;
-                titleRowCellArray[j].innerHTML =
-                        '<a ' +
-                        linkEventString +
-                        j + ',' + '"' + table.id + '"' + ');\'>' +
-                        '<' + titleFace + '>' + cellText +
-                        '</' + titleFace +'></a>';
+                cellText = innerMostNode.data;
         }
+        else
+        {
+                cellText = "column(" + j + ")";
+        }
+        titleRowArray[j] = cellText;
+        titleRowCellArray[j].innerHTML =
+                '<a ' +
+                linkEventString +
+                j + ',' + '"' + table.id + '"' + ');\'>' +
+                '<' + titleFace + '>' + cellText +
+                '</' + titleFace +'></a>';
+    }
 }
 
 //*****************************************************************************
 // Function called when user clicks on a title to sort
 //*****************************************************************************
-function sortTable(index,obj)
+function sortTable(index, obj)
 {
         // Re-inializing the table object
         initTable(obj);
@@ -378,24 +378,32 @@ function sortTable(index,obj)
         // Re-drawing the title row
         for (var j=0; j<maxNCol; j++)
         {
-                cellText = titleRowArray[j];
-                cellText = '<' + titleFace +'>' +
-                        cellText + '</' + titleFace + '></a>';
-                newTitle = '<a ' +
-                        linkEventString +
-                        j + ',' + '"' + table.id + '"' + ');\'>' +
-                        cellText +
-                        '</a>';
-                if (j == sortIndex)
-                {
-                        newTitle += '&nbsp;<font color=' + updownColor + '>';
-                        if (descending)
-                                newTitle += desChr;
-                        else
-                                newTitle += ascChr;
-                        newTitle += '</font>';
-                }
-                titleRowCellArray[j].innerHTML = newTitle;
+
+          cellText = titleRowArray[j];
+        if (cellText)
+        {
+
+
+        cellText = '<' + titleFace +'>' +
+                cellText + '</' + titleFace + '></a>';
+
+        newTitle = '<a ' +
+                linkEventString +
+                j + ',' + '"' + table.id + '"' + ');\'>' +
+                cellText +
+                '</a>';
+        if (j == sortIndex)
+        {
+                newTitle += '&nbsp;<font color=' + updownColor + '>';
+                if (descending)
+                        newTitle += desChr;
+                else
+                        newTitle += ascChr;
+                newTitle += '</font>';
+        }
+        titleRowCellArray[j].innerHTML = newTitle;
+        }
+
         }
 
 
