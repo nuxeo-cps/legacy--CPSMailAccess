@@ -23,7 +23,6 @@
         <img src="cpsma_delete_file.png"/>
      </a>
      <form action="rename" class="rename_form">
-       <input type="hidden" name="fullname" value="0"/>
        <input type="text" name="new_name"
               tal:attributes="value here/simpleFolderName"/>
        <input type="submit" name="submit" value="change"/>
