@@ -26,6 +26,9 @@ class ConnectionParamsError(Exception): pass
 
 LOGIN_FAILED = 'Login Failed.'
 CANNOT_SEARCH_MAILBOX = 'Could not search mailbox %s'
+BAD_LOGIN = 'Bad login'
+NO_CONNECTOR = 'Could find a connector'
+
 
 class BaseConnection:
     """ base class used for any mail server connexion
