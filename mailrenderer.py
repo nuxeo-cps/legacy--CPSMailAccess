@@ -85,8 +85,11 @@ class MailRenderer:
             if part_cte not in ('7bit', '8bit', '', None):
                 output_str = StringIO()
                 input_str = StringIO(content)
-                mimetools.decode(input_str, output_str, part_cte)
-                result = output_str.getvalue()
+                try:
+                    mimetools.decode(input_str, output_str, part_cte)
+                    result = output_str.getvalue()
+                except ValueError:
+                    result = content
             else:
                 result = content
             if ptype == 'text/html':
