@@ -33,6 +33,7 @@ from OFS.Folder import Folder
 from email.Errors import BoundaryError
 
 installProduct('Five')
+installProduct('TextIndexNG2')
 
 class FakePortal(Folder):
 
