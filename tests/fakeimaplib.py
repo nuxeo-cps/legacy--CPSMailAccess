@@ -20,6 +20,7 @@
 """
 is_fake = 1
 IMAP4_PORT = 25
+IMAP4_SSL_PORT = 993
 
 IMAPError = Exception
 
@@ -42,11 +43,16 @@ class IMAP4:
         self.password = password
         return 'OK', 'AUTH'
 
+    def select(self, mailbox):
+        pass
+
     def list(self, directory='""', pattern='*'):
         """ see how to manage this to provide a list
-
         """
-        return 'OK', []
+        return ('OK', ['(\\HasNoChildren) "." "INBOX.[Bugs]"', '(\\HasNoChildren) "." "INBOX.[BCEAO]"', '(\\HasNoChildren) "." "INBOX.[interne]"', '(\\HasNoChildren) "." "INBOX.[CPS-users]"', '(\\HasNoChildren) "." "INBOX.Drafts"', '(\\HasNoChildren) "." "INBOX.[dev]"', '(\\HasNoChildren) "." "INBOX.Trash"', '(\\HasNoChildren) "." "INBOX.[TypeMaker]"', '(\\HasNoChildren) "." "INBOX.[CPS-users-fr]"', '(\\HasNoChildren) "." "INBOX.[EuroPython]"', '(\\HasNoChildren) "." "INBOX.[CPS-devel]"', '(\\HasNoChildren) "." "INBOX.[z3-five]"', '(\\HasNoChildren) "." "INBOX.[courier-imap]"', '(\\HasNoChildren) "." "INBOX.[Cps-erp5-sprint]"', '(\\HasNoChildren) "." "INBOX.[Intranet Nuxeo]"', '(\\HasNoChildren) "." "INBOX.Sent"', '(\\HasNoChildren) "." "INBOX.TODO"', '(\\HasNoChildren) "." "INBOX.LOGS"', '(\\HasNoChildren) "." "INBOX.CVS"', '(\\Unmarked \\HasChildren) "." "INBOX"'])
+
+    def search(self, mailbox, charset, *criteria):
+        return ('OK', ['1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16'])
 
 class IMAP4_SSL(IMAP4):
     pass
