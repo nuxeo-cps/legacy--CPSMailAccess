@@ -19,19 +19,15 @@ so be patient on mailbox first synchro
 
 features (must and in precise order)
 
-+ save in cookies sort order not to loose it
-+ save in cookies tree position
-+ validate all Javascripts and CSS in IE
 + finish directory picker -- find something cool
 + security
 + translations in french
-
 + finish cache level 1
 + index body in cache level 1
 
 cosmetics
 
-+ fix scroll positions when a mailis selected
++ fix scroll positions when a mail is selected
 + review CSS naming conventions
 + review all html code style
 
@@ -45,8 +41,4 @@ later
 + anti virus
 + dates index in catalog
 + full mail specific UI for address books
-
-
-
-
-
++ add options for sanitizing : keep or delete links, images in bodies [Show Image button]
