@@ -17,7 +17,8 @@
 # 02111-1307, USA.
 #
 # $Id$
-from Products.CPSMailAccess.interfaces import IMailBox, IMailMessage, IMailFolder
+from Products.CPSMailAccess.interfaces import IMailBox, IMailMessage, \
+    IMailFolder
 from Products.Five import BrowserView
 
 from utils import getToolByName
@@ -84,8 +85,6 @@ class MailActionsView(BaseMailMessageView):
                 """
 
                 return [[save, init]]
-            else:
-                return []
 
         elif IMailFolder.providedBy(container):
             mailbox = container.getMailBox()
@@ -145,34 +144,52 @@ class MailActionsView(BaseMailMessageView):
             mailbox = container.getMailBox()
             root = mailbox.absolute_url()
 
-            reply = {'icon' : base_url + '/cpsma_reply.png',
-                     'title' : 'reply',
-                     'long_title' : 'reply to message',
-                     'action' : 'reply.html'}
+            trash_name = mailbox.getTrashFolderName().split('.')[-1]
+            draft_name = mailbox.getDraftFolderName().split('.')[-1]
+            sent_name = mailbox.getSentFolderName().split('.')[-1]
 
-            reply_all = {'icon' : base_url + '/cpsma_replyall.png',
-                     'title' : 'reply all',
-                     'long_title' : 'reply to message (all)',
-                     'action' : 'replyAll.html'}
+            current_folder = container.getMailFolder()
+            special_folder = False
 
-            forward = {'icon' : base_url + '/cpsma_forward.png',
-                     'title' : 'forward',
-                     'long_title' : 'forward the message',
-                     'action' : 'forward.html'}
+            if current_folder is not None:
+                if current_folder.id in (trash_name, sent_name, draft_name):
+                    special_folder = True
 
-            delete = {'icon' : base_url + '/cpsma_delete.png',
-                     'title' : 'delete message',
-                     'long_title' : 'delete the message',
-                     'onclick' : "return window.confirm('Are you sure?')",
-                     'action' : 'delete.html'}
+            if not special_folder:
+                reply = {'icon' : base_url + '/cpsma_reply.png',
+                        'title' : 'reply',
+                        'long_title' : 'reply to message',
+                        'action' : 'reply.html'}
 
-            actions.extend([reply, reply_all, forward, delete])
-            if container.draft:
-                draft = {'icon' : base_url + '/cpsma_reload.png',
-                     'title' : 'load message',
-                     'long_title' : 'load the message into the editor',
-                     'action' : 'reload.html'}
-                actions.append(draft)
+                reply_all = {'icon' : base_url + '/cpsma_replyall.png',
+                        'title' : 'reply all',
+                        'long_title' : 'reply to message (all)',
+                        'action' : 'replyAll.html'}
+
+                forward = {'icon' : base_url + '/cpsma_forward.png',
+                        'title' : 'forward',
+                        'long_title' : 'forward the message',
+                        'action' : 'forward.html'}
+
+                actions.extend([reply, reply_all, forward])
+
+                if container.draft:
+                    draft = {'icon' : base_url + '/cpsma_reload.png',
+                        'title' : 'load message',
+                        'long_title' : 'load the message into the editor',
+                        'action' : 'reload.html'}
+                    actions.extend([draft])
+
+
+            if current_folder.id != trash_name:
+                delete = {'icon' : base_url + '/cpsma_delete.png',
+                        'title' : 'delete message',
+                        'long_title' : 'delete the message',
+                        'onclick' : "return window.confirm('Are you sure?')",
+                        'action' : 'delete.html'}
+
+                actions.append(delete)
+
         else:
             return []
 
