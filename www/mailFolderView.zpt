@@ -1,12 +1,54 @@
 <html metal:use-macro="here/main_template/macros/master">
+  <metal:block fill-slot="css_slot">
+    <style type="text/css" media="all"
+      tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
+  </metal:block>
   <metal:block metal:fill-slot="main">
+    <div class="mailToolBar">
+
+      <div class="mailToolBarElement">
+        <div class="mailToolBarInsideElement"
+             style="width: 320px;">
+            Subject
+        </div>
+      </div>
+      <div class="mailToolBarElement">
+        <div class="mailToolBarInsideElement"
+             style="width: 130px;">
+            Sender
+        </div>
+      </div>
+      <div class="mailToolBarElement">
+        <div class="mailToolBarInsideElement"
+             style="width: 80px;">
+            Date
+        </div>
+      </div>
+    </div>
+    <div id="mailBreak"/>
     <div id="maillist">
       <tal:block tal:define="messages view/renderMailList" >
         <div id="folder_content">
           <div tal:repeat="message messages">
-            <a tal:attributes="href message/url">
-               <span tal:replace="message/title"/>
-            </a>
+
+             <div style="padding-left: 5px;float: left;width: 320px;">
+               <img src="cpsma_message.png"/>
+               <a tal:attributes="href python:message['url']+'?showfolders=1'">
+                 <span tal:replace="message/title"/>
+               </a>
+             </div>
+             <div style="padding-left: 5px;float: left;width: 130px;">
+               <a tal:attributes="href python:message['url']+'?showfolders=1'">
+                 <!--<span tal:replace="message/From|string:?"/>-->Tarek
+               </a>
+             </div>
+             <div style="padding-left: 5px;float: left;width: 80px;">
+               <a tal:attributes="href python:message['url']+'?showfolders=1'">
+                 <!--<span tal:replace="message/Date|string:?"/>-->10:23
+               </a>
+             </div>
+             &#160;
+             <div id="mailBreak"/>
           </div>
         </div>
       </tal:block>
