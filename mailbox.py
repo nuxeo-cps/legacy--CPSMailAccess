@@ -36,6 +36,7 @@ from Products.CPSMailAccess.mailcache import MailCache
 from interfaces import IMailFolder, IMailMessage
 from Globals import InitializeClass
 from zope.schema.fieldproperty import FieldProperty
+from Products.Five import BrowserView
 
 ### see for CMF dependency here
 from Products.CMFCore.utils import getToolByName
@@ -70,19 +71,23 @@ class MailBox(MailFolder):
     implements(IMailBox, IMapping)
 
     # see here for security
-    connection_params = FieldProperty(IMailBox['connection_params'])
+    connection_params = {'uid' : '',
+                         'connection_type' : '',
+                         'HOST' : '',
+                         'password' :'',
+                         'login' : ''}
 
     # one mail cache by mailbox
     mail_cache = getCache()
 
     def __init__(self, uid=None, server_name='', **kw):
         MailFolder.__init__(self, uid, server_name, **kw)
-        self.connection_params = {}
 
-    def setParameters(self, connection_params, resync=True):
+    def setParameters(self, connection_params=None, resync=True):
         """ sets the parameters
         """
         self.connection_params = connection_params
+
         if resync is True:
             self._getconnector()
             self.synchronize()
@@ -202,15 +207,6 @@ class MailBox(MailFolder):
         if return_log:
             return log
 
-    def _appendProperties(self, params = {}):
-        """ appends properties to param dictionnary
-        """
-        for property in self._properties:
-            id = property['id']
-            value = getattr(self, id)
-            params[id] = value
-        return params
-
     def _getconnector(self):
         """get mail server connector
         """
@@ -223,9 +219,7 @@ class MailBox(MailFolder):
             wm_tool.reloadPlugins()
 
         connection_params = self.connection_params
-        connection_params = self._appendProperties(connection_params)
         connector = wm_tool.getConnection(connection_params)
-
         if connector is None:
             raise ValueError(NO_CONNECTOR)
 
@@ -278,9 +272,95 @@ class MailBox(MailFolder):
         return self.connection_params.items()
 
 
+
 """ classic Zope 2 interface for class registering
 """
 InitializeClass(MailBox)
+
+#
+# MailBox Views
+#
+class MailBoxParametersView(BrowserView):
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+
+
+    def _getParameters(self):
+        """ returns a list of parameters
+        """
+        ob = self.context
+        return ob.connection_params
+
+    def renderParameters(self):
+        """ renders parameters
+        """
+        params = self._getParameters()
+        form = '<dl>'
+        for param in params.keys():
+            form += '<dt>%s</dt><dd>%s</dd>' %(param, params[param])
+        form += '</dl>'
+        return form
+
+    def addParameter(self, name):
+        """ sets given parameters
+        """
+        self.context[name] = ''
+        if self.request is not None:
+            self.request.response.redirect('configure.html')
+
+    def setParameters(self, params={}):
+        """ sets given parameters
+        """
+        if self.request is not None and hasattr(self.request, 'form'):
+            form = self.request.form
+            for element in form.keys():
+                params[element] = form[element]
+
+        if params.has_key('submit'):
+            del params['submit']
+
+        # XXX need to check each parameters
+        # to avoid resync if not needed
+        self.context.setParameters(params, False)
+
+        if self.request is not None:
+            self.request.response.redirect('configure.html')
+
+    def renderParametersForm(self):
+        """ returns a form with parameters
+            XXXX see for zope 3 form use here
+        """
+        if self.request is not None:
+            if self.request.has_key('submit'):
+                self.setParameters(REQUEST)
+
+        params = self._getParameters()
+        rendered_params = []
+
+        for param in params:
+            rendered_param = {}
+            rendered_param['name'] = param
+            rendered_param['value'] = params[param]
+            if param == 'password':
+                rendered_param['type'] = 'password'
+            else:
+                rendered_param['type'] = 'text'
+
+            rendered_params.append(rendered_param)
+
+        return rendered_params
+
+    def renderAddParamForm(self):
+        """ returns a form with parameters
+            XXXX see for zope 3 form use here
+        """
+        rendered_param = {}
+        rendered_param['name'] = 'name'
+        rendered_param['value'] = ''
+        rendered_param['type'] = 'text'
+        return [rendered_param]
+
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
