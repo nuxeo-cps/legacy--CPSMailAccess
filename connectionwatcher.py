@@ -68,24 +68,20 @@ class ConnectionWatcher(Thread):
         1
         """
         while self.running:
-            try:
-                if self.parent:
-                    connection_list = self.parent
-                    for connection in connection_list:
-                        connection.idle_time += self.sleep_time
+            if self.parent:
+                connection_list = self.parent
+                for connection in connection_list:
+                    connection.idle_time += self.sleep_time
 
-                        # connection is sleeping for too long
-                        # closing and cleaning it
-                        if connection.idle_time >= self.idle_time:
-                            connection.logout()
-                            connection_list.remove(connection)
-                            del connection
-                sleep(self.sleep_time)
-            # under dev, no mess here we don't want
-            # to mix error at this time
-            except:
-                self.running = 0
+                    # connection is sleeping for too long
+                    # closing and cleaning it
+                    if connection.idle_time >= self.idle_time:
+                        connection.logout()
+                        #connection.close()
+                        connection_list.remove(connection)
+                        del connection
 
+            sleep(self.sleep_time)
 
 # thread cleaning
 thread_instances = []
