@@ -53,12 +53,14 @@ class MailActionsView(BrowserView):
                 save = {'icon' : 'cpsma_save.png',
                      'title' : 'save message',
                      'long_title' : 'save the message in Drafts',
+                     'onclick' : 'saveMessageDatas()',
                      'action' : 'save'}
 
                 attach_file = {'icon' : 'cpsma_attach.png',
                      'title' : 'attach file',
                      'long_title' : 'add a file to the message',
-                     'action' : 'editMessage.html?attach=1'}
+                     'action' : 'editMessage.html?attach=1',
+                     'onclick' : 'saveMessageDatas()'}
 
                 send = {'icon' : 'cpsma_sendmsg.png',
                                  'title' : 'send message',
@@ -85,22 +87,27 @@ class MailActionsView(BrowserView):
             elif container == mailbox.getSentFolder():
                 pass
             else:
-                delete = {'icon' : 'cpsma_delete.png',
-                            'title' : 'delete folder',
-                            'long_title' : 'delete current folder',
-                            'onclick' : "return window.confirm('Are you sure?')",
-                            'action' : 'delete'}
-                rename = {'icon' : 'cpsma_rename.png',
-                            'title' : 'rename folder',
-                            'long_title' : 'rename current folder',
-                            'action' : 'view?edit_name=1'}
-
                 add_folder = {'icon' : 'cpsma_addfolder.png',
                             'title' : 'add subfolder',
                             'long_title' : 'add a subfolder',
                             'action' : 'view?add_folder=1'}
+                actions.append(add_folder)
 
-                actions.extend([delete, rename, add_folder])
+                if container.server_name != 'INBOX':
+                    move_folder = {'icon' : 'cpsma_movefolder.png',
+                            'title' : 'move folder',
+                            'long_title' : 'move the folder',
+                            'action' : 'view?move_folder=1'}
+                    delete = {'icon' : 'cpsma_delete.png',
+                                'title' : 'delete folder',
+                                'long_title' : 'delete current folder',
+                                'onclick' : "return window.confirm('Are you sure?')",
+                                'action' : 'delete'}
+                    rename = {'icon' : 'cpsma_rename.png',
+                                'title' : 'rename folder',
+                                'long_title' : 'rename current folder',
+                                'action' : 'view?edit_name=1'}
+                    actions.extend([delete, rename, move_folder])
 
         elif IMailMessage.providedBy(container):
             root = container.getMailBox().absolute_url()
