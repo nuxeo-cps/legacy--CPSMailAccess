@@ -22,7 +22,6 @@
 
 """
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
-
 from zope.interface import implements
 from interfaces import IConnection
 from baseconnection import BaseConnection
@@ -30,7 +29,6 @@ from baseconnection import LOGIN_FAILED
 from baseconnection import ConnectionError
 from baseconnection import ConnectionParamsError
 from baseconnection import CANNOT_SEARCH_MAILBOX, MAILBOX_INDEX_ERROR
-
 
 class IMAPConnection(BaseConnection):
     """ IMAP4 v1 implementation for Connection
@@ -307,6 +305,20 @@ class IMAPConnection(BaseConnection):
         """
         self._respawn()
         self._connection.noop()
+
+    def writeMessage(self, mailbox, raw_message):
+        """ writes a message
+        """
+        self._respawn()
+        res = self._connection.append(mailbox, None , None, raw_message)
+        try:
+            # XXX not elegant
+            res = res[1][0]
+            res = res.split()
+            res = res[2]
+            return res.replace(']', '')
+        except IndexError:
+            return ''
 
 connection_type = 'IMAP'
 
