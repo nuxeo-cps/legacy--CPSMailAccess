@@ -26,6 +26,11 @@ from CPSMailAccess.mailtool import manage_addMailTool, MailTool
 from CPSMailAccess.mailfolder import MailFolder
 from Products.CPSMailAccess.mailexceptions import MailContainerError
 from CPSMailAccess.utils import uniqueId
+import sys
+import fakesmtplib
+if sys.modules.has_key('smtplib'):
+    del sys.modules['smtplib']
+sys.modules['smtplib'] = fakesmtplib
 from CPSMailAccess.mailbox import MailBox, MailBoxParametersView
 from Acquisition import Implicit
 from Testing.ZopeTestCase import ZopeTestCase
@@ -188,6 +193,19 @@ class ObjectInteractionTest(ZopeTestCase):
             'uid' : 'tarek', 'ok': '12', 'submit' : 'ok'}
         view.setParameters(params)
         self.assertEquals(mailbox.connection_params['ok'], '12')
+
+    def test_sendMessage(self):
+        # sendMessage
+        msg_from = 'Tarek Ziadé <tarek@ziade.org>'
+        msg_to = ''
+        msg_subject = []
+        msg_body = ''
+        msg_attachments = []
+        mailbox = self._getMailBox()
+        mailbox.sendMessage(msg_from, msg_to, msg_subject, msg_body,
+            msg_attachments)
+
+
 
 def test_suite():
     return unittest.TestSuite((
