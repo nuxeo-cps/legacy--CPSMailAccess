@@ -22,7 +22,7 @@
 import unittest, os
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
-from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase import ZopeTestCase, _print
 
 from Products.CPSMailAccess.mailrenderer import MailRenderer
 from Products.CPSMailAccess.mailmessage import MailMessage
@@ -48,9 +48,11 @@ class MailRendererTestCase(ZopeTestCase):
                 fp.close()
 
             return data
-        except:
-            print str(filename) + ' not found'
-            return ''
+        except IOError:
+             # this is a warning when mail test file is missing
+             _print('\n!!!!!!!!!!!!!!!!!!!!!!'+ str(filename) +
+                 ' not found for MailRendererTestCase')
+             return ''
 
     def getAllMails(self):
         res = []
