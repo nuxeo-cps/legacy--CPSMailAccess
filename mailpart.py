@@ -287,13 +287,12 @@ class MailPart(Folder):
             # raw_msg is a list of 3 elements : flags, size and headers
             if type(raw_msg) is list:
                 flags = raw_msg[0]
-                size = raw_msg[1]
+                #size = raw_msg[1]
                 headers = raw_msg[2]
             else:
                 headers = raw_msg
                 flags = ''
-                size = ''
-
+                #size = ''
             self._setStore(Message.Message())
             store = self._getStore()
             # filling headers
