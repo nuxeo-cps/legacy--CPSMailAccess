@@ -31,7 +31,9 @@ from encodings import exceptions as encoding_exceptions
 from zLOG import LOG, INFO
 from DateTime import DateTime
 from Acquisition import aq_get
-from zope.app.datetimeutils import DateTimeParser, SyntaxError as ZSyntaxError
+
+from zope.app.datetimeutils import DateTimeParser, \
+    SyntaxError as ZSyntaxError, DateTimeError
 from html2text import HTML2Text
 from Products.CPSUtil.html import HTMLSanitizer
 
@@ -133,7 +135,7 @@ def parseDateString(date_string):
         result = parser.parse(date_string)
         result = datetime(result[0], result[1], result[2],
             result[3], result[4], result[5])
-    except ZSyntaxError:
+    except (ZSyntaxError, DateTimeError):
         result = datetime(1970,1,1)
 
     return result
@@ -345,4 +347,36 @@ def isValidEmail(mail):
         return False
     res = res.group(0)
     return res == mail.strip()
+
+def sameMail(mail1, mail2):
+    """ tells if the recipients are the same
+
+    Works even if the presentation differs
+
+    >>> sameMail('Tarek Ziadé <tz@nuxeo.com>', 'tz@nuxeo.com')
+    True
+    >>> sameMail('Tarek Ziadé <tz@nuxeo.com>', 'TZ@NUXEO.COM')
+    True
+    >>> sameMail('<tz@nuxeo.com>', 'tz@nuxeo.com ')
+    True
+    >>> sameMail('<tz@nuxeo.com>', 'john@doe.com ')
+    False
+    >>> sameMail('<tz@nuxeo.com>', '     tz@nuxeo.com              ')
+    True
+    """
+    re_script = r'<.*>'
+
+    res = re.findall(re_script, mail1.strip())
+    if len(res) > 0:
+        mail1 = res[0][1:-1].strip()
+
+    res = re.findall(re_script, mail2.strip())
+    if len(res) > 0:
+        mail2 = res[0][1:-1].strip()
+
+    mail1 = mail1.lower()
+    mail2 = mail2.lower()
+
+    return mail1.strip(' ') == mail2.strip(' ')
+
 
