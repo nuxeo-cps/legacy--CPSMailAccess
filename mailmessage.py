@@ -23,16 +23,19 @@ A MailFolder contains mail messages and other mail folders.
 """
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
+from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from interfaces import IMailMessage, IMailMessageStore, IMailMessageMapping
+from utils import decodeHeader
 from email import Message as Message
 from email import message_from_string
 from email.Charset import Charset
+from email.Header import decode_header
+
 from Globals import InitializeClass
 from Products.Five import BrowserView
 from mailrenderer import MailRenderer
-
 
 class MailMessage(Folder):
     """A folderish mail
@@ -42,19 +45,13 @@ class MailMessage(Folder):
     True
 
     """
-    _properties = Folder._properties + \
-    ({'id': 'msg_uid', 'type': 'string', 'mode': 'r',
-        'label': 'Server ID'},
-     {'id': 'msg_key', 'type': 'string', 'mode': 'r',
-        'label': 'Key'})
-
-    meta_type = "CPSMailAccess Message"
-
     implements(IMailMessage, IMailMessageStore, IMailMessageMapping)
 
-    msg_uid = FieldProperty(IMailMessage['msg_uid'])
-    msg_key = FieldProperty(IMailMessage['msg_key'])
-
+    meta_type = "CPSMailAccess Message"
+    msg_uid = ''
+    msg_key = ''
+    message_cache = ''
+    message_cache_level = 0
     store = None
     sync_state = False
 
@@ -77,14 +74,15 @@ class MailMessage(Folder):
         True
         """
         if self.store is None:
-            self.store = message_from_string('')
+            ### XXX we'll do different load level here
+            self.store = message_from_string(self.message_cache)
 
         return self.store
-
 
     def loadMessage(self, raw_msg):
         """ See interfaces.IMailMessage
         """
+        self.message_cache = raw_msg
         self.store = message_from_string(raw_msg)
 
     def getPartCount(self):
@@ -304,11 +302,12 @@ class MailMessageView(BrowserView):
             subject = self.context['Subject']
             if subject is None:
                 subject = '?'
+            else:
+                subject = decodeHeader(subject)
+
         else:
             subject = '?'
-
         rendering = '<span>' + subject + '</span>'
-
         return rendering
 
     def renderFromList(self):
@@ -318,11 +317,11 @@ class MailMessageView(BrowserView):
             froms = self.context['From']
             if froms is None:
                 froms = '?'
+            else:
+                froms = decodeHeader(froms)
         else:
             froms = '?'
-
         rendering = '<span>' + froms + '</span>'
-
         return rendering
 
     def renderToList(self):
@@ -332,11 +331,11 @@ class MailMessageView(BrowserView):
             tos = self.context['To']
             if tos is None:
                 tos = '?'
+            else:
+                tos = decodeHeader(tos)
         else:
             tos = '?'
-
         rendering = '<span>'  + tos + '</span>'
-
         return rendering
 
     def _bodyRender(self, mail, part_index):
@@ -347,12 +346,10 @@ class MailMessageView(BrowserView):
         """
         if self.context is not None:
             mail = self.context
-
             if mail.isMultipart():
                 ### XXXXXX todo here : recursively parse multipart
                 ### messages
                 body = self._bodyRender(mail, 0)
-
                 # XXXXXXXXXXhere we need part parsing
 
                 #raise str(body)
@@ -362,12 +359,9 @@ class MailMessageView(BrowserView):
                     body = self._bodyRender(mail, 0)
                 else:
                     body = ''
-
         else:
             body = ''
-
         rendering = '<span>' + body + '</span>'
-
         return rendering
 
 
