@@ -164,6 +164,14 @@
       />
 
   <browser:page
+      for=".interfaces.IMailTool"
+      class=".mailtool.MailToolView"
+      name="webmail_redirect"
+      attribute="webmailRedirect"
+      permission="zope2.View"
+      />
+
+  <browser:page
       for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
       template="www/mailMessageViewAlone.zpt"
