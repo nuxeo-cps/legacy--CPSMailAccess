@@ -27,7 +27,7 @@
 </div>
 </metal:block>
 
-<metal:block define-macro="basebox_default">
+<metal:block define-macro="basebox_treeview">
   <div style="background-color: white;border:solid black 1px;
               padding-bottom: 10px;padding-top: 10px;margin-bottom:10px;">
   <tal:block tal:define="treeview here/treeview|nothing">
@@ -37,4 +37,20 @@
   </tal:block>
  </div>
 </metal:block>
+
+
+<metal:block define-macro="basebox_actions">
+  <tal:block tal:define="actions here/actionview|nothing">
+    <tal:block tal:repeat="action actions">
+      <div>
+        <a tal:attributes="href action/action">
+          <img tal:attributes="src action/icon"/>
+          <span tal:content="action/title"/>
+        </a>
+      </div>
+    </tal:block>
+  </tal:block>
+</metal:block>
+
+
 
