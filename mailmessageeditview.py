@@ -51,7 +51,7 @@ class MailMessageEdit(BrowserView):
         mailbox = self.context
         # this creates a mailmessage instance
         # XXX todo manage a list of editing message in case of multiediting
-        mailbox.getCurrentEditorMessage()
+        #mailbox.getCurrentEditorMessage()
 
     def sendMessage(self, msg_from, msg_subject, msg_body, came_from=None):
         """ calls MailTool
@@ -62,7 +62,7 @@ class MailMessageEdit(BrowserView):
         # call mail box to send a message and to copy it to "send" section
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
-        msg.addHeader('Subject', msg_subject)
+        msg.setHeader('Subject', msg_subject)
         Tos = msg.getHeader('To')
         if Tos == []:
             if self.request is not None:
@@ -72,7 +72,7 @@ class MailMessageEdit(BrowserView):
                     % (psm))
             return
 
-        msg.addHeader('From', msg_from)
+        msg.setHeader('From', msg_from)
         msg_body = verifyBody(msg_body)
         # this needs to be done in an api inside mailpart
         if not msg.isMultipart():
@@ -231,7 +231,7 @@ class MailMessageEdit(BrowserView):
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
 
-        msg.removeHeader(type, value)
+        msg.removeHeader(type, [value])
 
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
@@ -271,17 +271,25 @@ class MailMessageEdit(BrowserView):
                 came_from = kw['came_from']
             else:
                 came_from = None
-            self.sendMessage(kw['msg_from'], kw['msg_subject'], kw['msg_body'], came_from)
+            self.sendMessage(kw['msg_from'], kw['msg_subject'],
+                             kw['msg_body'], came_from)
 
     def saveMessage(self):
         """ saves the message in Drafts
         """
         mailbox = self.context
+        msg = mailbox.getCurrentEditorMessage()
+        identity = mailbox.getIdentitites()[0]
+        msg_from = '%s <%s>' %(identity['fullname'], identity['email'])
+        msg_subject = '?'
+        msg.setHeader('From', msg_from)
+        msg.setHeader('Subject', msg_subject)
         mailbox.saveEditorMessage()
 
         if self.request is not None:
             psm = 'Message has been saved in Drafts'
-            self.request.response.redirect('editMessage.html?portal_status_message=%s' % psm)
+            self.request.response.redirect('editMessage.html\
+                                            ?portal_status_message=%s' % psm)
 
     def initializeEditor(self):
         """ cleans the editor
