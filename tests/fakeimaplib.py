@@ -104,6 +104,9 @@ class IMAP4:
     def uid(self, command, *args):
         return ('OK', '')
 
+    def create(self, mailbox):
+        return ('OK', '')
+
 class IMAP4_SSL(IMAP4):
     pass
 
