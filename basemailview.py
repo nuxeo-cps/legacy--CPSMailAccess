@@ -21,13 +21,11 @@ from zLOG import LOG, INFO
 from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
 
-from interfaces import IMailMessage
+from interfaces import IMailMessage, IMailBox, IMailFolder
 from utils import getToolByName
 from mailexceptions import MailContainerError
 
 class BaseMailMessageView(BrowserView):
-
-    lotus_style = True
 
     def getBaseUrl(self):
         portal_url = getToolByName(self.context, 'portal_url')
@@ -232,6 +230,19 @@ class BaseMailMessageView(BrowserView):
         """
         treeview = []
         current_place = self.context
+
+        if IMailBox.providedBy(current_place):
+            mailbox = current_place
+        elif IMailMessage.providedBy(current_place) or \
+             IMailFolder.providedBy(current_place):
+            mailbox = current_place.getMailBox()
+
+        if mailbox is not None:
+            lotus_style = mailbox.getConnectionParams()['treeview_style'] \
+                          == 'lotus'
+        else:
+            lotus_style = False
+
         childs = current_place.getMailMessages(list_folder=True,
             list_messages=False, recursive=False)
 
@@ -259,7 +270,7 @@ class BaseMailMessageView(BrowserView):
         for element in treeview:
             stitle = element['short_title']
 
-            if self.lotus_style and level == 2:
+            if lotus_style and level == 2:
                 if stitle not in ('Sent', 'Drafts', 'Trash'):
                     stree.append((stitle, element))
                 else:
