@@ -85,8 +85,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.setupTypes()
         self.setupBoxes()
         self.setupDefaultAddressBooks()
-        self.setupDefaultMailingListsDirectory()
-        self.setupMembersSchemasAndLayouts()
+#         self.setupMembersSchemasAndLayouts()
         self.addWMAction()
         self.finalize()
         self.log("End of Install/Update : CPSMailAccess Product")
@@ -265,6 +264,12 @@ class CPSMailAccessInstaller(CPSInstaller):
                 'type': 'CPS String Field',
                 'data': {
                     'default_expr': 'string:',
+                    },
+                },
+            'mails_sent': {
+                    'type': 'CPS Int Field',
+                    'data': {
+                        'default_expr': 'python:0',
                     },
                 },
             }
@@ -563,160 +568,6 @@ class CPSMailAccessInstaller(CPSInstaller):
             }
         self.verifyVocabularies(vocabulary)
         self.log("Vocabulary addressbook added")
-
-    def setupDefaultMailingListsDirectory(self):
-        """ sets up mailing list directory
-        """
-
-        self.log("Setting up default mailing lists directory")
-
-        # removing 'mailinglists' directory, which is the old name for
-        # directory '.mailinglists'. Old personal instances in users' home
-        # folders will have to be deleted manually
-        dirtool = self.portal.portal_directories
-        if 'mailinglists' in dirtool.objectIds():
-            dirtool.manage_delObjects(['mailinglists'])
-            self.log("Removing old directory 'mailinglists' from portal_directory ; old instances in users'home folders will have to be deleted manually")
-
-        mailinglists_directory = {
-            'type': 'CPS Local Directory',
-            'data': {
-                'title': 'label_mailinglists_directory',
-                'schema': 'mailinglists',
-                'schema_search': 'mailinglists',
-                'layout': 'mailinglists',
-                'layout_search': 'mailinglists_search',
-                'acl_directory_view_roles': 'Manager; Member',
-                'acl_entry_create_roles': 'Manager; Member',
-                'acl_entry_delete_roles': 'Manager; Member',
-                'acl_entry_view_roles': 'Manager; Member',
-                'acl_entry_edit_roles': 'Manager; Member',
-                'id_field': 'id',
-                'title_field': 'id',
-                'search_substring_fields': ['id', 'emails'],
-                'directory_ids': [],
-                'directory_type': 'CPS ZODB Directory',
-                },
-            }
-
-        directories = {
-            '.mailinglists': mailinglists_directory,
-            }
-
-        self.verifyDirectories(directories)
-
-        self.log("Mailing lists directory added")
-
-        portal = self.portal
-
-        mailinglists_schema = {
-            'id': {
-                'type': 'CPS String Field',
-                'data': {
-                    'default_expr': 'string:',
-                    },
-                },
-            'emails': {
-                'type': 'CPS String List Field',
-                'data': {
-                    'default_expr': 'python:[]',
-                    },
-                },
-            }
-
-        schemas = {
-            'mailinglists': mailinglists_schema,
-            }
-        self.verifySchemas(schemas)
-
-        mailinglists_layout = {
-            'widgets': {
-                'emails': {
-                    'type': 'Unordered List Widget',
-                    'data': {
-                        'fields': ('emails',),
-                        'is_required': 0,
-                        'label': 'label_emails',
-                        'label_edit': 'label_emails',
-                        'help': 'label_emails_help',
-                        'is_i18n': 1,
-                        'width': 40,
-                        'height': 5,
-                        },
-                    },
-                'id': {
-                    'type': 'String Widget',
-                    'data': {
-                        'fields': ('id',),
-                        'is_required': 1,
-                        'label': 'label_mailinglist_name',
-                        'label_edit': 'label_mailinglist_name',
-                        'is_i18n': 1,
-                        'display_width': 20,
-                        'size_max': 0,
-                        },
-                    },
-                },
-            'layout': {
-                'style_prefix': 'layout_dir_',
-                'flexible_widgets': [],
-                'ncols': 2,
-                'rows': [
-                    [{'ncols': 2, 'widget_id': 'id'},
-                     ],
-                    [{'ncols': 2, 'widget_id': 'emails'},
-                     ],
-                    ],
-                },
-            }
-
-        mailinglists_search_layout = {
-            'widgets': {
-                'emails': {
-                    'type': 'Unordered List Widget',
-                    'data': {
-                        'fields': ('emails',),
-                        'is_required': 0,
-                        'label': 'label_emails',
-                        'label_edit': 'label_emails',
-                        'is_i18n': 1,
-                        'width': 40,
-                        'height': 5,
-                        },
-                    },
-                'id': {
-                    'type': 'String Widget',
-                    'data': {
-                        'fields': ('id',),
-                        'is_required': 0,
-                        'label': 'label_mailinglist_name',
-                        'label_edit': 'label_mailinglist_name',
-                        'is_i18n': 1,
-                        'display_width': 20,
-                        'size_max': 0,
-                        },
-                    },
-                },
-            'layout': {
-                'style_prefix': 'layout_dir_',
-                'flexible_widgets': [],
-                'ncols': 2,
-                'rows': [
-                    [{'ncols': 2, 'widget_id': 'id'},
-                     ],
-                    [{'ncols': 2, 'widget_id': 'emails'},
-                     ],
-                    ],
-                },
-            }
-
-        layouts = {
-            'mailinglists': mailinglists_layout,
-            'mailinglists_search': mailinglists_search_layout,
-            }
-        self.verifyLayouts(layouts)
-
-        self.log("Schemas and layouts related to mailing lists directory added")
 
     def setupMembersSchemasAndLayouts(self):
         """ adds a checkbox that tells if the user
