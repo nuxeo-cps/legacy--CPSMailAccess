@@ -89,6 +89,16 @@ class MailTool(Folder, UniqueObject):
         """
         return self.getConnectionList().getConnection(connection_params)
 
+    def killConnection(self, uid, connection_type):
+        """ kill someone connections
+        """
+        self.getConnectionList().killConnection(uid, connection_type)
+
+    def killAllConnections(self):
+        """ kill someone connections
+        """
+        self.getConnectionList().killAllConnections()
+
 """ classic Zope 2 interface for class registering
 """
 InitializeClass(MailTool)

@@ -79,8 +79,9 @@ class ConnectionList(UserList):
             meth = self.connection_generators[connection_type]
             new_connection = meth(connection_params)
             # XXXX auto-login
-            new_connection.login(connection_params['uid'],
-                connection_params['password'])
+            if not new_connection.connected:
+                new_connection.login(connection_params['uid'],
+                    connection_params['password'])
             return new_connection
         else:
             raise ValueError("no connector for %s" % connection_type)
@@ -109,6 +110,33 @@ class ConnectionList(UserList):
             self.lock.release()
 
         return result
+
+    def killConnection(self, uid, connection_type):
+        """ see interface
+        """
+        self.lock.acquire()
+        try:
+            for connection in self:
+                if (connection.uid == uid) and \
+                        (connection.connection_type == connection_type):
+                    self.remove(connection)
+                    del connection
+
+        finally:
+            self.lock.release()
+
+    def killAllConnections(self):
+        """ see interface
+        """
+        self.lock.acquire()
+        try:
+            for connection in self:
+                self.remove(connection)
+                del connection
+        finally:
+            self.lock.release()
+
+
 
 """ this method gives
     a list of Product folder
