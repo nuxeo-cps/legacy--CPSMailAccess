@@ -18,16 +18,13 @@
 # 02111-1307, USA.
 #
 # $Id$
-
 import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
-
 from Products.CPSMailAccess.mailboxtreeview import MailBoxTreeView, \
     manage_addMailBoxTreeview
 from Products.CPSMailAccess.interfaces import IMailBox
-
 
 installProduct('FiveTest')
 installProduct('Five')
@@ -46,11 +43,7 @@ class MailBoxViewTestCase(ZopeTestCase):
         # dispatcher adder
         dispatcher = self
         manage_addMailBoxTreeview(dispatcher, 'mailboxtreeview')
-        self.assertEquals(hasattr(dispatcher, 'mailboxtreeview'), True)
-
-
-
-
+        self.assert_(hasattr(dispatcher, 'mailboxtreeview'))
 
 def test_suite():
     return unittest.TestSuite((
