@@ -428,7 +428,7 @@ class IMAPConnection(BaseConnection):
         if val is None:
             return ''
         flags=re.sub(r'(.+)(FLAGS \()(.+)(\).+)', r'\3', val)
-        if string.find(flags, 'UID')!=(-1):
+        if flags.find('UID')!=(-1):
             flags=" "
         return flags
 
@@ -448,7 +448,7 @@ class IMAPConnection(BaseConnection):
                 _flags.append(_flag)
 
         _flags = '(%s)' % ' '.join(_flags)
-        res = self._connection.store(message_number, 'FLAGS', _flags)
+        self._connection.store(message_number, 'FLAGS', _flags)
 
     def expunge(self):
         """ expunge
@@ -473,8 +473,6 @@ class IMAPConnection(BaseConnection):
 
         message = message.lower()
         message = message.strip()
-        result = {}
-        level = 0
         start = 1
         subparts = []
         while start != -1:
@@ -538,10 +536,4 @@ connection_type = 'IMAP'
 
 def makeMailObject(connection_params):
     newob =  IMAPConnection(connection_params)
-    uid = connection_params['uid']
-    password = connection_params['password']
-    #newob.login(uid, password)
-    #print str('created '+str(newob))
     return newob
-
-

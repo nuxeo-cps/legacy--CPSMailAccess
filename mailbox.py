@@ -42,7 +42,7 @@ from zope.publisher.browser import FileUpload
 from zope.app.cache.ram import RAMCache
 
 from utils import getToolByName, getCurrentDateStr, \
-    _isinstance, decodeHeader, uniqueId, makeId, getFolder
+    decodeHeader, uniqueId, makeId, getFolder
 from interfaces import IMailBox, IMailMessage, IMailFolder, IMessageTraverser
 from mailfolder import MailFolder, manage_addMailFolder
 from maileditormessage import MailEditorMessage
@@ -137,7 +137,7 @@ class MailBoxBaseCaching(MailFolder):
 
     def clipBoardEmpty(self):
         """ tells if clipboard is empty """
-        return self._cache.query('clipboard_content') == None
+        return self._cache.query('clipboard_content') is None
 
 
 class MailBox(MailBoxBaseCaching):
@@ -186,13 +186,13 @@ class MailBox(MailBoxBaseCaching):
     def synchronize(self, no_log=False):
         """ see interface """
         if not has_connection:
-            return
+            return []
         # retrieving folder list from server
         connector = self._getconnector()
         server_directory = connector.list()
 
         if no_log:
-            self._syncdirs(server_directory)
+            return self._syncdirs(server_directory)
         else:
             log = self._syncdirs(server_directory, True)
             log.insert(0, 'synchronizing mailbox...')
@@ -201,8 +201,7 @@ class MailBox(MailBoxBaseCaching):
             return logtext
 
     def _syncdirs(self, server_directories = [], return_log=False):
-        """ syncing dirs
-        """
+        """ syncing dirs """
         log = []
 
         self.setSyncState(state=False, recursive=True)
@@ -210,7 +209,7 @@ class MailBox(MailBoxBaseCaching):
         for directory in server_directories:
             # servers directory are delimited by dots
             dirname = directory['Name']
-            dirattr = directory['Attributes']
+            #dirattr = directory['Attributes']
             dir_fullpath = dirname.split('.')
             current_dir = self
             size = len(dir_fullpath)
@@ -262,7 +261,7 @@ class MailBox(MailBoxBaseCaching):
                 for id, item in folder.objectItems():
                     if IMailMessage.providedBy(item):
                         digest = item.digest
-                        self.addMailToCache(digest, item)
+                        self.addMailToCache(item, digest)
 
                 # delete the folder (see for order problem later here)
                 parent_folder = folder.aq_inner.aq_parent
@@ -288,13 +287,15 @@ class MailBox(MailBoxBaseCaching):
 
         if return_log:
             return log
+        else:
+            return []
 
     def _getconnector(self):
         """get mail server connector
         """
         wm_tool = getToolByName(self, 'portal_webmail')
         if wm_tool is None:
-            raise ValueError(MISSING_TOOL)
+            raise ValueError('portal_webmail is missing')
 
         # safe scan in case of first call
         if wm_tool.listConnectionTypes() == []:
@@ -337,7 +338,8 @@ class MailBox(MailBoxBaseCaching):
         if result:
             self._givePoints(msg)
             connector = self._getconnector()
-            res = connector.writeMessage('INBOX.Sent', msg.getRawMessage())
+            connector.writeMessage('INBOX.Sent', msg.getRawMessage())
+
             # b) on the zodb, by synchronizing INBOX.Sent folder
             if hasattr(self, 'INBOX'):
                 if hasattr(self.INBOX, 'Sent'):
@@ -461,7 +463,7 @@ class MailBox(MailBoxBaseCaching):
         """ returns the catalog
         """
         if not self.getConnectionParams().has_key('uid'):
-            raise MailCatalogError('Need a uid to get the catalog')
+            raise Exception('Need a uid to get the catalog')
 
         uid = self.getConnectionParams()['uid']
 
@@ -500,7 +502,6 @@ class MailBox(MailBoxBaseCaching):
         msg.title = decodeHeader(msg.getHeader('Subject')[0])
 
         drafts = self.getDraftFolder()
-        uid = drafts.getNextMessageUid()
         new_uid = drafts.getNextMessageUid()
 
         msg_copy = drafts._addMessage(new_uid, msg.digest)
@@ -633,7 +634,6 @@ class MailBox(MailBoxBaseCaching):
         Entries are sorted with mails_sent field
         so the UI can show at first the buddies
         """
-        entries = []
         adressbook = self._searchEntries('addressbook',
                                          ['fullname', 'email', 'id',
                                           'mails_sent'])
@@ -800,11 +800,12 @@ class MailBoxParametersView(BrowserView):
 
     def renderParametersForm(self):
         """ returns a form with parameters
+
         XXXX see for zope 3 schema/widget use here
         """
         if self.request is not None:
             if self.request.has_key('submit'):
-                self.setParameters(REQUEST)
+                self.setParameters(self.request)
 
         params = self._getParameters()
         rendered_params = []

@@ -45,7 +45,7 @@ class MailFolderView(BaseMailMessageView):
             if self.request is not None:
                 self.request.response.redirect(
                     mailfolder.absolute_url()+'/view')
-            return
+            return None
 
         parent = mailfolder.getMailFolder()
         if parent is not None and hasattr(parent, new_name):
@@ -54,7 +54,7 @@ class MailFolderView(BaseMailMessageView):
                 self.request.response.redirect(
                     mailfolder.absolute_url()+
                     '/view?edit_name=1&portal_status_message=%s' % psm)
-            return
+            return None
 
         # truncates the name in case it's bigger than 20
         if len(new_name) > max_folder_size:
@@ -152,9 +152,9 @@ class MailFolderView(BaseMailMessageView):
             return 'cpsma_message_new.png'
 
         # todo : create more icons here
-        answered = message.getFlag('answered')
-        flagged = message.getFlag('flagged')
-        forwarded = message.getFlag('forwarded')
+        # answered = message.getFlag('answered')
+        # flagged = message.getFlag('flagged')
+        # forwarded = message.getFlag('forwarded')
         return 'cpsma_message.png'
 
     def addFolder(self, name):

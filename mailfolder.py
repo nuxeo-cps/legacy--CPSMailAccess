@@ -54,7 +54,7 @@ class MailFolder(BTreeFolder2):
     message_count = 0
     folder_count = 0
 
-    def __init__(self, uid=None, server_name='""', **kw):
+    def __init__(self, uid=None, server_name='""'):
         """
         >>> f = MailFolder('ok', 'Open.INBOX.Stuffs')
         >>> f.getServerName()
@@ -66,7 +66,8 @@ class MailFolder(BTreeFolder2):
 
     def getNextMessageUid(self):
         """ retrieves next id for messages
-            XXX todo : do not calculate it each time
+
+        XXX todo : do not calculate it each time
         """
         msgs = self.getMailMessages(list_folder=False, list_messages=True,
             recursive=False)
@@ -416,7 +417,7 @@ class MailFolder(BTreeFolder2):
                 '(FLAGS RFC822.SIZE RFC822.HEADER)')
 
             msg_flags = fetched[0]
-            msg_size = fetched[1]
+            # msg_size = fetched[1]
             msg_headers = fetched[2]
 
             digest = self._createKey(msg_headers)
@@ -441,14 +442,14 @@ class MailFolder(BTreeFolder2):
                     raw_msg = msg_headers
                     # need to fetch number of part here
                     #and to use it to initiate create empty parts
-                    body_structure = connector.fetch(self.server_name, uid, '(BODYSTRUCTURE)')
+                    #body_structure = connector.fetch(self.server_name, uid, '(BODYSTRUCTURE)')
                 else:
                     # XXX Only simplest case where all message is cached
                     # we also get flags
                     #try:
                     msg_content = connector.fetch(self.server_name, uid,
                                                 '(FLAGS RFC822)')
-                    msg_flags = msg_content[0]
+                    #msg_flags = msg_content[0]
                     msg_body = msg_content[1]
                     if msg_content:
                         raw_msg = msg_body
@@ -478,6 +479,8 @@ class MailFolder(BTreeFolder2):
                 self.manage_delObjects([message.getId()])
         if return_log:
             return log
+        else:
+            return []
 
     def checkMessages(self):
         """See interfaces.IMailFolder
@@ -533,6 +536,7 @@ class MailFolder(BTreeFolder2):
         parent = self.getMailFolder()
         parent._delObject(self.id)
         parent.folder_count -= 1
+
         gparent = parent.getMailFolder()
         while gparent is not None and IMailFolder.providedBy(gparent):
             gparent.folder_count -= 1
@@ -625,10 +629,7 @@ class MailFolder(BTreeFolder2):
         return self._moveMessage(uid, new_mailbox) is not None
 
     def copyMessage(self, uid, to_mailbox):
-        """ make a copy
-        """
-        mailbox = self.getMailBox()
-
+        """ make a copy """
         if has_connection:
             connector = self._getconnector()
             res = connector.copy(self.server_name, to_mailbox.server_name, uid)
@@ -655,6 +656,7 @@ class MailFolder(BTreeFolder2):
         msg = self._moveMessage(uid, trash)
         if msg:
             msg.deleted = 1
+            return True
         else:
             return False
 
