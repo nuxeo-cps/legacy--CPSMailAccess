@@ -266,6 +266,14 @@ class IMailTool(IContainer):
         """ rescan avalailable connection plugins
         """
 
+    def killConnection(uid, connection_type):
+        """ kills a given connection
+        """
+
+    def killAllConnections():
+        """ kills all connections
+        """
+
 class IConnection(Interface):
     """ important a mail folder is called an mailbox in IConnection
     """
@@ -325,6 +333,13 @@ class IConnectionList(Interface):
         """ gets a connection for the current user
         """
 
+    def killConnection(uid, connection_type):
+        """ kills a given connection
+        """
+
+    def killAllConnections():
+        """ kills all connections
+        """
 
 class IConnectionWatcher(Interface):
 
