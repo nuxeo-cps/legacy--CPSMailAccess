@@ -35,9 +35,7 @@ from interfaces import IMailFolder, IMailMessage, IMailBox
 from Globals import InitializeClass
 from Acquisition import aq_parent, aq_inner, aq_base
 from Products.Five import BrowserView
-from baseconnection import ConnectionError
-
-has_connection = 1
+from baseconnection import ConnectionError, has_connection
 
 class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
@@ -126,7 +124,7 @@ class MailFolder(BTreeFolder2):
         """ returns cache level
         """
         mailbox = self.getMailBox()
-        return int(mailbox.getConnectionParams()['cache_level'])
+        return mailbox.getConnectionParams()['cache_level']
 
     def getMailMessages(self, list_folder=True, list_messages=True,
                         recursive=False):
