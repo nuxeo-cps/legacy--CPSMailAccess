@@ -148,13 +148,20 @@ class MailFolderView(BaseMailMessageView):
             return 'cpsma_mini_mail_delete.png'
 
         read = message.getFlag('read')
+        answered = message.getFlag('answered')
+        forwarded = message.getFlag('forwarded')
+
         if read == 0:
             return 'cpsma_message_new.png'
+        if answered == 1 and forwarded == 0:
+            return 'cpsma_replied.png'
+        if answered == 1 and forwarded == 1:
+            return 'cpsma_replied_forward.png'
+        if forwarded == 1:
+            return 'cpsma_mini_mail_forward.png'
 
         # todo : create more icons here
-        # answered = message.getFlag('answered')
         # flagged = message.getFlag('flagged')
-        # forwarded = message.getFlag('forwarded')
         return 'cpsma_message.png'
 
     def addFolder(self, name):
