@@ -20,7 +20,7 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.interface import implements
 from interfaces import IConnectionWatcher
 from threading import Thread
-from time import time,sleep
+from time import sleep
 import atexit
 from Products.CPSMailAccess.interfaces import IConnectionWatcher
 
@@ -39,7 +39,7 @@ class ConnectionWatcher(Thread):
 
     terminated = False
 
-    def __init__(self, parent=None, sleep_time = 2, idle_time = 30):
+    def __init__(self, parent=None, sleep_time=2, idle_time=30):
         Thread.__init__(self)
         self.parent = parent
         self.sleep_time = sleep_time
@@ -87,11 +87,11 @@ class ConnectionWatcher(Thread):
 thread_instances = []
 
 def registerThreadInstance(thread_instance):
-    if thread_instances.index < 0 :
+    if thread_instances.index < 0:
         thread_instances.append(thread_instance)
 
 def cleanThreads():
-    if thread_instances :
+    if thread_instances:
         for thread_instance in thread_instances:
             if hasattr(thread_instance, 'stop'):
                 thread_instance.stop()

@@ -22,9 +22,8 @@
 #import timeoutsocket
 #
 
-from UserList import UserList
 from zope.interface import implements
-from time import time,sleep
+from time import time
 from Products.CPSMailAccess.interfaces import IConnection
 
 has_connection = 1
@@ -58,7 +57,7 @@ class BaseConnection:
 
         self._checkparams(connection_params)
 
-        self.start_time = time().__float__()
+        self.start_time = float(time())
         if connection_params.has_key('uid'):
             self.uid = connection_params['uid']
         if connection_params.has_key('connection_type'):
