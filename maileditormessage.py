@@ -30,6 +30,7 @@ class MailEditorMessage(MailMessage):
     def __init__(self, id=None, uid='', digest='', **kw):
         MailMessage.__init__(self, id=None, uid='', digest='', **kw)
         self.answerType = ''
+        self.origin_message = None
 
     def setCachedValue(self, name, value):
         name = {'key': name}
