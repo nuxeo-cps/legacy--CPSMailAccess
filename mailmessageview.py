@@ -25,7 +25,8 @@ from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
 from utils import decodeHeader, parseDateString, localizeDateString, \
-    truncateString, sanitizeHTML, mimetype_to_icon_name, getFolder, replyToBody, HTMLize
+    truncateString, sanitizeHTML, mimetype_to_icon_name, getFolder,\
+    replyToBody, HTMLize, sameMail
 from Globals import InitializeClass
 from Products.Five import BrowserView
 from mailrenderer import MailRenderer
@@ -182,6 +183,12 @@ class MailMessageView(BaseMailMessageView):
 
         if reply_all and not forward:
             ccs = origin_msg.getHeader('Cc')
+            tos = origin_msg.getHeader('To')
+            boxmail = self._getBoxMail()
+            for to in tos:
+                if sameMail(boxmail, to):
+                    del tos[to]
+            ccs.extend(tos)
             for element in ccs:
                 if element not in recipients:
                     recipients.append(element)
@@ -333,4 +340,11 @@ class MailMessageView(BaseMailMessageView):
            url = box.absolute_url()
            response.redirect('%s/editMessage.html' % url)
 
+    def _getBoxMail(self):
+        """ returns the box email
 
+        this is used to find the mail in To/Cc lists
+        """
+        message = self.context
+        box = message.getMailBox()
+        return box.getIdentitites()[0]['email']
