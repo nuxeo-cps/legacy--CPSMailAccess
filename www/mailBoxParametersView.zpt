@@ -1,0 +1,56 @@
+<html metal:use-macro="here/main_template/macros/master">
+  <metal:block metal:fill-slot="main">
+    <h2>MailBox parameters</h2>
+    <form name="parameters" action="editParameters.html" method="post">
+      <table width="100%">
+
+        <tal:block tal:repeat="parameter view/renderParametersForm">
+        <tr>
+          <td width="50%" align="right">
+            <tal:block tal:replace="parameter/name"/>
+          </td>
+          <td width="50%" align="left">
+            <input tal:attributes="type parameter/type;
+                                   name parameter/name;
+                                   value parameter/value;"/>
+          </td>
+        </tr>
+        </tal:block>
+        <tr>
+          <td align="center" colspan="2">
+            <br/>
+            <input type="submit" name="submit" value="submit" i18n:translate="value"/>
+          </td>
+        </tr>
+      </table>
+
+    </form>
+    <br/>
+    <h2>Adding a field</h2>
+    <form name="add_parameter" action="addParameter.html" method="post">
+      <table width="100%">
+        <tal:block tal:repeat="parameter view/renderAddParamForm">
+        <tr>
+          <td width="50%" align="right">
+            <tal:block tal:replace="parameter/name"/>
+          </td>
+          <td width="50%" align="left">
+            <input tal:attributes="type parameter/type;
+                                   name parameter/name;
+                                   value parameter/value;"/>
+          </td>
+        </tr>
+
+        </tal:block>
+        <tr>
+          <td align="center" colspan="2">
+            <br/>
+            <input type="submit" name="submit" value="submit" i18n:translate="value"/>
+          </td>
+        </tr>
+
+      </table>
+    </form>
+
+  </metal:block>
+</html>
