@@ -86,6 +86,7 @@ class MailRenderer:
                 mimetools.decode(content, result, part_cte)
             else:
                 result = content
+
             if ptype == 'text/html':
                 result = sanitizeHTML(result)
 
@@ -122,7 +123,10 @@ class MailRenderer:
                 # always choose the last one (html rendering)
                 last = len(mail._payload) - 1
                 mail = mail._payload[last]
-
+                sub_part_type = mail['Content-type']
+                if sub_part_type is not None and \
+                   isinstance(sub_part_type, str):
+                    html = sub_part_type.strip().startswith('text/html')
             it = Iterators.body_line_iterator(mail)
             lines = list(it)
             res = EMPTYSTRING.join(lines)
