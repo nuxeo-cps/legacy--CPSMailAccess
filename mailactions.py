@@ -184,7 +184,13 @@ class MailActionsView(BrowserView):
                    'long_title' : 'write a message',
                    'action' : root + '/editMessage.html'}
 
-        actions = [configure, synchro, search, write] + actions
+        adressbook   = {'icon' : base_url + '/cpsma_addressbook.png',
+                        'title' : 'address books',
+                        'long_title' : 'address books',
+                        'action' : root + '/addressBooks.html'}
+
+
+        actions = [configure, synchro, search, write, adressbook] + actions
         # renders actions 2 by 2
         c_actions = []
         i = 0
