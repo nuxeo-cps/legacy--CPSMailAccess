@@ -9,55 +9,35 @@
       src="++resource++cpsmailaccess.js">
     </script>
   </metal:main>
-  <metal:block metal:fill-slot="main">
-    <div class="mailToolBar">
-
-      <div class="mailToolBarElement">
-        <div class="mailToolBarInsideElement"
-             style="width: 320px;">
-            Subject
-        </div>
-      </div>
-      <div class="mailToolBarElement">
-        <div class="mailToolBarInsideElement"
-             style="width: 130px;">
-            Sender
-        </div>
-      </div>
-      <div class="mailToolBarElement">
-        <div class="mailToolBarInsideElement"
-             style="width: 80px;">
-            Date
-        </div>
-      </div>
+  <metal:block metal:fill-slot="main"
+              tal:define="edit_name request/edit_name|nothing;
+                          add_folder request/add_folder|nothing;">
+    <div tal:condition="edit_name">
+     <a href="view"
+        class="close_rename_form"
+        title="close">
+        <img src="cpsma_delete_file.png"/>
+     </a>
+     <form action="rename" class="rename_form">
+       <input type="text" name="new_name"
+              tal:attributes="value here/simpleFolderName"/>
+       <input type="submit" name="submit" value="change"/>
+     </form>
     </div>
-    <div id="mailBreak"/>
-    <div id="maillist">
-      <tal:block tal:define="messages view/renderMailList" >
-        <div id="folder_content">
-          <div tal:repeat="message messages">
-
-             <div style="padding-left: 5px;float: left;width: 320px;">
-               <img src="cpsma_message.png"/>
-               <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                 <span tal:replace="message/title"/>
-               </a>
-             </div>
-             <div style="padding-left: 5px;float: left;width: 130px;">
-               <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                 <!--<span tal:replace="message/From|string:?"/>-->Tarek
-               </a>
-             </div>
-             <div style="padding-left: 5px;float: left;width: 80px;">
-               <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                 <!--<span tal:replace="message/Date|string:?"/>-->10:23
-               </a>
-             </div>
-             &#160;
-             <div id="mailBreak"/>
-          </div>
-        </div>
-      </tal:block>
+    <div tal:condition="add_folder">
+     <a href="view"
+        class="close_rename_form"
+        title="close">
+        <img src="cpsma_delete_file.png"/>
+     </a>
+     <form action="addFolder" class="rename_form">
+       <input type="text" name="name" value=""/>
+       <input type="submit" name="submit" value="add"/>
+     </form>
+    </div>
+    <div id="maillist"
+         tal:define="is_folder python:1">
+      <metal:block use-macro="here/messagelist_macros/messagelist"/>
     </div>
   </metal:block>
 </html>
