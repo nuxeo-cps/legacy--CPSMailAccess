@@ -173,7 +173,7 @@ class MailFolderView(BaseMailMessageView):
         elements = self._sortMessages(elements, sort_with, sort_asc)
 
         # slicing
-        elements = elements[first_element:last_element]
+        elements = elements[first_element:last_element+1]
 
         i = 0
 
