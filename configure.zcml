@@ -533,6 +533,19 @@
     name="sorttable.js"
   />
 
+  <browser:resourceDirectory
+    directory="www/calendar"
+    name="calendar"
+    permission="zope2.View"
+  />
+
+  <browser:resourceDirectory
+    directory="www/calendar/lang"
+    name="calendarlang"
+    permission="zope2.View"
+  />
+
+
   <browser:page
       for="*"
       name="messagelist_macros"
