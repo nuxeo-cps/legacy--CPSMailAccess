@@ -1,7 +1,38 @@
 
-#mailHeaders {
+div.mailHeaders {
   background-color: #e7e7e7;
-  padding: 4px;
+  padding: 7px;
+}
+
+div.mailToolBarElement {
+  background-color: #e7e7e7;
+  float: left;
+  border-top: solid white 1px;
+  border-bottom: solid black 1px;
+  border-right: solid black 1px;
+  border-left: solid white 1px;
+}
+
+div.mailToolBarInsideElement {
+  background-color: transparent;
+  border-right: solid #818181 1px;
+  border-left: solid white 1px;
+  border-top: solid white 1px;
+  border-bottom: solid #818181 1px;
+  padding: 2px;
+}
+
+#mailBody {
+  background-color: white;
+}
+
+#imgMailMoreInfos {
+  cursor: hand;
+  vertical-align: middle;
+}
+
+#maillist {
+  margin-bottom: 4px;
 }
 
 #mailSubject {
@@ -22,3 +53,10 @@
   clear: both;
 }
 
+#midPageButton {
+  float: right;
+}
+
+#fullPageButton {
+  float: right;
+}
