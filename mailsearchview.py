@@ -20,6 +20,8 @@
 
 from Products.Five import BrowserView
 from utils import getToolByName
+from mailexceptions import MailCatalogError
+from mailmessageview import MailMessageView
 
 class MailSearchView(BrowserView):
 
@@ -36,21 +38,56 @@ class MailSearchView(BrowserView):
     def searchMessages(self, searchable_text):
         """ search the catalog
         """
-        searchable_text = unicode(searchable_text)
-
+        searchable_text = unicode(searchable_text.strip())
+        if searchable_text == '':
+            return []
         box = self.context
         user_id = box.connection_params['uid']
         results = []
         cat = self._getCatalog(user_id)
+        msg_viewer = MailMessageView(None, self.request)
+
         if cat is not None:
             query = {}
             query['searchable_text'] = searchable_text
             raw_results = cat.search(query_request=query)
-
             for result in raw_results:
                 current = {}
-                current['object'] = result.getObject()
                 current['path'] = result.getPath()
-                # to be completed
+                object = self.traverseToObject(current['path'])
+                current['object'] = object
+                current['rid'] = result.getRID()
+                # see if this can be done more quickly
+                msg_viewer.context = object
+                current['From'] = msg_viewer.renderFromList()
+                current['Subject'] = msg_viewer.renderSubject()
+                current['Date'] = msg_viewer.renderDate()
+
                 results.append(current)
+        else:
+            raise MailCatalogError('No catalog for %s' % user_id)
         return results
+
+    def traverseToObject(self, path):
+        """ transforms an url to its object
+        """
+        mailbox = self.context
+        path = path.split('/')
+        if len(path) == 0:
+            return None
+
+        while len(path) > 0 and path[0] != mailbox.id:
+            del path[0]
+
+        if len(path) == 0:
+            return None
+
+        # starting at mailbox
+        del path[0]
+        subject = mailbox
+
+        for element in path:
+            subject = subject[element]
+
+        return subject
+
