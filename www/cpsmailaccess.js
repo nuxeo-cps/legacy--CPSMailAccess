@@ -61,7 +61,7 @@ function saveMessageDatas()
   msg_subject = msg_subject.value
 
   msg_body = document.getElementById('msg_body');
-  msg_body = msg_body.value
+  msg_body = msg_body.innerHTML
 
   msg_to = document.getElementById('msg_to');
   msg_to = msg_to.value;
@@ -123,7 +123,6 @@ function saveMessageDatas()
     msg_bcc = escape(msg_bcc);
 
     var body = "attacher_on="+attacher_on+"&cc_on="+cc_on+"&bcc_on="+bcc_on+"&msg_subject="+msg_subject+"&msg_body="+msg_body+"&msg_to="+msg_to+"&msg_cc="+msg_cc+"&msg_bcc="+msg_bcc
-
     i = 0;
     while ((status == 503) && (i<10))
     {
