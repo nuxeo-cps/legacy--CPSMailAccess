@@ -143,6 +143,10 @@ class MailSearchViewTestCase(MailTestCase):
 
         self.assertEquals(len(results), 3)
 
+        query = {}
+        query['intersection'] = 'store is open'
+        results = searchview.zemanticSearchMessages(**query)
+        self.assertEquals(len(results), 0)
 
 
 

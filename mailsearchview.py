@@ -152,6 +152,7 @@ class MailSearchView(BrowserView):
             # and intersect them one by one
             # if the interesection gets empty we can stop
             i = 0
+            raw_results = []
 
             for query in queries:
                 query_results = cat.query(query)
