@@ -33,17 +33,24 @@ class MailSearchView(BrowserView):
         cat = mailtool.mail_catalogs
         return cat.getCatalog(user_id)
 
-    def search(self, user_id, searchable_text):
+    def searchMessages(self, searchable_text):
         """ search the catalog
         """
+        searchable_text = unicode(searchable_text)
+
+        box = self.context
+        user_id = box.connection_params['uid']
         results = []
         cat = self._getCatalog(user_id)
         if cat is not None:
             query = {}
             query['searchable_text'] = searchable_text
             raw_results = cat.search(query_request=query)
-            for result in raw_results:
-                ob = result.getObject()
-                results.append(ob)
-        return results
 
+            for result in raw_results:
+                current = {}
+                current['object'] = result.getObject()
+                current['path'] = result.getPath()
+                # to be completed
+                results.append(current)
+        return results
