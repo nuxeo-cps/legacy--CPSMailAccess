@@ -21,6 +21,7 @@ from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
 from Products.CPSMailAccess.mailexceptions import MailContainerError
 from zLOG import LOG, INFO
+from interfaces import IMailMessage
 
 class BaseMailMessageView(BrowserView):
 
@@ -107,8 +108,9 @@ class BaseMailMessageView(BrowserView):
                 childview.context = child
                 element = self.createTreeViewElement(child, firstfolder,
                     index, length, level, parent_index, parent_length)
-                element['childs'] = childview._renderTreeView(firstfolder, level+1,
+                unreads, element['childs'] = childview._renderTreeView(firstfolder, level+1,
                     parent_index, parent_length, flags)
+                element['unreads'] = unreads
                 treeview.append(element)
                 index += 1
 
@@ -181,14 +183,40 @@ class BaseMailMessageView(BrowserView):
 
         childview = BaseMailMessageView(None, self.request)
         index = 0
+        unreads = 0
         length = len(childs)
         for child in childs:
             childview.context = child
             element = self.createTreeViewElement(child, current,
                 index, length, level, parent_index, parent_length)
-            element['childs'] = childview._renderTreeView(current, level+1,
+
+
+            if hasattr(element, 'getFlaggedMessageList'):
+                # todo : a finir
+                list = element.getFlaggedMessageList(['read'])
+                unreads += len(list)
+
+            unreads, element['childs'] = childview._renderTreeView(current, level+1,
                 flags, length, index)
+            element['unreads'] =  unreads
             treeview.append(element)
             index += 1
 
-        return treeview
+        # sort the treeview
+
+        stree = []
+        for element in treeview:
+            if element['short_title'] == 'Sent':
+                stree.append((1, element))
+            elif element['short_title'] == 'Drafts':
+                stree.append((0, element))
+            elif element['short_title'] == 'Trash':
+                stree.append((2, element))
+            else:
+                stree.append((element['short_title'], element))
+        stree.sort()
+        ntreeview = []
+        for element in stree:
+            ntreeview.append(element[1])
+
+        return unreads, ntreeview
