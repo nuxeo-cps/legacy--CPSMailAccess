@@ -474,6 +474,14 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailSearchView"
+      template="www/mailSearchView.zpt"
+      name="searchMessage.html"
+      permission="zope2.View"
+      />
+
   <include file="cpsdefault.zcml" />
 
   <browser:resource
