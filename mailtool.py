@@ -159,7 +159,7 @@ class MailToolView(BrowserView):
         if hasattr(mailtool, mailbox_name):
             box = getattr(mailtool, mailbox_name)
             # always synchronize when we get in
-            self.request.response.redirect(box.absolute_url()+'/synchronize')
+            self.request.response.redirect(box.absolute_url()+'/synchronize.html')
         else:
             box = mailtool.addMailBox(user_id)
             url = '%s/configure.html?first_time=1' % box.absolute_url()
