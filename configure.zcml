@@ -357,6 +357,14 @@
   <browser:page
       for=".interfaces.IMailFolder"
       class=".mailfolderview.MailFolderView"
+      name="getMaxFolderSize"
+      attribute="getMaxFolderSize"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailfolderview.MailFolderView"
       name="rename.html"
       attribute="rename"
       permission="zope2.View"
