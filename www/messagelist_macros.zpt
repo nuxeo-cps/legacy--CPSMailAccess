@@ -17,17 +17,17 @@
             <td width="320px">
               <img src="cpsma_message.png"/>
               <a tal:attributes="href python:result['path']+'/view'">
-                <span tal:replace="result/Subject|string:?"/>
+                <span class="truncable" tal:content="result/Subject|string:?"/>
               </a>
             </td>
             <td width="130px">
               <a tal:attributes="href python:result['path']+'/view'">
-                <span tal:replace="result/From|string:?"/>
+                <span class="truncable" tal:content="result/From|string:?"/>
               </a>
             </td>
             <td width="80px">
               <a tal:attributes="href python:result['path']+'/view'">
-                <span tal:replace="result/Date|string:?"/>
+                <span class="truncable" tal:content="result/Date|string:?"/>
               </a>
             </td>
           </tr>
@@ -68,21 +68,21 @@
               <img tal:attributes="src message/icon"
                     src="cpsma_message.png"/>
               <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                <span tal:replace="message/title"/>
+                <span class="truncable" tal:content="message/title"/>
               </a>
             </td>
             <td width="130px">
              <input type="hidden" name="sorter" id="sorter"
                    tal:attributes="value message/From|python:''"/>
             <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                <span tal:replace="message/From|string:?"/>
+                <span class="truncable" tal:content="message/From|string:?"/>
             </a>
             </td>
             <td width="80px">
              <input type="hidden" name="sorter" id="sorter"
                    tal:attributes="value message/FullDate|python:0"/>
             <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                <span tal:replace="message/Date|string:?"/>
+                <span class="truncable" tal:content="message/Date|string:?"/>
             </a>
             </td>
           </tr>
