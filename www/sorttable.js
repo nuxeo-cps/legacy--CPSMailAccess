@@ -445,7 +445,9 @@ function compare(a, b)
 
         return 0;
     }
-    sorter = Array(ca, cb);
+    sorter = new Array();
+    sorter[0] = ca
+    sorter[1] = cb;
 
     //alert(sorter);
 
