@@ -212,20 +212,20 @@ class MailMessageView(BaseMailMessageView):
             is writing a message with a given "to" "from"
             and with a given body
         """
-        self.prepareReplyRecipient(reply_all=0)
+        self.prepareReplyRecipient(reply_all=0, forward=0)
 
     def reply_all(self):
         """ replying to a message
             is writing a message with a given "to" "from"
             and with a given body
         """
-        self.prepareReplyRecipient(reply_all=1)
+        self.prepareReplyRecipient(reply_all=1, forward=0)
 
     def forward(self):
         """ replying to a message is writing a message with a given "to" "from"
             and with a given body
         """
-        self.prepareReplyRecipient(forward=1)
+        self.prepareReplyRecipient(reply_all=0, forward=1)
 
     def delete(self):
         """ "deletes" the message (copy it to the thrash indeed)
