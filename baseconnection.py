@@ -35,6 +35,8 @@ CANNOT_SEARCH_MAILBOX = 'Could not search mailbox %s'
 MAILBOX_INDEX_ERROR = '[%s] Message Index error in box %s'
 BAD_LOGIN = 'Bad login'
 NO_CONNECTOR = 'Could find a connector'
+CANNOT_READ_MESSAGE = 'Could not read message %s in %s'
+SOCKET_ERROR  = 'Could not open a socket to the server'
 
 
 class BaseConnection:
@@ -49,6 +51,8 @@ class BaseConnection:
     connection_type = ''
     connection_params = {}
     connection_timeout = 10
+    _v_user = None
+    _v_password = None
 
     def __init__(self, connection_params = {}):
 
@@ -67,6 +71,9 @@ class BaseConnection:
 
     def login(self, user, password):
         return False
+
+    def _cache_login(self):
+        self.login(self._v_user, self._v_password)
 
     def logout(self):
         return False
@@ -132,4 +139,7 @@ class BaseConnection:
         raise NotImplementedError
 
     def create(self, mailbox):
+        raise NotImplementedError
+
+    def deleteMailBox(self, mailbox):
         raise NotImplementedError
