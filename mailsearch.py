@@ -19,7 +19,7 @@
 """
   mailsearch holds all mail searches
 """
-import os
+import os, time
 from encodings import exceptions as encoding_exceptions
 
 from zLOG import LOG, INFO, DEBUG
@@ -186,14 +186,41 @@ class ZemanticMessageAdapter:
 
         return triples
 
-class ZemanticMailCatalog(TripleStore):
+class ZemanticMailCatalog(Folder):
 
     implements(IMailCatalog)
 
+    def __init__(self, id, backend=None):
+        Folder.__init__(self, id)
+        self._store = TripleStore(backend)
+
     def indexMessage(self, message):
         message = ZemanticMessageAdapter(message)
-        self.addTriples(message.threeTuples())
+        self._store.addTriples(message.threeTuples())
 
     def unIndexMessage(self, message):
         raise NotImplementedError
 
+    def clear(self):
+        self._store.clear()
+
+    def addTriples(self, statements):
+        self._store.addTriples(statements)
+
+    def remove(self, (subject, predicate, object)):
+        self._store.remove((subject, predicate, object))
+
+    def query(self, q):
+        return self._store.query(q)
+
+    def add(self, (subject, predicate, object)):
+        self._store.add((subject, predicate, object))
+
+    def uniqueSubjects(self):
+        return self._store.uniqueSubjects()
+
+    def uniquePredicates(self):
+        return self._store.uniquePredicates()
+
+    def uniqueObjects(self):
+        return self._store.uniqueObjects()
