@@ -138,6 +138,13 @@
       type="zope.app.content.interfaces.IContentType"
       />
 
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".directorypicker.DirectoryPickerView"
+      template="www/mailDirectoryView.zpt"
+      name="selectRecipients"
+      permission="zope2.View"
+      />
 
   <browser:page
       for=".interfaces.IMailMessage"
