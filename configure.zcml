@@ -14,10 +14,14 @@
       provides=".interfaces.IMessageTraverser"
       />
 
+  <adapter
+      for=".interfaces.IMailBox"
+      factory=".mailbox.MailBoxTraversable"
+      provides=".interfaces.IMessageTraverser"
+      />
 
   <five:traversable class="OFS.Folder.Folder" />
   <five:traversable class=".mailfolder.MailFolder" />
-  <!--<five:traversable class=".mailmessage.MailMessage"/>-->
   <five:traversable class=".mailbox.MailBox" />
   <five:traversable class=".connectionlist.ConnectionList" />
   <five:traversable class=".connectionwatcher.ConnectionWatcher" />
@@ -151,6 +155,14 @@
       />
 
   <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailfolderview.MailFolderView"
+      name="manageContent"
+      attribute="manageContent"
+      permission="zope2.View"
+      />
+
+  <browser:page
       for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
       template="www/mailMessageViewAlone.zpt"
@@ -256,7 +268,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="is_editor"
       attribute="is_editor"
       permission="zope2.View"
@@ -264,7 +276,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="bodyvalue"
       attribute="getBodyValue"
       permission="zope2.View"
@@ -272,7 +284,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="tos"
       attribute="getDestList"
       permission="zope2.View"
@@ -280,7 +292,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="subject"
       attribute="getSubject"
       permission="zope2.View"
@@ -288,7 +300,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="saveMessageForm"
       attribute="saveMessageForm"
       permission="zope2.View"
@@ -296,7 +308,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="attached_files"
       attribute="attached_files"
       permission="zope2.View"
@@ -304,7 +316,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="delete_attachement"
       attribute="detachFile"
       permission="zope2.View"
@@ -416,23 +428,15 @@
 
    <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="getIdentitites"
       attribute="getIdentitites"
       permission="zope2.View"
       />
 
-   <browser:page
-      for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
-      template="www/mailAttachmentView.zpt"
-      name="attachfile_form"
-      permission="zope2.View"
-      />
-
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="initMessage"
       attribute="initMessage"
       permission="zope2.View"
@@ -440,7 +444,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
       name="attach_file"
       attribute="attachFile"
       permission="zope2.View"
@@ -448,15 +452,23 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
-      name="sendMessage"
-      attribute="sendMessage"
+      class=".mailmessageeditview.MailMessageEdit"
+      name="editAction"
+      attribute="editAction"
       permission="zope2.View"
       />
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailMessageEdit"
+      class=".mailmessageeditview.MailMessageEdit"
+      name="removeRecipient"
+      attribute="removeRecipient"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
       template="www/mailEditorView.zpt"
       name="editMessage.html"
       permission="zope2.View"
