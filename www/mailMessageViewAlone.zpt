@@ -2,13 +2,10 @@
   <head>
     <style type="text/css" media="all"
       tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
-
-
     <script type="text/javascript"
       tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
       src="++resource++cpsmailaccess.js">
     </script>
-
   </head>
   <body>
     <div id="folder" tal:condition="request/showfolders|python:0">
@@ -16,7 +13,6 @@
     </div>
     <div class="mailHeaders">
         <div class="mailToolBar">
-
         </div>
           <div id="mailLessInfos">
           <div id="mailSubject">
@@ -50,45 +46,6 @@
     </div>
     <div id="mailBody">
       <tal:block tal:replace="structure view/renderBody"/>
-<pre style="background-color: white">
-        FLASH: Gagnez un GlobeTrotter - le Linux mobile de Mandrakesoft !
-
-Bonjour,
-
-Mandrakesoft a récemment lancé un nouveau programme de parrainage pour
-Mandrakeclub.
-http://www.mandrakeclub.com/article.php?sid=2498
-
-L'idée en est simple : si vous parrainez un nouveau membre, vous gagnez
-des mois d'adhésion gratuite (jusqu'à un an!). Il suffit que votre
-filleul indique votre nom au moment de son inscription, et votre compte
-sera instantanément crédité avec des mois supplémentaires gratuits.
-
-Le concours du meilleur parrain débute aujourd'hui - le parrain avec le
-plus grand nombre de filleuls gagne :
-
-* Premier prix : Un système mobile GlobeTrotter, d'une valeur marchande
-de 199 EUR.
-http://store.mandrakesoft.com/product_info.php?products_id=119&language=fr
-
-* Deuxième prix : Une nouvelle Move avec une clé USB de 512 MO.
-http://www.mandrakesoft.com/products/move
-
-Pour participer à la compétition, il faut être membre du Club. Pour
-adhérer :
-http://www.mandrakelinux.com/fr/club/
-
-        L'Equipe en Ligne Mandrakesoft.
-
-------------------------------------------------------------------
-The Mandrakelinux Community Newsletter is available in English, French,
-German, Spanish, Dutch, Portuguese, Polish, Italian and Russian.
-Please select the following link to:
-* Request a different language for the next newsletter
-* Receive the next newsletter in a different format (plain text or HTML)
-* Unsubscribe to the newsletter
-http://mandrake.com/cgi-bin/regnl.pl?em=tarek%40ziade.org&ctr=r
-            </pre>
     </div>
   </body>
 </html>
