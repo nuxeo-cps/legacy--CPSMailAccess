@@ -102,6 +102,14 @@ class MailRendererTestCase(MailTestCase):
             # see here for deeper checks on rendered body
             self.assertNotEqual(rendered, None)
 
+    def test_badbodyrender(self):
+        ob = MailRenderer()
+
+        res = ob.render(None,'charset=iso88-59-15',None)
+        self.assertEquals(res, '')
+
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailRendererTestCase),

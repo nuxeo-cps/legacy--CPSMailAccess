@@ -296,10 +296,16 @@ class MailMessageTestCase(MailTestCase):
         # to be thaught
         #self.assertEquals(ob.getRawMessage(), initial_message)
 
-
-
-
-
+    def test_hasAttachment(self):
+        ob = self.getMailInstance(2)
+        self.assert_(not ob.hasAttachment())
+        file = openfile('audiotest.au')
+        storage = FakeFieldStorage()
+        storage.file = file
+        storage.filename = 'audiotest.au'
+        uploaded = FileUpload(storage)
+        ob.attachFile(uploaded)
+        self.assert_(ob.hasAttachment())
 
 def test_suite():
     return unittest.TestSuite((
