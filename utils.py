@@ -63,6 +63,7 @@ def uniqueId(container, seed='', use_primary=True):
         if not primary_id in container.objectIds():
             return primary_id
     i = 0
+    # XXX linear time !
     while seed + str(i) in container.objectIds():
         i +=1
 
