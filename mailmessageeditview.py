@@ -139,6 +139,10 @@ class MailMessageEdit(BrowserView):
     def attached_files(self):
         """ gets attached file list
         """
+        if self.request is not None:
+            # XXX this is a ugly hack, need to do better thru zcml
+            if not self.request['URL'].endswith('editMessage.html'):
+                return []
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
         msg_viewer = MailMessageView(msg, self.request)
@@ -321,11 +325,8 @@ class MailMessageEdit(BrowserView):
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
         msg_from = self._identyToMsgHeader()
-        msg_subject = '?'
         msg.setHeader('From', msg_from)
-        msg.setHeader('Subject', msg_subject)
         mailbox.saveEditorMessage()
-
         if self.request is not None:
             psm = 'Message has been saved in Drafts'
             self.request.response.redirect('editMessage.html\
