@@ -124,36 +124,57 @@ function saveMessageDatas()
   msg_bcc = document.getElementById('msg_bcc');
   msg_bcc = msg_bcc.value;
 
-  Cc = document.getElementById('Cc');
-  if (Cc.style.visibility == 'hidden')
+  try
+  {
+    Cc = document.getElementById('Cc');
+    if (Cc.style.visibility == 'hidden')
+    {
+      cc_on = "0";
+    }
+    else
+    {
+      cc_on = "1";
+    }
+  }
+  catch(err)
   {
     cc_on = "0";
   }
-  else
+
+  try
   {
-    cc_on = "1";
+    BCc = document.getElementById('BCc');
+
+    if (BCc.style.visibility == 'hidden')
+    {
+      bcc_on =  "0";
+    }
+    else
+    {
+      bcc_on = "1";
+    }
+  }
+  catch(err)
+  {
+    bcc_on = "0";
   }
 
-  BCc = document.getElementById('BCc');
+  try
+  {
+    Attach = document.getElementById('attacher');
 
-  if (BCc.style.visibility == 'hidden')
-  {
-    bcc_on =  "0";
+    if (Attach.style.visibility == 'hidden')
+    {
+      attacher_on =  "0";
+    }
+    else
+    {
+      attacher_on = "1";
+    }
   }
-  else
+  catch(err)
   {
-    bcc_on = "1";
-  }
-
-  Attach = document.getElementById('attacher');
-
-  if (Attach.style.visibility == 'hidden')
-  {
-    attacher_on =  "0";
-  }
-  else
-  {
-    attacher_on = "1";
+    attacher_on = "0";
   }
 
   if(window.XMLHttpRequest) // Firefox
