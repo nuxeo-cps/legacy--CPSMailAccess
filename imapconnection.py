@@ -268,7 +268,7 @@ class IMAPConnection(BaseConnection):
         return returned
 
     def search(self, mailbox, charset, *criteria):
-        """ see interface for doc
+        """See interface for doc.
         """
         self._respawn()
         results = []
@@ -287,16 +287,12 @@ class IMAPConnection(BaseConnection):
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
 
         if imap_result[0] == 'NO':
+            # XXX try to parse errors
             raise ConnectionError(imap_result[1])
         else:
             imap_results = imap_result[1]
-            i_results = []
-            for result in imap_results:
-                if result:
-                    i_results = results + result.split(' ')
-        # we want ints
-        for item in i_results:
-            results.append(int(item))
+            for res in imap_results:
+                results.extend(res.split(' '))
         return results
 
     def noop(self):

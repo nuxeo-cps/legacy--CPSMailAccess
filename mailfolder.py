@@ -158,15 +158,13 @@ class MailFolder(Folder):
         # typically resync
         self.server_name = server_name
 
-    def _addMessage(self, msg_uid='', digest=''):
+    def _addMessage(self, uid, digest):
         """See interfaces.IMailFolder
         """
-        id = '.'+msg_uid
-        msg = MailMessage(id, msg_uid, digest)
-
+        id = '.'+uid
+        msg = MailMessage(id, uid, digest)
         self._setObject(id, msg)
         msg = self._getOb(id)
-
         return msg
 
     def _addFolder(self, uid='', server_name=''):
@@ -199,7 +197,7 @@ class MailFolder(Folder):
 
         return None
 
-    def findMessageByUid(self, msg_uid, recursive=True):
+    def findMessageByUid(self, uid, recursive=True):
         """ See interfaces.IMailFolder
         """
         # XXX see for caching here
@@ -207,7 +205,7 @@ class MailFolder(Folder):
             recursive=recursive)
 
         for message in message_list:
-            if str(message.msg_uid) == str(msg_uid):
+            if message.uid == uid:
                 return message
 
         return None
@@ -252,64 +250,53 @@ class MailFolder(Folder):
             message.setSyncState(state=False)
 
         try:
-            server_messages = connector.search(self.server_name, None,'ALL')
+            uids = connector.search(self.server_name, None,'ALL')
         except ConnectionError:
             # XXX should be a more specific exception (no such dir)
             # this will happen if the directory has been
             # deleted form the server
-            server_messages = []
+            uids = []
 
-        for message in server_messages:
+        for uid in uids:
 
             # first of all, search message by uidwich is unique inside a folder
-            msg = self.findMessageByUid(message, recursive=False)
+            msg = self.findMessageByUid(uid, recursive=False)
 
             if msg is None:
-                # opti : Will do just one call
-                #msg_uid = connector.fetch(self.server_name, message, '(UID)')
-                #msg_uid = str(msg_uid['UID'])
-                msg_uid = str(message)
+                continue
 
-                msg_headers = connector.fetch(self.server_name, message, '(RFC822.HEADER)')
-                digest = self._createKey(msg_headers)
+            msg_headers = connector.fetch(self.server_name, uid,
+                                          '(RFC822.HEADER)')
+            digest = self._createKey(msg_headers)
 
-                # first of all, search message by key
-                #msg = self.findMessage(digest, recursive=False)
+            msg = mail_cache.retrieveMessage(digest, remove=True)
 
-                # check if the message is in the orphan list
-                if msg is None:
-                    msg = mail_cache.retrieveMessage(digest, remove=True)
+            if msg is None:
+                # Message is not in cache
 
-                    # the message has to be created
-                    if msg is None:
-                        log.append('adding message %s in %s' % (msg_uid, self.server_name))
-                        msg = self._addMessage(msg_uid, digest)
+                # XXX Only simplest case where all message is cached
+                msg_content = connector.fetch(self.server_name, uid,
+                                              '(RFC822)')
+                # XXX should be done by fetch
+                if msg_content and msg_content[0] == 'OK':
+                    raw_msg = msg_content[1]
+                else:
+                    raw_msg = ''
 
-                        # THIS IS A HACK,next step is to create
-                        # a message accordingly to the whole message string
-                        # and to the cache parameter (with or without body)
-                        msg_content = connector.fetch(self.server_name, message, '(RFC822)')
+                log.append('adding message %s in %s' % (uid, self.server_name))
+                msg = self._addMessage(uid, digest)
+                msg.loadMessage(raw_msg)
 
-                        raw_msg = ''
+                #setattr(msg, header, msg_headers[header])
+                if msg_headers.has_key('Subject'):
+                    msg.title = msg_headers['Subject']
 
-                        if len(msg_content) > 0:
-                            msg_bloc = msg_content[0]
-                            if msg_bloc == 'OK':
-                                raw_msg  =  msg_content[1]
+            else:
+                # Message was in cache, adding it to self
+                log.append('moving message %s in %s' % (uid, self.server_name))
+                self._setObject(msg.getId(), msg)
 
-                        msg.loadMessage(raw_msg)
-
-                        for header in msg_headers.keys():
-                            setattr(msg, header, msg_headers[header])
-                            if msg_headers.has_key('Subject'):
-                                msg.title = msg_headers['Subject']
-                    else:
-                        # was in cache, linking it to self
-                        log.append('moving message %s in %s' % (msg_uid, self.server_name))
-                        self._setObject(msg.getId(), msg)
-
-            if msg:
-                msg.setSyncState(state=True)
+            msg.setSyncState(state=True)
 
         # now clear messages in zodb that appears to be
         # deleted from the directory
@@ -317,7 +304,7 @@ class MailFolder(Folder):
         for message in zodb_messages:
             if not message.sync_state:
                 if not mail_cache.inCache(message):
-                    log.append('adding %s message ni cache' % message.msg_uid)
+                    log.append('adding %s message ni cache' % message.uid)
                     mail_cache.putMessage(message)
                 self.manage_delObjects([message.getId(),])
         if return_log:

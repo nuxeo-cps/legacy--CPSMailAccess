@@ -107,7 +107,7 @@ class IMailMessage(IContainer):
     It stores the content of a message, this content can be composed of
     headers, ID, and optionnaly the body.
     """
-    msg_uid = Field(
+    uid = Field(
         title=u'Message ID',
         description=u'Unique identifier for message in its container',
         default=u'',
@@ -272,7 +272,9 @@ class IConnection(Interface):
         """
 
     def search(mailbox, charset, *criteria):
-        """ message search interface
+        """Search messages.
+
+        Returns a list of message uids (strings).
         """
 
     def fetch(mailbox, message_number, message_parts):
