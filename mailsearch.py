@@ -20,6 +20,8 @@
   mailsearch holds all mail searches
 """
 import os
+from encodings import exceptions as encoding_exceptions
+
 from zLOG import LOG, INFO, DEBUG
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
@@ -158,7 +160,21 @@ class ZemanticMessageAdapter:
                 triples.append(triple)
 
         # a triple for the direct body
-        body = Literal(message.getDirectBody())
+        charset = message.getHeader('Charset')
+        if charset is None or charset == []:
+            charset = 'ISO-8859-15'
+        else:
+            charset = charset[0]
+
+        body = message.getDirectBody()
+
+        if isinstance(body, str):
+            try:
+                body = body.decode(charset)
+            except encoding_exceptions.LookupError:
+                body = body.decode('ISO-8859-15')
+
+        body = Literal(body)
         triples.append((ob_uri, URIRef(u'body'), body))
 
         return triples
