@@ -27,7 +27,7 @@ class MailFolderView(BaseMailMessageView):
     def __init__(self, context, request):
         BaseMailMessageView.__init__(self, context, request)
 
-    def rename(self, new_name):
+    def rename(self, new_name, fullname):
         """ action called to rename the
             current folder
         """
@@ -47,7 +47,7 @@ class MailFolderView(BaseMailMessageView):
                     mailfolder.absolute_url()+'/view?edit_name=1&portal_status_message=%s' % psm)
             return
 
-        renamed = mailfolder.rename(new_name)
+        renamed = mailfolder.rename(new_name, fullname)
 
         if self.request is not None and renamed is not None:
             self.request.response.redirect(renamed.absolute_url()+'/view')
@@ -117,13 +117,13 @@ class MailFolderView(BaseMailMessageView):
 
     def addFolder(self, name):
         """ adds a folder
-            XXX todo:doit on server's side
+            XXX todo:do it on server's side
         """
         mailfolder = self.context
-        if not hasattr(mailfolder, name):
+        if not mailfolder.hasKey(name):
             server_name = mailfolder.server_name + '.' + name
-            new_folder = mailfolder._addFolder(name, server_name)
+            new_folder = mailfolder._addFolder(name, server_name, True)
         else:
-            new_folder = getattr(mailfolder, name)
+            new_folder = mailfolder[name]
         if self.request is not None and new_folder is not None:
             self.request.response.redirect(new_folder.absolute_url()+'/view')
