@@ -182,6 +182,18 @@ class MailMessage(Folder):
             payload = store.get_payload()
             payload[part_index-1].set_param(param_name, param_value)               
             
+    def delParam(self, param_name, part_index=0):
+        """ See interfaces.IMailMessage
+        """  
+        store = self._getStore()
+        if not self.isMultipart() or part_index == 0:
+            if part_index > 0:
+                raise IndexError('Index out of bounds')
+            store.del_param(param_name)
+        else:
+            payload = store.get_payload()
+            payload[part_index-1].del_param(param_name)               
+                    
 """ classic Zope 2 interface for class registering
 """        
 manage_addMailMessage = PageTemplateFile(

@@ -163,4 +163,8 @@ class IMailMessageStore(IContainer):
             for single part messages, part_index is 0       
         """             
         
+    def delParam(self, param_name, part_index=0):                
+        """ deletes the given param 
+            for single part messages, part_index is 0       
+        """             
         

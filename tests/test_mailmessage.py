@@ -214,11 +214,38 @@ class MailMessageTestCase(ZopeTestCase):
         ct = ob.getParam('boundary')
         self.assertEquals(ct, 'FRONTIERE')
         
+        ob.setParam('boundary', 'FRONTIERE', 1)
+        ct = ob.getParams(1)
+        self.assertEquals(ct, [('text/plain', ''), ('charset', 'us-ascii'), 
+            ('boundary', 'FRONTIERE')])
+        ct = ob.getParam('boundary', 1)
+        self.assertEquals(ct, 'FRONTIERE')        
+        
         ob = self.getMailInstance(2)
         ob.setParam('boundary', 'FRONTIERE')
         ct = ob.getParam('boundary')
         self.assertEquals(ct, 'FRONTIERE')
+        
+    def test_delParams(self):        
+        """ testing getParams
+        """
+        ob = self.getMailInstance(6)
 
+        ob.setParam('boundary', 'FRONTIERE')
+        ob.delParam('boundary')
+        ct = ob.getParam('boundary')
+        self.assertEquals(ct, None) 
+        
+        ob.setParam('boundary', 'FRONTIERE', 1)
+        ob.delParam('boundary', 1)
+        ct = ob.getParam('boundary', 1)
+        self.assertEquals(ct, None) 
+        
+        ob = self.getMailInstance(2)
+        ob.setParam('boundary', 'FRONTIERE')
+        ob.delParam('boundary')
+        ct = ob.getParam('boundary')
+        self.assertEquals(ct, None) 
                                                 
 def test_suite():
     return unittest.TestSuite((
