@@ -24,10 +24,9 @@ import os
 from Products.CPSMailAccess.mailpart import MailPart
 from Products.CPSMailAccess.mailmessage import MailMessage
 
-installProduct('FiveTest')
-installProduct('Five')
+from basetestcase import MailTestCase
 
-class MailPartTestCase(ZopeTestCase):
+class MailPartTestCase(MailTestCase):
 
     def test_instance(self):
         part = MailPart('id', None, None)
@@ -37,6 +36,16 @@ class MailPartTestCase(ZopeTestCase):
         msg = MailMessage('id', 'sid')
         part = MailPart('id', msg, None)
         self.assertEquals(part.getParent(), msg)
+
+    def test_getFileInfos(self):
+        # testing getParams
+        ob = self.getMailInstance(6)
+        part = MailPart('part', ob, ob.getPart(1))
+        infos = part.getFileInfos()
+        self.assertEquals(infos['filename'], 'dingusfish.gif')
+        self.assertEquals(infos['mimetype'], 'image/gif')
+        part = MailPart('part', ob, ob.getPart(0))
+        self.assertEquals(part.getFileInfos(), None)
 
 
 def test_suite():
