@@ -33,6 +33,12 @@ from CPSDefault.tests import CPSDefaultTestCase
 installProduct('CPSMailAccess')
 
 class ObjectInteractionTest(CPSDefaultTestCase.CPSDefaultTestCase):
+    msg_key = 0
+
+    def msgKeyGen(self):
+        result = 'msg_' + str(self.msg_key)
+        self.msg_key += 1
+        return result
 
     def afterSetUp(self):
         user = self.folder.acl_users.getUser(user_name)
@@ -86,6 +92,23 @@ class ObjectInteractionTest(CPSDefaultTestCase.CPSDefaultTestCase):
 
         folder = MailFolder()
         self.failUnlessRaises(MailContainerError, folder._getconnector)
+
+    def test_synchronize(self):
+        """ testing synchronize calls
+        """
+        mailbox = self._getMailBox()
+
+        for i in range(10):
+            ob = mailbox._addFolder()
+
+            for i in range(10):
+                ob._addFolder()
+
+            for i in range(123):
+                key = self.msgKeyGen()
+                ob._addMessage(key, key)
+
+        mailbox.synchronize()
 
 def test_suite():
     return unittest.TestSuite((
