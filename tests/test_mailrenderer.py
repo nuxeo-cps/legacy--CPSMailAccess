@@ -143,7 +143,6 @@ class MailRendererTestCase(MailTestCase):
         rd = MailRenderer()
         ob.getPhysicalPath = self.fakePhysicalPath
         body = rd.renderBody(ob, 0)
-        #self.assertEquals(body, '')
         self.assert_(body.startswith(u'<br><font size="2" face="sans-serif">sqdsqd d</font>'))
 
 def test_suite():

@@ -337,7 +337,32 @@ class MailMessageTestCase(MailTestCase):
         subpart_1 = mailpart._payload[0]
         self.assert_(subpart_1._payload.startswith('sqdsqd'))
 
+    def test_flags(self):
+        # testing get an set flags and triggering
+        ob = self.getMailInstance(35)
 
+        self.assertEquals(ob.getFlag('read'), 0)
+        ob.setFlag('read', 1)
+        self.assert_(ob.getFlag('read') == 1)
+
+        # try out event triggering
+        ob.onflagchanged = self._onFlagChanged
+        self._called = 0
+        ob.setFlag('read', 0)
+        # test continues in _onFlagChanged
+        # checks that _onFlagChanged has been called
+        self.assertEquals(self._called, 1)
+
+        # if no changes, it's not called
+        self._called = 0
+        ob.setFlag('read', 0)
+        self.assertEquals(self._called, 0)
+
+    def _onFlagChanged(self, msg, flag, value):
+        self.assert_(flag == 'read')
+        self.assert_(value == 0)
+        self.assert_(msg.getFlag('read') ==  0)
+        self._called = 1
 
 def test_suite():
     return unittest.TestSuite((
