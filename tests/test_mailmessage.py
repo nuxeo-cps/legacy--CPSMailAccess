@@ -235,26 +235,30 @@ class MailMessageTestCase(ZopeTestCase):
         ct = ob.getParam('boundary')
         self.assertEquals(ct, None)
 
-    def test_MailMapping(self):
-        # testing mapping with case insentitive calls
+    def test_getHeaders(self):
         ob = self.getMailInstance(6)
 
         self.assertEquals(ob.getHeader('From'), 'Barry <barry@digicool.com>')
-        # mapping must be case insensitive
+        # must be case insensitive
         self.assertEquals(ob.getHeader('from'), 'Barry <barry@digicool.com>')
 
-    def test_MailMapping2(self):
-        # testing mapping with a new mail creation
+    def test_setHeaders(self):
         ob = MailMessage()
 
-        ob.setHeader('From', 'Tarek <tz@nuxeo.com>')
-        self.assertEquals(ob.getHeader('From'), 'Tarek <tz@nuxeo.com>')
+        s = 'Tarek <tz@nuxeo.com>'
+        ob.setHeader('From', s)
+        self.assertEquals(ob.getHeader('From'), s)
+        self.assertEquals(ob.getHeader('from'), s)
 
-        ob.setHeader('From', 'Tarek <tarek@ziade.org>')
-        self.assertEquals(ob.getHeader('From'), 'Tarek <tarek@ziade.org>')
+        s = 'Tarek <tarek@ziade.org>'
+        ob.setHeader('From', s)
+        self.assertEquals(ob.getHeader('From'), s)
+        self.assertEquals(ob.getHeader('from'), s)
 
-        ob.setHeader('from', 'Bob <bob@dinosaur.org>')
-        self.assertEquals(ob.getHeader('From'), 'Bob <bob@dinosaur.org>')
+        s = 'Bob <bob@dinosaur.org>'
+        ob.setHeader('from', s)
+        self.assertEquals(ob.getHeader('From'), s)
+        self.assertEquals(ob.getHeader('from'), s)
 
     #
     # view testers
