@@ -110,15 +110,15 @@ class MailTestCase(ZopeTestCase):
         mailbox = MailBox('INBOX')
         container._setObject('INBOX', mailbox)
         mailbox = container.INBOX
-        mailbox.connection_params['uid'] = 'tziade'
-        mailbox.connection_params['connection_type'] = 'IMAP'
-        mailbox.connection_params['password'] = 'secret'
-        mailbox.connection_params['HOST'] = 'localhost'
-        mailbox.connection_params['trash_folder_name'] = 'INBOX.Trash'
-        mailbox.connection_params['smtp_host'] = 'localhost'
-        mailbox.connection_params['smtp_port'] = 25
-        mailbox.connection_params['cache_level'] = 2
-        mailbox.connection_params['email_adress'] = 'tz@nuxeo.com'
+        mailbox._connection_params['uid'] = 'tziade'
+        mailbox._connection_params['connection_type'] = 'IMAP'
+        mailbox._connection_params['password'] = 'secret'
+        mailbox._connection_params['HOST'] = 'localhost'
+        mailbox._connection_params['trash_folder_name'] = 'INBOX.Trash'
+        mailbox._connection_params['smtp_host'] = 'localhost'
+        mailbox._connection_params['smtp_port'] = 25
+        mailbox._connection_params['cache_level'] = 2
+        mailbox._connection_params['email_adress'] = 'tz@nuxeo.com'
         return mailbox
 
     def _msgobj(self, filename):

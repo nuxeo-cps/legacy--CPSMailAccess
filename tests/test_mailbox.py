@@ -55,7 +55,7 @@ class MailBoxTestCase(MailTestCase):
 
     def test_MailBoxParametersView(self):
         # testing MailBoxParametersView generators
-        mailbox = MailBox('mailbox')
+        mailbox = self._getMailBox()
         view = MailBoxParametersView(mailbox, None)
         self.assertNotEquals(view, None)
 
@@ -74,7 +74,7 @@ class MailBoxTestCase(MailTestCase):
 
     def test_clipboard(self):
         # test clipboard
-        mailbox = MailBox('mailbox')
+        mailbox = self._getMailBox()
         action, ids = mailbox.getClipboard()
         self.assertEquals(action, None)
         self.assertEquals(ids, None)
@@ -143,6 +143,19 @@ class MailBoxTestCase(MailTestCase):
         """XXXX need to test msg caching
            XXXX with retrieval and invalidations
         """
+
+    def test_createMailDirectoryEntry(self):
+        mailbox = self._getMailBox()
+
+        res = mailbox._createMailDirectoryEntry('Tarek Ziadé <tarek@ziade.org>')
+        self.assertEquals(res, {'fullname': 'Tarek Ziad\xe9', 'email': 'tarek@ziade.org'})
+
+        res = mailbox._createMailDirectoryEntry('Tarek <tarek@nuxeo.com>')
+        self.assertEquals(res, {'fullname': 'Tarek', 'email': 'tarek@nuxeo.com'})
+
+        res = mailbox._createMailDirectoryEntry('tz@nuxeo.com>')
+        self.assertEquals(res, {'fullname': '', 'email': 'tz@nuxeo.com'})
+
 
 def test_suite():
     return unittest.TestSuite((
