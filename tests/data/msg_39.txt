@@ -1,0 +1,465 @@
+Return-Path: <error@ldlc.com>
+Delivered-To: webmaster@zopeur.org
+Received: (qmail 30336 invoked by uid 503); 22 Oct 2004 13:04:56 -0000
+Received: from unknown (HELO redir-mail-telehouse1.gandi.net) (217.70.180.1)
+  by ns2641.ovh.net with SMTP; 22 Oct 2004 13:04:56 -0000
+Received: from siege.ldlc.com (relay.ldlc.com [195.167.236.148])
+	by glenlivet.gandi.net (Postfix) with ESMTP id E2570445CA7
+	for <tarek@ziade.org>; Fri, 22 Oct 2004 15:17:00 +0200 (CEST)
+Received: from localhost ([192.168.150.2]) by siege.ldlc.com with Microsoft SMTPSVC(6.0.3790.0);
+	 Fri, 22 Oct 2004 15:24:45 +0200
+Message-ID: <1418462.1098450927612@ldlc.com>
+Date:  Fri, 22 Oct 2004 15:15:27 +0200 (ECT)
+From: LDLC NEWS <mailing@ldlc.com>
+Reply-To: mailing@ldlc.com
+To: "tarek@ziade.org" <tarek@ziade.org>
+Subject: [LDLC] Attention... Il n'y a que 2000 pieces !
+Errors-To: error@ldlc.com
+Mime-Version: 1.0
+Content-Type: multipart/alternative; boundary="______BoundaryOfDocument______"
+X-Mailer: adToOne version 3.7.2
+X-AdToOne-URL: http://www.zaisoft.com/adtoone/
+X-OriginalArrivalTime: 22 Oct 2004 13:24:45.0375 (UTC) FILETIME=[7F21C4F0:01C4B83A]
+
+--______BoundaryOfDocument______
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Une surprise ca vous tente ?
+
+Le principe est simple...
+Nous vous proposons une r=E9duction cons=E9quente, sur un produit du site.
+
+En cliquant sur le lien indiqu=E9 vous d=E9couvrez le produit. Le prix indi=
+qu=E9 sur le site ne tiend pas compte de la r=E9duction !
+Il ne vous reste plus alors qu'=E0 faire le calcul et voir si l'offre vous =
+tente...
+
+Pour profiter de la r=E9duction, rien de plus simple. En fin de commande vo=
+us saisissez le code de r=E9duction fourni et voila elle sera appliqu=E9e !
+
+R=E9duction du jour : 7 ?*
+Code promo pour en b=E9n=E9ficier: TOUTPLAT
+
+et pour connaitre le produit...
+Cliquez ici
+http://www.ldlc.com/fiche/PB00020882.html
+
+Vous n'aimez pas les surprises ?
+Alors profitez de l'offre suivante....
+
+Canon EOS 300D Avec ou sans objectif...
+100 euros rembours=E9s sur votre achat jusqu'au 31 Janvier 2005 !!!
+
+EOS 300D NU
+Cliquez ici pour en savoir plus:
+http://www.ldlc.com/fiche/PB00018841.html
+
+EOS 300D Avec Objectif
+Cliquez ici pour en savoir plus:
+http://www.ldlc.com/fiche/PB00018842.html
+
+
+Rendez-vous donc imm=E9diatement sur le site LDLC.com, pour passer et recev=
+oir rapidement toutes les commandes dont vous r=EAvez.
+
+Merci de votre fidelit=E9.
+Laurent
+
+*Offre limit=E9e =E0 un produit par personne dans la limite du stock dispon=
+ible.
+Valable au plus tard jusqu'au 25 octobre 2004 minuit.
+r=E9duction bas=E9s sur une TVA fran=E7aise de 19.6%
+
+adresse e-mail inscrite: tarek@ziade.org,
+pour vous d=E9sinscrire
+cliquez ici: http://www.ldlc.fr/newsletter/desabo.html?email=3Dtarek@ziade.=
+org=20
+
+
+
+
+--______BoundaryOfDocument______
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Newsletter LDLC</title>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<style type=3D"text/css">
+/* CSS Document */
+.produit{
+font-family:verdana; font-size:12px; font-weight:bold; color:#FF7B00;
+}
+.produit h1,h2,h3{
+margin-top:0px; margin-bottom:0px; display:inline;
+}
+.produit h1{ /*nom prod */
+font-size:22px; =20
+}
+.produit h2{ /*prix prod */
+font-size:26px; =20
+}
+.produit h3{
+font-size:12px;=20
+}
+.text{
+font-family:verdana; font-size:12px; color:#006599; text-align:center;
+}
+.chapeau{=20
+font-weight:bold; font-size:13px;
+}
+.codePromo{
+font-family:arial Black; font-size:22px; font-weight:bold; text-align:cente=
+r; color:#E02A00;
+}
+.avertissement{
+color:#E02A00; font-weight:bold;
+}
+.avertissement h1{
+font-size:16px; margin-bottom:5px; font-family:arial Black;
+}
+.asterisque{
+font-size:9px;
+}
+.asterisque i{
+color:#E02A00;
+}
+.desabo{
+margin-top:0px; font-family:verdana; color:#006599; text-align:center; font=
+-size:9px;
+}
+.desabo a{
+font-size:10px;
+}
+A{
+text-decoration:none; font-weight:bold; color:#006599; font-size:12px;
+}
+A:hover{
+text-decoration:underline;
+}
+A.cliquezLa{
+font-weight:bold; font-size:14px;
+}
+A:hover.cliquezLa{
+text-decoration:none; color:#E02A00;
+}
+.lienProduit{
+font-size:12px; text-align:right; vertical-align:bottom; bottom:15px; posit=
+ion:relative;
+}
+.lienProduit A{
+font-weight:normal;
+}
+#dialogue{
+text-align:left; text-family:times New Roman;
+
+}
+#dialogue h1{
+margin-bottom:5px; font-family:arial black; font-size:16px; font-weight:bol=
+d;
+}
+.tableauProd{
+margin-bottom:20px; margin-top:20px;
+}
+.titre{
+font-family:verdana; font-size:22px; color:#FF7B00; font-weight:bold;
+}
+.titre h1{
+font-size:24px;  margin-bottom:0px;
+}
+</style>
+
+</head>
+
+<body marginheight=3D"0" marginwidth=3D"0" leftmargin=3D"0" topmargin=3D"0"=
+ rightmargin=3D"0" bottommargin=3D"0" bgcolor=3D"E3E3E3" >
+<style type=3D"text/css">
+/* CSS Document */
+.produit{
+font-family:verdana; font-size:12px; font-weight:bold; color:#FF7B00;
+}
+.produit h1,h2,h3{
+margin-top:0px; margin-bottom:0px; display:inline;
+}
+.produit h1{ /*nom prod */
+font-size:22px; =20
+}
+.produit h2{ /*prix prod */
+font-size:26px; =20
+}
+.produit h3{
+font-size:12px;=20
+}
+.text{
+font-family:verdana; font-size:12px; color:#006599; text-align:center;
+}
+.chapeau{=20
+font-weight:bold; font-size:13px;
+}
+.codePromo{
+font-family:arial Black; font-size:22px; font-weight:bold; text-align:cente=
+r; color:#E02A00;
+}
+.avertissement{
+color:#E02A00; font-weight:bold;
+}
+.avertissement h1{
+font-size:16px; margin-bottom:5px; font-family:arial Black;
+}
+.asterisque{
+font-size:9px;
+}
+.asterisque i{
+color:#E02A00;
+}
+.desabo{
+margin-top:0px; font-family:verdana; color:#006599; text-align:center; font=
+-size:9px;
+}
+.desabo a{
+font-size:10px;
+}
+A{
+text-decoration:none; font-weight:bold; color:#006599; font-size:12px;
+}
+A:hover{
+text-decoration:underline;
+}
+A.cliquezLa{
+font-weight:bold; font-size:14px;
+}
+A:hover.cliquezLa{
+text-decoration:none; color:#E02A00;
+}
+.lienProduit{
+font-size:12px; text-align:right; vertical-align:bottom; bottom:15px; posit=
+ion:relative;
+}
+.lienProduit A{
+font-weight:normal;
+}
+#dialogue{
+text-align:left; text-family:times New Roman;
+
+}
+#dialogue h1{
+margin-bottom:5px; font-family:arial black; font-size:16px; font-weight:bol=
+d;
+}
+.tableauProd{
+margin-bottom:20px; margin-top:20px;
+}
+.titre{
+font-family:verdana; font-size:22px; color:#FF7B00; font-weight:bold;
+}
+.titre h1{
+font-size:24px;  margin-bottom:0px;
+}
+</style>
+<!-- tablaeu contenaire -->
+<table width=3D"100%" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" >
+  <tr>
+    <td align=3D"center" class=3D"chapeau">
+=09=09<!-- debut graphisme -->
+=09=09<table width=3D"583" border=3D"0" cellspacing=3D"0" cellpadding=3D"0"=
+>
+=09=09  <tr>
+=09=09=09
+          <td><img src=3D"http://images.ldlc.fr/ld/news/surprise.gif" style=
+=3D""></td>
+=09=09  </tr>
+=09=09  <tr>
+=09=09  =09<TD>
+=09=09=09  <table width=3D"100%" border=3D"0" cellspacing=3D"0" cellpadding=
+=3D"0">
+=09=09=09=09  <tr>
+=09=09=09=09  =09<td width=3D"3" height=3D"100" background=3D"http://images=
+.ldlc.fr/ld/news/ombreGauche.gif"><img src=3D"http://images.ldlc.fr/ld/news=
+/spacer.gif" width=3D"3"></td>
+=09=09=09=09=09<td width=3D"100%" bgcolor=3D"#FFFFFF" style=3D"padding-left=
+:20px;padding-right:20px" valign=3D"top" class=3D"text">
+=09=09=09=09=09=09<!-- partie a remplir par la news -->
+=09=09=09=09=09=09<!-- titre de la promo -->
+=09=09=09=09=09=09<br>
+=09=09=09=09=09=09<div id=3D"dialogue">
+                    <h1>Une surprise ca vous tente ?</h1>
+=09=09=09=09=09=09
+                    <br>
+                    Le principe est simple...<br>
+                    <br>
+                    Nous vous proposons une r&eacute;duction cons&eacute;qu=
+ente,=20
+                    sur un produit du site.<br>
+                    <br>
+                    En cliquant sur le lien indiqu&eacute; vous d&eacute;co=
+uvrez=20
+                    le produit. Le prix indiqu&eacute; sur le site ne tiend=
+ pas=20
+                    compte de la r&eacute;duction !<br>
+                    Il ne vous reste plus alors qu'&agrave; faire le calcul=
+ et=20
+                    voir si l'offre vous tente...<br>
+                    <br>
+                    Pour profiter de la r&eacute;duction, rien de plus simp=
+le.=20
+                    En fin de commande vous saisissez le code de r&eacute;d=
+uction=20
+                    fourni et voila elle sera appliqu&eacute;e !<br>
+                    <br>
+                    <br>
+=09=09=09=09=09=09
+=09=09=09=09=09=09</div>
+=09=09=09=09=09=09<br>
+                  <div class=3D"produit"></div>
+=09=09=09=09=09=09<hr style=3D"margin-top:5px; margin-bottom:1px; color:#FF=
+7B00; width:300px;">
+                  <br>
+                  <h2><font size=3D"4">R&eacute;duction du jour : <font col=
+or=3D"#FF0000"><b><font size=3D"6">7=20
+                    &euro;</font></b>*</font><br>
+                    <br>
+                    <i>Code promo pour en b&eacute;n&eacute;ficier: <font c=
+olor=3D"#FF9900">TOUTPLAT</font></i><font size=3D"2"><br>
+                    </font></font><br>
+                  </h2>
+                  <h1><font size=3D"4" color=3D"#0000FF"><i><font color=3D"=
+#FF0000">et=20
+                    pour connaitre le produit...</font></i></font></h1>
+                  <h3><font size=3D"2"><a href=3D"http://www.ldlc.com/fiche=
+/PB00020882.html?origine=3D670014"><font size=3D"4">&gt;&gt;=20
+                    Cliquez ici &lt;&lt;</font></a></font></h3>
+                  <br>
+                  <hr style=3D"margin-top:5px; margin-bottom:1px; color:#FF=
+7B00; width:300px;">
+                  <h2><font size=3D"4"><br>
+                    <br>
+                    <font size=3D"5" color=3D"#FF9900">Vous n'aimez pas les=
+ surprises=20
+                    ?</font><br>
+                    <br>
+                    <font size=3D"3">Alors profitez de l'offre suivante....=
+</font><br>
+                    <br>
+                    </font></h2>
+                  <table class=3D"tableauProd" width=3D"100%" border=3D"0" =
+cellspacing=3D"0" cellpadding=3D"0">
+                    <tr>=20
+                      <td align=3D"center" class=3D"text" width=3D"30%"><im=
+g src=3D"http://images.ldlc.com/photos/00/00/36/10/ME0000361044_1.jpg" bord=
+er=3D"0" >=20
+                        <br>
+                        <br>
+                      </td>
+                      <td valign=3D"top" height=3D"100%" width=3D"74%">=20
+                        <table width=3D"100%" height=3D"100%" border=3D"0" =
+cellspacing=3D"0" cellpadding=3D"0">
+                          <tr>=20
+                            <td  class=3D"produit">=20
+                              <p align=3D"center"><font size=3D"4" color=3D=
+"#000000">=20
+                                <font size=3D"6" color=3D"#000099">Canon EO=
+S 300D<font size=3D"3"><br>
+                                Avec ou sans objectif...</font><br>
+                                <br>
+                                <font size=3D"4" color=3D"#000000"><font si=
+ze=3D"6" color=3D"#000099"><i><font size=3D"4" color=3D"#FF3300">100=20
+                                euros rembours&eacute;s sur votre achat jus=
+qu'au=20
+                                31 Janvier 2005 !!!</font></i></font></font=
+><font size=3D"4"><br>
+                                <br>
+                                EOS 300D NU<br>
+                                <font size=3D"2">&gt;&gt; <a href=3D"http:/=
+/www.ldlc.com/fiche/PB00018841.html?origine=3D670014">Cliquez=20
+                                ici pour en savoir plus</a> &lt;&lt;</font>=
+<br>
+                                <br>
+                                EOS 300D Avec Objectif<br>
+                                </font></font><font size=3D"4" color=3D"#00=
+0000"><font size=3D"6" color=3D"#000099"><font size=3D"2">&gt;&gt;=20
+                                <a href=3D"http://www.ldlc.com/fiche/PB0001=
+8842.html?origine=3D670014">Cliquez=20
+                                ici pour en savoir plus</a> &lt;&lt;</font>=
+</font></font></font></p>
+                              <h2 align=3D"right"><br>
+                                <font color=3D"#FF0000"> </font></h2>
+                              <br>
+                            </td>
+                          </tr>
+                          <tr>=20
+                            <td class=3D"lienProduit">&nbsp;</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <h2><font size=3D"4"> <br>
+                    <br>
+                    </font></h2>
+                  <p class=3D"asterisque"> *Offre limit=E9e &agrave; un pro=
+duit par=20
+                    personne dans la limite du stock disponible.<br>
+                    Valable au plus tard jusqu'au 25 octobre 2004 minuit.<b=
+r>
+                    r&eacute;duction bas&eacute;s sur une TVA fran&ccedil;a=
+ise=20
+                    de 19.6%</p>
+=09=09=09=09=09=09
+                  <p><b>Rendez-vous donc imm=E9diatement sur le site <a hre=
+f=3D"http://www.ldlc.com">LDLC.com</a>,=20
+                    pour passer et recevoir rapidement toutes les commandes=
+ dont=20
+                    vous r=EAvez.</b></p>
+=09=09=09=09=09=09<br>
+=09=09=09=09=09=09<p>Merci de votre fidelit=E9.<br>
+=09=09=09=09=09=09<b>Laurent</b></p><br>
+
+=09=09=09=09=09
+=09=09=09=09=09
+=09=09=09=09=09
+=09=09=09=09=09
+=09=09=09=09=09
+=09=09=09=09=09
+=09=09=09=09=09=09<!-- fin de la news -->
+=09=09=09=09=09</td>
+=09=09=09=09=09<td width=3D"9" background=3D"http://images.ldlc.fr/ld/news/=
+ombreDroite.gif"><img src=3D"http://images.ldlc.fr/ld/news/spacer.gif" widt=
+h=3D"9"></td>
+=09=09=09=09  </tr>
+=09=09=09  </table>
+=09=09=09</TD>
+=09=09  </tr>
+=09=09  <tr>
+=09=09=09<td valign=3D"top"><img src=3D"http://images.ldlc.fr/ld/news/foote=
+r.gif"><p class=3D"desabo">
+=09=09=09=09 adresse e-mail inscrite: tarek@ziade.org,<br>
+=09=09=09=09 pour vous d=E9sinscrire<br>
+              <a href=3D"http://www.ldlc.fr/newsletter/desabo.html?email=3D=
+tarek@ziade.org">cliquez=20
+              ici: http://www.ldlc.fr/newsletter/desabo.html?email=3Dtarek@=
+ziade.org</a>=20
+            </p>
+=09=09=09</td>
+=09=09  </tr>
+=09=09</table>
+=09=09<!-- fin graphisme -->
+=09</td>
+  </tr>
+</table>
+
+
+
+
+
+<img width=3D"1" height=3D"1" src=3D"http://logc12.xiti.com/hit.xiti?s=3D14=
+1607&s2=3D1&p=3DSURP-3220-EOS&" >
+
+</body>
+</html>
+
+--______BoundaryOfDocument______--
+
