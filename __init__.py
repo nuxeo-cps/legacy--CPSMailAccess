@@ -16,16 +16,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
-
 import mailbox, mailfolder, mailmessage, mailtool, mailboxtreeview
 
 ## XXX dependencies introduced by the box creation
 from Products.CMFCore.DirectoryView import registerDirectory
 from Products.CMFCore.utils import ContentInit
 from Products.CMFCore.CMFCorePermissions import AddPortalContent
+
 contentClasses = (mailboxtreeview.MailBoxTreeView, )
 contentConstructors = (mailboxtreeview.manage_addMailBoxTreeview, )
 fti = (mailboxtreeview.factory_type_information + ())
+
+
 
 registerDirectory('skins', globals())
 
