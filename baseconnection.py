@@ -120,3 +120,14 @@ class BaseConnection:
         """ writes a message
         """
         raise NotImplementedError
+
+    def rename(self, oldmailbox, newmailbox):
+        """ renames a mailbox
+        """
+        raise NotImplementedError
+
+    def copy(self, from_mailbox, to_mailbox, message_number):
+        """ copy a message from a box to another
+        """
+        raise NotImplementedError
+
