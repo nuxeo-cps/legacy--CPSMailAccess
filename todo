@@ -1,0 +1,13 @@
++ faire des divs des glissières en javascript et conserver les tailles et les tris dans mailbox
++ reussir à se positionner dans le scroll
++ glisser-déposer de message dans les folders
++ les reply, replyall, forward doivent pre-remplir le message
++ mettre un composant richedit pour le message
++ créer le corps du message
++ ajouter les actions de boite
++ ajouter renommage, suppression de folder
++ passer les formulaires en schemas zope 3
++ regler le pb du japonais japanese.iso-2022-jp
++ finaliser le mode traversable avec creation à la volée
++ integrer les preferences persos
++ brancher les annuaires
