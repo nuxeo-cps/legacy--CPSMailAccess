@@ -1,7 +1,6 @@
 # -*- coding: ISO-8859-15 -*-
 # Copyright (c) 2004 Nuxeo SARL <http://nuxeo.com>
 # Authors: Tarek Ziadé <tz@nuxeo.com>
-#          Florent Guillaume <tz@nuxeo.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as published
@@ -24,16 +23,14 @@ A MailBox is the root MailFolder for a given mail account
 """
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
-
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
-
 from utils import uniqueId, makeId
 from Products.CPSMailAccess.interfaces import IMailBox
 from Products.CPSMailAccess.mailfolder import MailFolder
-
 from interfaces import IMailFolder, IMailMessage
+from Globals import InitializeClass
 
 class MailBox(MailFolder):
     """ the main container
@@ -44,6 +41,8 @@ class MailBox(MailFolder):
     >>> IMailBox.providedBy(f)
     True
     """
+    meta_type = "CPSMailAccess Box"
+
     implements(IMailBox)
 
     def __init__(self, uid=None, server_name='', **kw):
@@ -64,6 +63,8 @@ class MailBox(MailFolder):
 
 """ classic Zope 2 interface for class registering
 """
+InitializeClass(MailBox)
+
 manage_addMailBox = PageTemplateFile(
     "www/zmi_addmailbox", globals(),
     __name__ = 'manage_addMailBox')
