@@ -25,16 +25,18 @@ A MailFolder contains mail messages and other mail folders.
 from zLOG import LOG, DEBUG, INFO
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
-from zope.schema.fieldproperty import FieldProperty
-from zope.app import zapi
-from zope.interface import implements
-from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder
-from Products.CPSMailAccess.mailmessage import MailMessage
-from Products.CPSMailAccess.mailexceptions import MailContainerError
-from interfaces import IMailFolder, IMailMessage, IMailBox
 from Globals import InitializeClass
 from Acquisition import aq_parent, aq_inner, aq_base
 from Products.Five import BrowserView
+
+from zope.schema.fieldproperty import FieldProperty
+from zope.app import zapi
+from zope.interface import implements
+
+from mailmessage import MailMessage
+from mailexceptions import MailContainerError
+from interfaces import IMailFolder, IMailMessage, IMailBox
+from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder
 from baseconnection import ConnectionError, has_connection
 
 class MailFolder(BTreeFolder2):
@@ -79,14 +81,13 @@ class MailFolder(BTreeFolder2):
         return str(highest_id + 1)
 
     def clearMailBoxTreeViewCache(self):
-        """ clears mailbox cache in case of change
-        """
+        """ clears mailbox cache in case of change """
         mailbox = self.getMailBox()
         if mailbox is not None:
             mailbox.clearTreeViewCache()
 
     def getKeysSlice(self, key1, key2):
-        """Get a slice of BTreeFolder2 keys.
+        """ Get a slice of BTreeFolder2 keys.
 
         Returns the keys between key1 and key2.
         """
@@ -103,8 +104,7 @@ class MailFolder(BTreeFolder2):
         return len(self.getKeysSlice(key, key)) == 1
 
     def getMailBox(self):
-        """See interfaces.IMailFolder
-        """
+        """ See interfaces.IMailFolder """
         if self.mailbox is None:
             current = self
             while current is not None and not IMailBox.providedBy(current):
@@ -280,8 +280,7 @@ class MailFolder(BTreeFolder2):
         msg_copy.copyFrom(msg)
 
     def _deleteMessage(self, uid):
-        """ see interfaces ImailFolder
-        """
+        """ see interfaces ImailFolder """
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
         if hasattr(self, id):
@@ -294,8 +293,7 @@ class MailFolder(BTreeFolder2):
         return False
 
     def _addMessage(self, uid, digest, index=True):
-        """See interfaces.IMailFolder
-        """
+        """ See interfaces.IMailFolder """
         self.clearMailBoxTreeViewCache()
         self.message_count +=1
         id = self.getIdFromUid(uid)
@@ -309,20 +307,17 @@ class MailFolder(BTreeFolder2):
         return msg
 
     def _indexMessage(self, msg):
-        """ indexes message
-        """
+        """ indexes message """
         mailbox = self.getMailBox()
         mailbox.indexMessage(msg)
 
     def _unIndexMessage(self, msg):
-        """ indexes message
-        """
+        """ indexes message """
         mailbox = self.getMailBox()
         mailbox.unIndexMessage(msg)
 
     def _addFolder(self, uid='', server_name='', server=False):
-        """see interfaces.IMailFolder
-        """
+        """see interfaces.IMailFolder """
         self.clearMailBoxTreeViewCache()
         self.folder_count +=1
         if uid == '':
@@ -344,8 +339,7 @@ class MailFolder(BTreeFolder2):
         return new_folder
 
     def findMessageByUid(self, uid):
-        """ See interfaces.IMailFolder
-        """
+        """ See interfaces.IMailFolder """
         id = self.getIdFromUid(uid)
         try:
             msg = self[id]
@@ -358,19 +352,16 @@ class MailFolder(BTreeFolder2):
         return msg
 
     def childFoldersCount(self):
-        """ See interfaces.IMailFolder
-        """
+        """ See interfaces.IMailFolder """
         return self.getMailMessagesCount(count_folder=True, count_messages=False, \
             recursive=False)
 
     def getchildFolders(self):
-        """ See interfaces.IMailFolder
-        """
+        """ See interfaces.IMailFolder """
         return self.getMailMessages(list_folder=True, list_messages=False)
 
     def setSyncState(self, state=False, recursive=False):
-        """ sets state
-        """
+        """ sets state """
         self.sync_state = state
         if recursive:
             folders = self.getchildFolders()
@@ -378,9 +369,7 @@ class MailFolder(BTreeFolder2):
                 folder.setSyncState(state, True)
 
     def _createKey(self, header):
-        """ creates unique key
-            for messages identification
-        """
+        """ creates unique key for messages identification """
         s = ''.join(header.values())
         return md5Hash(s)
 
