@@ -22,6 +22,7 @@ from time import time,sleep
 from Products.CPSMailAccess.interfaces import IConnection
 
 class ConnectionError(Exception): pass
+class ConnectionParamsError(Exception): pass
 
 LOGIN_FAILED = 'Login Failed.'
 CANNOT_SEARCH_MAILBOX = 'Could not search mailbox %s'
@@ -36,9 +37,12 @@ class BaseConnection:
     connected = False
     uid = ''
     connection_type = ''
-
+    connection_params = {}
 
     def __init__(self, connection_params = {}):
+
+        self._checkparams(connection_params)
+
         self.start_time = time().__float__()
         if connection_params.has_key('uid'):
             self.uid = connection_params['uid']
@@ -88,3 +92,10 @@ class BaseConnection:
     def noop(self):
         raise NotImplementedError
 
+    def _checkparams(self, params):
+        try:
+            host = params['HOST']
+        except KeyError:
+            raise ConnectionParamsError('Host name is missing')
+
+        self.connection_params = params
