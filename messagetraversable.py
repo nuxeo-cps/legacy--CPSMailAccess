@@ -70,11 +70,11 @@ class MessageTraversable(FiveTraversable):
                 cpath = path
 
             if IMailMessage.providedBy(context) and \
-                context._v_volatile_parts.has_key(cpath):
-                part = context._v_volatile_parts[cpath]
+                context.volatile_parts.has_key(cpath):
+                part = context.volatile_parts[cpath]
 
             # todo : generate the part on the fly and loads it
-            # in  context._v_volatile_parts
+            # in  context.volatile_parts
             else:
                 part = None
                 # if the path is a number,
@@ -82,7 +82,7 @@ class MessageTraversable(FiveTraversable):
                 #if context.isMultipart():
                 try:
                     # beware that in user side, parts starts at 1
-                    path_num = int(cpath)-1
+                    path_num = int(cpath) - 1
                 except ValueError:
                     path_num = -1
 
@@ -105,7 +105,7 @@ class MessageTraversable(FiveTraversable):
                                 # XXX TODO
                                 part = self.fetchPart(context, path_num)
                                 part = self.adaptPart(context, str(path_num), part)
-                                context._v_volatile_parts[str(path_num)] = part
+                                context.volatile_parts[str(path_num)] = part
                 else:
                     # let's try to find if it's a filename
                     if context.isMultipart():
@@ -119,9 +119,9 @@ class MessageTraversable(FiveTraversable):
                                     index +=1
                     else:
                         file_infos = context.getFileInfos()
-                        if file_infos is not None and \
-                            file_infos['filename'] == cpath :
-                            part = context
+                        if file_infos is not None:
+                            if file_infos['filename'] == cpath:
+                                part = context
             if part is not None:
                 return part
 
