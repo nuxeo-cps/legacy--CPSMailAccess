@@ -27,6 +27,10 @@ from mailmessage import MailMessage
 class MailEditorMessage(MailMessage):
     _cache = RAMCache()
 
+    def __init__(self, id=None, uid='', digest='', **kw):
+        MailMessage.__init__(self, id=None, uid='', digest='', **kw)
+        self.answerType = ''
+
     def setCachedValue(self, name, value):
         name = {'key': name}
         self._cache.set(value, 'editor', name)
