@@ -195,8 +195,7 @@ class MailMessageEdit(BrowserView):
         return msg_viewer.attached_files()
 
     def attachFile(self, file):
-        """ attach a file to the current message
-        """
+        """ attach a file to the current message """
         if file == '':
             return False
         for line in self.attached_files():
