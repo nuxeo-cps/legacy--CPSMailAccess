@@ -18,4 +18,30 @@
 # $Id$
 
 from zope.interface import Interface
+from zope.app.container.interfaces import IContained, IContainer
+from zope.app.container.constraints import ContainerTypesConstraint
+from zope.schema import Field
 
+class ICPSMessage(Interface):
+    """ A Mail message container.
+    
+        ICPSMessage stores the content of a message
+        this content can be composed of headers,
+        ID, and optionnaly the body      
+    """
+    pass
+    
+class ICSPMailFolder(IContainer):
+    """ A Message container
+        it can contains also Mail Folders
+    """    
+    def getMessageList(recursive=False):
+        """ Retrieves all contained messages with recursive option            
+        """
+    
+    
+class ICSPMailFolderContained(IContained):
+    """Objects that contain Message should implement this interface."""
+    __parent__ = Field(
+        constraint = ContainerTypesConstraint(ICSPMailFolder)) 
+          
