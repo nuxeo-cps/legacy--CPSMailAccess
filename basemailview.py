@@ -161,7 +161,11 @@ class BaseMailMessageView(BrowserView):
 
         for i in range(level-1):
             if self._hasParentNext(parent_index, parent_length):
+                """ commented out (alog need review)
                 front_icons.insert(0, {'icon': root + '/cma_center_line.png',
+                                       'clickable' : False})
+                """
+                front_icons.insert(0, {'icon':root + '/cma_empty.png',
                                        'clickable' : False})
             else:
                 front_icons.insert(0, {'icon':root + '/cma_empty.png',
