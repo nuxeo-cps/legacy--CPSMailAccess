@@ -53,6 +53,8 @@ class MailFolder(BTreeFolder2):
     server_name = ''
     sync_state = False
     mailbox = None
+    message_count = 0
+    folder_count = 0
 
     def __init__(self, uid=None, server_name='""', **kw):
         """
@@ -152,31 +154,23 @@ class MailFolder(BTreeFolder2):
         count = 0
 
         if recursive:
+            if count_folder:
+                count += self.folder_count
+
             # use btree slices
             r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
             r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
             folders = list(r1) + list(r2)
-
-            if count_folder:
-                count += len(folders)
 
             for folder in folders:
                 subcount = folder.getMailMessagesCount(count_folder,
                                                        count_messages,
                                                        recursive)
                 count += subcount
-
         elif count_folder:
-            # use btree slices
-            r1 = self.getKeysSlice(' ', '-\xff') # '-' is before '.'
-            r2 = self.getKeysSlice('/', '\xff') # '/' is after '.'
-            count += len(r1) + len(r2)
-
+            count += self.folder_count
         if count_messages:
-            # use btree slices
-            r = self.getKeysSlice('.', '.\xff')
-            count += len(r)
-
+            count += self.message_count
         return count
 
     def getServerName(self):
@@ -203,6 +197,8 @@ class MailFolder(BTreeFolder2):
         """See interfaces.IMailFolder
         """
         self.clearMailBoxTreeViewCache()
+        self.message_count +=1
+
         id = self.getIdFromUid(uid)
         msg = MailMessage(id, uid, digest)
         self._setObject(id, msg)
@@ -213,6 +209,8 @@ class MailFolder(BTreeFolder2):
         """see interfaces.IMailFolder
         """
         self.clearMailBoxTreeViewCache()
+        self.folder_count +=1
+
         if uid == '':
             uid = uniqueId(self, 'folder_', use_primary=False)
         else:
@@ -374,6 +372,12 @@ class MailFolder(BTreeFolder2):
         else:
             raise MailContainerError('object is not contained in a mailbox')
 
+    def isEmpty(self):
+        """ returns True if empty
+        """
+        return self.getMailMessagesCount(count_folder=True, count_messages=True, \
+            recursive=False) == 0
+
 #
 # MailFolderView Views
 #
@@ -439,6 +443,8 @@ def manage_addMailFolder(container, id=None, server_name ='',
     """
     container = container.this()
     ob = MailFolder(id, server_name, **kw)
+    if IMailFolder.providedBy(container):
+        container.folder_count += 1
     container._setObject(ob.getId(), ob)
     if REQUEST is not None:
         ob = container._getOb(ob.getId())
