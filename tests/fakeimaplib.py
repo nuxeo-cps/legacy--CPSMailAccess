@@ -111,6 +111,9 @@ class IMAP4:
     def create(self, mailbox):
         return ('OK', '')
 
+    def delete(self, mailbox):
+        return ('OK', '')
+
     def copy(self, msg_num, to_mailbox):
         return ('OK', '')
 
@@ -119,6 +122,8 @@ class IMAP4:
 
     def expunge(self):
         return ('OK', '')
+
+
 
 class IMAP4_SSL(IMAP4):
     pass

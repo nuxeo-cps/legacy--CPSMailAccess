@@ -159,7 +159,7 @@ class ObjectInteractionTest(MailTestCase):
         params = {'connection_type' : 'DUMMY',
             'uid' : 'tarek', 'ok': '12', 'submit' : 'ok'}
         view.setParameters(params)
-        self.assertEquals(mailbox.connection_params['ok'], '12')
+        self.assertEquals(mailbox.getConnectionParams()['ok'], '12')
 
     def oldtest_sendMessage(self):
         # sendMessage

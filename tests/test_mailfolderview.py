@@ -32,6 +32,8 @@ from Products.CPSMailAccess.mailbox import MailBox
 from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
 from basetestcase import MailTestCase
 
+installProduct('TextIndexNG2')
+
 class MailFolderViewTestCase(MailTestCase):
 
     def test_getMailMessagesCountRecursive(self):
@@ -210,6 +212,26 @@ class MailFolderViewTestCase(MailTestCase):
         view.rename('bolo', False)
         self.assertEquals(ob.title, 'bolo')
         self.assertEquals(ob.id, 'bolo')
+
+    def test_renametwice(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX.ok')
+        self.assertNotEqual(ob.getMailBox(), None)
+        view = MailFolderView(ob, None)
+        view = view.__of__(ob)
+
+        res = view.rename('bolo', False)
+        self.assertEquals(ob.title, 'bolo')
+        self.assertEquals(ob.id, 'bolo')
+        self.assertEquals(res, ob)
+
+        res = view.rename('bol', False)
+        self.assertEquals(ob.title, 'bol')
+        self.assertEquals(ob.id, 'bol')
+        self.assertEquals(res, ob)
+
+
+
 
     def test_renamemaxsize(self):
         box = self._getMailBox()

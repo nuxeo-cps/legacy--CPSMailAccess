@@ -31,6 +31,8 @@ from Products.CPSMailAccess.mailbox import MailBox
 from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
 from basetestcase import MailTestCase
 
+installProduct('TextIndexNG2')
+
 class MailFolderTestCase(MailTestCase):
 
     def test_getMailBox(self):
@@ -241,6 +243,21 @@ class MailFolderTestCase(MailTestCase):
         self.assertEquals(Todos.server_name, 'INBOX.Trash.Todosez_1')
         self.assert_(hasattr(mailbox.Trash, 'Todosez_1'))
 
+    def test_delete_whole_branch(self):
+        mailbox = self._getMailBox()
+        INBOX = mailbox._addFolder('INBOX', 'INBOX')
+        # trash folder will be created when needed
+
+        ob = INBOX._addFolder('MyFolder', 'MyFolder')
+        self.assertEquals(ob.childFoldersCount(), 0)
+        for i in range(10):
+            ob._addFolder()
+        for i in range(10):
+            ob._addMessage('ok'+str(i), 'ok'+str(i))
+
+        ob.delete()
+        mailbox.emptyTrashFolder()
+
     def test_message_moving(self):
         mailbox = self._getMailBox()
         msg1 = mailbox._addMessage('1', '1234567TCFGVYBH')
@@ -313,6 +330,14 @@ class MailFolderTestCase(MailTestCase):
         folder1 = mailbox._addFolder('ééouéééouééé', 'ééouéééouééé')
         self.assertEquals(folder1.title, 'ééouéééouééé')
 
+
+    def test_renametwice(self):
+        mailbox = self._getMailBox()
+        folder1 = mailbox._addFolder('folder1', 'folder1')
+        folder1.rename('folder2')
+        self.assertEquals(folder1.server_name, 'folder2')
+        folder1.rename('folde')
+        self.assertEquals(folder1.server_name, 'folde')
 
 def test_suite():
     return unittest.TestSuite((

@@ -31,6 +31,12 @@ from CPSMailAccess.tests import __file__ as landmark
 from OFS.Folder import Folder
 
 from email.Errors import BoundaryError
+import sys
+import fakeimaplib
+if sys.modules.has_key('imaplib'):
+    del sys.modules['imaplib']
+sys.modules['imaplib'] = fakeimaplib
+
 
 installProduct('Five')
 #installProduct('TextIndexNG2')
@@ -40,8 +46,20 @@ class FakeDirectory:
         return [('tziade', {'email': 'tz@nuxeo.com',
             'givenName': 'Tarek', 'sn' : 'Ziadé'})]
 
+    def hasEntry(self, id):
+        return False
+
+    def createEntry(self, entry):
+        pass
+
 class FakeDirectories(Folder):
+
     members = FakeDirectory()
+    adressbook = FakeDirectory()
+
+    def __init__(self, id=None):
+        Folder.__init__(self, id)
+        setattr(self, '.addressbook', FakeDirectory())
 
 
 class FakePortalUrl:
@@ -50,7 +68,7 @@ class FakePortalUrl:
 
 class FakePortal(Folder):
 
-    portal_directories = FakeDirectories()
+    portal_directories = FakeDirectories('portal_directories')
     portal_url = FakePortalUrl()
     portal_webmail = MailTool()
 
@@ -110,8 +128,10 @@ class MailTestCase(ZopeTestCase):
         mailbox = MailBox('INBOX')
         container._setObject('INBOX', mailbox)
         mailbox = container.INBOX
+        mailbox._connection_params['max_folder_size'] = 20
         mailbox._connection_params['uid'] = 'tziade'
         mailbox._connection_params['connection_type'] = 'IMAP'
+        mailbox._connection_params['login'] = 'tziade'
         mailbox._connection_params['password'] = 'secret'
         mailbox._connection_params['HOST'] = 'localhost'
         mailbox._connection_params['trash_folder_name'] = 'INBOX.Trash'

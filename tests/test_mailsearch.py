@@ -75,10 +75,25 @@ class MailSearchTestCase(MailTestCase):
         datas = cat.getIndexDataForRID(rid)
         self.assertEquals(datas['searchable_text'],
                           [(u'delivery', 1), (u'notification', 1), (u'has', 1),
-                           (u'failed', 1), (u'scr', 1), (u'admin', 1),
-                           (u'socal', 1), (u'raves', 1), (u'internet', 1),
-                           (u'mail', 1), (u'postmaster', 1), (u'ucla', 1),
-                           (u'edu', 1)])
+                           (u'failed', 1), (u'scr', 3), (u'admin', 1),
+                           (u'socal', 3), (u'raves', 3), (u'internet', 1),
+                           (u'mail', 1), (u'postmaster', 1), (u'ucla', 2),
+                           (u'edu', 4), (u'this', 1), (u'report', 1),
+                           (u'relates', 1), (u'to', 3), (u'message', 3),
+                           (u'you', 1), (u'sent', 1), (u'with', 1),
+                           (u'the', 2), (u'following', 2), (u'header', 1),
+                           (u'fields', 1), (u'id', 1), (u'002001c144a6', 1),
+                           (u'8752e060', 1), (u'56104586', 1), (u'oxy', 2),
+                           (u'date', 1), (u'sun', 1), (u'23', 1), (u'sep', 1),
+                           (u'2001', 1), (u'20:10:55', 1), (u'0700', 1),
+                           (u'from', 1), (u'ian', 1), (u'henry', 1),
+                           (u'henryi', 1), (u'subject', 1), (u'yeah', 1),
+                           (u'for', 1), (u'ians', 1), (u'your', 1),
+                           (u'cannot', 1), (u'be', 1), (u'delivered', 1),
+                           (u'recipients', 1), (u'recipient', 2), (u'address', 1),
+                           (u'jangel1', 1), (u'cougar', 1), (u'noc', 1),
+                           (u'reason', 1), (u'reached', 1), (u'disk', 1),
+                           (u'quota', 1)])
 
     def test_unindexing(self):
         cat = self._getCatalog()
