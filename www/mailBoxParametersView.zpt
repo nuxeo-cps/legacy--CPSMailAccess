@@ -7,7 +7,7 @@
     </div>
 
     <h2>MailBox Managment tasks</h2>
-    <form action="reindexMailCatalog">
+    <form action="reindexMailCatalog.html">
       <input type="submit" name="reindex" value="reindex mail catalog"/>
     </form>
 
