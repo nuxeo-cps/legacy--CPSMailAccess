@@ -208,6 +208,13 @@ class IMailTool(Interface):
         """ kills all connections
         """
 
+    def addMailBox(user_id):
+        """ adds a mail box for the given user """
+
+    def deleteMailBox(user_id):
+        """ adds a mail box for the given user """
+
+
 class IConnection(Interface):
     """ important a mail folder is called an mailbox in IConnection
     """
