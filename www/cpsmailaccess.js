@@ -45,29 +45,6 @@ function getLastToNode () {
   return node
 }
 
-function addToSection() {
-  // need to set up a max
-  ToNode = document.getElementById('Tos');
-  if (ToNode)
-  {
-    new_section = document.createElement("div");
-    new_section.appendChild(document.createTextNode("will add more to sections"));
-    last_node = getLastToNode();
-    ToNode.appendChild(new_section);
-  }
-
-}
-
-function removeToSection() {
-  ToNode = document.getElementById('Tos');
-  if (ToNode)
-  {
-    new_section = document.createElement("div");
-    last_node = getLastToNode();
-    ToNode.removeChild(new_section);
-  }
-}
-
 function delay(ms)
 {
   then = new Date().getTime();
