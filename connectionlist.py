@@ -16,11 +16,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
+
+"""
+ ConnectionList is a thread-safe list of all active connections
+ inactive connections are killed
+"""
+
 from UserList import UserList
 from zope.interface import implements
 import os, sys
 from Products.CPSMailAccess.interfaces import IConnectionList
 from Products.CPSMailAccess.connectionwatcher import ConnectionWatcher
+import thread
 
 class ConnectionList(UserList):
     """ this is a list with a thread
@@ -32,6 +39,7 @@ class ConnectionList(UserList):
 
     connection_guard = None
     connection_generators = {}
+    lock = thread.allocate_lock()
 
     def __init__(self, initlist=None):
         UserList.__init__(self, initlist)
@@ -45,12 +53,20 @@ class ConnectionList(UserList):
 
     def listConnectionTypes(self):
         types = []
-        for generator_key in self.connection_generators.keys():
-            types.append(generator_key)
+        self.lock.acquire()
+        try:
+            for generator_key in self.connection_generators.keys():
+                types.append(generator_key)
+        finally:
+            self.lock.release()
         return types
 
     def registerConnectionType(self, connection_type, method):
-        self.connection_generators[connection_type] = method
+        self.lock.acquire()
+        try:
+            self.connection_generators[connection_type] = method
+        finally:
+            self.lock.release()
 
 
     #def killThread(self):
@@ -59,7 +75,9 @@ class ConnectionList(UserList):
 
 
     def _getConnectionObject(self, connection_params):
-
+        """ _getConnectionObject
+        """
+        # XXXX no lock here beware of the deadlock
         connection_type = connection_params['connection_type']
         if self.connection_generators.has_key(connection_type):
             meth = self.connection_generators[connection_type]
@@ -69,21 +87,28 @@ class ConnectionList(UserList):
             raise ValueError("no connector for %s" % connection_type)
 
     def getConnection(self, connection_params):
+        """return connection object
+        """
         result = None
-        for connection in self:
+        self.lock.acquire()
+        try:
+            for connection in self:
+                uid = self.getCurrentId()
+                connection_type = connection_params['connection_type']
 
-            uid = self.getCurrentId()
-            connection_type = connection_params['connection_type']
+                if (connection.uid == uid) and \
+                    (connection.connection_type == connection_type):
+                    result = connection
+                    break
 
-            if (connection.uid == uid) and \
-                (connection.connection_type == connection_type):
-                result = connection
-                break
 
-        if not result:
-            newob = self._getConnectionObject(connection_params)
-            result = newob
-            self.append(newob)
+            if not result:
+                newob = self._getConnectionObject(connection_params)
+                result = newob
+                self.append(newob)
+
+        finally:
+            self.lock.release()
 
         return result
 
