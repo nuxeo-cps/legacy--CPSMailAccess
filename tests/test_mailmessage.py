@@ -24,37 +24,15 @@ from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase, _print
 
-from Products.CPSMailAccess.mailmessage import MailMessage, MailMessageView
+from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.interfaces import IMailMessage
 
 from CPSMailAccess.tests import __file__ as landmark
+from basetestcase import MailTestCase
 
-installProduct('FiveTest')
-installProduct('Five')
+# XXXXXXXXX todo : move part tests to test_mailpart.py
 
-""" XXX need to transfer most tests in test_mailpart.py
-"""
-
-def openfile(filename, mode='r'):
-    path = os.path.join(os.path.dirname(landmark), 'data', filename)
-    return open(path, mode)
-
-
-class MailMessageTestCase(ZopeTestCase):
-    def _msgobj(self, filename):
-        try:
-            fp = openfile(filename)
-            try:
-                data = fp.read()
-            finally:
-                fp.close()
-
-            return data
-        except IOError:
-             # this is a warning when mail test file is missing
-             _print('\n!!!!!!!!!!!!!!!!!!!!!!'+ str(filename) +
-                 ' not found for MailMessageTestCase')
-             return ''
+class MailMessageTestCase(MailTestCase):
 
     def getAllMails(self):
         res = []
@@ -69,19 +47,6 @@ class MailMessageTestCase(ZopeTestCase):
                 ob.loadMessage(data)
                 res.append(ob)
         return res
-
-
-    def getMailInstance(self,number):
-        ob = MailMessage()
-        ob.cache_level = 2
-
-        if number < 9:
-            data = self._msgobj('msg_0'+str(number+1)+'.txt')
-        else:
-            data = self._msgobj('msg_'+str(number+1)+'.txt')
-
-        ob.loadMessage(data)
-        return ob
 
     def test_base(self):
         # loading a lot of different mails
@@ -265,73 +230,6 @@ class MailMessageTestCase(ZopeTestCase):
         self.assertEquals(ob.getHeader('From'), s)
         self.assertEquals(ob.getHeader('from'), s)
 
-    #
-    # view testers
-    #
-
-    def test_MailMessageViewInstance(self):
-        # testing view instanciation
-        ob = self.getMailInstance(6)
-        view = MailMessageView(ob, None)
-        self.assertNotEquals(view, None)
-
-    def test_MailMessageHeaders(self):
-        # testing view instanciation
-        ob = self.getMailInstance(6)
-        view = MailMessageView(ob, None)
-
-        self.assertEquals(view.renderFromList(),
-            'Barry <barry@digicool.com>')
-
-        self.assertEquals(view.renderToList(),
-            'Dingus Lovers <cravindogs@cravindogs.com>')
-
-        ob = MailMessage()
-        ob.cache_level = 2
-        view = MailMessageView(ob, None)
-
-        self.assertEquals(view.renderFromList(),
-            '?')
-
-        self.assertEquals(view.renderToList(),
-            '?')
-
-    def test_MailMessageparts(self):
-        # testing message parts
-        ob = self.getMailInstance(1)
-        body = ob.getPart(0)
-
-        self.assertNotEquals(body, '')
-        self.assertNotEquals(body, None)
-        """
-        ob = self.getMailInstance(6)
-        body = ob.getPart(0, True)
-
-        self.assertNotEquals(body, '')
-        self.assertNotEquals(body, None)
-        raise str(body)
-        """
-
-        view = MailMessageView(ob, None)
-
-        viewbody = view.renderBody()
-
-        #self.assertEquals(body, viewbody)
-
-    def test_MailMessageViewMethods(self):
-
-        ob = self.getMailInstance(6)
-
-        # need to set up context and request object here
-        view = MailMessageView(ob, None)
-        self.assert_(view)
-        """
-        view.reply()
-        view.reply_all()
-        view.forward()
-        view.delete()
-        """
-
     def test_partialMessages(self):
         ob = self.getMailInstance(6)
         count = ob.getPartCount()
@@ -347,12 +245,20 @@ class MailMessageTestCase(ZopeTestCase):
         self.assertEquals(ob.getPersistentPartIds(), [0])
 
         # try to reload it as a volatile part
-        ob.loadPart(1, 'dfghj', volatile=True)
+        vp = ob.loadPart(1, 'dfghj', volatile=True)
 
         self.assertEquals(ob.getPart(1), None)
+        self.assertEquals(vp, ob.getVolatilePart(1))
+        self.assertNotEquals(ob.getVolatilePart(1), 'dfghj')
+        self.assertEquals(ob.getVolatilePart(1).as_string(), '\ndfghj\n')
 
-
-
+    def test_copyFrom(self):
+        ob = self.getMailInstance(6)
+        ob2 = MailMessage('uid2', 'uid2')
+        ob2.copyFrom(ob)
+        self.assertNotEquals(ob.uid, ob2.uid)
+        self.assertEquals(ob._v_volatile_parts, ob2._v_volatile_parts)
+        self.assertEquals(ob.read, ob2.read)
 
 def test_suite():
     return unittest.TestSuite((
