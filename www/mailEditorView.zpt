@@ -116,9 +116,10 @@
                 <span class="link" onmouseover="setCursor(this);"
                     onclick="toggleElementVisibility('Cc')">Cc</span> |
                 <span class="link" onmouseover="setCursor(this);"
-                    onclick="toggleElementVisibility('BCc')">Bcc</span> |
-                <span class="link" onmouseover="setCursor(this);"
-                    onclick="popupRecipientPicker()">Directories</span>
+                    onclick="toggleElementVisibility('BCc')">Bcc</span>
+                    <!--|-->
+                <!--<span class="link" onmouseover="setCursor(this);"
+                    onclick="popupRecipientPicker()">Directories</span>-->
             </div>
         </td>
 
