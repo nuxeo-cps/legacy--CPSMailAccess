@@ -1,5 +1,12 @@
 <html metal:use-macro="here/main_template/macros/master">
   <metal:block metal:fill-slot="main">
+    <h2>MailBox Managment tasks</h2>
+
+    <form action="reindexMailCatalog">
+      <input type="submit" name="reindex" value="reindex mail catalog"/>
+    </form>
+
+
     <h2>MailBox parameters</h2>
     <form name="parameters" action="editParameters.html" method="post">
       <table width="100%">
