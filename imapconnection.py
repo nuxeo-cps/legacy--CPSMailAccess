@@ -306,7 +306,7 @@ connection_type = 'IMAP'
 
 def makeMailObject(connection_params):
     newob =  IMAPConnection(connection_params)
-    uid = connection_params['UID']
+    uid = connection_params['uid']
     password = connection_params['password']
     newob.login(uid, password)
     #print str('created '+str(newob))
