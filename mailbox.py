@@ -563,13 +563,6 @@ class MailBoxTraversable(FiveTraversable):
         return FiveTraversable.traverse(self, path, '')
 
 
-class MailSearchView(BrowserView):
-
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-
-
-
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
 

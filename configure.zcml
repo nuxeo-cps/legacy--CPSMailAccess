@@ -476,7 +476,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailSearchView"
+      class=".mailsearchview.MailSearchView"
       template="www/mailSearchView.zpt"
       name="searchMessage.html"
       permission="zope2.View"
