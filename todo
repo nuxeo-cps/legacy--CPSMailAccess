@@ -1,7 +1,7 @@
 ajouté dernièrement (controle /refactoring ):
 
-+ envois des messages
-+ le cycle : création d'un message -> envoi smtp -> ajout dans INBOX/Send
++ envois des messages (sauf le body)
++ le cycle : création d'un message -> envoi smtp -> ajout dans INBOX/Send resync
 
 a) fonctionnel du plus important au moins
 
@@ -15,6 +15,7 @@ a) fonctionnel du plus important au moins
 + brancher les annuaires
 + mettre en place les traductions
 + mettre en place la sécu
++ tester sur des très grosses BAL
 
 b) features qui feront le "plus"
 
