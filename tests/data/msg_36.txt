@@ -1,0 +1,103 @@
+Return-Path: <XXXX@xxxx.int>
+Delivered-To: webmailtest@nuxeo.com
+Received: (qmail 13301 invoked by uid 1009); 18 Feb 2005 09:59:55 +0100
+Received: from XXXX@xxxx.int by tamise.nuxeo.com by uid 1008 with qmail-scanner-1.22-st-qms
+ (clamscan: 0.75-1. spamassassin: 3.0.0.  Clear:RC:0(213.154.86.14):SA:0(?/?):.
+ Processed in 26.02347 secs); 18 Feb 2005 08:59:55 -0000
+X-Spam-Status: No, hits=? required=?
+Received: from unknown (HELO mail-rx.xxxx.int) (213.154.86.14)
+  by tamise.nuxeo.com with SMTP; 18 Feb 2005 09:59:29 +0100
+Received: by mail-rx.xxxx.int (Postfix, from userid 90)
+        id 3E4F87429E; Fri, 18 Feb 2005 08:31:02 +0000 (GMT)
+Received: from pivot.xxxx.int (zsrvpivot [10.165.194.26])by mail-rx.xxxx.int (Postfix) with ESMTP id C1A3274297for <webmailtest@nuxeo.com>; Fri, 18 Feb 2005 08:30:58 +0000 (GMT)
+Received: from siege.xxxx.int ([10.164.194.22])by pivot.xxxx.int (Lotus Domino Release 5.0.11)with ESMTP id 2005021808464866:21449 ;Fri, 18 Feb 2005 08:46:48 +0000
+To: webmailtest@nuxeo.com
+Subject: sassoumtest
+MIME-Version: 1.0
+X-Mailer: Lotus Notes Release 5.0.11   July 24, 2002
+Message-ID: <OFB956C80E.1E05F225-ON00256FAC.002FAE30-00256FAC.00308A3E@xxxx.int>
+From: xxxx@xxxx.int
+Date: Fri, 18 Feb 2005 08:41:14 +0000
+X-MIMETrack: Serialize by Router on siege/Serveurs/xxxx(Release 5.0.11 |September 30, 2002) at18.02.2005 08:41:21,Itemize by SMTP Server on pivot/Serveurs/xxxx(Release 5.0.11  |July 24, 2002) at18/02/2005 08:46:49,Serialize by Router on pivot/Serveurs/xxxx(Release 5.0.11  |July 24, 2002) at18/02/2005 08:46:50
+Content-Type: multipart/mixed; boundary="=_mixed 00308A3A00256FAC_="
+X-Copyrighted-Material: http.xxxx.int/privacy.html
+
+--=_mixed 00308A3A00256FAC_=
+Content-Type: multipart/alternative; boundary="=_alternative 00308A3A00256FAC_="
+
+
+--=_alternative 00308A3A00256FAC_=
+Content-Type: text/plain; charset="us-ascii"
+
+sqdsqd d
+sqdsqd
+qsd
+sd
+qs
+dsqdqsdsq
+
+
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+Mme XXX
+Direction Informatique
+xxxx - SIEGE
+Tel : XXX
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+--------------------------------------------
+
+Ce mail est à l'attention exclusive des destinataires désignés. Il peut
+contenir des informations confidentielles. Si vous le recevez par erreur,
+merci de le détruire et d'en informer sans délais l'expéditeur.
+
+Le contenu de ce mail ne pourrait engager la responsabilité de la Banque
+Centrale des Etats de l'Afrique de l'Ouest que s'il a été émis par une
+personne dûment habilitée, agissant dans le cadre strict des fonctions
+auxquelles elle est employée et à des fins non étrangères à ses attributions.
+
+Toute diffusion, copie, publication partielle ou totale, ou toute autre
+utilisation est interdite, sauf autorisation.
+
+--------------------------------------------
+
+
+--=_alternative 00308A3A00256FAC_=
+Content-Type: text/html; charset="us-ascii"
+
+
+<br><font size=2 face="sans-serif">sqdsqd d</font>
+<br><font size=2 face="sans-serif">sqdsqd</font>
+<br><font size=2 face="sans-serif">qsd</font>
+<br><font size=2 face="sans-serif">sd</font>
+<br><font size=2 face="sans-serif">qs</font>
+<br><font size=2 face="sans-serif">dsqdqsdsq</font>
+<br>
+<br><font size=2 face="sans-serif"><br>
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>
+Mme XXX  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <br>
+Direction Informatique<br>
+xxxx - SIEGE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>
+Tel : X<br>
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ </font>
+--=_alternative 00308A3A00256FAC_=--
+--=_mixed 00308A3A00256FAC_=
+Content-Type: application/octet-stream; name="7anges.ppt"
+Content-Disposition: attachment; filename="7anges.ppt"
+Content-Transfer-Encoding: base64
+
+0M8R4KGxGuEAAAAAAAAAAAAAAAAAAAAAPgADAP7/CQAGAAAAAAAAAAAAAAAMAAAAsgUAAAAAAAAA
+EAAAtAUAAAEAAAD+////AAAAALYFAAC3BQAAuAUAALkFAAC6BQAAuwUAALwFAAC9BQAAvgUAAL8F
+AADABQAAswUAAP//////////////////////////////////////////////////////////////
+
+
+*** cut for tests ***
+
+bQBhAHIAeQBJAG4AZgBvAHIAbQBhAHQAaQBvAG4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAo
+AAIBAgAAAAUAAAD/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfAUAAAxS
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAA=
+
+--=_mixed 00308A3A00256FAC_=--
