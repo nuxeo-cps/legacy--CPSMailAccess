@@ -228,7 +228,10 @@ class IMAPConnection(BaseConnection):
         """
         # at ths time it's done "case by case"
         if query == 'FLAGS':
-            raw = results[0][0]
+            try:
+                raw = results[0][0]
+            except TypeError:
+                return []
             # todo use regexprs
             index = raw.find('FLAGS (')+7
             if index < 7:
@@ -239,7 +242,10 @@ class IMAPConnection(BaseConnection):
                 return flags.split(' ')
 
         if query == 'RFC822.SIZE':
-            raw = results[0][0]
+            try:
+                raw = results[0][0]
+            except TypeError:
+                return ''
             # todo use regexpr
             index = raw.find('RFC822.SIZE ')+12
             raw = raw[index:]
