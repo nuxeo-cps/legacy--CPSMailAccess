@@ -75,7 +75,9 @@ class MailTool(Folder): # UniqueObject
                                  'draft_folder_name' : 'INBOX.Drafts',
                                  'sent_folder_name' : 'INBOX.Sent',
                                  'cache_level' :  2,
-                                 'max_folder_size' : 20}
+                                 'max_folder_size' : 20,
+                                 'max_folder_depth' : 2,
+                                 'treeview_style' : 'lotus'}
 
     def __init__(self):
         Folder.__init__(self)
@@ -159,7 +161,7 @@ class MailToolView(BrowserView):
         if hasattr(mailtool, mailbox_name):
             box = getattr(mailtool, mailbox_name)
             # always synchronize when we get in
-            self.request.response.redirect(box.absolute_url()+'/synchronize.html')
+            self.request.response.redirect(box.absolute_url()+'/syncProgress.html')
         else:
             box = mailtool.addMailBox(user_id)
             url = '%s/configure.html?first_time=1' % box.absolute_url()
