@@ -130,7 +130,7 @@ class MessageTraversableTestCase(ZopeTestCase):
         part = ob.getPart(0)
 
         mt = MessageTraversable(ob)
-        msg = mt.adaptPart(0, part)
+        msg = mt.adaptPart('0', None, part)
 
         self.assert_(msg)
 
@@ -147,7 +147,8 @@ class MessageTraversableTestCase(ZopeTestCase):
         req = FakeRequest()
 
         ob = self.getMailInstance(7)
-        ob.parent_folder = container
+        container._setObject('ob', ob)
+        ob = container.ob
 
         ob.persistent_parts = (1, 3)
         mt = MessageTraversable(ob)
@@ -156,17 +157,17 @@ class MessageTraversableTestCase(ZopeTestCase):
 
         # give me the first part please
         result = mt.traverse('1', req)
-        self.assert_(result)
+        self.assertNotEquals(result, None)
 
         result = mt.traverse('2', req)
 
         self.assertNotEquals(result, None)
 
         result = mt.traverse('3', req)
-        self.assert_(result)
+        self.assertNotEquals(result, None)
 
         result = mt.traverse('4', req)
-        self.assert_(result)
+        self.assertNotEquals(result, None)
 
     def test_filename(self):
         # testing filename traverse
@@ -190,7 +191,36 @@ class MessageTraversableTestCase(ZopeTestCase):
 
         msg1.loadPart(2, volatile=True)
 
+    def test_3layerParts(self):
+        # testing part loadingwith msg that are
+        # deeper than 1 level
+        req = FakeRequest()
+        mailbox = self._getMailBox()
+        ob = self.getMailInstance(11)
+        mailbox._setObject('ob', ob)
+        ob = mailbox.ob
+
+        mt = MessageTraversable(ob)
+        result = mt.traverse('2', req)
+
+        self.assert_(result)
+
+        self.assertEquals(result.getRawMessage(), 'Content-Type: text/html; charset="iso-8859-1"\n\n')
+
+        # traversing 3/1
+        mt = MessageTraversable(ob)
+        result = mt.traverse('3', req)
+        mt = MessageTraversable(result)
+        result = mt.traverse('1', req)
+
+        self.assert_(result)
+
+
+
+
+
 ### TODO :  test parts of parts
+
 
 def test_suite():
     return unittest.TestSuite((
