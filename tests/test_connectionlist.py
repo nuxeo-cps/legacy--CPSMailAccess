@@ -82,9 +82,8 @@ class ListAdder(Thread):
 class ConnectionListTestCase(ZopeTestCase):
 
     def test_ThreadDeaths(self):
-        """ testing thread deaths
-            this is a long test, might want to disable it
-        """
+        # testing thread deaths
+        # this is a long test, might want to disable it
         my_list = ConnectionList()
 
         my_list.connection_guard.sleep_time = 0.5
@@ -106,15 +105,13 @@ class ConnectionListTestCase(ZopeTestCase):
             #print('list count :'+str(len(my_list)))
 
     def test_qualifyModule(self):
-        """ testing plugins scanner file finder
-        """
+        # testing plugins scanner file finder
         self.assertEquals(qualifyModule('imapconnection.py'), True)
         self.assertEquals(qualifyModule('baseconnection.py'), False)
         self.assertEquals(qualifyModule('connection.py'), False)
 
     def test_registerConnectionType(self):
-        """ testing registery
-        """
+        # testing registery
         from Products.CPSMailAccess import dummyconnection
 
         my_list = ConnectionList()
@@ -132,15 +129,13 @@ class ConnectionListTestCase(ZopeTestCase):
         self.assertEquals('IMAP' in my_list.listConnectionTypes(), True)
 
     def test_registerConnections(self):
-        """ testing auto registery
-        """
+        # testing auto registery
         my_list = ConnectionList()
         registerConnections(my_list)
         self.assertNotEquals(my_list.listConnectionTypes(), [])
 
     def test_threadsafeness(self):
-        """ testing thread safeness
-        """
+        # testing thread safeness
         my_list = ConnectionList()
         registerConnections(my_list)
         self.assertNotEquals(my_list.listConnectionTypes(), [])

@@ -81,8 +81,7 @@ class MailMessageTestCase(ZopeTestCase):
         return ob
 
     def test_base(self):
-        """ loading a lot of different mails
-        """
+        # loading a lot of different mails
         ob = MailMessage()
         for i in range(35):
             if i < 9:
@@ -95,8 +94,7 @@ class MailMessageTestCase(ZopeTestCase):
 
 
     def test_getPartCount(self):
-        """ testing part count on msg_07.txt
-        """
+        # testing part count on msg_07.txt
         ob = self.getMailInstance(7)
         part_count = ob.getPartCount()
         self.assertEquals(part_count, 4)
@@ -107,8 +105,7 @@ class MailMessageTestCase(ZopeTestCase):
 
 
     def test_getCharset(self):
-        """ testing charsets on msg_07.txt
-        """
+        # testing charsets on msg_07.txt
         ob = self.getMailInstance(7)
 
         self.assertEquals(ob.getCharset(0), None)
@@ -121,8 +118,7 @@ class MailMessageTestCase(ZopeTestCase):
 
 
     def test_getCharset(self):
-        """ testing charsets on msg_07.txt
-        """
+        # testing charsets on msg_07.txt
         ob = self.getMailInstance(7)
         self.assertEquals(ob.getCharset(1), "us-ascii")
         ob.setCharset("iso-8859-1", 1)
@@ -134,8 +130,7 @@ class MailMessageTestCase(ZopeTestCase):
         self.assertEquals(ob.getCharset(), "iso-8859-1")
 
     def test_isMultipart(self):
-        """ testing Multipart
-        """
+        # testing Multipart
         ob = self.getMailInstance(7)
         self.assertEquals(ob.isMultipart(), True)
 
@@ -143,8 +138,7 @@ class MailMessageTestCase(ZopeTestCase):
         self.assertEquals(ob.isMultipart(), False)
 
     def test_getContentType(self):
-        """ testing getContentType
-        """
+        # testing getContentType
         ob = self.getMailInstance(6)
 
         ct = ob.getContentType()
@@ -163,8 +157,7 @@ class MailMessageTestCase(ZopeTestCase):
 
 
     def test_setContentType(self):
-        """ testing setContentType
-        """
+        # testing setContentType
         ob = self.getMailInstance(6)
 
         ct = ob.getContentType()
@@ -180,8 +173,7 @@ class MailMessageTestCase(ZopeTestCase):
         self.assertEquals(ct, 'image/gif')
 
     def test_getParams(self):
-        """ testing getParams
-        """
+        # testing getParams
         ob = self.getMailInstance(6)
 
         ct = ob.getParams()
@@ -202,8 +194,7 @@ class MailMessageTestCase(ZopeTestCase):
         self.assertEquals(ct, None)
 
     def test_setParams(self):
-        """ testing getParams
-        """
+        # testing getParams
         ob = self.getMailInstance(6)
 
         ob.setParam('boundary', 'FRONTIERE')
@@ -225,8 +216,7 @@ class MailMessageTestCase(ZopeTestCase):
         self.assertEquals(ct, 'FRONTIERE')
 
     def test_delParams(self):
-        """ testing getParams
-        """
+        # testing getParams
         ob = self.getMailInstance(6)
 
         ob.setParam('boundary', 'FRONTIERE')
@@ -246,8 +236,7 @@ class MailMessageTestCase(ZopeTestCase):
         self.assertEquals(ct, None)
 
     def test_MailMapping(self):
-        """ testing mapping with case insentitive calls
-        """
+        # testing mapping with case insentitive calls
         ob = self.getMailInstance(6)
 
         self.assertEquals(ob['From'], 'Barry <barry@digicool.com>')
@@ -255,8 +244,7 @@ class MailMessageTestCase(ZopeTestCase):
         self.assertEquals(ob['from'], 'Barry <barry@digicool.com>')
 
     def test_MailMapping2(self):
-        """ testing mapping with a new mail creation
-        """
+        # testing mapping with a new mail creation
         ob = MailMessage()
 
         ob['From'] = 'Tarek <tz@nuxeo.com>'
@@ -270,15 +258,13 @@ class MailMessageTestCase(ZopeTestCase):
     #
 
     def test_MailMessageViewInstance(self):
-        """ testing view instanciation
-        """
+        # testing view instanciation
         ob = self.getMailInstance(6)
         view = MailMessageView(ob, None)
         self.assertNotEquals(view, None)
 
     def test_MailMessageHeaders(self):
-        """ testing view instanciation
-        """
+        # testing view instanciation
         ob = self.getMailInstance(6)
         view = MailMessageView(ob, None)
 
@@ -298,8 +284,7 @@ class MailMessageTestCase(ZopeTestCase):
             '<span>?</span>')
 
     def test_MailMessageparts(self):
-        """ testing view instanciation
-        """
+        # testing view instanciation
         ob = self.getMailInstance(1)
         body = ob.getPart(0)
 

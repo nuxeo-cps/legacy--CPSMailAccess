@@ -40,8 +40,7 @@ class MailCacheTestCase(ZopeTestCase):
         return result
 
     def test_putMessage(self):
-        """ test putMessage
-        """
+        # test putMessage
         ob = MailCache()
 
         message = MailMessage()
@@ -57,8 +56,7 @@ class MailCacheTestCase(ZopeTestCase):
 
 
     def test_retrieveMessage(self):
-        """ testing retrieveMessage
-        """
+        # testing retrieveMessage
         ob = MailCache()
 
         message = MailMessage()

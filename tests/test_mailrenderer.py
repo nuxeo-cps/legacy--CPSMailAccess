@@ -82,14 +82,12 @@ class MailRendererTestCase(ZopeTestCase):
         return ob
 
     def test_simpleInstanciation(self):
-        """ testing simple instanciation
-        """
+        # testing simple instanciation
         ob = MailRenderer()
         self.assertNotEquals(ob, None)
 
     def test_bodyRendering(self):
-        """ testing the simplest mail structure
-        """
+        # testing the simplest mail structure
         mail = self.getMailInstance(0)
         ob = MailRenderer()
         part = mail.getPart()
@@ -100,8 +98,7 @@ class MailRendererTestCase(ZopeTestCase):
 
 
     def test_bodyRendering(self):
-        """ testing a mail with an attached file
-        """
+        # testing a mail with an attached file
         mail = self.getMailInstance(6)
         ob = MailRenderer()
         part = mail.getPart()
@@ -111,8 +108,7 @@ class MailRendererTestCase(ZopeTestCase):
         self.assertEquals(rendered, 'Hi there,\n\nThis is the dingus fish.\n')
 
     def test_allRendering(self):
-        """ testing all mails with MIME engine
-        """
+        # testing all mails with MIME engine
         ob = MailRenderer()
         for i in range(35):
             mail = self.getMailInstance(i)

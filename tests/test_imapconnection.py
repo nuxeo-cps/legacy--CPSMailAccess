@@ -58,8 +58,7 @@ class IMAPConnectionTestCase(ZopeTestCase):
         return myconnection
 
     def test_Instance(self):
-        """ testing simple instanciation with parameters
-        """
+        # testing simple instanciation with parameters
         if not fake_imap_enabled:
             return
         my_params = {}
@@ -74,8 +73,7 @@ class IMAPConnectionTestCase(ZopeTestCase):
         self.assertNotEqual(myconnection, None)
 
     def test_SSLInstance(self):
-        """ testing simple SSL instanciation with parameters
-        """
+        # testing simple SSL instanciation with parameters
         if not fake_imap_enabled:
             return
         my_params = {}
@@ -91,16 +89,14 @@ class IMAPConnectionTestCase(ZopeTestCase):
         self.assertNotEqual(myconnection, None)
 
     def test_ConnectionParamsError(self):
-        """ testing simple instanciation with missing parameters
-        """
+        # testing simple instanciation with missing parameters
         from Products.CPSMailAccess.baseconnection import ConnectionParamsError
         my_params = {}
 
         self.failUnlessRaises(ConnectionParamsError, IMAPConnection, my_params)
 
     def test_login(self):
-        """ testing simple instanciation with missing parameters
-        """
+        # testing simple instanciation with missing parameters
         ob = self.makeConnection()
 
         login_result = ob.login('tarek','tarek')

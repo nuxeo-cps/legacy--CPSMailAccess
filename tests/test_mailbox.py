@@ -41,14 +41,12 @@ class MailBoxTestCase(ZopeTestCase):
         return result
 
     def test_base(self):
-        """ single instance
-        """
+        # single instance
         ob = MailBox('mailbox')
         self.assertNotEquals(ob, None)
 
     def test_MailBoxParametersView(self):
-        """ testing MailBoxParametersView generators
-        """
+        # testing MailBoxParametersView generators
         mailbox = MailBox('mailbox')
 
         view = MailBoxParametersView(mailbox, None)

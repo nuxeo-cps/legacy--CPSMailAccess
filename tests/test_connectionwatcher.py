@@ -34,14 +34,12 @@ installProduct('Five')
 class ConnectionWatcherTestCase(ZopeTestCase):
 
     def test_simpleInstance(self):
-        """ testing instanciation
-        """
+        # testing instanciation
         watcher = ConnectionWatcher()
         self.assertNotEquals(watcher, None)
 
     def test_threadStopStart(self):
-        """ testing stops and starts
-        """
+        # testing stops and starts
         watcher = ConnectionWatcher()
         watcher.start()
         self.assertEquals(watcher.running, 1)
@@ -49,8 +47,7 @@ class ConnectionWatcherTestCase(ZopeTestCase):
         self.assertEquals(watcher.running, 0)
 
     def test_ListWatching(self):
-        """ checking that silent connection get removed
-        """
+        # checking that silent connection get removed
         my_list = ConnectionList()
         my_list.connection_guard.sleep_time = 0.5
         my_list.connection_guard.idle_time = 0.1

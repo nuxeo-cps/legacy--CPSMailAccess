@@ -74,29 +74,25 @@ class ObjectInteractionTest(ZopeTestCase):
 
 
     def test_getconnectors(self):
-        """ testing connector getter thru portal_webmail
-        """
+        # testing connector getter thru portal_webmail
         wm = self.portal.portal_webmail
         ct = wm.listConnectionTypes()
         self.assertNotEqual(ct, [])
 
 
     def test_getconnector(self):
-        """ testing connector getter thru local mailbox
-        """
+        # testing connector getter thru local mailbox
         mailbox = self._getMailBox()
         connector = mailbox._getconnector()
         self.assertNotEquals(connector, None)
 
     def test_synchro(self):
-        """ testing synchro
-        """
+        # testing synchro
         mailbox = self._getMailBox()
         mailbox.synchronize()
 
     def test_containtment(self):
-        """ testing containtment
-        """
+        # testing containtment
         mailbox = self._getMailBox()
 
         folder = mailbox._addFolder()
@@ -106,8 +102,7 @@ class ObjectInteractionTest(ZopeTestCase):
         self.failUnlessRaises(MailContainerError, folder._getconnector)
 
     def test_synchronize(self):
-        """ testing synchronize calls
-        """
+        # testing synchronize calls
         mailbox = self._getMailBox()
 
         for i in range(10):
@@ -123,8 +118,7 @@ class ObjectInteractionTest(ZopeTestCase):
         mailbox.synchronize()
 
     def test_uniqueId(self):
-        """ testing unique ID
-        """
+        # testing unique ID
         mailbox = self._getMailBox()
         id = uniqueId(mailbox, 'folder_', use_primary=False)
         self.assertEquals(hasattr(mailbox, id), False)
@@ -135,8 +129,7 @@ class ObjectInteractionTest(ZopeTestCase):
         self.assertEquals(hasattr(mailbox, id), False)
 
     def test_syncdirs(self):
-        """ testing folder synchro
-        """
+        # testing folder synchro
         mailbox = self._getMailBox()
 
         # first synchronize to create structure
@@ -169,8 +162,7 @@ class ObjectInteractionTest(ZopeTestCase):
         self.assertEquals(hasattr(folders, 'Trash'), False)
 
     def test_MailBoxParametersInterface(self):
-        """ testing MailBoxParametersView parameters interface
-        """
+        # testing MailBoxParametersView parameters interface
         mailbox = self._getMailBox()
         view = MailBoxParametersView(mailbox, None)
         params = {'connection_type' : 'DUMMY',

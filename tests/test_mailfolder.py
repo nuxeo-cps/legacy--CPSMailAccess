@@ -45,11 +45,10 @@ class MailFolderTestCase(ZopeTestCase):
         return ('fake',)
 
     def test_getServerName(self):
-        """ testing getServerName and setServerName
-            this is trivial but will be very useful
-            when setServerName will call for content resync
-            for non-regression
-        """
+        # testing getServerName and setServerName
+        # this is trivial but will be very useful
+        # when setServerName will call for content resync
+        # for non-regression
         ob = MailFolder()
 
         ob.setServerName('INBOX')
@@ -60,8 +59,7 @@ class MailFolderTestCase(ZopeTestCase):
 
 
     def test_getMailMessages(self):
-        """ testing getMailMessages with all combos
-        """
+        # testing getMailMessages with all combos
         ob = self.test_getMailMessagesCount()
 
         all_types = ob.getMailMessages()
@@ -84,8 +82,7 @@ class MailFolderTestCase(ZopeTestCase):
         self.assertEquals(len(no_type), 0)
 
     def test_getMailMessagesCount(self):
-        """ testing getMailMessagesCount with all combos
-        """
+        # testing getMailMessagesCount with all combos
         ob = MailFolder()
 
         for i in range(10):
@@ -112,8 +109,7 @@ class MailFolderTestCase(ZopeTestCase):
 
 
     def test_getMailMessagesRecursive(self):
-        """ testing getMailMessages with all combos recursively
-        """
+        # testing getMailMessages with all combos recursively
         ob = self.test_getMailMessagesCountRecursive()
 
         all_types = ob.getMailMessages(True, True, True)
@@ -137,8 +133,7 @@ class MailFolderTestCase(ZopeTestCase):
 
 
     def test_getMailMessagesCountRecursive(self):
-        """ testing getMailMessagesCount with all combos recursively
-        """
+        # testing getMailMessagesCount with all combos recursively
         ob = MailFolder()
 
         for i in range(10):
@@ -171,8 +166,7 @@ class MailFolderTestCase(ZopeTestCase):
         return ob
 
     def test_findMessage(self):
-        """ testing message finder
-        """
+        # testing message finder
         ob = self.test_getMailMessagesCountRecursive()
 
         msg = ob.findMessage('msg_223')
@@ -182,15 +176,13 @@ class MailFolderTestCase(ZopeTestCase):
         self.assertEquals(msg, None)
 
     def test_childFoldersCount(self):
-        """ testing child folder count
-        """
+        # testing child folder count
         ob = self.test_getMailMessagesCountRecursive()
         count = ob.childFoldersCount()
         self.assertEquals(count, 10)
 
     def test_setSyncState(self):
-        """ testing setSyncState
-        """
+        # testing setSyncState
         ob = MailFolder()
 
         for i in range(5):
@@ -215,15 +207,13 @@ class MailFolderTestCase(ZopeTestCase):
             self.assertEquals(folder.sync_state, True)
 
     def test_MailFolderViewInstance(self):
-        """ testing mail folder view instanciation
-        """
+        # testing mail folder view instanciation
         ob = MailFolder()
         view = MailFolderView(ob, None)
         self.assertNotEquals(view, None)
 
     def test_renderMailList(self):
-        """ testing mail folder view instanciation
-        """
+        # testing mail folder view instanciation
         ob = MailFolder()
         view = MailFolderView(ob, None)
         rendered_list = view.renderMailList()
@@ -243,8 +233,7 @@ class MailFolderTestCase(ZopeTestCase):
         self.assertNotEquals(rendered_list.index('folder_0'), -1)
 
     def test_sortFolderContent(self):
-        """ testing mail folder view instanciation
-        """
+        # testing mail folder view instanciation
         elements = []
         elements.append(MailFolder('folder_1'))
         elements.append(MailMessage('msg_1'))

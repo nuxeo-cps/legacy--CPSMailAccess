@@ -28,19 +28,17 @@ installProduct('Five')
 
 class MailToolTestCase(ZopeTestCase):
     def test_base(self):
-        """ single instance
-        """
+        # single instance
         ob = MailTool()
         self.assertNotEquals(ob, None)
         self.assertEquals(ob.getId(), 'portal_webmail')
 
     def test_listConnectionTypes(self):
-        """ testing list connection types
-        """
+        # testing list connection types
         ob = MailTool()
         ct = ob.listConnectionTypes()
         self.assertNotEquals(ct , [])
-        
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailToolTestCase),
