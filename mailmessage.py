@@ -269,19 +269,41 @@ class MailMessageView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
 
-    def _getHeader(self):
+    def _getFromList(self):
         if self.context is not None:
-            headers = self.context.getParams()
-            return headers
+            froms = self.context['From']
+            if froms is None:
+                froms = '?'
         else:
-            return ''
+            froms = '?'
+
+        rendering = '<div id="mailFrom">' + froms + '</div>'
+
+        return rendering
+
+    def _getToList(self):
+        if self.context is not None:
+            tos = self.context['To']
+            if tos is None:
+                tos = '?'
+        else:
+            tos = '?'
+
+        rendering = '<div id="mailTo">' + tos + '</div>'
+
+        return rendering
 
     def render(self):
         """ renders the mail
         """
-        title = self._getHeader()
+        str_render = self._getFromList()
 
-        return title
+        #see if this is reliable
+        str_render = str_render + '\n'
+
+        str_render = str_render + self._getToList()
+
+        return str_render
 
 
 """ classic Zope 2 interface for class registering

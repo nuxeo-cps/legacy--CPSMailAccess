@@ -284,10 +284,23 @@ class MailMessageTestCase(ZopeTestCase):
         """ testing view instanciation
         """
         ob = self.getMailInstance(6)
-
         view = MailMessageView(ob, None)
 
-        self.assertEquals(view._getHeader(), ob.getParams())
+        self.assertEquals(view._getFromList(),
+            '<div id="mailFrom">Barry <barry@digicool.com></div>')
+
+        self.assertEquals(view._getToList(),
+            '<div id="mailTo">Dingus Lovers <cravindogs@cravindogs.com></div>')
+
+        ob = MailMessage()
+        view = MailMessageView(ob, None)
+
+        self.assertEquals(view._getFromList(),
+            '<div id="mailFrom">?</div>')
+
+        self.assertEquals(view._getToList(),
+            '<div id="mailTo">?</div>')
+
 
 
 def test_suite():
