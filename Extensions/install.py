@@ -29,7 +29,8 @@ from Products.CPSInstaller.CPSInstaller import CPSInstaller
 from OFS.ObjectManager import BadRequestException
 
 SKINS = {'cpsmailaccess_default' : 'Products/CPSMailAccess/skins',
-         'cpsmailaccess_icons'   : 'Products/CPSMailAccess/skins/icons',}
+         'cpsmailaccess_icons'   : 'Products/CPSMailAccess/skins/icons',
+         'cpsmailaccess_mime_icons'   : 'Products/CPSMailAccess/skins/mime_icons',}
 
 class CPSMailAccessInstaller(CPSInstaller):
     """ Installer class for CPSMailAccess
@@ -104,6 +105,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         """ sets up boxes
         """
         boxes = {
+
             'mailbox_treeview': {
                 'type': 'MailBoxTreeView',
                 'title': 'MailBox TreeView',
@@ -123,6 +125,17 @@ class CPSMailAccessInstaller(CPSInstaller):
                 'box_skin': 'here/box_lib/macros/wbox',
                 'slot': 'right',
                 'order': 1,
+                'display_in_subfolder': 1,
+                'display_only_in_subfolder': 0,
+                },
+            'mailbox_attachedfiles': {
+                'type': 'MailBoxTreeView',
+                'title': 'MailBox Attached Files',
+                'provider': 'mailaccess',
+                'btype': 'attached_files',
+                'box_skin': 'here/box_lib/macros/wbox',
+                'slot': 'right',
+                'order': 0,
                 'display_in_subfolder': 1,
                 'display_only_in_subfolder': 0,
                 },
