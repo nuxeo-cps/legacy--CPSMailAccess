@@ -1,7 +1,54 @@
 <html metal:use-macro="here/main_template/macros/master">
-  <metal:block metal:fill-slot="main">
-    <div id="maillist">
-      <tal:block tal:replace="structure view/renderMailList" />
-    </div>
+  <metal:block metal:fill-slot="main"
+      tal:define="base_url here/getBaseUrl">
+    <h1>Webmail</h1>
+    <table width="100%">
+      <tr>
+        <td>
+            <h4>
+              <a href="addressBooks.html" class="selectable">
+                <img tal:attributes="src python:base_url+'/cpsma_addressbook.png'"/>
+                &#160;Address Book
+              </a>
+            </h4>
+        </td>
+        <td>
+            <h4>
+              <a href="configure.html" class="selectable">
+                <img tal:attributes="src python:base_url+'/cpsma_configure.png'"/>
+                &#160;Configure Mailbox
+              </a>
+            </h4>
+        </td>
+      </tr>
+      <tr>
+        <td>
+            <h4>
+              <a href="searchMessage.html" class="selectable">
+                <img tal:attributes="src python:base_url+'/cspma_mail_find.png'"/>
+                &#160;Search Messages
+              </a>
+            </h4>
+        </td>
+        <td>
+            <h4>
+              <a href="editMessage.html" class="selectable">
+                <img tal:attributes="src python:base_url+'/cpsma_writemail.png'"/>
+                &#160;Write Message
+              </a>
+            </h4>
+        </td>
+      </tr>
+      <tr>
+        <td>
+            <h4>
+              <a href="synchronize.html" class="selectable">
+                <img tal:attributes="src python:base_url+'/cpsma_getmails.png'"/>
+                &#160;Synchronize mailbox
+              </a>
+            </h4>
+        </td>
+      </tr>
+    </table>
   </metal:block>
 </html>
