@@ -147,6 +147,14 @@
       />
 
   <browser:page
+      for=".interfaces.IMailBox"
+      class=".adressbook.AddressBookViewer"
+      template="www/mailAdressBookView.zpt"
+      name="addressBooks.html"
+      permission="zope2.View"
+      />
+
+  <browser:page
       for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
       template="www/mailMessageView.zpt"
