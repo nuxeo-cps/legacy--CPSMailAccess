@@ -1,4 +1,5 @@
 # Copyright (c) 2004 Nuxeo SARL <http://nuxeo.com>
+# -*- encoding: iso-8859-15 -*-
 # Author: Florent Guillaume <fg@nuxeo.com>
 #         Tarek Ziadé <tz@nuxeo.com>
 #
