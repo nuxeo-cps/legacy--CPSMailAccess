@@ -405,27 +405,38 @@ class MailBox(MailBoxBaseCaching):
             sent = inbox._addFolder(uid, sent_name, server=True)
         return sent
 
-    def emptyTrashFolder(self):
-        """ empty the trash """
+    def _serverEmptyTrashElement(self, element):
+        """ empty trash element
+
+        If the element is a folder, need to recursively
+        delete sub folders
+        """
+        if not has_connection:
+            return
 
         trash = self.getTrashFolder()
+        connector = self._getconnector()
+        connector.select(trash.server_name)
 
-        if has_connection:
-            connector = self._getconnector()
-            connector.select(trash.server_name)
+        if IMailFolder.providedBy(element):
+            # recursively calling
+            sub_items = [ob for id, ob in element.objectItems()]
+            map(self._serverEmptyTrashElement, sub_items)
 
+            connector.deleteMailBox(element.server_name)
+        else:
+            folder = element.getMailFolder()
+            connector.setFlags(folder.server_name,
+                               element.uid, {'Deleted': 1})
+
+
+    def emptyTrashFolder(self):
+        """ empty the trash """
         trash = self.getTrashFolder()
         ids = []
         for id, ob in trash.objectItems():
             ids.append(id)
-            if IMailFolder.providedBy(ob):
-                if has_connection:
-                    connector.deleteMailBox(ob.server_name)
-            else:
-                folder = ob.getMailFolder()
-                if has_connection:
-                    connector.setFlags(folder.server_name,
-                        ob.uid, {'Deleted': 1})
+            self._serverEmptyTrashElement(ob)
 
         trash.manage_delObjects(ids)
         trash.message_count = 0
@@ -436,8 +447,7 @@ class MailBox(MailBoxBaseCaching):
         self.clearMailBoxTreeViewCache()
 
     def validateChanges(self):
-        """ call expunger
-        """
+        """ call expunger """
         if has_connection:
             connector = self._getconnector()
             connector.expunge()
