@@ -109,76 +109,6 @@ class IMailMessage(IContainer):
         default=u'',
         required=False)
 
-
-class IMailMessageStore(Interface):
-    """ Provides interface to a mail message store
-
-    """
-    def loadMessage(raw_msg):
-        """ loads a message from a string raw content
-        """
-
-    def getPartCount():
-        """ returns the number of parts the message holds
-        """
-
-    def getPart(self, index=0):
-        """ returns the given index part
-        """
-
-    def getCharset(part_index=0):
-        """ returns the charset for the given part
-            for single part messages, part_index is 0
-        """
-
-    def setCharset(charset, part_index=0):
-        """ sets the charset for the given part
-            for single part messages, part_index is 0
-        """
-
-    def isMultipart():
-        """ tells if the mail is multipart
-        """
-
-    def getContentType(part_index=0):
-        """ retrieves the content type
-            for single part messages, part_index is 0
-        """
-
-    def setContentType(content_type, part_index=0):
-        """ sets the content type
-            for single part messages, part_index is 0
-        """
-
-    def getContentTypeParams(part_index=0):
-        """ gets the content type param list as tuple
-            for single part messages, part_index is 0
-        """
-
-    def getParams(part_index=0):
-        """ gets params in tuple (name, value)
-            for single part messages, part_index is 0
-        """
-
-    def getParam(param_name, part_index=0):
-        """ gets value for given param
-            for single part messages, part_index is 0
-        """
-
-    def setParam(param_name, param_value, part_index=0):
-        """ sets the param to given value
-            for single part messages, part_index is 0
-        """
-
-    def delParam(param_name, part_index=0):
-        """ deletes the given param
-            for single part messages, part_index is 0
-        """
-
-    def getRawMessage():
-        """ retrieves the raw message
-        """
-
 class IMailBox(IContainer):
     """ mailboxes gives a few api to synchronize
     """
@@ -305,7 +235,7 @@ class IConnection(Interface):
         """ writes a message to the given mailbox
         """
 
-    def partial(mailbox, message_number, message_part, start, length):
+    def fetchPartial(mailbox, message_number, message_part, start, length):
         """ gets a part of a message
         """
 
@@ -404,4 +334,78 @@ class IMessageTraverser(ITraverser):
         """ traverses the message to render the right part
         """
 
+class IMailPart(Interface):
+    """ IMailPart is an adapter that presents a python message object
+    """
+    def getRawMessage():
+        """ retrieves the raw message
+        """
 
+    def isMultipart():
+        """ tells if the mail is multipart
+        """
+
+    def getPartCount():
+        """ returns the number of parts the message holds
+        """
+
+    def getPart(self, index=0):
+        """ returns the given index part
+        """
+
+    def getCharset(part_index=0):
+        """ returns the charset for the given part
+            for single part messages, part_index is 0
+        """
+
+    def setCharset(charset, part_index=0):
+        """ sets the charset for the given part
+            for single part messages, part_index is 0
+        """
+
+    def isMultipart():
+        """ tells if the mail is multipart
+        """
+
+    def getContentType(part_index=0):
+        """ retrieves the content type
+            for single part messages, part_index is 0
+        """
+
+    def setContentType(content_type, part_index=0):
+        """ sets the content type
+            for single part messages, part_index is 0
+        """
+
+    def getContentTypeParams(part_index=0):
+        """ gets the content type param list as tuple
+            for single part messages, part_index is 0
+        """
+
+    def getParams(part_index=0):
+        """ gets params in tuple (name, value)
+            for single part messages, part_index is 0
+        """
+
+    def getParam(param_name, part_index=0):
+        """ gets value for given param
+            for single part messages, part_index is 0
+        """
+
+    def setParam(param_name, param_value, part_index=0):
+        """ sets the param to given value
+            for single part messages, part_index is 0
+        """
+
+    def delParam(param_name, part_index=0):
+        """ deletes the given param
+            for single part messages, part_index is 0
+        """
+
+    def setPart(self, index, content):
+        """ sets a part
+        """
+
+    def loadMessage(raw_msg):
+        """ loads a message from a string raw content
+        """
