@@ -21,18 +21,18 @@ import unittest
 
 from Testing.ZopeTestCase import user_name, folder_name
 from Testing.ZopeTestCase import installProduct
-from CPSMailAccess.mailbox import manage_addMailBox
-from CPSMailAccess.mailtool import manage_addMailTool, MailTool
-from CPSMailAccess.mailfolder import MailFolder
+from Products.CPSMailAccess.mailbox import manage_addMailBox
+from Products.CPSMailAccess.mailtool import manage_addMailTool, MailTool
+from Products.CPSMailAccess.mailfolder import MailFolder
 from Products.CPSMailAccess.mailexceptions import MailContainerError
-from CPSMailAccess.utils import uniqueId
+from Products.CPSMailAccess.utils import uniqueId
 
 import sys
 import fakesmtplib
 if sys.modules.has_key('smtplib'):
     del sys.modules['smtplib']
 sys.modules['smtplib'] = fakesmtplib
-from CPSMailAccess.mailbox import MailBox, MailBoxParametersView
+from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView
 from basetestcase import MailTestCase
 
 

@@ -21,7 +21,7 @@ from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
 import os, sys
-from CPSMailAccess.mailsearch \
+from Products.CPSMailAccess.mailsearch \
     import MailCatalog
 
 from Testing.ZopeTestCase import installProduct

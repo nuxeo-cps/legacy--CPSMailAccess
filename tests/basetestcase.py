@@ -24,10 +24,10 @@ from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase, _print
 from Acquisition import Implicit
 
-from CPSMailAccess.mailtool import MailTool
-from CPSMailAccess.mailmessage import MailMessage
-from CPSMailAccess.mailbox import MailBox, IMailBox
-from CPSMailAccess.tests import __file__ as landmark
+from Products.CPSMailAccess.mailtool import MailTool
+from Products.CPSMailAccess.mailmessage import MailMessage
+from Products.CPSMailAccess.mailbox import MailBox, IMailBox
+from Products.CPSMailAccess.tests import __file__ as landmark
 from OFS.Folder import Folder
 
 from email.Errors import BoundaryError

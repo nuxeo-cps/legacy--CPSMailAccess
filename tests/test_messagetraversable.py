@@ -23,8 +23,8 @@ from zope.testing import doctest
 from Products.CPSMailAccess.interfaces import IMessageTraverser, IMailMessage
 from Products.CPSMailAccess.messagetraversable import MessageTraversable
 from Products.CPSMailAccess.mailmessage import MailMessage
-from CPSMailAccess.mailtool import manage_addMailTool, MailTool
-from CPSMailAccess.mailbox import manage_addMailBox
+from Products.CPSMailAccess.mailtool import manage_addMailTool, MailTool
+from Products.CPSMailAccess.mailbox import manage_addMailBox
 from basetestcase import MailTestCase, FakeRequest
 
 class MessageTraversableTestCase(MailTestCase):

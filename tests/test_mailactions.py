@@ -19,10 +19,10 @@
 import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
-from CPSMailAccess.mailbox import manage_addMailBox
-from CPSMailAccess.mailactions import MailActionsView
+from Products.CPSMailAccess.mailbox import manage_addMailBox
+from Products.CPSMailAccess.mailactions import MailActionsView
 from basetestcase import MailTestCase
-from CPSMailAccess.interfaces import IMailBox
+from Products.CPSMailAccess.interfaces import IMailBox
 
 class MailActionsTestCase(MailTestCase):
 

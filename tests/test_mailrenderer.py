@@ -26,7 +26,7 @@ from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.interfaces import IMailRenderer
 from Products.CPSMailAccess.mailtool import MailTool
 from Products.CPSMailAccess.mailbox import manage_addMailBox
-from CPSMailAccess.tests import __file__ as landmark
+from Products.CPSMailAccess.tests import __file__ as landmark
 from email.Errors import BoundaryError
 from basetestcase import MailTestCase
 

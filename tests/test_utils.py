@@ -20,7 +20,7 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import ZopeTestCase
 from datetime import datetime
-from CPSMailAccess.utils import isToday, replyToBody, verifyBody, \
+from Products.CPSMailAccess.utils import isToday, replyToBody, verifyBody, \
     sanitizeHTML, HTMLize, HTMLToText, decodeHeader, getCurrentDateStr, \
     isValidEmail
 

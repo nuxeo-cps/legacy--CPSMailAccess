@@ -27,7 +27,7 @@ from Testing.ZopeTestCase import ZopeTestCase, _print
 from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.interfaces import IMailMessage
 
-from CPSMailAccess.tests import __file__ as landmark
+from Products.CPSMailAccess.tests import __file__ as landmark
 from basetestcase import MailTestCase, openfile
 
 from zope.publisher.browser import FileUpload
