@@ -38,7 +38,7 @@
       <form action="sendMessage"
           tal:define="dummy here/initMessage;
                       came_from request/came_from|nothing;
-                      body_value request/body_value|nothing;
+                      body_value here/bodyvalue;
                       from_indentities here/getIdentitites;"
           >
 
@@ -50,7 +50,7 @@
            From
           </td>
           <td>
-            <select style="width: 100%" name="msg_from">
+            <select style="width: 100%" name="msg_from" id="msg_from">
               <tal:block tal:repeat="from_indenty from_indentities">
                 <option tal:attributes="value from_indenty/email">
                   <span tal:replace="from_indenty/fullname"/> &lt;<span
@@ -60,7 +60,7 @@
             </select>
           </td>
         </tr>
-        <tr>
+        <tr tal:repeat="to here/tos">
             <!-- later
                 <img title="more" onclick="addToSection();"
                     style="float:right;" src="cma_more_lines.png"/>
@@ -71,20 +71,26 @@
             -->
           <td>
             <select name="sent_type_1" style="width: 100%" class="tr_title">
-              <option value="To" selected="selected">To</option>
-              <option value="Cc">Cc</option>
-              <option value="BCc">BCc</option>
+              <option value="To" tal:attributes="selected
+                  python:test(to['type']=='To','selected', '')">To</option>
+              <option value="Cc" tal:attributes="selected
+                  python:test(to['type']=='Cc','selected', '')">Cc</option>
+              <option value="BCc" tal:attributes="selected
+                  python:test(to['type']=='BCc','selected', '')">BCc</option>
             </select>
           </td>
           <td>
-            <input class="message_edit_input" name="msg_to" type="text" value=""/>
+            <input class="message_edit_input" id="msg_to" name="msg_to" type="text"
+                tal:attributes="value to/value"/>
           </td>
         </tr>
         <tr>
           <td class="tr_title">Subject:
           </td>
           <td>
-            <input class="message_edit_input" type="text" name="msg_subject" value="" />
+            <input class="message_edit_input" type="text" name="msg_subject"
+                id="msg_subject"
+                tal:attributes="value here/subject" />
           </td>
         </tr>
       </table>
