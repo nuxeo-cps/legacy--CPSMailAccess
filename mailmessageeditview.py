@@ -90,6 +90,7 @@ class MailMessageEdit(BrowserView):
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
         msg.setHeader('Subject', msg_subject)
+
         Tos = msg.getHeader('To')
         if Tos == []:
             if self.request is not None:
@@ -107,7 +108,6 @@ class MailMessageEdit(BrowserView):
                 self.request.response.redirect('editMessage.html?portal_status_message=%s'\
                     % (psm))
             return False, psm
-
         msg.setHeader('From', msg_from)
         msg_body = verifyBody(msg_body)
         msg.setDirectBody(msg_body)
@@ -122,7 +122,6 @@ class MailMessageEdit(BrowserView):
 
         # using the message instance that might have attached files already
         result, error = self.context.sendEditorsMessage()
-
         if self.request is not None:
             if result:
                 # need to set the answered or forwarded flag
@@ -290,9 +289,13 @@ class MailMessageEdit(BrowserView):
         for area, id in textareas:
             if form.has_key(area):
                 msg_body = form[area]
-                lines = msg_body.split('\r\n')
-                msg.removeHeader(id)            # otherwise previou ones stays there
-                self.addRecipient(msg_body, id)
+                if msg_body.strip() == '':
+                    continue
+                lines = msg_body.split('\n')
+                msg.removeHeader(id)            # otherwise previous ones stays there
+                for line in lines:
+                    if line.strip() != '':
+                        self.addRecipient(line, id)
 
         if form.has_key('cc_on'):
             msg.setCachedValue('cc_on', int(form['cc_on']))
@@ -335,7 +338,6 @@ class MailMessageEdit(BrowserView):
         # ; and , for mail separators
         content = content.replace(';', ',')
         mails = content.split(',')
-
         for mail in mails:
             mail = mail.strip()
             list_ = msg.getHeader(type)
