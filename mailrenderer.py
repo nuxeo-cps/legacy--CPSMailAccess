@@ -94,8 +94,9 @@ class MailRenderer:
                 # forcing iso-8859-15
                 return unicode(result, 'ISO-8859-15')
 
+
         if ptype.startswith('multipart'):
-            return u''
+            return unicode(content, pcharset)
 
         raise NotImplementedError('part_type %s charset %s type %s \n content %s' \
                 % (part_type, pcharset, ptype, content))
@@ -103,9 +104,18 @@ class MailRenderer:
     def _extractBodies(self, mail):
         """ extracts the body
         """
+        html = False
         part_type = mail['Content-type']
         part_cte =  mail['Content-transfert-encoding']
         if mail.is_multipart():
+            # have to choose an alternative here
+            if part_type is not None and \
+                part_type.startswith('multipart/alternative'):
+                # always choose the last one (html rendering)
+                last = len(mail._payload) - 1
+                mail = mail._payload[last]
+                html = True
+
             it = Iterators.body_line_iterator(mail)
             lines = list(it)
             res = EMPTYSTRING.join(lines)
@@ -120,9 +130,9 @@ class MailRenderer:
 
         if res is None:
             # body is empty
-            return ''
+            return False, ''
         else:
-            return self.render(res, part_type, part_cte)
+            return html, self.render(res, part_type, part_cte)
 
 
     def renderBody(self, mail, part_index=0):
@@ -147,6 +157,7 @@ class MailRenderer:
         if part is None:
             # this works for all level
             part = mail.getPart(part_index, True)
+
         if part is None:
             # need to fetch server then
             # but will charge the highest part
@@ -156,11 +167,14 @@ class MailRenderer:
             if is_msg:
                 volatile = True
                 part = root_msg.loadPart(part_index, part_content='', volatile=volatile)
-                body = self._extractBodies(part)
+                html, body = self._extractBodies(part)
             else:
                 #need to load the whole branch
                 raise NotImplementedError
 
-        body = self._extractBodies(part)
+        html, body = self._extractBodies(part)
 
-        return HTMLize(body)
+        if not html:
+            body = HTMLize(body)
+
+        return body
