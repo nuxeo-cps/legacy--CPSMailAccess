@@ -25,7 +25,7 @@ from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 import sys
 from smtplib import SMTP
-from utils import getToolByName, getCurrentDateStr, _isinstance
+from utils import getToolByName, getCurrentDateStr, _isinstance, decodeHeader
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
@@ -82,9 +82,8 @@ class MailBox(MailFolder):
                          'smtp_port' : 25,
                          'trash_folder_name' : 'INBOX.Trash',
                          'draft_folder_name' : 'INBOX.Drafts',
-                         'sent_folder_name' : 'INBOX.Sent'}
-
-    cache_level = 1
+                         'sent_folder_name' : 'INBOX.Sent',
+                         'cache_level' :  2}
 
     # one mail cache by mailbox
     mail_cache = getCache()
@@ -101,14 +100,14 @@ class MailBox(MailFolder):
             self._getconnector()
             self.synchronize()
 
-    def synchronize(self, REQUEST=None):
+    def synchronize(self, no_log=False):
         """ see interface
         """
         # retrieving folder list from server
         connector = self._getconnector()
         server_directory = connector.list()
 
-        if not REQUEST:
+        if no_log:
             self._syncdirs(server_directory)
         else:
             log = self._syncdirs(server_directory, True)
@@ -255,11 +254,12 @@ class MailBox(MailFolder):
         smtp_host = self.connection_params['smtp_host']
         smtp_port = self.connection_params['smtp_port']
         server = SMTP(smtp_host, smtp_port)
-        res = server.sendmail(msg_from, msg_to, msg)
+        res = server.sendmail(msg_from, msg_to, msg.getRawMessage())
         server.quit()
         if res != {}:
             # TODO: look upon failures here
             pass
+        return True
 
     def sendEditorsMessage(self):
         """ sends the cached message
@@ -267,11 +267,25 @@ class MailBox(MailFolder):
         msg = self.getCurrentEditorMessage()
         if msg is None:
             return False
-        msg_from = ob.getHeader('From')
-        msg_to = ob.getHeader('To')
+        msg_from = msg.getHeader('From')
+        msg_to = msg.getHeader('To')
         result = self._sendMailMessage(msg_from, msg_to, msg)
         if result:
+            connector = self._getconnector()
+            res = connector.writeMessage('INBOX.Sent', msg.getRawMessage())
+            # b) on the zodb, by synchronizing INBOX.Sent folder
+            if hasattr(self, 'INBOX'):
+                if hasattr(self.INBOX, 'Sent'):
+                    self.INBOX.Sent._synchronizeFolder(return_log=False)
+                else:
+                    self._syncdirs()
+                    self.INBOX._synchronizeFolder(return_log=False)
+            else:
+                self._syncdirs()
+                self._synchronizeFolder(return_log=False)
             self.clearEditorMessage()
+
+
 
     def sendMessage(self, msg_from, msg_to, msg_subject, msg_body):
         """ sends the message
@@ -292,6 +306,7 @@ class MailBox(MailFolder):
         # if the sent was ok, copy it to the Send folder
         # a) on the server
         connector = self._getconnector()
+
         res = connector.writeMessage('INBOX.Sent', ob.getRawMessage())
 
         # b) on the zodb, by synchronizing INBOX.Sent folder
@@ -479,6 +494,15 @@ class MailBoxView(MailFolderView):
         if self.request is not None:
             self.request.response.redirect(trash.absolute_url()+'/view')
 
+    def synchronize(self):
+        mailbox = self.context
+        mailbox.synchronize(True)
+        if self.request is not None:
+            psm = 'synchronized'
+            self.request.response.redirect(mailbox.absolute_url()+ \
+                '/view?portal_status_message=%s' % psm)
+
+
 #
 # MailMessageEdit view
 #
@@ -493,7 +517,7 @@ class MailMessageEdit(BrowserView):
         mailbox.getCurrentEditorMessage()
 
     def sendMessage(self, msg_from, msg_to, msg_subject, msg_body,
-            msg_attachments, came_from=None):
+            msg_attachments=[], came_from=None):
         """ calls MailTool
         """
         # call mail box to send a message and to copy it to "send" section
@@ -505,8 +529,7 @@ class MailMessageEdit(BrowserView):
         msg.setHeader('Subject', msg_subject)
 
         # XX todo load body according to attached parts
-        msg.set_payload(msg_body)
-
+        msg.setPart(0, msg_body)
 
         # using the message instance that might have attached files already
         result = self.context.sendEditorsMessage()
@@ -516,7 +539,8 @@ class MailMessageEdit(BrowserView):
                 self.request.response.redirect(came_from)
             else:
                 #XXXX need to redirect to an error screen here later
-                self.request.response.redirect(came_from)
+                psm ='Message Sent'
+                self.request.response.redirect('view?portal_status_message=%s' % psm)
 
     def getIdentitites(self):
         """ gives to the editor the list of current mùailbox idendities
@@ -561,9 +585,8 @@ class MailMessageEdit(BrowserView):
             return
         elif max_size and len(file.read(max_size)) == max_size:
             raise FileError('file is too big')
-        else:
-            msg.attachFile(file)
 
+        msg.attachFile(file)
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
 
@@ -577,6 +600,77 @@ class MailMessageEdit(BrowserView):
 
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
+
+    def getBodyValue(self):
+        """ returns body value
+        """
+        mailbox = self.context
+        msg = mailbox.getCurrentEditorMessage()
+        # XXX should be inside message and called thru an api
+        res = msg.getPart(0).get_payload()
+        #msg_viewer = MailMessageView(msg, self.request)
+        return res
+
+    def getSubject(self):
+        """ returns subject value
+        """
+        mailbox = self.context
+        msg = mailbox.getCurrentEditorMessage()
+        # XXX should be inside message and called thru an api
+        res = msg.getHeader('Subject')
+        if res is None:
+            return ''
+        #msg_viewer = MailMessageView(msg, self.request)
+        return decodeHeader(res)
+
+    def getDestList(self):
+        """ returns dest list
+        """
+        mailbox = self.context
+        msg = mailbox.getCurrentEditorMessage()
+        res = []
+        tos = msg.getHeader('To')
+
+        if tos is not None:
+            """
+            tos = tos.split(' ')
+            for to in tos:
+                res.append({'value' : to, 'type' : 'To'})
+            """
+            res.append({'value' : decodeHeader(tos), 'type' : 'To'})
+
+        Ccs = msg.getHeader('Cc')
+        if Ccs is not None:
+            Ccs = Ccs.split(' ')
+            for cc in Ccs:
+                res.append({'value' : cc, 'type' : 'Cc'})
+
+        BCcs = msg.getHeader('BCc')
+        if BCcs is not None:
+            BCcs = BCcs.split(' ')
+            for BC in BCcs:
+                res.append({'value' : BC, 'type' : 'BCc'})
+
+        return res
+
+    def saveMessageForm(self, msg_from=None, msg_to=None, msg_subject=None,
+            msg_body=None):
+        """ saves the form into the message
+        """
+        mailbox = self.context
+        msg = mailbox.getCurrentEditorMessage()
+        if msg_from is not None:
+            msg.setHeader('From', msg_from)
+        if msg_to is not None:
+            if type(msg_to) is str:
+                msg.setHeader('To', msg_to)
+            else:
+                msg.setHeader('To', ' '.join(msg_to))
+        if msg_subject is not None:
+            msg.setHeader('Subject', msg_subject)
+        if msg_body is not None:
+            msg.setPart(0, msg_body)
+
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
