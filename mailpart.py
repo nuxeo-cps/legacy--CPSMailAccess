@@ -21,6 +21,8 @@
 
     A MailPart is a part of a message
 """
+from zLOG import LOG, INFO, DEBUG
+
 from zope.interface import implements
 from interfaces import IMailPart
 from email import Message as Message
@@ -38,7 +40,6 @@ class MailPart:
     True
     """
     implements(IMailPart)
-
     msg = None
     _v_part = None
     id = ''
@@ -48,6 +49,13 @@ class MailPart:
         self.id = id
         self.msg = message
         self._v_part = part
+
+    def copyFrom(self, msg):
+        """ make a copy
+        """
+        self.msg = msg.msg
+        self._v_part = msg._v_part
+        self.cache_level = msg.cache_level
 
     def _getStore(self):
         return  self._v_part
@@ -66,10 +74,30 @@ class MailPart:
         store = self._getStore()
         return store.as_string()
 
+    def getFileInfos(self):
+        """ returns the filename if the part is a file
+            otherwise return an empty string
+        """
+        store = self._getStore()
+
+        #LOG('getFileInfos', INFO,'%s %s' % (store['filename'], store.get_filename()))
+
+        filename = store.get_filename() or store['filename']
+        if filename is None:
+            return None
+        mimetype = store['Content-Type']
+        if mimetype is None:
+            mimetype = 'unknown'
+        if mimetype.find(';'):
+            mimetype = mimetype.split(';')[0]
+        # todo: add size
+        return {'filename' : filename,
+                'mimetype' : mimetype}
+
     def isMultipart(self):
         """ See interfaces.IMailMessage
         >>> f = MailPart('id', None, None)
-        >>> f.cache_level = 0
+        >>> f.cache_level = 2
         >>> f.loadMessage('mmdclkdshkdjg')
         >>> f.isMultipart()
         False
@@ -86,33 +114,23 @@ class MailPart:
         else:
             return 1
 
-    def getPart(self, index=None, decode= False):
+    def getPart(self, index=0, decode= False):
         """ See interfaces.IMailMessage
         """
-        store = self._getStore()
-        if index == None:
-            try:
-                part = store.get_payload(None, decode)
-            except TypeError:
-                part = None
+        if self.isMultipart():
+            return self._getStore().get_payload(index)
         else:
-            try:
-                part = store.get_payload(index, decode)
-            except TypeError:
-                part = None
-
-        return part
+            return self._getStore()
 
     def setPart(self, index, content):
         """ See interfaces.IMailMessage
         """
+        multi = self.isMultipart()
         store = self._getStore()
-        payload = store.get_payload(index, False)
-        if content is not None:
-            payload.set_payload(content)
+        if not multi:
+            store._payload = content
         else:
-            store._payload[index] = None
-
+            store._payload[index] = content
 
     def getParts(self):
         """ returns parts in a sequence (or a string if monopart)
@@ -238,15 +256,41 @@ class MailPart:
         ### XXX we'll do different load level here
         if self.cache_level == 0:
             # todo
-            self._setStore(Message.Message())
+            raise NotImplementedError
         elif self.cache_level == 1:
-            # todo fill headers
+            # raw_msg is a list of 3 elements : flags, size and headers
+            if type(raw_msg) is list:
+                flags = raw_msg[0]
+                size = raw_msg[1]
+                headers = raw_msg[2]
+            else:
+                headers = raw_msg
+                flags = ''
+                size = ''
+
             self._setStore(Message.Message())
             store = self._getStore()
-            for key in raw_msg.keys():
-                store[key] = raw_msg[key]
+            # filling headers
+            for key in headers.keys():
+                store[key] = headers[key]
+            self._parseFlags(flags)
+            # todo: manage size
         else:
-            self._setStore(message_from_string(raw_msg))
+            if type(raw_msg) is list:
+                # raw_msg is a list of 2 elements : flags, body
+                flags = raw_msg[0]
+                body = raw_msg[1]
+            else:
+                flags = ''
+                body = raw_msg
+            store = message_from_string(body)
+            self._setStore(store)
+            self._parseFlags(flags)
+
+    def _parseFlags(self, flags):
+        """ no flags in parts at this time
+        """
+        pass
 
     def getPersistentPartIds(self):
         """ retrieves a sequence of persistent parts
@@ -258,6 +302,27 @@ class MailPart:
                 results.append(i)
             i += 1
         return results
+
+    def deletePart(self, part_num):
+        """ deletes the given part
+            get back to a simple mail if there's one part left
+        """
+        if not self.isMultipart() or part_num>=self.getPartCount():
+            return False
+        store = self._getStore()
+        part_count = self.getPartCount()
+        new_payload = []
+        for part in range(part_count):
+            if part != part_num:
+                new_payload.append(store.get_payload(part))
+
+        if len(new_payload) > 1:
+            # still multipart
+            store._payload = new_payload
+        else:
+            # back to simple message
+            store._payload = new_payload[0]
+        return True
 
 InitializeClass(MailPart)
 
