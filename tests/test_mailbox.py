@@ -24,7 +24,8 @@ from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
 
-from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView
+from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView, \
+    MailMessageEdit
 from Products.CPSMailAccess.interfaces import IMailBox
 
 
@@ -64,6 +65,14 @@ class MailBoxTestCase(ZopeTestCase):
 
         params = view.renderAddParamForm()
         self.assertNotEquals(params, '')
+
+    def test_MailMessageEdit(self):
+        # mailmessageedit view
+        mailbox = MailBox('mailbox')
+        view = MailMessageEdit(mailbox, None)
+        self.assertNotEquals(view, None)
+
+
 
 def test_suite():
     return unittest.TestSuite((
