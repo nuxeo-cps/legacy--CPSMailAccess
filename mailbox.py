@@ -29,6 +29,8 @@ from zope.interface import implements
 from utils import uniqueId, makeId
 from Products.CPSMailAccess.interfaces import IMailBox, IMapping
 from Products.CPSMailAccess.mailfolder import MailFolder
+from Products.CPSMailAccess.baseconnection import ConnectionError, BAD_LOGIN, \
+    NO_CONNECTOR
 from interfaces import IMailFolder, IMailMessage
 from Globals import InitializeClass
 from zope.schema.fieldproperty import FieldProperty
@@ -83,12 +85,7 @@ class MailBox(MailFolder):
 
         connection_params = self.connection_params
 
-        try:
-            connector = wm_tool.getConnection(connection_params)
-        except ConnectionError:
-            # TODO : we need to redirect here to a clean
-            # "login failed" screen
-            raise ValueError(BAD_LOGIN)
+        connector = wm_tool.getConnection(connection_params)
 
         if connector is None:
             raise ValueError(NO_CONNECTOR)
