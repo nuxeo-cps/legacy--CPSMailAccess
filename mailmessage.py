@@ -81,6 +81,7 @@ class MailMessage(Folder):
         True
         """
         if self.store is None:
+            self.cache_level = 0
             self.loadMessage('')
         return self.store
 
@@ -323,6 +324,45 @@ class MailMessageView(BaseMailMessageView):
         else:
             body = ''
         return body
+
+    def renderMailList(self):
+        """ renders mail message list given by the folder
+            XXX duplicated from folder view,
+            need to get folder's view
+            if this list does not differ from the folder's one
+        """
+        mailfolder = self.context.aq_inner.aq_parent
+
+        returned = []
+        elements = mailfolder.getMailMessages(list_folder=False,
+            list_messages=True, recursive=False)
+
+        for element in elements:
+            part = {}
+            part['object'] = element
+            part['url'] = element.absolute_url() +'/view'
+            ob_title = self.createShortTitle(element)
+            if ob_title is None or ob_title == '':
+                mail_title = '?'
+            else:
+                if IMailMessage.providedBy(element):
+                    translated_title = decodeHeader(ob_title)
+                    mail_title = translated_title
+                else:
+                    mail_title = ob_title
+            part['title'] = mail_title
+            element_from = element.getHeader('From')
+            if element_from is None:
+                element_from = '?'
+            part['From'] = decodeHeader(element_from)
+
+            element_date = element.getHeader('Date')
+            if element_date is None:
+                element_date = '?'
+            part['Date'] = decodeHeader(element_date)
+
+            returned.append(part)
+        return returned
 
 """ classic Zope 2 interface for class registering
 """
