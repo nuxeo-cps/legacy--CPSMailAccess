@@ -26,6 +26,7 @@
 from zope.app.mail.mailer import SMTPMailer
 from zope.app.mail.delivery import QueuedMailDelivery
 from zope.interface import implements
+from smtplib import SMTPRecipientsRefused
 
 class MultiSMTPMailer(SMTPMailer):
     """ a class that delivers a mail to any SMTP server """
@@ -39,7 +40,7 @@ class MultiSMTPMailer(SMTPMailer):
         self.port = port
         self.username = username
         self.password = password
-        SMTPMailer.send(fromaddr, toaddrs, message)
+        SMTPMailer.send(self, fromaddr, toaddrs, message)
 
 class SmtpQueuedMailer:
     """ a class that sends mails """
@@ -48,7 +49,12 @@ class SmtpQueuedMailer:
 
     def send(self, fromaddr, toaddrs, message, hostname='localhost', port=25,
              username=None, password=None):
-        """ sends mails
-        """
+        """ sends mails """
 
-        mailer.send(host, port, user_id, password, fromaddr, toaddrs, message)
+        try:
+            self.mailer.send(fromaddr, toaddrs, message, hostname, port,
+                         username, password, )
+        except SMTPRecipientsRefused, e:
+            return False, e.recipients
+        else:
+            return True, ''
