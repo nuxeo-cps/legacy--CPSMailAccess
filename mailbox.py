@@ -417,6 +417,22 @@ class MailBox(MailFolder):
         connector = self._getconnector()
         connector.expunge()
 
+    def reindexMailCatalog(self):
+        """ reindex the catalog
+        """
+        mailtool = getToolByName(self, 'portal_webmail')
+        if not self.connection_params.has_key('uid'):
+            return
+        uid = self.connection_params['uid']
+        cat = mailtool.mail_catalogs.getCatalog(uid)
+        if cat is None:
+            mailtool.mail_catalogs.addCatalog(uid)
+            cat = mailtool.mail_catalogs.getCatalog(uid)
+        mails = self.getMailMessages(list_folder=False,
+            list_messages=True, recursive=True)
+        for mail in mails:
+            cat.indexMessage(mail)
+
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
 
@@ -503,6 +519,17 @@ class MailBoxParametersView(BrowserView):
         rendered_param['value'] = ''
         rendered_param['type'] = 'text'
         return [rendered_param]
+
+    def reindexMailCatalog(self):
+        """ calls the catalog indexation
+        """
+        box = self.context
+        box.reindexMailCatalog()
+
+
+        if self.request is not None:
+            psm = 'All mails are indexed'
+            self.request.response.redirect('configure.html?portal_status_message=%s' % psm)
 
 #
 # MailBoxView Views
