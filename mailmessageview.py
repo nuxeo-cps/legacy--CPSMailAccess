@@ -26,7 +26,7 @@ from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
 from utils import decodeHeader, parseDateString, localizeDateString, \
-    truncateString, mimetype_to_icon_name, getFolder
+    truncateString, mimetype_to_icon_name, getFolder, replyToBody
 from Globals import InitializeClass
 from Products.Five import BrowserView
 from mailrenderer import MailRenderer
@@ -166,11 +166,7 @@ class MailMessageView(BaseMailMessageView):
         from_value = self.renderFromList()
 
         # see to ext.traductions
-        reply_content = ['>>> '+from_value + ' wrote']
-        body_values = body_value.split('\r\n')
-        for line in body_values:
-            reply_content.append('>>> '+line)
-        reply_content = '\r\n'.join(reply_content)
+        reply_content = replyToBody(from_value, body_value)
 
         msg = mailbox.getCurrentEditorMessage()
         msg.setPart(0, reply_content)
