@@ -51,8 +51,7 @@ class MailPart(Folder):
         self.cache_level = 1
 
     def copyFrom(self, msg):
-        """ make a copy
-        """
+        """ make a copy """
         self.msg = msg.msg
         self._v_part = msg._v_part
         self.cache_level = msg.cache_level
@@ -64,20 +63,19 @@ class MailPart(Folder):
         self._v_part = store
 
     def getParent(self):
-        """ returns the message instance
-        """
+        """ returns the message instance """
         return self.msg
 
     def getRawMessage(self):
-        """ see interface
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
         payload = store._payload
         return store.as_string()
 
     def getFileInfos(self):
         """ returns the filename if the part is a file
-            otherwise return an empty string
+
+        Otherwise return an empty string
         """
         store = self._getStore()
         if type(store) is str:
@@ -106,8 +104,7 @@ class MailPart(Folder):
         return store.is_multipart()
 
     def getPartCount(self):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
         if self.isMultipart():
             return len(store.get_payload())
@@ -115,16 +112,14 @@ class MailPart(Folder):
             return 1
 
     def getPart(self, index=0, decode= False):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         if self.isMultipart():
             return self._getStore().get_payload(index)
         else:
             return self._getStore()
 
     def setPart(self, index, content):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         multi = self.isMultipart()
         store = self._getStore()
         if not multi:
@@ -137,21 +132,21 @@ class MailPart(Folder):
                 store._payload.append(content)
 
     def getParts(self):
-        """ returns parts in a sequence (or a string if monopart)
+        """ returns parts in a sequence
+
+        (or a string if monopart)
         """
         store = self._getStore()
         return store.get_payload()
 
 
     def getCharset(self, part_index=0):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
         return store.get_charsets()[part_index]
 
     def setCharset(self, charset, part_index=0):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
         ob_charset = Charset(charset)
 
@@ -164,8 +159,7 @@ class MailPart(Folder):
             payload[part_index-1].set_charset(ob_charset)
 
     def getContentType(self, part_index=0):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
 
         if not self.isMultipart() or part_index == 0:
@@ -177,8 +171,7 @@ class MailPart(Folder):
             return payload[part_index-1].get_content_type()
 
     def setContentType(self, content_type, part_index=0):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
         if not self.isMultipart() or part_index == 0:
             if part_index > 0:
@@ -190,8 +183,7 @@ class MailPart(Folder):
 
 
     def getParams(self, part_index=0):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
 
         if not self.isMultipart() or part_index == 0:
@@ -203,8 +195,7 @@ class MailPart(Folder):
             return payload[part_index-1].get_params()
 
     def getParam(self, param_name, part_index=0):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
 
         if not self.isMultipart() or part_index == 0:
@@ -216,8 +207,7 @@ class MailPart(Folder):
             return payload[part_index-1].get_param(param_name)
 
     def setParam(self, param_name, param_value, part_index=0):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
         if not self.isMultipart() or part_index == 0:
             if part_index > 0:
@@ -228,8 +218,7 @@ class MailPart(Folder):
             payload[part_index-1].set_param(param_name, param_value)
 
     def delParam(self, param_name, part_index=0):
-        """ See interfaces.IMailMessage
-        """
+        """ See interfaces.IMailMessage """
         store = self._getStore()
         if not self.isMultipart() or part_index == 0:
             if part_index > 0:
@@ -240,8 +229,7 @@ class MailPart(Folder):
             payload[part_index-1].del_param(param_name)
 
     def getHeaders(self):
-        """Get a message header.
-        """
+        """ Get a message headers """
         store = self._getStore()
         res = {}
         for header in store._headers:
@@ -249,8 +237,7 @@ class MailPart(Folder):
         return res
 
     def getHeader(self, name):
-        """Get a message header.
-        """
+        """ Get a message header. """
         store = self._getStore()
 
         elements = store.get_all(name, [])
@@ -259,8 +246,7 @@ class MailPart(Folder):
         return elements
 
     def setHeader(self, name, value):
-        """Set a message header.
-        """
+        """ Set a message header. """
         store = self._getStore()
         while store.has_key(name):
             # Erase previous header
@@ -268,8 +254,7 @@ class MailPart(Folder):
         store[name] = value
 
     def addHeader(self, name, value):
-        """ adds an header
-        """
+        """ adds an header """
         store = self._getStore()
         store[name] = value
 
@@ -331,13 +316,11 @@ class MailPart(Folder):
             self._parseFlags(flags)
 
     def _parseFlags(self, flags):
-        """ no flags in parts at this time
-        """
+        """ no flags in parts at this time """
         pass
 
     def getPersistentPartIds(self):
-        """ retrieves a sequence of persistent parts
-        """
+        """ retrieves a sequence of persistent parts """
         results = []
         i = 0
         for element in self.getParts():
@@ -348,7 +331,8 @@ class MailPart(Folder):
 
     def deletePart(self, part_num):
         """ deletes the given part
-            get back to a simple mail if there's one part left
+
+        Get back to a simple mail if there's one part left
         """
         if not self.isMultipart() or part_num>=self.getPartCount():
             return False
