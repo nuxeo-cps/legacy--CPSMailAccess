@@ -16,39 +16,39 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-# $Id
-from zope.app.mail.delivery import QueuedMailDelivery
+# $Id$
+""" Smtp mailer
+    TODO: used zope 3 threaded queue mail delivery
+    utility thru zcml directive
+    and get notification when swork is done
+"""
+
 from zope.app.mail.mailer import SMTPMailer
-from zope.app.mail.interfaces import IMailQueueProcessor
+from zope.app.mail.delivery import QueuedMailDelivery
 from zope.interface import implements
 
-from smtplib import SMTP
+class MultiSMTPMailer(SMTPMailer):
+    """ a class that delivers a mail to any SMTP server """
+
+    def send(self, fromaddr, toaddrs, message, hostname='localhost', port=25,
+             username=None, password=None):
+        """ sets SMTP infos then sends the mail
+        """
+
+        self.hostname = hostname
+        self.port = port
+        self.username = username
+        self.password = password
+        SMTPMailer.send(fromaddr, toaddrs, message)
 
 class SmtpQueuedMailer:
-    """ a class that implements IMailQueueProcessor
-        and sends mails with various indentitites
-    """
-    implements(IMailQueueProcessor)
+    """ a class that sends mails """
 
-    queuePath = ''
-    pollingInterval = 500
-    mailer = SMTPMailer()
-    delivery = None
+    mailer = MultiSMTPMailer()
 
-    def __init__(self, queuePath):
-        self.delivery = QueuedMailDelivery(queuePath)
-
-    def sendMail(self, host, port, user_id, password, \
-        fromaddr, toaddrs, message):
-        """ next : uses IMailQueueProcessor and
-            QueuedMailDelivery when
-            founded how to make it work with multi smtp
+    def send(self, fromaddr, toaddrs, message, hostname='localhost', port=25,
+             username=None, password=None):
+        """ sends mails
         """
-        server = SMTP(host, port)
-        res = server.sendmail(fromaddr, toaddrs, message)
-        server.quit()
-        if res != {}:
-            # TODO: look upon failures here
-            pass
 
-        return True
+        mailer.send(host, port, user_id, password, fromaddr, toaddrs, message)
