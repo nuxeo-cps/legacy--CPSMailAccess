@@ -42,12 +42,9 @@ class MailFolder(Folder):
     >>> IMailFolder.providedBy(f)
     True
     """
-    
     implements(IMailFolder)
-    
     server_name = FieldProperty(IMailFolder['server_name'])    
     mail_prefix = FieldProperty(IMailFolder['mail_prefix'])
-    
     
     def __init__(self, uid=None, server_name='', **kw):
         """
@@ -63,11 +60,9 @@ class MailFolder(Folder):
         """See interfaces.IMailFolder
         """
         current = self
-        while (not current == None) and (not IMailBox.providedBy(current)):
+        while current is not None and not IMailBox.providedBy(current):
             current = aq_parent(current)
-               
         return current    
-            
     
     def getMailMessages(self, list_folder=True, list_messages=True, recursive=False):
         """See interfaces.IMailFolder
@@ -77,12 +72,11 @@ class MailFolder(Folder):
         []
         """
         providers = ()
-        
         result = []
         
         if list_folder:
             providers = providers+ (IMailFolder,)
-                
+            
         if list_messages:
             providers = providers+ (IMailMessage,)
             
@@ -129,7 +123,6 @@ class MailFolder(Folder):
                         count += element.getMailMessagesCount(count_folder,
                             count_messages, recursive)                                       
         return count
-            
     
     def checkMessages(self):
         """See interfaces.IMailFolder     
@@ -152,7 +145,6 @@ class MailFolder(Folder):
         # typically resync
         self.server_name = server_name 
     
-    
     def _addMessage(self, uid='', msg_key=''):
         """"See interfaces.IMailFolder              
         """
@@ -164,7 +156,6 @@ class MailFolder(Folder):
         new_msg = MailMessage(uid, uid, msg_key)
         self._setObject(new_msg.getId(), new_msg)
         return new_msg
-        
         
     def _addFolder(self, uid='', server_name=''):  
         """"See interfaces.IMailFolder      
@@ -194,13 +185,11 @@ class MailFolder(Folder):
         """ See interfaces.IMailFolder      
         """
         return self.getMailMessagesCount(True, False, False)
-          
-        
+       
     def _synchronizeFolder(self):
         """ See interfaces.IMailFolder      
         """
         pass
-                            
       
 """ classic Zope 2 interface for class registering
 """        
