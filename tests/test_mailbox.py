@@ -195,6 +195,17 @@ class MailBoxTestCase(MailTestCase):
         res = mailbox._directoryToParam('nothing')
         self.assertEquals(res, 'nothing')
 
+    def test_elementIsInTrash(self):
+        mailbox = self._getMailBox()
+        Trash = mailbox._addFolder('Trash', 'INBOX.Trash')
+        Todos = mailbox._addFolder('Todosez', 'INBOX.Todosez')
+        self.assert_(not mailbox.elementIsInTrash(Todos))
+
+        res = Todos.delete()
+        self.assert_(mailbox.elementIsInTrash(Todos))
+
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),
