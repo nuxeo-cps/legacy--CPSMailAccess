@@ -112,12 +112,12 @@ tr.line_selectable_even:hover {
 }
 
 div.folder_msglist {
-  overflow: scroll;
+  /*overflow: scroll;*/
   height: 800px;
 }
 
 div.message_msglist {
-  overflow: scroll;
+  /*overflow: scroll;*/
   height: 200px;
 }
 
@@ -359,4 +359,8 @@ div.manageGroup {
 
 table.messageList {
   width: 100%;
+}
+
+div.batcher {
+  margin-top: 10px;
 }
