@@ -88,6 +88,7 @@ class MailActionsView(BrowserView):
         elif IMailFolder.providedBy(container):
             mailbox = container.getMailBox()
             root = mailbox.absolute_url()
+            candelete = not mailbox.elementIsInTrash(container)
 
             if container == mailbox.getTrashFolder():
                 empty_trash = {'icon' : base_url + '/cpsma_emptytrash.png',
@@ -113,16 +114,22 @@ class MailActionsView(BrowserView):
                                    'title' : 'move folder',
                                    'long_title' : 'move the folder',
                                    'action' : 'view?move_folder=1'}
-                    delete = {'icon' : base_url + '/cpsma_delete.png',
-                                'title' : 'delete folder',
-                                'long_title' : 'delete current folder',
-                                'onclick' : "return window.confirm('Are you sure?')",
-                                'action' : 'delete.html'}
                     rename = {'icon' : base_url + '/cpsma_rename.png',
                                 'title' : 'rename folder',
                                 'long_title' : 'rename current folder',
                                 'action' : 'view?edit_name=1'}
-                    actions.extend([delete, rename, move_folder])
+
+                    if candelete:
+                        delete = {'icon' : base_url + '/cpsma_delete.png',
+                                    'title' : 'delete folder',
+                                    'long_title' : 'delete current folder',
+                                    'onclick' : "return window.confirm('Are you sure?')",
+                                    'action' : 'delete.html'}
+                        list_ = [delete, rename, move_folder]
+                    else:
+                        list_ = [rename, move_folder]
+
+                    actions.extend(list_)
 
             manage = {'icon' : root + '/cpsma_manage_content.png',
                       'title' : 'manage content',
