@@ -83,8 +83,8 @@ class ConnectionList(UserList):
             meth = self.connection_generators[connection_type]
             new_connection = meth(connection_params)
             # XXXX auto-login
-            if not new_connection.connected:
-                new_connection.login(connection_params['uid'],
+            if new_connection.getState() != 'AUTH':
+                new_connection.login(connection_params['login'],
                     connection_params['password'])
             return new_connection
         else:
