@@ -30,11 +30,12 @@
      </a>
      <form action="rename.html" method="post" class="rename_form"
           tal:define="max_size_reached_msg string:'max_size_reached';
-                      js_snip python:'controlInputSize(this, %s, event, %s)' % (max_folder_size, max_size_reached_msg)">
+                      js_snip python:'controlInputSize(this, %s, event, %s)' % (max_folder_size,
+                       max_size_reached_msg)">
        <input type="text" name="new_name" id="new_name"
               tal:attributes="value here/simpleFolderName;
                               onkeyup js_snip"/>
-       <input type="submit" name="submit" value="change"/>
+       <input type="submit" name="submit" value="cpsma_change"  i18n:attributes="value"/>
      </form>
     </div>
     <div tal:condition="add_folder">
@@ -45,10 +46,11 @@
      </a>
      <form action="addFolder.html" method="post" class="rename_form"
           tal:define="max_size_reached_msg string:max_size_reached;
-                      js_snip python:'controlInputSize(this, %s, event, %s)' % (max_folder_size, max_size_reached_msg)">
+                      js_snip python:'controlInputSize(this, %s, event, %s)' % (max_folder_size,
+                      max_size_reached_msg)">
        <input type="text" name="name" value=""
               tal:attributes="onkeyup js_snip"/>
-       <input type="submit" name="submit" value="add"/>
+       <input type="submit" name="submit" value="cpsma_add" i18n:attributes="value"/>
      </form>
     </div>
     <div tal:condition="move_folder">
@@ -89,12 +91,17 @@
               </tal:block>
             </div>
 
-            <input class="manage_copy" type="submit" name="action" value="copy"/>
-            <input class="manage_cut" type="submit" name="action" value="cut"/>
-            <input class="manage_paste" type="submit" name="action" value="paste"/>
-            <input class="manage_delete" type="submit" name="action" value="delete"/>
+            <input class="manage_copy" type="submit" name="action" value="copy"
+                i18n:attributes="value"/>
+            <input class="manage_cut" type="submit" name="action" value="cut"
+                i18n:attributes="value"/>
+            <input class="manage_paste" type="submit" name="action" value="paste"
+                i18n:attributes="value"/>
+            <input class="manage_delete" type="submit" name="action" value="delete"
+                i18n:attributes="value"/>
             <tal:block tal:condition="clipboard">
-              <input class="manage_delete" type="submit" name="action" value="clear"/>
+              <input class="manage_delete" type="submit" name="action" value="clear"
+                i18n:attributes="value"/>
             </tal:block>
           </div>
           <metal:block use-macro="here/messagelist_macros/messagelist"/>
