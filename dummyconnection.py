@@ -51,10 +51,11 @@ def makeMailObject(connection_params):
 
     try:
         newob =  DummyConnection(connection_params)
+        uid = connection_params['uid']
     except IMAP4.abort:
         # we probablyhave a socket error here
         raise ConnectionError("socket error")
     else:
-        newob.login(uid, password)
-        print str('created '+str(newob))
+        newob.login(uid, 'password')
+        #print str('created '+str(newob))
         return newob
