@@ -91,14 +91,7 @@ class MailMessageEdit(BrowserView):
         msg.setHeader('From', msg_from)
         msg_body = verifyBody(msg_body)
 
-        # this needs to be done in an api inside mailpart
-        if not msg.isMultipart():
-            msg.setPart(0, msg_body)
-        else:
-            # the mail editor message structure does not move
-            sub = msg.getPart(0)
-            sub._payload = msg_body
-            msg.setPart(0, sub)
+        msg.setBody(msg_body)
 
         # using the message instance that might have attached files already
         result, error = self.context.sendEditorsMessage()
@@ -201,18 +194,7 @@ class MailMessageEdit(BrowserView):
         """
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
-        # XXX should be inside message and called thru an api
-        try:
-            res = msg.getPart(0)
-            if res is None:
-                return ''
-        except IndexError:
-            res = ''
-
-        if type(res) is str:
-            return res
-        else:
-            return res.get_payload()
+        return msg.getBody()
 
     def getSubject(self):
         """ returns subject value
