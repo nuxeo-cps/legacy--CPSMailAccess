@@ -17,6 +17,8 @@
 # 02111-1307, USA.
 #
 # $Id$
+from math import ceil
+
 from zLOG import LOG, INFO, DEBUG
 from basemailview import BaseMailMessageView
 from utils import decodeHeader, localizeDateString, parseDateString, \
@@ -89,14 +91,63 @@ class MailFolderView(BaseMailMessageView):
             self.request.response.redirect(url+'/view?portal_status_message=\
                                            %s' % psm)
 
-    def renderMailList(self):
+    def _sortMessages(self, elements, sort_with, sort_asc):
+        """ sorts a list of messages """
+        if sort_with not in ('Attachments', 'Subject', 'From', 'Date',
+                             'Size', 'Icon'):
+            sort_with = 'Date'
+
+        sort_list = []
+        for element in elements:
+            if sort_with == 'Attachments':
+                if element.hasAttachment():
+                    sorter = 1
+                else:
+                    sorter = 0
+            elif sort_with == 'Subject':
+                ob_title = self.createShortTitle(element)
+                if ob_title is None or ob_title == '':
+                    mail_title = '?'
+                else:
+                    if IMailMessage.providedBy(element):
+                        translated_title = decodeHeader(ob_title)
+                        mail_title = translated_title
+                    else:
+                        mail_title = ob_title
+                sorter = mail_title
+            elif sort_with == 'From':
+                element_from = element.getHeader('From')
+                if element_from is None or element_from == []:
+                    element_from = '?'
+                sorter = decodeHeader(element_from[0])
+            elif sort_with == 'Date':
+                element_date = element.getHeader('Date')
+                if element_date is None or element_date == []:
+                    element_date = '?'
+                stDate = decodeHeader(element_date[0])
+                sorter = parseDateString(stDate)
+            elif sort_with == 'Size':
+                sorter = int(element.size)
+            elif sort_with == 'Icon':
+                sorter = self.getMsgIconName(element)
+
+            sort_list.append((sorter, element))
+
+        sort_list.sort()
+        if not sort_asc:
+            sort_list.reverse()
+
+        return [element[1] for element in sort_list]
+
+    def renderMailList(self, page=1, nb_items=20, sort_with='Date',
+                       sort_asc=0):
         """ renders mailfolder content
 
-        XXX need to externalize html here
-        XXX need to memoize this
+        uses a batch
         """
         mailfolder = self.context
-        cache = mailfolder.getMailListFromCache()
+        cache = mailfolder.getMailListFromCache(page, nb_items,
+                                                sort_with, sort_asc)
         if cache is not None:
             return cache
 
@@ -104,26 +155,39 @@ class MailFolderView(BaseMailMessageView):
         elements = mailfolder.getMailMessages(list_folder=False,
             list_messages=True, recursive=False)
 
-        elements_sizes = [element.size for element in elements]
-        elements_sizes = intToSortableStr(elements_sizes)
+        # now cutting in nb_items
+        nb_elements = len(elements)
+        nb_pages = int(ceil(float(nb_elements) / float(nb_items)))
+
+        # calculating the slice
+        if page >= nb_pages:    # first page starts at 1
+            page = nb_pages
+
+        first_element = (page - 1) * nb_items
+        last_element =  first_element + nb_items
+
+        if last_element >= nb_elements:
+            last_element = nb_elements - 1
+
+        # sorting before slicing
+        elements = self._sortMessages(elements, sort_with, sort_asc)
+
+        # slicing
+        elements = elements[first_element:last_element]
+
         i = 0
 
         for element in elements:
             part = {}
             part['object'] = element
-
             part['Icon'] = self.getMsgIconName(element)
-            part['Icon_sort'] = part['Icon']
-
             part['url'] = element.absolute_url() +'/view'
             part['uid'] = element.uid
 
             if element.hasAttachment():
                 part['Attachments'] = 1
-                part['Attachments_sort'] = 'a'
             else:
                 part['Attachments'] = 0
-                part['Attachments_sort'] = 'z'
 
             ob_title = self.createShortTitle(element)
             if ob_title is None or ob_title == '':
@@ -135,15 +199,12 @@ class MailFolderView(BaseMailMessageView):
                 else:
                     mail_title = ob_title
 
-            part['Subject_sort'] = mail_title
             part['Subject'] = mail_title
 
             element_from = element.getHeader('From')
             if element_from is None or element_from == []:
                 element_from = '?'
             part['From'] = decodeHeader(element_from[0])
-            part['From_sort'] = part['From']
-
             element_date = element.getHeader('Date')
             if element_date is None or element_date == []:
                 element_date = '?'
@@ -153,34 +214,19 @@ class MailFolderView(BaseMailMessageView):
             else:
                 part['Date'] = localizeDateString(date, 3)
 
-            part['Date_sort'] = parseDateString(date)
-
             if element.size is not None:
                 part['Size'] = getHumanReadableSize(element.size)
-                part['Size_sort'] = elements_sizes[i]
             else:
                 part['Size'] = 0
-                part['Size_sort'] = '0'
-
-            returned.append((part['Date_sort'], part))
+            returned.append(part)
             i += 1
 
-        # now sorting upon date
-        returned.sort()
-        returned.reverse()        # most recent on top
-
-        returned = [element[1] for element in returned]
-
-        # test XXXXXXXXx no more than 200 elements
-        while len(returned) > 200:
-            del returned[len(returned)-1]
-
-        mailfolder.addMailListToCache(returned)
-        return returned
+        mailfolder.addMailListToCache((nb_pages, returned), page, nb_items,
+                                      sort_with, sort_asc)
+        return (nb_pages, returned)
 
     def getMsgIconName(self, message):
-        """ icon representing the mail depends on flags
-        """
+        """ icon representing the mail depends on flags """
         deleted = message.getFlag('deleted')
         if deleted == 1:
             return 'cpsma_mini_mail_delete.png'
@@ -335,7 +381,6 @@ class MailFolderView(BaseMailMessageView):
         mailfolder = self.context
         mailbox = mailfolder.getMailBox()
         list_cols = mailbox.getConnectionParams()['message_list_cols']
-        if isinstance(list_cols, str):
-            list_cols = [item.strip() for item in list_cols.split(',')]
+        list_cols = [item.strip() for item in list_cols.split(',')]
         return list_cols
 
