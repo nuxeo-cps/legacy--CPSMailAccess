@@ -27,7 +27,7 @@ from zope.interface import implements
 from time import time,sleep
 from Products.CPSMailAccess.interfaces import IConnection
 
-has_connection = 0
+has_connection = 1
 
 class ConnectionError(Exception): pass
 class ConnectionParamsError(Exception): pass
