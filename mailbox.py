@@ -61,6 +61,14 @@ class MailBox(MailFolder):
         MailFolder.__init__(self, uid, server_name, **kw)
         self.connection_params = {}
 
+    def setParameters(self, connection_params, resync=True):
+        """ sets the parameters
+        """
+        self.connection_params = connection_params
+        if resync is True:
+            self._getconnector()
+            self.synchronize()
+
     def synchronize(self):
         """ see interface
         """
