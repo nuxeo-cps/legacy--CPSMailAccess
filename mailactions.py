@@ -19,6 +19,7 @@
 # $Id$
 from Products.CPSMailAccess.interfaces import IMailBox, IMailMessage, IMailFolder
 from Products.Five import BrowserView
+from utils import getToolByName
 
 """ XXXX using a view to retrieve actions
     to avoid the use of portal_actions
@@ -45,30 +46,34 @@ class MailActionsView(BrowserView):
         """
         container = self.context
         actions = []
+        portal_url = getToolByName(container, 'portal_url')
+        # todo check if ok behind apache
+        base_url = portal_url.getPortalPath()
 
         if IMailBox.providedBy(container):
             root = container.absolute_url()
+
             # are we in the editor ?
             if self.is_editor():
-                save = {'icon' : root + '/cpsma_save.png',
+                save = {'icon' : base_url + '/cpsma_save.png',
                      'title' : 'save message',
                      'long_title' : 'save the message in Drafts',
                      'onclick' : 'saveMessageDatas(GetHTML())',
                      'action' : 'saveMessage'}
 
-                attach_file = {'icon' : root + '/cpsma_attach.png',
+                attach_file = {'icon' : base_url + '/cpsma_attach.png',
                      'title' : 'attach file',
                      'long_title' : 'add a file to the message',
                      'action' : 'editMessage.html?attach=1',
                      'onclick' : 'saveMessageDatas(GetHTML())'}
 
-                init = {'icon' : root + '/cpsma_initeditor.png',
+                init = {'icon' : base_url + '/cpsma_initeditor.png',
                      'title' : 'init editor',
                      'long_title' : 'initialize editor',
                      'action' : 'initializeEditor',
                      'onclick' : ''}
 
-                send = {'icon' : root + '/cpsma_sendmsg.png',
+                send = {'icon' : base_url + '/cpsma_sendmsg.png',
                                  'title' : 'send message',
                                  'long_title' : 'send the message',
                                  'action' : 'editMessage.html',
@@ -81,7 +86,7 @@ class MailActionsView(BrowserView):
             root = mailbox.absolute_url()
 
             if container == mailbox.getTrashFolder():
-                empty_trash = {'icon' : root + '/cpsma_emptytrash.png',
+                empty_trash = {'icon' : base_url + '/cpsma_emptytrash.png',
                                'title' : 'empty trash',
                                'long_title' : 'empty the trashcan',
                                'onclick' : "return window.confirm('Are you sure?')",
@@ -93,7 +98,7 @@ class MailActionsView(BrowserView):
             elif container == mailbox.getSentFolder():
                 pass
             else:
-                add_folder = {'icon' : root + '/cpsma_addfolder.png',
+                add_folder = {'icon' : base_url + '/cpsma_addfolder.png',
                             'title' : 'add subfolder',
                             'long_title' : 'add a subfolder',
                             'action' : 'view?add_folder=1'}
@@ -104,12 +109,12 @@ class MailActionsView(BrowserView):
                             'title' : 'move folder',
                             'long_title' : 'move the folder',
                             'action' : 'view?move_folder=1'}
-                    delete = {'icon' : root + '/cpsma_delete.png',
+                    delete = {'icon' : base_url + '/cpsma_delete.png',
                                 'title' : 'delete folder',
                                 'long_title' : 'delete current folder',
                                 'onclick' : "return window.confirm('Are you sure?')",
                                 'action' : 'delete'}
-                    rename = {'icon' : root + '/cpsma_rename.png',
+                    rename = {'icon' : base_url + '/cpsma_rename.png',
                                 'title' : 'rename folder',
                                 'long_title' : 'rename current folder',
                                 'action' : 'view?edit_name=1'}
@@ -122,24 +127,25 @@ class MailActionsView(BrowserView):
             actions.append(manage)
 
         elif IMailMessage.providedBy(container):
-            root = container.getMailBox().absolute_url()
+            mailbox = container.getMailBox()
+            root = mailbox.absolute_url()
 
-            reply = {'icon' : root + '/cpsma_reply.png',
+            reply = {'icon' : base_url + '/cpsma_reply.png',
                      'title' : 'reply',
                      'long_title' : 'reply to message',
                      'action' : 'reply'}
 
-            reply_all = {'icon' : root + '/cpsma_replyall.png',
+            reply_all = {'icon' : base_url + '/cpsma_replyall.png',
                      'title' : 'reply all',
                      'long_title' : 'reply to message (all)',
                      'action' : 'reply_all'}
 
-            forward = {'icon' : root + '/cpsma_forward.png',
+            forward = {'icon' : base_url + '/cpsma_forward.png',
                      'title' : 'forward',
                      'long_title' : 'forward the message',
                      'action' : 'forward'}
 
-            delete = {'icon' : root + '/cpsma_delete.png',
+            delete = {'icon' : base_url + '/cpsma_delete.png',
                      'title' : 'delete message',
                      'long_title' : 'delete the message',
                      'onclick' : "return window.confirm('Are you sure?')",
@@ -147,7 +153,7 @@ class MailActionsView(BrowserView):
 
             actions.extend([reply, reply_all, forward, delete])
             if container.draft:
-                draft = {'icon' : root + '/cpsma_reload.png',
+                draft = {'icon' : base_url + '/cpsma_reload.png',
                      'title' : 'load message',
                      'long_title' : 'load the message into the editor',
                      'action' : 'reload'}
@@ -155,21 +161,21 @@ class MailActionsView(BrowserView):
         else:
             return []
 
-        configure = {'icon' : root + '/cpsma_configure.png',
+        configure = {'icon' : base_url + '/cpsma_configure.png',
                      'title' : 'configure',
                      'long_title' : 'configure the webmail',
                      'action' : root + '/configure.html'}
-        synchro = {'icon' : root + '/cpsma_getmails.png',
+        synchro = {'icon' : base_url + '/cpsma_getmails.png',
                    'title' : 'get messages',
                    'long_title' : 'get all messages',
                    'action' : root + '/synchronize'}
 
-        search = {'icon' : root + '/cspma_mail_find.png',
+        search = {'icon' : base_url + '/cspma_mail_find.png',
                    'title' : 'search messages',
                    'long_title' : 'searchin messages',
                    'action' : root + '/searchMessage.html'}
 
-        write   = {'icon' : root + '/cpsma_writemail.png',
+        write   = {'icon' : base_url + '/cpsma_writemail.png',
                    'title' : 'write message',
                    'long_title' : 'write a message',
                    'action' : root + '/editMessage.html'}

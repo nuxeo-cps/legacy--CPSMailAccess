@@ -22,6 +22,7 @@ from Products.Five import BrowserView
 from Products.CPSMailAccess.mailexceptions import MailContainerError
 from zLOG import LOG, INFO
 from interfaces import IMailMessage
+from utils import getToolByName
 
 class BaseMailMessageView(BrowserView):
 
@@ -75,7 +76,10 @@ class BaseMailMessageView(BrowserView):
         """
         mailbox = self.context.getMailBox()
         mailbox.clearTreeViewCache()
-        root = mailbox.absolute_url()
+
+        portal_url = getToolByName(mailbox, 'portal_url')
+        base_url = portal_url.getPortalPath()
+
 
         # XXX hack to avoid round import
         if hasattr(self.context, 'message_cache'):
@@ -111,9 +115,9 @@ class BaseMailMessageView(BrowserView):
             for child in childs:
                 childview.context = child
                 element = self._createTreeViewElement(child, firstfolder,
-                    index, length, level, parent_index, parent_length, root)
+                    index, length, level, parent_index, parent_length, base_url)
                 unreads, element['childs'] = childview._renderTreeView(firstfolder, level+1,
-                    parent_index, parent_length, root, flags)
+                    parent_index, parent_length, base_url, flags)
                 element['unreads'] = unreads
                 treeview.append(element)
                 index += 1
