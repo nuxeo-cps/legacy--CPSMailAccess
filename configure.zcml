@@ -130,7 +130,31 @@
       permission="zope2.View"
       />
 
-  <five:pagesFromDirectory
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxParametersView"
+      template="www/mailBoxParametersView.zpt"
+      name="configure.html"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxParametersView"
+      name="editParameters.html"
+      attribute="setParameters"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxParametersView"
+      name="addParameter.html"
+      attribute="addParameter"
+      permission="zope2.View"
+      />
+
+    <five:pagesFromDirectory
       module="Products.CPSDefault"
       directory="skins/cps_default"
       for=".interfaces.IMailMessage"
@@ -164,6 +188,24 @@
       module="Products.CPSDefault"
       directory="skins/cps_styles"
       for=".interfaces.IMailFolder"
+      />
+
+  <five:pagesFromDirectory
+      module="Products.CPSDefault"
+      directory="skins/cps_default"
+      for=".interfaces.IMailBox"
+      />
+
+  <five:pagesFromDirectory
+      module="Products.CPSDefault"
+      directory="skins/cps_devel"
+      for=".interfaces.IMailBox"
+      />
+
+  <five:pagesFromDirectory
+      module="Products.CPSDefault"
+      directory="skins/cps_styles"
+      for=".interfaces.IMailBox"
       />
 
 </configure>
