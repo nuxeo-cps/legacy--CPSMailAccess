@@ -31,62 +31,67 @@ class IMailFolder(IContainer):
         description=u'Corresponding server name',
         default=u'',
         required=False)
-        
+
     mail_prefix = Field(
         title=u'Prefix for mail objects',
         description=u'All mails are prefixed with this',
         default=u'',
-        required=False)        
-        
+        required=False)
+
     def getMailMessages(list_folder=True, list_messages= True, recursive=False):
         """Retrieves all contained messages and/or folders
 
         Returns a sequence of IMailMessage and/or IMailFolder.
         """
-        
+
     def getMailMessagesCount(recursive=False):
-        """ Retrieves a count of all contained messages        
-        
+        """ Retrieves a count of all contained messages
+
         """
-        
+
     def checkMessages():
         """ Each Mail Folder can resync its content
             according to server's folder
-            a global resync would be a resync done on 
+            a global resync would be a resync done on
             the root mail folder
         """
-        
+
+    def _synchronizeFolder():
+        """ synchronizes the Folder and its content with the server
+            uses checkMessages depending on cache strategies
+        """
+
     def getServerName():
         """" returns server name
         """
-        
-    def setServerName(self, server_name):        
+
+    def setServerName(self, server_name):
         """" sets server name
              can also hold a synchronization call
              when the name changes
         """
-        
-        
+
+
     def _addMessage(uid='', msg_key=''):
         """ Mail Message factory for this
             MailFolder, adds an IMailMessage
             to it and returns it
         """
-        
+
     def _addFolder(uid='', server_name=''):
         """ Mail Folder factory for this
             MailFolder, adds an IMailFolder
             to it and returns it
-        """        
-        
+        """
+
     def findMessage(msg_key, recursive=True):
         """ finds a message by its msg_key
-        """ 
-        
+        """
+
     def childFoldersCount():
         """ returns the number of child fodlers
-        """           
-            
+        """
+
 class IMailMessage(IContainer):
     """A mail message.
 
@@ -98,86 +103,82 @@ class IMailMessage(IContainer):
         description=u'Unique identifier for message in its container',
         default=u'',
         required=True)
-        
+
     msg_key = Field(
         title=u'Message Key',
         description=u'Hash key used to identify message',
         default=u'',
         required=False)
-       
-        
-        
+
+
+
 class IMailMessageStore(IContainer):
     """ Provides interface to a mail message store
-        
-    """  
+
+    """
     def getMailBox():
         """ returns mailbox holder
-        """              
-        
-    def loadMessage(raw_msg):
-        """ loads a message from a string raw content  
         """
-        
+
+    def loadMessage(raw_msg):
+        """ loads a message from a string raw content
+        """
+
     def getPartCount():
         """ returns the number of parts the message holds
-        """         
-        
-    def getCharset(part_index=0):        
+        """
+
+    def getCharset(part_index=0):
         """ returns the charset for the given part
             for single part messages, part_index is 0
         """
-        
-    def setCharset(charset, part_index=0):        
-        """ sets the charset for the given part 
-            for single part messages, part_index is 0       
-        """        
-        
-    def isMultipart():         
+
+    def setCharset(charset, part_index=0):
+        """ sets the charset for the given part
+            for single part messages, part_index is 0
+        """
+
+    def isMultipart():
         """ tells if the mail is multipart
         """
-        
+
     def getContentType(part_index=0):
         """ retrieves the content type
-            for single part messages, part_index is 0       
-        """      
-        
+            for single part messages, part_index is 0
+        """
+
     def setContentType(content_type, part_index=0):
         """ sets the content type
-            for single part messages, part_index is 0       
-        """      
-               
+            for single part messages, part_index is 0
+        """
+
     def getContentTypeParams(part_index=0):
         """ gets the content type param list as tuple
-            for single part messages, part_index is 0       
-        """          
-        
+            for single part messages, part_index is 0
+        """
+
     def getParams(part_index=0):
         """ gets params in tuple (name, value)
-            for single part messages, part_index is 0       
-        """  
-            
-    def getParam(param_name, part_index=0):
-        """ gets value for given param 
-            for single part messages, part_index is 0       
-        """  
-        
-    def setParam(param_name, param_value, part_index=0):     
-        """ sets the param to given value
-            for single part messages, part_index is 0       
-        """             
-        
-    def delParam(self, param_name, part_index=0):                
-        """ deletes the given param 
-            for single part messages, part_index is 0       
-        """             
-        
-    def _synchronizeFolder():
-        """ synchronizes the Folder and its content with the server
+            for single part messages, part_index is 0
         """
-                
+
+    def getParam(param_name, part_index=0):
+        """ gets value for given param
+            for single part messages, part_index is 0
+        """
+
+    def setParam(param_name, param_value, part_index=0):
+        """ sets the param to given value
+            for single part messages, part_index is 0
+        """
+
+    def delParam(self, param_name, part_index=0):
+        """ deletes the given param
+            for single part messages, part_index is 0
+        """
+
 class IMailBox(IContainer):
-    """ mailboxes gives a few api to synchronize         
+    """ mailboxes gives a few api to synchronize
     """
     def synchronize():
         """ synchronizes the mailbox and its content
@@ -185,4 +186,102 @@ class IMailBox(IContainer):
         """
         pass
 
-    
+
+class IMailTool(IContainer):
+    """ portal tool
+    """
+    def listConnectionTypes():
+        """ returns a list of founded connection
+            types, based on what plugins have been successfully
+            scanned
+        """
+
+    def reloadPlugins():
+        """ rescan avalailable connection plugins
+        """
+
+
+class IConnection(Interface):
+    """ important a mail folder is called an mailbox in IConnection
+    """
+
+    def login(user, password):
+        """ used to login
+        """
+
+    def logout():
+        """ used to logout
+        """
+
+    def isConnected():
+        """ used to check the state
+        """
+
+    def list(directory='""', pattern='*'):
+        """ returns a flat list of directories
+            each directory is a dict
+            with two keys :
+                Name : Name of the directory (full path)
+                    example: 'INBOX.Drafts'__init__(self, initlist=None):
+                Attributes : List of attributes
+                    example : ['Unmarked', 'HasChildren']
+        """
+
+    def getacl(mailbox):
+        """ returns a list of acls for the given folder
+            each acls contains two parts : who and what
+            example :
+                [{'what': '"acdilrsw"', 'who': '"owner"'}]
+        """
+
+    def search(mailbox, charset, *criteria):
+        """ message search interface
+        """
+
+    def fetch(mailbox, message_number, message_parts):
+        """ fetcher
+        """
+
+    def noop():
+        """ null command sended to keep connection alive
+        """
+
+class IConnectionList(Interface):
+
+    def listConnectionTypes():
+        """ returns a list of connection types
+        """
+
+    def registerConnectionType(connection_type, method):
+        """ registers a newconnectino type thru a given method
+        """
+
+    def getConnection(connection_type, password):
+        """ gets a connection for the current user
+        """
+
+
+class IConnectionWatcher(Interface):
+
+    sleep_time = Field(
+        title=u'Sleep Time',
+        description=u'Sleep time for the thread',
+        default=u'',
+        required=True)
+
+    idle_time = Field(
+        title=u'Idle Time',
+        description=u'Time limit for connections',
+        default=u'',
+        required=True)
+
+    def linkConnectionList(connection_list):
+        """ links the connection to watch
+        """
+
+    def run():
+        """ runs the guard
+        """
+    def stop():
+        """ stops the guard
+        """
