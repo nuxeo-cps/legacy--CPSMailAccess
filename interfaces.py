@@ -36,13 +36,6 @@ class IMailFolder(IContainer):
         default=u'',
         required=False)
 
-    mail_prefix = Field(
-        title=u'Prefix for mail objects',
-        description=u'All mails are prefixed with this',
-        default=u'',
-        required=False)
-
-
     def getMailMessages(list_folder=True, list_messages= True, recursive=False):
         """Retrieves all contained messages and/or folders
 

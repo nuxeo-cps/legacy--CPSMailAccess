@@ -52,7 +52,6 @@ class MailFolder(BTreeFolder2):
     implements(IMailFolder)
     meta_type = "CPSMailAccess Folder"
     server_name = ''
-    mail_prefix = ''
     sync_state = False
 
     def __init__(self, uid=None, server_name='""', **kw):
@@ -62,7 +61,6 @@ class MailFolder(BTreeFolder2):
         'Open.INBOX.Stuffs'
         """
         BTreeFolder2.__init__(self, uid)
-        self.mail_prefix = 'msg_'
         self.setServerName(server_name)
         self.title = server_name
 
