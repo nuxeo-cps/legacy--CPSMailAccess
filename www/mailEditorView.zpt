@@ -12,18 +12,18 @@
     </script>
   </metal:main>
   <metal:block metal:fill-slot="main"
-               tal:define="attaching request/attach|nothing">
+               tal:define="attaching request/attach|nothing;
+                           cc_on python:here.getFlag('cc_on');
+                           bcc_on python:here.getFlag('bcc_on');
+                           attacher_on python:here.getFlag('attacher_on')">
+
       <noscript>
         <div class="message">
         Javascript is disabled, please activate it for enhanced ergonomy.
         </div>
       </noscript>
-      <div  tal:condition="attaching">
-        <a href="editMessage.html"
-           class="close_attach_form"
-           title="close">
-          <img src="cpsma_delete_file.png"/>
-        </a>
+      <div id="attacher"
+       tal:attributes="style python:test(attacher_on==0,'visibility: hidden','visibility: visible');class python:test(attacher_on==0,'hidden_part','')">
         <form class="attach_form"
               action="attach_file"
               method="post" enctype="multipart/form-data">
@@ -35,7 +35,8 @@
               </td>
               <td>
                 <input class="attach_button" type="submit" name="submit"
-                    value="attach"/>
+                    value="attach"
+                    onclick="saveMessageDatas(GetHTML())"/>
               </td>
             </tr>
           </table>
@@ -45,11 +46,10 @@
       <form action="editAction"
             method="post"
             enctype="multipart/form-data"
-          tal:define="dummy here/initMessage;
+            tal:define="dummy here/initMessage;
                       came_from request/came_from|nothing;
                       body_value here/bodyvalue;
-                      from_indentities here/getIdentitites;"
-          >
+                      from_indentities here/getIdentitites;">
 
       <input type="hidden" tal:attributes="value came_from" name="came_from"/>
 
@@ -74,43 +74,61 @@
             </select>
           </td>
         </tr>
-        <tr tal:repeat="to here/tos">
-          <td colspan="1"  class="tr_title">
-            &#160;<span tal:replace="to/type"/>
-          </td>
-          <td class="tr_title" colspan="2">
-            <a style="float:right"
-               tal:attributes="href python:'removeRecipient?value='+to['value']+'&type='+to['type']">
-              <img src="cpsma_delete_file.png"/>
-            </a>
-            <span tal:replace="to/value"/>
+        <tr>
+         <td colspan="3">
+           <div id="To" tal:define="elements python:here.getDestList(type_='To');
+                                    elements python:'\r\n'.join(elements)">
+             <div class="recipient_header">To:</div>
+             <div  class="recipient">
+               <textarea name="msg_to" id="msg_to"
+                         class="recipients" tal:content="elements"></textarea>
+             </div>
+           </div>
+           <div style="clear: both"/>
 
-          </td>
+           <div id="Cc"
+            tal:attributes="style python:test(cc_on==0,'visibility: hidden','visibility: visible');class python:test(cc_on==0,'hidden_part','')"
+                tal:define="elements python:here.getDestList(type_='Cc');
+                                    elements python:'\r\n'.join(elements)">
+             <div class="recipient_header">Cc:</div>
+             <div  class="recipient">
+               <textarea name="msg_cc"  id="msg_cc"
+                         class="recipients" tal:content="elements"></textarea>
+             </div>
+           </div>
+
+           <div style="clear: both"/>
+           <div id="BCc"
+                tal:attributes="style python:test(bcc_on==0,'visibility: hidden','visibility: visible');
+                class python:test(bcc_on==0,'hidden_part','')"
+                tal:define="elements python:here.getDestList(type_='BCc');
+                                    elements python:'\r\n'.join(elements)">
+             <div class="recipient_header">BCc:</div>
+             <div  class="recipient">
+               <textarea name="msg_bcc" id="msg_bcc"
+                         class="recipients" tal:content="elements"></textarea>
+             </div>
+           </div>
+
+            <div class="recipient_toggler">
+                <span class="link" onclick="toggleElementVisibility('attacher')">
+                <img src="cma_small_attach.png"/>&#160;Attach file</span> |
+                <span class="link" onclick="toggleElementVisibility('Cc')">Cc</span> |
+                <span class="link" onclick="toggleElementVisibility('BCc')">Bcc</span> |
+                Directories
+            </div>
+        </td>
+
         </tr>
+
         <tr>
-          <td>
-            <select name="sent_type" style="width: 100%" class="tr_title">
-              <option value="To" selected>To</option>
-              <option value="Cc">Cc</option>
-              <option value="BCc">BCc</option>
-            </select>
-          </td>
-          <td width="100%">
-            <input class="message_edit_input" id="msg_to" name="msg_to" type="text"/>
-          </td>
-          <td>
-            <input style="margin-left : 4px" type="submit"
-              onclick="saveMessageDatas(GetHTML())"
-              name="action" value="add_recipient"/>
-          </td>
-        </tr>
-        <tr>
-          <td class="tr_title">Subject:
-          </td>
-          <td colspan="2">
+          <td colspan="3">
+          <div class="subject">Subject:</div>
+          <div class="message_edit_input">
             <input class="message_edit_input" type="text" name="msg_subject"
                 id="msg_subject"
                 tal:attributes="value here/subject" />
+          </div>
           </td>
         </tr>
       </table>
@@ -121,7 +139,8 @@
             style='width:100%; height:300px; border:1px solid #A0A0A0; border-style:solid;')" />
       </div>
       <div id="toolbar">
-        <input type="submit" value="send" name="action"/>
+        <input type="submit" value="send" name="action"
+         onclick="saveMessageDatas(GetHTML())"/>
       </div>
     </form>
   </metal:block>
