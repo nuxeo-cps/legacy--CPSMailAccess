@@ -140,6 +140,22 @@
 
   <browser:page
       for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxView"
+      template="www/mailBoxView.zpt"
+      name="view.html"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxView"
+      template="www/mailBoxView.zpt"
+      name="view"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
       class=".mailbox.MailBoxParametersView"
       name="editParameters.html"
       attribute="setParameters"
@@ -154,8 +170,23 @@
       permission="zope2.View"
       />
 
-<!--
-    <five:pagesFromDirectory
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailbox.MailFolderView"
+      name="treeview"
+      attribute="renderTreeView"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxView"
+      name="treeview"
+      attribute="renderTreeView"
+      permission="zope2.View"
+      />
+
+  <five:pagesFromDirectory
       module="Products.CPSDefault"
       directory="skins/cps_default"
       for=".interfaces.IMailMessage"
@@ -209,6 +240,6 @@
       for=".interfaces.IMailBox"
       />
 
--->
+
 
 </configure>
