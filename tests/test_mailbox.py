@@ -24,7 +24,7 @@ from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
 
-from Products.CPSMailAccess.mailbox import MailBox
+from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView
 from Products.CPSMailAccess.interfaces import IMailBox
 
 
@@ -67,6 +67,26 @@ class MailBoxTestCase(ZopeTestCase):
         self.assertEquals('IMAP', mailbox['connection_type'])
         self.assertEquals('tarek', mailbox['uid'])
 
+    def test_MailBoxParametersView(self):
+        """ testing MailBoxParametersView generators
+        """
+        mailbox = MailBox('mailbox')
+
+        view = MailBoxParametersView(mailbox, None)
+
+        self.assertNotEquals(view, None)
+
+        params = view._getParameters()
+        self.assertNotEquals(params, [])
+
+        params = view.renderParameters()
+        self.assertNotEquals(params, '')
+
+        params = view.renderParametersForm()
+        self.assertNotEquals(params, '')
+
+        params = view.renderAddParamForm()
+        self.assertNotEquals(params, '')
 
 def test_suite():
     return unittest.TestSuite((
