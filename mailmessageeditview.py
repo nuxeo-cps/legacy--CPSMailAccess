@@ -36,7 +36,7 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.publisher.browser import FileUpload
 
 
-from utils import uniqueId, makeId, getFolder
+from utils import uniqueId, makeId, getFolder, isValidEmail
 from interfaces import IMailBox, IMailMessage, IMailFolder
 from mailmessage import MailMessage
 from mailfolder import MailFolder, manage_addMailFolder
@@ -60,12 +60,30 @@ class MailMessageEdit(BrowserView):
             return value
 
     def initMessage(self):
-        """ will init message editor
-        """
+        """ will init message editor """
         mailbox = self.context
         # this creates a mailmessage instance
         # XXX todo manage a list of editing message in case of multiediting
         #mailbox.getCurrentEditorMessage()
+
+    def writeTo(self, msg_to):
+        """ initialize maileditor """
+        mailbox = self.context
+        mailbox.clearEditorMessage()
+        msg = mailbox.getCurrentEditorMessage()
+        msg.setHeader('To', msg_to)
+        if self.request is not None:
+            self.request.response.redirect('editMessage.html')
+
+    def _verifyRecipients(self, msg):
+        """ verify all recipients """
+        verify_fields = ('To', 'Cc', 'BCc')
+        for field in verify_fields:
+            values = msg.getHeader(field)
+            for value in values:
+                if not isValidEmail(value):
+                    return '%s is not a valid email' % value
+        return None
 
     def sendMessage(self, msg_from, msg_subject, msg_body, came_from=None):
         """ calls MailTool """
@@ -82,9 +100,26 @@ class MailMessageEdit(BrowserView):
                     % (psm))
             return
 
+        error = self._verifyRecipients(msg)
+        if error is not None:
+            if self.request is not None:
+                # todo : need to be externalized in i18n
+                psm = error
+                self.request.response.redirect('editMessage.html?portal_status_message=%s'\
+                    % (psm))
+            return
+
         msg.setHeader('From', msg_from)
         msg_body = verifyBody(msg_body)
         msg.setDirectBody(msg_body)
+
+        if msg_subject.strip() == '' and msg_body.strip() == '':
+            if self.request is not None:
+                # todo : need to be externalized in i18n
+                psm = 'both subject and body are empty'
+                self.request.response.redirect('editMessage.html?portal_status_message=%s'\
+                    % (psm))
+            return
 
         # using the message instance that might have attached files already
         result, error = self.context.sendEditorsMessage()
@@ -245,6 +280,7 @@ class MailMessageEdit(BrowserView):
             if form.has_key(area):
                 msg_body = form[area]
                 lines = msg_body.split('\r\n')
+                msg.removeHeader(id)            # otherwise previou ones stays there
                 self.addRecipient(msg_body, id)
 
         if form.has_key('cc_on'):
