@@ -146,7 +146,8 @@ class MailFolder(BTreeFolder2):
 
         if list_messages:
             # use btree slices
-            r = self.getValuesSlice('.', '.\xff')
+            # catalogs starts with a '.z' and are neither msg nor folder
+            r = self.getValuesSlice('.', '.y')
             results.extend(list(r))
 
         if recursive:
