@@ -199,8 +199,7 @@ class MailFolder(Folder):
 InitializeClass(MailFolder)
 
 manage_addMailFolderForm = PageTemplateFile(
-    "www/zmi_addmailfolder", globals(),
-    __name__ = 'manage_addMailFolder')
+    "www/zmi_addmailfolder", globals())
 
 def manage_addMailFolder(container, id=None, server_name ='',
         REQUEST=None, **kw):
