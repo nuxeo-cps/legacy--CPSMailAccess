@@ -64,11 +64,8 @@ class MailMessageTestCase(ZopeTestCase):
                 data = self._msgobj('msg_'+str(i+1)+'.txt')
 
             if data <> '':
-                try:
-                    ob.loadMessage(data)
-                    res.append(ob)
-                except:
-                    pass
+                ob.loadMessage(data)
+                res.append(ob)
         return res
 
 
@@ -94,10 +91,7 @@ class MailMessageTestCase(ZopeTestCase):
                 data = self._msgobj('msg_'+str(i+1)+'.txt')
 
             if data <> '':
-                try:
-                    ob.loadMessage(data)
-                except:
-                    print '\nmsg_0'+str(i+1)+'.txt fails\n'
+                ob.loadMessage(data)
 
 
     def test_getPartCount(self):

@@ -66,11 +66,8 @@ class MailRendererTestCase(ZopeTestCase):
                 data = self._msgobj('msg_'+str(i+1)+'.txt')
 
             if data <> '':
-                try:
-                    ob.loadMessage(data)
-                    res.append(ob)
-                except:
-                    pass
+                ob.loadMessage(data)
+                res.append(ob)
         return res
 
     def getMailInstance(self,number):
@@ -118,19 +115,16 @@ class MailRendererTestCase(ZopeTestCase):
         """
         ob = MailRenderer()
         for i in range(35):
-            if i == 24:
-                self.assertRaises(BoundaryError, self.getMailInstance, i)
-            else:
-                mail = self.getMailInstance(i)
+            mail = self.getMailInstance(i)
 
-                # for multiparts, just get first part
-                #raise str(mail)
-                part = mail.getPart()
+            # for multiparts, just get first part
+            #raise str(mail)
+            part = mail.getPart()
 
-                rendered = ob.renderBody(mail)
+            rendered = ob.renderBody(mail)
 
-                # see here for deeper checks on rendered body
-                self.assertNotEqual(rendered, None)
+            # see here for deeper checks on rendered body
+            self.assertNotEqual(rendered, None)
 
 def test_suite():
     return unittest.TestSuite((
