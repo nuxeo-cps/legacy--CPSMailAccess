@@ -26,6 +26,8 @@ from zope.app.datetimeutils import DateTimeParser, SyntaxError as ZSyntaxError
 from datetime import datetime
 from time import strftime
 from Acquisition import aq_get
+from email.Utils import fix_eols
+from html2text import HTML2Text
 
 _translation_table = string.maketrans(
     # XXX candidates: @°+=`|
@@ -220,3 +222,67 @@ def getToolByName(obj, name, default=_marker):
         if tool is _marker:
             raise AttributeError, name
         return tool
+
+def replyToBody(from_value, body, line_header='>>> '):
+    """ return a reply bloc
+    """
+    reply_content = [line_header+from_value + ' wrote']
+    body = fix_eols(body)
+    body_lines = body.split('\r\n')
+    for line in body_lines:
+        reply_content.append(line_header+line)
+    return '<br/>'.join(reply_content)
+
+def verifyBody(msg):
+    """ verify direct body content, according to
+        content-type
+    """
+    content_type = msg.getHeader('content-type')
+    if content_type == []:
+        content_type = 'text/plain'
+    else:
+        content_type = content_type[0]
+
+    if content_type == 'text/plain':
+        # todo create a 'getBody' api instead
+        # that gets the first viewable body
+        body = msg.getPart(0)
+
+        # need to find a high level utility here
+        try:
+            body = fix_eols(body)
+            body = HTMLToText(body)
+            body = body.replace('&lt;', '<')
+            body = body.replace('&gt;', '>')
+            ### epoz :(
+            body = body.replace('<br>', '\r\n')
+            msg.setPart(0, body)
+        except TypeError:
+            pass
+    else:
+        raise NotImplementedError(content_type)
+
+
+def HTMLize(content):
+    """ transforms a text into a html bloc
+    """
+    content = fix_eols(content)
+    content = content.replace('\r\n', '<br/>')
+    return content
+
+class HTMLMail(HTML2Text):
+
+    def clear(self):
+        self.lines = []
+
+    def generate(self):
+        HTML2Text.generate(self)
+        return self.result
+
+def HTMLToText(html):
+    #todo : make a thread safe queue and use one
+    # instance of html engine
+    html_engine = HTMLMail()
+    #html_engine.clear()
+    html_engine.add_text(html)
+    return html_engine.generate()
