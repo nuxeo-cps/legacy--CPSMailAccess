@@ -31,7 +31,8 @@ class MailSearchView(BrowserView):
     def searchMessages(self, searchable_text):
         """ search the catalog
         """
-        searchable_text = unicode(searchable_text.strip())
+        # XXX encoding in iso8859-15 (today's CPS)
+        searchable_text = searchable_text.strip().decode('ISO-8859-15')
         if searchable_text == '':
             return []
         box = self.context
