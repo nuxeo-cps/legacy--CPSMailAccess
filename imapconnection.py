@@ -111,7 +111,7 @@ class IMAPConnection(BaseConnection):
         try:
             typ, dat = self._connection.login(user, password)
         except self._connection.error:
-            raise ConnectionError(LOGIN_FAILED)
+            raise ConnectionError(LOGIN_FAILED + ' for user %s' % user)
 
         # _connection state is AUTH if login succeeded
         if typ == 'OK' :
@@ -261,7 +261,8 @@ class IMAPConnection(BaseConnection):
                 returned[raw_name] = raw_data
                 i += 1
         else:
-            raise Exception('generalize fails on %s' % str(element) )
+            returned = element
+            #raise Exception('generalize fails on %s' % str(element) )
 
         return returned
 
