@@ -156,6 +156,7 @@
                                results python:here.zemanticSearchMessages(**form);
                                num_results python:len(results[0]);
                                time python:'%0.2f' % results[1];
+                               nbitems python:results[2];
                                results python:results[0]">
             <tal:block tal:condition="python:num_results>0">
               <div class="dlabel">
@@ -163,7 +164,9 @@
                 <tal:block tal:replace="num_results"/>
                   <span i18n:translate="cpsma_results_in">results in</span>
                 <tal:block tal:replace="time"/>
-                <span i18n:translate="cpsma_seconds">seconds</span>:
+                <span i18n:translate="cpsma_seconds">seconds</span>
+                 (<span tal:replace="nbitems"/>
+                 <span i18n:translate="cpsma_objects">objects</span>) :
               </div>
               <div id="searchResults">
                 <metal:block metal:use-macro="here/messagelist_macros/search_messagelist"/>
