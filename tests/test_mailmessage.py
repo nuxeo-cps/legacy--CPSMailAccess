@@ -215,9 +215,9 @@ class MailMessageTestCase(MailTestCase):
     def test_getHeaders(self):
         ob = self.getMailInstance(6)
 
-        self.assertEquals(ob.getHeader('From'), 'Barry <barry@digicool.com>')
+        self.assertEquals(ob.getHeader('From'), ['Barry <barry@digicool.com>'])
         # must be case insensitive
-        self.assertEquals(ob.getHeader('from'), 'Barry <barry@digicool.com>')
+        self.assertEquals(ob.getHeader('from'), ['Barry <barry@digicool.com>'])
 
     def test_setHeaders(self):
         ob = MailMessage()
@@ -225,18 +225,18 @@ class MailMessageTestCase(MailTestCase):
 
         s = 'Tarek <tz@nuxeo.com>'
         ob.setHeader('From', s)
-        self.assertEquals(ob.getHeader('From'), s)
-        self.assertEquals(ob.getHeader('from'), s)
+        self.assertEquals(ob.getHeader('From'), [s])
+        self.assertEquals(ob.getHeader('from'), [s])
 
         s = 'Tarek <tarek@ziade.org>'
         ob.setHeader('From', s)
-        self.assertEquals(ob.getHeader('From'), s)
-        self.assertEquals(ob.getHeader('from'), s)
+        self.assertEquals(ob.getHeader('From'), [s])
+        self.assertEquals(ob.getHeader('from'), [s])
 
         s = 'Bob <bob@dinosaur.org>'
         ob.setHeader('from', s)
-        self.assertEquals(ob.getHeader('From'), s)
-        self.assertEquals(ob.getHeader('from'), s)
+        self.assertEquals(ob.getHeader('From'), [s])
+        self.assertEquals(ob.getHeader('from'), [s])
 
     def test_partialMessages(self):
         ob = self.getMailInstance(6)
@@ -277,8 +277,10 @@ class MailMessageTestCase(MailTestCase):
         storage.file = file
         storage.filename = 'audiotest.au'
         uploaded = FileUpload(storage)
+
         ob.attachFile(uploaded)
         raw = ob.getRawMessage()
+
         self.assertNotEquals(raw.find('AAAAAAABnZ+fn59PNzefnZ1tbZ1'), -1)
 
         file = openfile('PyBanner048.gif')
