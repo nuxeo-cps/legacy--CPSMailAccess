@@ -24,7 +24,7 @@ A MailFolder contains mail messages and other mail folders.
 """
 from zLOG import LOG, DEBUG, INFO
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from OFS.Folder import Folder
+from BTreeFolder2.BTreeFolder2 import BTreeFolder2
 from Acquisition import aq_parent
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
@@ -40,7 +40,7 @@ from Products.CPSMailAccess.baseconnection import ConnectionError
 class MailContainerError(Exception) :
     pass
 
-class MailFolder(Folder):
+class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
 
     A MailFolder implements IMailFolder:
@@ -61,7 +61,7 @@ class MailFolder(Folder):
         >>> f.getServerName()
         'Open.INBOX.Stuffs'
         """
-        Folder.__init__(self, uid)
+        BTreeFolder2.__init__(self, uid)
         self.mail_prefix = 'msg_'
         self.setServerName(server_name)
         self.title = server_name
@@ -396,6 +396,7 @@ manage_addMailFolderForm = PageTemplateFile(
 def manage_addMailFolder(container, id=None, server_name ='',
         REQUEST=None, **kw):
     """Add a box to a container (self).
+
     >>> from OFS.Folder import Folder
     >>> f = Folder()
     >>> manage_addMailFolder(f, 'inbox')
