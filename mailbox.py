@@ -653,10 +653,26 @@ class MailBox(MailBoxBaseCaching):
             i += 1
         return res
 
-
     #
     # apis that deals with directory manipulations
     #
+
+    def searchDirectoryEntries(self, email):
+        #
+        kw = {'email' : email}
+        adressbook = self._searchEntries('addressbook',
+                                         ['fullname', 'email', 'id',
+                                          'mails_sent'], **kw)
+
+        private_adressbook = self._searchEntries('.addressbook',
+                                                  ['fullname', 'email',
+                                                   'id', 'mails_sent'], **kw)
+
+        adressbook.extend(private_adressbook)
+        adressbook = self._sortDirectorySearchResult(adressbook, 'mails_sent')
+
+        return adressbook
+
 
     def getMailDirectoryEntries(self, max_entries=10):
         """ retrieves all entries
