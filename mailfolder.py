@@ -126,7 +126,7 @@ class MailFolder(BTreeFolder2):
         """ returns cache level
         """
         mailbox = self.getMailBox()
-        return mailbox.connection_params['cache_level']
+        return int(mailbox.connection_params['cache_level'])
 
     def getMailMessages(self, list_folder=True, list_messages=True,
                         recursive=False):
@@ -294,7 +294,7 @@ class MailFolder(BTreeFolder2):
             return True
         return False
 
-    def _addMessage(self, uid, digest):
+    def _addMessage(self, uid, digest, index=True):
         """See interfaces.IMailFolder
         """
         self.clearMailBoxTreeViewCache()
@@ -305,7 +305,8 @@ class MailFolder(BTreeFolder2):
         msg.parent_folder = self
         msg = self._getOb(id)
         # index message
-        self._indexMessage(msg)
+        if index:
+            self._indexMessage(msg)
         return msg
 
     def _indexMessage(self, msg):
@@ -423,8 +424,11 @@ class MailFolder(BTreeFolder2):
 
             digest = self._createKey(msg_headers)
             msg = mail_cache.get(digest, remove=True)
+            raw_msg = ''
 
             if msg is None:
+                msg = self._addMessage(uid, digest, index=False)
+
                 # Message is not in cache
                 if cache_level == 0:
                     # nothing is uploaded
@@ -449,29 +453,22 @@ class MailFolder(BTreeFolder2):
                                                 '(FLAGS RFC822)')
                     msg_flags = msg_content[0]
                     msg_body = msg_content[1]
-                    #except Timeout:
-                    #except:
-                        # XXX will be moved to connection object
-                    #    msg_content = ''
-
-                # XXX should be done by fetch into connection object
-                #raise str(msg_content)
-
                     if msg_content:
                         raw_msg = msg_body
                     else:
                         raw_msg = ''
 
                 log.append('adding message %s in %s' % (uid, self.server_name))
-                msg = self._addMessage(uid, digest)
+
                 # todo: parse flags
                 msg.loadMessage(raw_msg, cache_level)
+
+                self._indexMessage(msg)
             else:
                 # Message was in cache, adding it to self
                 log.append('moving message %s in %s' % (uid, self.server_name))
                 self._setObject(msg.getId(), msg)
             msg.setSyncState(state=True)
-            LOG('sync', INFO, str(uid))
 
         # now clear messages in zodb that appears to be
         # deleted from the directory
