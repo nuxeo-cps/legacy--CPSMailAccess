@@ -211,8 +211,21 @@ class MailBoxTestCase(MailTestCase):
         mb = mailbox._getZemanticCatalog()
         self.assert_(mb is not None)
 
+    def test_checkIndexStack(self):
+        #checks that index stack gets filled
+        mailbox = self._getMailBox()
+        indexStack = []
+        mailbox._syncdirs([{'Name' : 'INBOX'}], True, indexStack)
+        self.assertEquals(len(indexStack), 1)
 
+        indexStack = []
+        mailbox._syncdirs([{'Name' : 'INBOX'}, {'Name' : 'INBOX.Trash'}], True, indexStack)
+        self.assertEquals(len(indexStack), 2)
 
+    def test_synchronize(self):
+        mailbox = self._getMailBox()
+        logs = mailbox.synchronize()
+        self.assert_(len(logs)>100)
 
 
 

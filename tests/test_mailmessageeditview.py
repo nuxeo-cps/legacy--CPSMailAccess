@@ -189,9 +189,6 @@ class MailMessageEditTestCase(MailTestCase):
         self.assertEquals(view.getIdentitites(), [{'fullname': 'Tarek Ziad\xe9',
                                                    'email': 'tz@nuxeo.com'}])
 
-    ### need more tests here on EditorMessage
-
-
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageEditTestCase),

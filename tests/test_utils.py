@@ -22,7 +22,7 @@ from Testing.ZopeTestCase import ZopeTestCase
 from datetime import datetime
 from Products.CPSMailAccess.utils import isToday, replyToBody, verifyBody, \
     sanitizeHTML, HTMLize, HTMLToText, decodeHeader, getCurrentDateStr, \
-    isValidEmail
+    isValidEmail, parseDateString
 
 from basetestcase import MailTestCase
 
@@ -128,6 +128,15 @@ The CPS Team.
         self.assert_(not isValidEmail('fezefz'))
         self.assert_(not isValidEmail(''))
         self.assert_(isValidEmail('tdddd.dddddd.ddd@nu.x.eo.com'))
+
+    def test_parseDateStringWeirdCases(self):
+        date = parseDateString('Sat, 04 Dec 2004 20:03:34 +0190')
+        self.assertEquals(date, datetime(2004, 12, 4, 20, 3, 34))
+
+        # sometime the last part is not ok,
+        # those are hard to guess so we return 1 jan 70
+        date = parseDateString('Sat, 04 Dec 2004 20:03:34 01900')
+        self.assertEquals(date, datetime(1970, 1, 1, 0, 0))
 
 def test_suite():
     return unittest.TestSuite((

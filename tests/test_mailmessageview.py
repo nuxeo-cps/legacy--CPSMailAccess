@@ -87,13 +87,11 @@ class MailMessageViewTestCase(MailTestCase):
         self.assertNotEquals(full.find('http://www.zzz.org/mailman/listinfo/ppp'), -1)
 
     def test_MailMessageViewMethods(self):
-
         ob = self.getMailInstance(6)
         # need to set up context and request object here
         view = MailMessageView(ob, None)
         self.assert_(view)
         """
-        view.reply()
         view.reply_all()
         view.forward()
         view.delete()
@@ -183,6 +181,56 @@ class MailMessageViewTestCase(MailTestCase):
 
         hl = view.renderHeaderList('From')
         self.assertEquals(hl, u'Tarek Ziadé')
+
+    def test_reply_all(self):
+        mbox =self._getMailBox()
+        ob = self.getMailInstance(6)
+
+        ob = ob.__of__(mbox)
+
+        # need to set up context and request object here
+        view = MailMessageView(ob, None)
+        self.assert_(view)
+
+        ob.addHeader('To', 'tarek')
+        ob.addHeader('To', 'bob')
+        ob.addHeader('Cc', 'bill')
+        ob.addHeader('Cc', 'billie')
+
+        # testing reply all
+        view.reply_all()
+
+        ed_msg = mbox.getCurrentEditorMessage()
+
+        # we should get all 4 persons
+        ToList = ed_msg.getHeader('To')
+        self.assert_('tarek' in ToList)
+        self.assert_('bob' in ToList)
+        self.assert_('bill' in ToList)
+        self.assert_('billie' in ToList)
+
+    def test_reply(self):
+        mbox =self._getMailBox()
+        ob = self.getMailInstance(6)
+
+        ob = ob.__of__(mbox)
+
+        # need to set up context and request object here
+        view = MailMessageView(ob, None)
+        self.assert_(view)
+
+        ob.addHeader('To', 'tarek')
+        ob.addHeader('To', 'bob')
+        ob.addHeader('Cc', 'bill')
+        ob.addHeader('Cc', 'billie')
+
+        # testing reply all
+        view.reply()
+
+        ed_msg = mbox.getCurrentEditorMessage()
+
+        # we should get only the From person
+        self.assertEquals(ed_msg.getHeader('To'), ob.getHeader('From'))
 
 def test_suite():
     return unittest.TestSuite((
