@@ -24,7 +24,7 @@
       <tr>
         <td>
             <h4>
-              <a href="searchMessage.html" class="selectable">
+              <a href="zemanticSearchMessage.html" class="selectable">
                 <img tal:attributes="src python:base_url+'/cspma_mail_find.png'"/>
                 &#160;Search Messages
               </a>
