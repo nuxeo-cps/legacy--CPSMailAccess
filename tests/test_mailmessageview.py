@@ -33,6 +33,8 @@ from Products.CPSMailAccess.tests import __file__ as landmark
 
 from basetestcase import MailTestCase
 
+installProduct('TextIndexNG2')
+
 def openfile(filename, mode='r'):
     path = os.path.join(os.path.dirname(landmark), 'data', filename)
     return open(path, mode)
@@ -146,6 +148,21 @@ class MailMessageViewTestCase(MailTestCase):
         self.assertNotEquals(body, '')
         body = view.renderBody()
         self.assertNotEquals(body, '')
+
+    def test_renderBody(self):
+        # thunderbird html
+        ob = MailMessage()
+        ob.setDirectBody(u'<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> <html> <head>  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">  <title></title> </head> <body bgcolor="#ffffff" text="#000000"> ezezf<br> ezf<br> <b>ezf</b><br> ef<br> <br> <u>ez<br> <br> <span class="moz-smiley-s6"><span> :-[ </span></span><br> </u>ezf<br> </body> </html>')
+
+        ob.setHeader('Content-Type', 'text/html')
+        ob.setHeader('Charset', 'ISO-8859-15')
+
+        view = MailMessageView(ob, None)
+        self.assert_(view)
+
+        body = view.renderBody()
+        self.assertEquals(body, u' ezezf<br/> ezf<br/> <b>ezf</b><br/> ef<br/> <br/> <u>ez<br/> <br/> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> </u>ezf<br/> ')
+
 
 
 

@@ -20,7 +20,8 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import ZopeTestCase
 from datetime import datetime
-from CPSMailAccess.utils import isToday, replyToBody, verifyBody, HTMLize
+from CPSMailAccess.utils import isToday, replyToBody, verifyBody, \
+    sanitizeHTML, HTMLize, HTMLToText
 from basetestcase import MailTestCase
 
 class UtilsTestCase(MailTestCase):
@@ -69,6 +70,38 @@ class UtilsTestCase(MailTestCase):
         self.assertEqual(result[3], '&gt; The CPS Team.')
 
 
+    def test_sanitizeHTML(self):
+        html = 'dfghjuik<body> ghfrtgy<script >hj</script>uikolmù</body>'
+        res = sanitizeHTML(html)
+        self.assertEquals(res, ' ghfrtgyuikolmù')
+
+        html = 'dfghjuik&lt;body&gt; ghfrtgy&lt;script &gt;hj&lt;/script&gt;uikolmù&lt;/body&gt;'
+        res = sanitizeHTML(html)
+        self.assertEquals(res, ' ghfrtgyuikolmù')
+        html = """<html>
+<body>
+ezezf<br>
+</body>
+</html>
+"""
+        res = sanitizeHTML(html)
+        self.assertEquals(res, u'ezezf<br/>')
+
+    def test_HTMLToText(self):
+        html = 'ezezf<br><span>ezezf</span><br>'
+        res = HTMLToText(html)
+        self.assertEquals(res, 'ezezf\r\nezezf')
+
+    def oldtest_HTMLToTextNoEffect(self):
+        html = """Welcome to your cps webmail, webmailtest4 !
+
+The CPS Team.
+"""
+        res = HTMLToText(html)
+        self.assertEquals(res, """Welcome to your cps webmail, webmailtest4 !
+
+The CPS Team.
+""")
 
 
 def test_suite():
