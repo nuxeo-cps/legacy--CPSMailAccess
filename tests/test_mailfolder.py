@@ -263,6 +263,39 @@ class MailFolderTestCase(MailTestCase):
         mailbox = self._getMailBox()
         mailbox._synchronizeFolder()
 
+
+    def test_MoveMessage(self):
+        mailbox = self._getMailBox()
+        folder1 = mailbox._addFolder('folder1', 'INBOX')
+        folder2 = mailbox._addFolder('folder2', 'INBOX2')
+
+        msg = folder1._addMessage('1', 'DFRTGYHJUKL')
+        msg.uid = '1'
+
+        folder1.moveMessage('1', folder2)
+
+        self.assert_(not hasattr(folder1, '.1'))
+        self.assert_(hasattr(folder2, '.1'))
+        self.assertEquals(getattr(folder2, '.1'), msg)
+
+
+    def test_copyMessage(self):
+        mailbox = self._getMailBox()
+        folder1 = mailbox._addFolder('folder1', 'INBOX')
+        folder2 = mailbox._addFolder('folder2', 'INBOX2')
+
+        msg = folder1._addMessage('1', 'DFRTGYHJUKL')
+        msg.uid = '1'
+        msg.setHeader('Subject', 'yopla')
+
+        folder1.copyMessage('1', folder2)
+
+        self.assert_(hasattr(folder1, '.1'))
+        self.assert_(hasattr(folder2, '.1'))
+        msg2 = getattr(folder2, '.1')
+        self.assertEquals(msg2.getHeader('Subject'), ['yopla'])
+        self.assertEquals(msg2.getHeader('Subject'), msg.getHeader('Subject'))
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailFolderTestCase),
