@@ -1,0 +1,66 @@
+<html metal:use-macro="here/main_template/macros/master">
+  <metal:block fill-slot="css_slot">
+    <style type="text/css" media="all"
+      tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
+  </metal:block>
+  <metal:main fill-slot="javascript_head_slot">
+    <script type="text/javascript"
+      tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
+      src="++resource++cpsmailaccess.js">
+    </script>
+  </metal:main>
+  <metal:block metal:fill-slot="main"
+      tal:define="searchable_text request/searchable_text|python:'';
+                  numblocs request/numblocs|python:1;
+                  numblocs python:range(int(numblocs))">
+      zemantic
+    <form action="zemanticSearchMessage.html">
+
+      <div tal:repeat="bloc numblocs">
+        <select tal:attributes="name python:'relation_'+str(bloc)">
+          <tal:block tal:repeat="predicate here/zemanticPredicateList">
+            <option>
+              <tal:block tal:replace="predicate"/>
+            </option>
+          </tal:block>
+        </select>
+        <input type="text" tal:attributes="name python:'value_'+str(bloc)"/>
+      </div>
+
+
+      <input type="submit" name="search_submitted" value="search"/>
+
+     </form>
+    <tal:block tal:condition="request/search_submitted|python:0">
+        <hr/>
+        <tal:block tal:define="form request/form;
+                               results python:here.zemanticSearchMessages(**form);
+                               num_results python:len(results)">
+            <tal:block tal:condition="python:num_results>0">
+              <div>
+                Found <tal:block tal:replace="num_results"/> results :
+              </div>
+              <div id="searchResults">
+                <tal:block tal:repeat="result results">
+                  <div>
+                    <a tal:attributes="href python:result[0]">
+                    Message
+                    </a>
+                    &#160;
+                    <tal:block tal:replace="python:result[1]"/>
+                    &#160;
+                    <tal:block tal:replace="python:result[2]"/>
+                  </div>
+                </tal:block>
+              </div>
+              <script langage="javascript">
+                truncateFields(32);
+              </script>
+            </tal:block>
+            <tal:block tal:condition="python:num_results==0">
+            No results where found.
+            </tal:block>
+        </tal:block>
+    </tal:block>
+  </metal:block>
+</html>
