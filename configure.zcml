@@ -98,4 +98,13 @@
       type="zope.app.content.interfaces.IContentType"
       />
 
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessage.MailMessageView"
+      template="www/mailMessageView.zpt"
+      name="view.html"
+      permission="zope2.View"
+      />
+
+
 </configure>
