@@ -104,7 +104,10 @@ class MailBoxBaseCaching(MailFolder):
     def setCurrentEditorMessage(self, msg):
         """ sets the message that is beeing edited
         """
-        self._cache.set(msg, 'maileditor')
+        # this is done to adapt any kind of message
+        editor_msg = self.getCurrentEditorMessage()        # creates it if empty
+        editor_msg.loadFromMessage(msg)
+        self._cache.set(editor_msg, 'maileditor')
 
     def clearEditorMessage(self):
         """ empty the cached message
@@ -491,23 +494,23 @@ class MailBox(MailBoxBaseCaching):
         cat.unIndexMessage(msg)
 
     def saveEditorMessage(self):
-        """ make a copy of editor message
-            into Drafts
-        """
+        """ makes a copy of editor message into Drafts """
         # TODO: add a TO section
         msg = self.getCurrentEditorMessage()
         drafts = self.getDraftFolder()
         uid = drafts.getNextMessageUid()
         new_uid = drafts.getNextMessageUid()
+
         msg_copy = drafts._addMessage(new_uid, msg.digest)
         msg_copy.copyFrom(msg)
+
         # todo check flag on server's side
         msg_copy.draft = 1
 
         if has_connection:
             connector = self._getconnector()
             # need to create the message on server side
-            connector.writeMessage(drafts.server_name, msg.getRawMessage())
+            connector.writeMessage(drafts.server_name, msg_copy.getRawMessage())
 
     def getIdentitites(self):
         """ returns identities """
@@ -652,7 +655,7 @@ class MailBox(MailBoxBaseCaching):
             kw = {'id' : id}
             entries = self._searchEntries(directory, [field], **kw)
             if len(entries) > 1:
-                raise Exception('Directory returned more than one entry %s')
+                raise Exception('Directory returned more than one entry')
             if len(entries) == 0:
                 raise Exception('No entry found in %s for %s' % (directory, id))
             fields = entries[0][1]
