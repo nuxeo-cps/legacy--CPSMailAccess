@@ -273,12 +273,26 @@ class IMAPConnection(BaseConnection):
         if query == 'RFC822':
             return results[0][1]
 
-        if query == 'RFC822.BODY':
+        if query == 'BODY':
             # todo
-            return ''
+            # parse message
+            # XXX should be use by all sub cases
+            index = results[0].find('(')
+            result = results[0][index:]
+            result = self._parseIMAPMessage(result)
+            result = result[0]
+            # body structure
+            if len(result) > 1:
+                result = result[1]
+            else:
+                result = result[0]
+            return result
 
+        if query.startswith('BODY.PEEK'):
+            return results[0][1]
 
         raise NotImplementedError('%s : %s' % (query, results))
+
 
     def fetch(self, mailbox, message_number, message_parts):
         """ see interface for doc
@@ -448,6 +462,71 @@ class IMAPConnection(BaseConnection):
         self._respawn()
         self._connection.delete(mailbox)
 
+    def _parseIMAPMessage(self, message):
+        """ parses an imap message """
+
+        message = message.lower()
+        message = message.strip()
+        result = {}
+        level = 0
+        start = 1
+        subparts = []
+        while start != -1:
+            start = message.find('(')
+            end = start
+            if len(message) <= 1:
+                break
+            if start != -1:
+                # finding the clossing bracket in the message
+                # each time we find a ( we need to lety a ) go
+                counter = 0
+                end  = start + 1
+                while end < len(message):
+                    if message[end] == '(':
+                        counter += 1
+                    elif message[end] == ')':
+                        if counter > 0:
+                            counter -= 1
+                        else:
+                            # found it
+                            break
+                    end += 1
+
+            if start != -1 and start != end:
+                submessage = message[start:end+1]
+                # now let's get into the body
+                #submessage =
+
+                subpart = self._parseIMAPMessage(submessage[1:-1])
+                #
+                # removes submessage
+                message = message.replace(submessage,'')
+
+                subparts.append(subpart)
+
+
+        message_parts = message.split()
+        message_parts = map(self._cleanpart, message_parts)
+
+        # todo: inserted at the end, should be inserted on the right place
+        if subparts != []:
+            for subpart in subparts:
+                message_parts.append(subpart)
+        return message_parts
+
+    def _cleanpart(self, element):
+        """ cleans a word
+        """
+        if element[0] == '"' and element[-1]=='"':
+            return element.strip('"')
+        else:
+            if element == 'nil':
+                return None
+            else:
+                try:
+                    return int(element)
+                except ValueError:
+                    return element.strip()
 
 connection_type = 'IMAP'
 
