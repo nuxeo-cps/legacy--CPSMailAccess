@@ -59,7 +59,7 @@
             <img src="cpsma_delete_file.png"/>
           </a>
           <div class="rename_form">
-            <p><b i18n:translate="">Make a selection and choose an action</b></p>
+            <div class="form_title">Make a selection and choose an action</div>
 
             <input class="manage_copy" type="submit" name="action" value="copy"/>
             <input class="manage_cut" type="submit" name="action" value="cut"/>
