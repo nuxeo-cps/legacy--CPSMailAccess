@@ -17,14 +17,17 @@ so be patient on mailbox first synchro
 
 -> level 2 will be much,much faster at box generation
 
-features (must)
+features (must and in precise order)
 
 + validate all Javascripts and CSS in IE
-+ finish directory picker
++ finish directory picker -- find something cool
++ append attachments when forwarding
++ add a front page in the maibox root
++ security
++ translations in french
+
 + finish cache level 1
 + index body in cache level 1
-+ append attachments when forwarding
-+ add afront page in the maibox root
 
 cosmetics
 
@@ -34,8 +37,12 @@ cosmetics
 
 later
 
++ set up all drag and drop features
++ message filtering
 + spell checker
 + scan mail body to generate contacts
++ anti spam
++ anti virus
 + dates index in catalog
 
 
