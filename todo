@@ -22,6 +22,7 @@ features (must and in precise order)
 + finish directory picker -- find something cool
 + security
 + translations in french
++ batch of directories
 + finish cache level 1
 + index body in cache level 1
 
