@@ -193,7 +193,7 @@ class IMAPConnection(BaseConnection):
             imap_raw = imap_result[1]
 
             return imap_raw
-        return results
+        return result
 
     def partQueriedList(self, message_parts):
         """ creates a list of part queried
@@ -253,6 +253,11 @@ class IMAPConnection(BaseConnection):
             return returned
         if query == 'RFC822':
             return results[0][1]
+
+        if query == 'RFC822.BODY':
+            # todo
+            return ''
+
 
         raise NotImplementedError('%s : %s' % (query, results))
 
@@ -373,7 +378,45 @@ class IMAPConnection(BaseConnection):
         res = self._connection.create(mailbox)
         return res[0] == 'OK'
 
+    def getFlags(self, mailbox, message_number):
+        """ return flags of a message """
+        self._respawn()
+        self._connection.select(mailbox)
+        rep = self._connection.uid('FETCH',str(IMAPId),'(FLAGS)')
+        val = rep[-1][0]
+        flags=re.sub(r'(.+)(FLAGS \()(.+)(\).+)', r'\3', val)
+        if string.find(flags, 'UID')!=(-1):
+            flags=" "
 
+        raise flags
+        return flags
+
+    def setFlags(self, mailbox, message_number, flags):
+        """ set flag of a message """
+        self._respawn()
+        self._connection.select(mailbox)
+
+        for flag in flags.keys():
+            if flags[flag] == 1:
+                name = flag.lower()
+                if name == 'forwarded':
+                    self.connection.uid('STORE',str(message_number),
+                        '+FLAGS','($Forwarded)')
+                else:
+                    self._connection.uid('STORE',str(message_number),
+                        '+FLAGS','(\%s)' % name)
+
+    def expunge(self):
+        """ expunge
+        """
+        self._respawn()
+        self._connection.expunge()
+
+    def select(self, mailbox):
+        """ expunge
+        """
+        self._respawn()
+        self._connection.select(mailbox)
 
 connection_type = 'IMAP'
 
