@@ -256,6 +256,7 @@ class MailFolder(Folder):
         try:
             server_messages = connector.search(self.server_name, None,'ALL')
         except ConnectionError:
+            # XXX should be a more specific exception (no such dir)
             # this will happen if the directory has been
             # deleted form the server
             server_messages = []
