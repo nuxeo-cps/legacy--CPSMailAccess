@@ -360,11 +360,6 @@ class MailFolderTestCase(MailTestCase):
         self.assert_(folder11.canCreateSubFolder())
         self.assert_(not folder111.canCreateSubFolder())
 
-
-
-
-
-
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailFolderTestCase),

@@ -253,7 +253,7 @@ class MailSearchTestCase(MailTestCase):
         self.assertEquals(len(res), 0)
 
     def test_ZemanticInstanciation(self):
-        ob = ZemanticMailCatalog()
+        ob = ZemanticMailCatalog('zem')
 
         from rdflib.URIRef import URIRef
 

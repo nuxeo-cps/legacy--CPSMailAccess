@@ -23,6 +23,10 @@ IMAP4_PORT = 25
 IMAP4_SSL_PORT = 993
 IMAPError = Exception
 
+class FakeSocket:
+    def settimeout(self, time):
+        pass
+
 class IMAP4:
     abort = IMAPError
     state = 'NOAUTH'
@@ -122,6 +126,9 @@ class IMAP4:
 
     def expunge(self):
         return ('OK', '')
+
+    def socket(self):
+        return FakeSocket()
 
 
 

@@ -39,7 +39,6 @@ class MailFolderViewTestCase(MailTestCase):
     def test_getMailMessagesCountRecursive(self):
         # testing getMailMessagesCount with all combos recursively
         box = self._getMailBox()
-
         ob = box._addFolder('folder', 'folder')
 
         for i in range(10):
@@ -88,9 +87,12 @@ class MailFolderViewTestCase(MailTestCase):
 
     def test_renderMailList(self):
         # testing mail folder view instanciation
-        ob = MailFolder()
+        box = self._getMailBox()
+        ob = box._addFolder('folder', 'folder')
 
         view = MailFolderView(ob, None)
+        view = view.__of__(ob)
+
         rendered_list = view.renderMailList()
 
         # empty folder

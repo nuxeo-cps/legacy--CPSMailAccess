@@ -67,7 +67,7 @@ class MessageTraversableTestCase(MailTestCase):
         part = ob.getPart(0)
 
         mt = MessageTraversable(ob)
-        msg = mt.adaptPart('0', None, part)
+        msg = mt.adaptPart('0', None, part, 2)
 
         self.assert_(msg)
 
