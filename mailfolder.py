@@ -94,7 +94,7 @@ class MailFolder(Folder):
             for provider in providers :
                 if provider.providedBy(element):
                     # see ***
-                    result.insert(0, provider(element))
+                    result.insert(0, element)
 
             if recursive:
                 if IMailFolder.providedBy(element):
