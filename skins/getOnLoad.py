@@ -1,6 +1,5 @@
-## Script (Python) "getOnLoad.py"
 #parameters=
-##$Id$
+#$Id$
 """ return the body onload attribute content
 """
 request = container.REQUEST
@@ -12,4 +11,4 @@ if request.has_key('URL'):
                 URL.endswith('searchMessage.html')):
             return 'highlightSearchTerm();setFocus();'
 
-return 'setFocus();'
+return 'prepareTableSorting();setFocus();'
