@@ -138,12 +138,14 @@ class MailFolderView(BaseMailMessageView):
     def getMsgIconName(self, message):
         """ icon representing the mail depends on flags
         """
-        read = message.getFlag('read')
-        if read == 0:
-            return 'cpsma_message_new.png'
         deleted = message.getFlag('deleted')
         if deleted == 1:
             return 'cpsma_mini_mail_delete.png'
+
+        read = message.getFlag('read')
+        if read == 0:
+            return 'cpsma_message_new.png'
+
         # todo : create more icons here
         answered = message.getFlag('answered')
         flagged = message.getFlag('flagged')
@@ -173,7 +175,8 @@ class MailFolderView(BaseMailMessageView):
 
     def getMessageUidAndFolder(self, id):
         """ get message from id
-            structure : server_name.uid
+
+        Structure : server_name.uid
         """
         mailfolder = self.context
         mailbox = mailfolder.getMailBox()
@@ -197,11 +200,11 @@ class MailFolderView(BaseMailMessageView):
 
         if not hasattr(current, msg_uid):
             return current, None
-        return current, current[msg_uid].uid
+        msg = getattr(current, msg_uid)
+        return current, msg.uid
 
     def manageContent(self, action, **kw):
         """ manage content """
-
         mailfolder = self.context
         changed = 0
         psm = ''
@@ -267,18 +270,19 @@ class MailFolderView(BaseMailMessageView):
 
     def clipBoardEmpty(self):
         """ tells if the clipboard is empty or not
-            if not empty, leaves the cut-copy-paste toolbar
-            on screen
-        """
 
+        If not empty, leaves the cut-copy-paste toolbar
+        on screen
+        """
         mailfolder = self.context
         mailbox = mailfolder.getMailBox()
         return mailbox.clipBoardEmpty()
 
     def clipBoardCount(self):
         """ returns clipboard item count """
-
         mailfolder = self.context
         mailbox = mailfolder.getMailBox()
         action, clipboard = mailbox.getClipboard()
+        if clipboard is None:
+            return 0
         return len(clipboard)
