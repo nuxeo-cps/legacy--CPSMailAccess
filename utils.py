@@ -22,15 +22,19 @@
 import string, re, md5
 from email.Header import decode_header, make_header
 from exceptions import UnicodeDecodeError
-from zope.app.datetimeutils import DateTimeParser, SyntaxError as ZSyntaxError
 from datetime import datetime
 from time import strftime
-from Acquisition import aq_get
-from email.Utils import fix_eols
-from html2text import HTML2Text
 from random import randrange
-from zLOG import LOG, INFO
+from email.Utils import fix_eols
 from encodings import exceptions as encoding_exceptions
+
+from zLOG import LOG, INFO
+from DateTime import DateTime
+from Acquisition import aq_get
+
+from zope.app.datetimeutils import DateTimeParser, SyntaxError as ZSyntaxError
+
+from html2text import HTML2Text
 from Products.CPSUtil.html import HTMLSanitizer, remove_attributes
 
 _translation_table = string.maketrans(
@@ -78,11 +82,11 @@ def uniqueId(container, seed='', use_primary=True):
 
     return makeId(seed + str(i))
 
-def md5Hash(string):
+def md5Hash(element):
     """ returns a md5 key
     """
     m = md5.new()
-    m.update(string)
+    m.update(element)
     return m.hexdigest()
 
 def decodeHeader(header, encoding='ISO8859-15'):
@@ -167,7 +171,7 @@ def isToday(date_string):
     return date.year == today.year and date.month ==today.month\
      and date.day == today.day
 
-def truncateString(string, font_size, max_size):
+def truncateString(element, font_size, max_size):
     """ truncates the string according to the given maximum size
         this is an aproximation since
         caracter width can vary
@@ -182,14 +186,14 @@ def truncateString(string, font_size, max_size):
     >>> truncateString('ok', 2, 90)
     'ok'
     """
-    if len(string) * font_size > max_size:
+    if len(element) * font_size > max_size:
         sub_max = max_size - (3*font_size)
         if sub_max<=0:
             return '...'
         sub_max = int(sub_max/ font_size)
-        return string[:sub_max]+'...'
+        return element[:sub_max]+'...'
     else:
-        return string
+        return element
 
 def mimetype_to_icon_name(mimetype):
     """ transforms a mimetype to an icon filename

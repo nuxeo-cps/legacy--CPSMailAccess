@@ -22,8 +22,8 @@ from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 import sys
 from smtplib import SMTP
-from utils import getToolByName, getCurrentDateStr, _isinstance,\
-     decodeHeader, verifyBody, cleanUploadedFileName
+from utils import getToolByName, getCurrentDateStr, decodeHeader, verifyBody,\
+    cleanUploadedFileName
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
@@ -64,7 +64,7 @@ class MailMessageEdit(BrowserView):
         mailbox = self.context
         # this creates a mailmessage instance
         # XXX todo manage a list of editing message in case of multiediting
-        #mailbox.getCurrentEditorMessage()
+        mailbox.getCurrentEditorMessage()
 
     def writeTo(self, msg_to):
         """ initialize maileditor """
@@ -107,7 +107,7 @@ class MailMessageEdit(BrowserView):
                 psm = error
                 self.request.response.redirect('editMessage.html?portal_status_message=%s'\
                     % (psm))
-            return
+            return False, psm
 
         msg.setHeader('From', msg_from)
         msg_body = verifyBody(msg_body)
@@ -119,7 +119,7 @@ class MailMessageEdit(BrowserView):
                 psm = 'both subject and body are empty'
                 self.request.response.redirect('editMessage.html?portal_status_message=%s'\
                     % (psm))
-            return
+            return False, psm
 
         # using the message instance that might have attached files already
         result, error = self.context.sendEditorsMessage()
@@ -187,11 +187,11 @@ class MailMessageEdit(BrowserView):
         """ attach a file to the current message
         """
         if file == '':
-            return
+            return False
         for line in self.attached_files():
             for cfile in line:
                 if cfile['filename'].lower() == file.filename.lower():
-                    return
+                    return False
 
         # file is the file name
         # need to load binary here
@@ -202,9 +202,9 @@ class MailMessageEdit(BrowserView):
         #if not _isinstance(file, FileUpload) or not type(file) is FileUpload:
         #    raise TypeError('%s' % str(type(file)))
         if file.read(1) == '':
-            return
+            return False
         elif max_size and len(file.read(max_size)) == max_size:
-            raise FileError('file is too big')
+            raise Exception('file is too big')
 
         # beware of IE under win : need to get rid of filename path
         # and this is specific on client side
@@ -216,6 +216,7 @@ class MailMessageEdit(BrowserView):
         msg.setCachedValue('attacher_on', 0)
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
+        return True
 
     def detachFile(self, filename):
         """ detach a file
