@@ -173,10 +173,80 @@ class IMailMessageStore(IContainer):
             for single part messages, part_index is 0
         """
 
-    def delParam(self, param_name, part_index=0):
+    def delParam(param_name, part_index=0):
         """ deletes the given param
             for single part messages, part_index is 0
         """
+
+class IMailMessageMapping(IContainer):
+
+    def __len__():
+        """Return the total number of headers, including duplicates."""
+
+    def __getitem__(name):
+        """Get a header value.
+
+        Return None if the header is missing instead of raising an exception.
+
+        Note that if the header appeared multiple times, exactly which
+        occurrance gets returned is undefined.  Use getall() to get all
+        the values matching a header field name.
+        """
+
+    def __setitem__(name, val):
+        """Set the value of a header.
+
+        Note: this does not overwrite an existing header with the same field
+        name.  Use __delitem__() first to delete any existing headers.
+        """
+
+    def __delitem__(name):
+        """Delete all occurrences of a header, if present.
+
+        Does not raise an exception if the header is missing.
+        """
+
+    def __contains__(name):
+        """ check if contains
+        """
+
+    def has_key(name):
+        """Return true if the message contains the header."""
+
+    def keys(self):
+        """Return a list of all the message's header field names.
+
+        These will be sorted in the order they appeared in the original
+        message, or were added to the message, and may contain duplicates.
+        Any fields deleted and re-inserted are always appended to the header
+        list.
+        """
+
+    def values():
+        """Return a list of all the message's header values.
+
+        These will be sorted in the order they appeared in the original
+        message, or were added to the message, and may contain duplicates.
+        Any fields deleted and re-inserted are always appended to the header
+        list.
+        """
+
+    def items():
+        """Get all the message's header fields and values.
+
+        These will be sorted in the order they appeared in the original
+        message, or were added to the message, and may contain duplicates.
+        Any fields deleted and re-inserted are always appended to the header
+        list.
+        """
+
+    def get(name, failobj=None):
+        """Get a header value.
+
+        Like __getitem__() but return failobj instead of None when the field
+        is missing.
+        """
+
 
 class IMailBox(IContainer):
     """ mailboxes gives a few api to synchronize
