@@ -42,7 +42,7 @@ class MultiSMTPMailer(SMTPMailer):
         self.password = password
         SMTPMailer.send(self, fromaddr, toaddrs, message)
 
-class SmtpQueuedMailer:
+class SmtpQueuedMailer(object):
     """ a class that sends mails """
 
     mailer = MultiSMTPMailer()
