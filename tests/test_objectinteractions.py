@@ -23,7 +23,8 @@ from Testing.ZopeTestCase import user_name, folder_name
 from Testing.ZopeTestCase import installProduct
 from CPSMailAccess.mailbox import manage_addMailBox
 from CPSMailAccess.mailtool import manage_addMailTool, MailTool
-from CPSMailAccess.mailfolder import MailFolder, MailContainerError
+from CPSMailAccess.mailfolder import MailFolder
+from Products.CPSMailAccess.mailexceptions import MailContainerError
 from CPSMailAccess.utils import uniqueId
 from CPSMailAccess.mailbox import MailBox, MailBoxParametersView
 from Acquisition import Implicit
