@@ -140,21 +140,27 @@ class MailFolder(BTreeFolder2):
             r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
             r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
             folders = list(r1) + list(r2)
-
-            if recursive:
-                for folder in folders:
-                    results.append(folder)
-                    subresults = folder.getMailMessages(list_folder,
-                                                        list_messages,
-                                                        recursive)
-                    results.extend(subresults)
-            else:
-                results.extend(folders)
+            results.extend(folders)
 
         if list_messages:
             # use btree slices
             r = self.getValuesSlice('.', '.\xff')
             results.extend(list(r))
+
+        if recursive:
+            if not list_folder:
+                r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
+                r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
+                folders = list(r1) + list(r2)
+
+            for folder in folders:
+                if list_folder:
+                    results.append(folder)
+                subresults = folder.getMailMessages(list_folder,
+                                                    list_messages,
+                                                    recursive)
+                results.extend(subresults)
+
         return results
 
 
