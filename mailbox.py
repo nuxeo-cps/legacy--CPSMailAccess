@@ -497,13 +497,14 @@ class MailBox(MailBoxBaseCaching):
         """ makes a copy of editor message into Drafts """
         # TODO: add a TO section
         msg = self.getCurrentEditorMessage()
+        msg.title = decodeHeader(msg.getHeader('Subject')[0])
+
         drafts = self.getDraftFolder()
         uid = drafts.getNextMessageUid()
         new_uid = drafts.getNextMessageUid()
 
         msg_copy = drafts._addMessage(new_uid, msg.digest)
         msg_copy.copyFrom(msg)
-
         # todo check flag on server's side
         msg_copy.draft = 1
 
