@@ -143,7 +143,7 @@ msgid "cpsma_delete_folder"
 msgstr "Supprimer le dossier"
 
 msgid "cpsma_manage_content"
-msgstr "Gérèr le contenu"
+msgstr "Gérer le contenu"
 
 msgid "cpsma_reply"
 msgstr "Répondre"
@@ -241,3 +241,35 @@ msgstr "Synchronisé"
 
 msgid "cpsma_failed_synchro"
 msgstr "Impossible de récuperer les messages du serveur"
+
+msgid "cpsma_add"
+msgstr "Ajouter"
+
+msgid "cpsma_change"
+msgstr "Changer"
+
+msgid "cpsma_choose_new_folder"
+msgstr "Choisissez un nouveau dossier parent"
+
+# content toolbar action
+msgid "copy"
+msgstr "Copier"
+
+msgid "cut"
+msgstr "Couper"
+
+msgid "paste"
+msgstr "Coller"
+
+msgid "delete"
+msgstr "Supprimer"
+
+msgid "clear"
+msgstr "Effacer"
+
+msgid "cpsma_reindex_mail_catalog"
+msgstr "Rédindexation du catalogue"
+
+msgid "cpsma_objects"
+msgstr "Messages indexés"
+

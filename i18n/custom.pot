@@ -242,3 +242,34 @@ msgstr ""
 
 msgid "cpsma_failed_synchro"
 msgstr ""
+
+msgid "cpsma_add"
+msgstr ""
+
+msgid "cpsma_change"
+msgstr ""
+
+msgid "cpsma_choose_new_folder"
+msgstr ""
+
+# content toolbar action
+msgid "copy"
+msgstr ""
+
+msgid "cut"
+msgstr ""
+
+msgid "paste"
+msgstr ""
+
+msgid "delete"
+msgstr ""
+
+msgid "clear"
+msgstr ""
+
+msgid "cpsma_reindex_mail_catalog"
+msgstr ""
+
+msgid "cpsma_objects"
+msgstr ""
