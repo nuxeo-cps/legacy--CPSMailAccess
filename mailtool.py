@@ -28,6 +28,18 @@ from Globals import InitializeClass
 from zope.interface import implements
 from Products.CPSMailAccess.connectionlist import registerConnections,\
      ConnectionList
+import thread
+
+lock = thread.allocate_lock()
+connector = ConnectionList()
+
+def getConnection():
+    lock.acquire()
+    try:
+        res = connector
+    finally:
+        lock.release()
+        return res
 
 class MailTool(Folder, UniqueObject):
     """ the portal tool wich holds
@@ -43,7 +55,7 @@ class MailTool(Folder, UniqueObject):
     meta_type = "CPSMailAccess Tool"
     id = 'portal_webmail'
 
-    _v_connection_list = ConnectionList()
+    connection_list = getConnection()
     initialized = 0
 
     def __init__(self):
@@ -55,12 +67,12 @@ class MailTool(Folder, UniqueObject):
         """
         #if self.initialized <> 1:
         self._initializeConnectionList()
-        return self._v_connection_list
+        return self.connection_list
 
     def _initializeConnectionList(self):
         """ registers all access plugins
         """
-        registerConnections(self._v_connection_list)
+        registerConnections(self.connection_list)
         self.initialized = 1
 
     def listConnectionTypes(self):
