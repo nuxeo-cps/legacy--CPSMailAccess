@@ -20,3 +20,9 @@
 
 class MailContainerError(Exception):
     pass
+
+class MailCatalogError(Exception):
+    pass
+
+class MailPartError(Exception):
+    pass
