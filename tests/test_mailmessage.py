@@ -288,20 +288,20 @@ class MailMessageTestCase(ZopeTestCase):
         ob = self.getMailInstance(6)
         view = MailMessageView(ob, None)
 
-        self.assertEquals(view._getFromList(),
-            '<div id="mailFrom">Barry <barry@digicool.com></div>')
+        self.assertEquals(view.renderFromList(),
+            '<span>Barry <barry@digicool.com></span>')
 
-        self.assertEquals(view._getToList(),
-            '<div id="mailTo">Dingus Lovers <cravindogs@cravindogs.com></div>')
+        self.assertEquals(view.renderToList(),
+            '<span>Dingus Lovers <cravindogs@cravindogs.com></span>')
 
         ob = MailMessage()
         view = MailMessageView(ob, None)
 
-        self.assertEquals(view._getFromList(),
-            '<div id="mailFrom">?</div>')
+        self.assertEquals(view.renderFromList(),
+            '<span>?</span>')
 
-        self.assertEquals(view._getToList(),
-            '<div id="mailTo">?</div>')
+        self.assertEquals(view.renderToList(),
+            '<span>?</span>')
 
     def test_MailMessageparts(self):
         """ testing view instanciation
@@ -322,7 +322,7 @@ class MailMessageTestCase(ZopeTestCase):
 
         view = MailMessageView(ob, None)
 
-        viewbody = view._getBody()
+        viewbody = view.renderBody()
 
         #self.assertEquals(body, viewbody)
 
