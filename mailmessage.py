@@ -197,9 +197,8 @@ class MailMessage(Folder):
 """
 InitializeClass(MailMessage)
 
-manage_addMailMessage = PageTemplateFile(
-    "www/zmi_addmailmessage", globals(),
-    __name__ = 'manage_addMailMessage')
+manage_addMailMessageForm = PageTemplateFile(
+    "www/zmi_addmailmessage", globals(),)
 
 def manage_addMailMessage(container, id=None, msg_uid='',
         msg_key='', REQUEST=None, **kw):
