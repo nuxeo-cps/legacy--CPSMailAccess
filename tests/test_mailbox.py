@@ -140,8 +140,9 @@ class MailBoxTestCase(MailTestCase):
     def test_mailcache(self):
         pass
 
-        XXXX need to test msg caching
-        XXXX with retrieval and invalidations
+        """XXXX need to test msg caching
+           XXXX with retrieval and invalidations
+        """
 
 def test_suite():
     return unittest.TestSuite((
