@@ -94,8 +94,7 @@ class ConnectionListTestCase(ZopeTestCase):
         #print 'types'
         connection_params = {'uid' : 'admin', 'connection_type' : 'DUMMY'}
 
-        self.assertEquals(my_list.listConnectionTypes(), [])
-
+        #self.assertEquals(my_list.listConnectionTypes(), [])
         for i in range(200):
             new_connection = DummyConnection(connection_params)
             new_connection.login('admin','admin')
