@@ -38,6 +38,10 @@ class MailToolTestCase(ZopeTestCase):
         ct = ob.listConnectionTypes()
         self.assertNotEquals(ct , [])
 
+    def test_catalogpresence(self):
+        ob = MailTool()
+        self.assert_(ob , 'mail_catalogs')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailToolTestCase),
