@@ -35,6 +35,7 @@ from mailpart import MailPart
 from mailfolderview import MailFolderView
 from email import message_from_string
 
+
 class MailMessageView(BaseMailMessageView):
 
     _RenderEngine = MailRenderer()
@@ -158,12 +159,25 @@ class MailMessageView(BaseMailMessageView):
         # let's compute the pre-filled body
         # XXX todo : add "MrJohn Doe wrote....
         # TODO : get the body and parseit here
-        body_value = '>>> wrote'
+        body_value = self.renderBody()
+        from_value = self.renderFromList()
+
+        # see to ext.traductions
+        reply_content = ['>>> '+from_value + ' wrote']
+        body_values = body_value.split('\r\n')
+        for line in body_values:
+            reply_content.append('>>> '+line)
+        reply_content = '\r\n'.join(reply_content)
+
+        msg = mailbox.getCurrentEditorMessage()
+        msg.setPart(0, reply_content)
+        msg.setHeader('To', self.context.getHeader('From'))
+        msg.setHeader('Subject', 'Re: '+self.context.getHeader('Subject'))
 
         if self.request is not None:
-            self.request.form['came_from'] = self.context.absolute_url()
-            self.request.response.redirect('%s/editMessage.html?body_value=%s'\
-                % (mailbox.absolute_url(), body_value))
+            came_from = self.context.absolute_url()
+            self.request.response.redirect('%s/editMessage.html?came_from=%s' \
+                % (mailbox.absolute_url(), came_from))
 
     def reply_all(self):
         """ replying to a message
