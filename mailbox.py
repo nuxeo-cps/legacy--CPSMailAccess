@@ -36,7 +36,7 @@ from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from zope.publisher.browser import FileUpload
 from utils import uniqueId, makeId, getFolder
-from interfaces import IMailBox, IMailMessage, IMailFolder
+from interfaces import IMailBox, IMailMessage, IMailFolder, IMessageTraverser
 from mailmessage import MailMessage
 from mailfolder import MailFolder, manage_addMailFolder
 from mailfolderview import MailFolderView
@@ -44,6 +44,7 @@ from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
 from mailcache import MailCache
 from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
+from Products.Five.traversable import FiveTraversable
 
 lock = thread.allocate_lock()
 cache = MailCache()
@@ -360,6 +361,8 @@ class MailBox(MailFolder):
         """
         if self._v_current_editor_message is None:
             msg = MailMessage()
+            # hack to identify it , need to do this better
+            msg.editor_msg = 1
             msg.setHeader('Date', getCurrentDateStr())
             self._v_current_editor_message = msg
         return self._v_current_editor_message
@@ -503,174 +506,26 @@ class MailBoxView(MailFolderView):
                 '/view?portal_status_message=%s' % psm)
 
 
-#
-# MailMessageEdit view
-#
-class MailMessageEdit(BrowserView):
+class MailBoxTraversable(FiveTraversable):
+    """ use to vizualize the mail parts in the mail editor
+    """
+    """
+    >>> f = MailBoxTraversable(None)
+    >>> IMessageTraverser.providedBy(f)
+    True
+    """
+    implements(IMessageTraverser)
 
-    def initMessage(self):
-        """ will init message editor
-        """
-        mailbox = self.context
-        # this creates a mailmessage instance
-        # XXX todo manage a list of editing message in case of multiediting
-        mailbox.getCurrentEditorMessage()
-
-    def sendMessage(self, msg_from, msg_to, msg_subject, msg_body,
-            msg_attachments=[], came_from=None):
-        """ calls MailTool
-        """
-        # call mail box to send a message and to copy it to "send" section
-        mailbox = self.context
-        msg = mailbox.getCurrentEditorMessage()
-
-        msg.setHeader('From', msg_from)
-        msg.setHeader('To', msg_to)
-        msg.setHeader('Subject', msg_subject)
-
-        # XX todo load body according to attached parts
-        msg.setPart(0, msg_body)
-
-        # using the message instance that might have attached files already
-        result = self.context.sendEditorsMessage()
-
-        if self.request is not None and came_from is not None:
-            if result:
-                self.request.response.redirect(came_from)
-            else:
-                #XXXX need to redirect to an error screen here later
-                psm ='Message Sent'
-                self.request.response.redirect('view?portal_status_message=%s' % psm)
-
-    def getIdentitites(self):
-        """ gives to the editor the list of current mùailbox idendities
-        """
-        # XXXX todo
-        identity = {'email' : 'tarek@ziade.org', 'fullname' : 'Tarek Ziadé'}
-
-        return [identity]
-
-    def is_editor(self):
-        """ tells if we are in editor view (hack)
-        """
-        if self.request is not None:
-            url_elements = self.request['URL'].split('/')
-            len_url = len(url_elements)
-            return url_elements[len_url-1]=='editMessage.html'
-        else:
-            return False
-
-    def attached_files(self):
-        """ gets attached file list
-        """
-        mailbox = self.context
-        msg = mailbox.getCurrentEditorMessage()
-        msg_viewer = MailMessageView(msg, self.request)
-        return msg_viewer.attached_files()
-
-    def attachFile(self, file):
-        """ attach a file to the current message
-        """
-        if file == '':
-            return
-        # file is the file name
-        # need to load binary here
-        mailbox = self.context
-        #max_size = mailbox.max_file_size
-        max_size = 0
-        msg = mailbox.getCurrentEditorMessage()
-        #if not _isinstance(file, FileUpload) or not type(file) is FileUpload:
-        #    raise TypeError('%s' % str(type(file)))
-        if file.read(1) == '':
-            return
-        elif max_size and len(file.read(max_size)) == max_size:
-            raise FileError('file is too big')
-
-        msg.attachFile(file)
-        if self.request is not None:
-            self.request.response.redirect('editMessage.html')
-
-    def detachFile(self, filename):
-        """ detach a file
-        """
-        mailbox = self.context
-        msg = mailbox.getCurrentEditorMessage()
-
-        msg.detachFile(filename)
-
-        if self.request is not None:
-            self.request.response.redirect('editMessage.html')
-
-    def getBodyValue(self):
-        """ returns body value
-        """
-        mailbox = self.context
-        msg = mailbox.getCurrentEditorMessage()
-        # XXX should be inside message and called thru an api
-        res = msg.getPart(0).get_payload()
-        #msg_viewer = MailMessageView(msg, self.request)
-        return res
-
-    def getSubject(self):
-        """ returns subject value
-        """
-        mailbox = self.context
-        msg = mailbox.getCurrentEditorMessage()
-        # XXX should be inside message and called thru an api
-        res = msg.getHeader('Subject')
-        if res is None:
-            return ''
-        #msg_viewer = MailMessageView(msg, self.request)
-        return decodeHeader(res)
-
-    def getDestList(self):
-        """ returns dest list
-        """
-        mailbox = self.context
-        msg = mailbox.getCurrentEditorMessage()
-        res = []
-        tos = msg.getHeader('To')
-
-        if tos is not None:
-            """
-            tos = tos.split(' ')
-            for to in tos:
-                res.append({'value' : to, 'type' : 'To'})
-            """
-            res.append({'value' : decodeHeader(tos), 'type' : 'To'})
-
-        Ccs = msg.getHeader('Cc')
-        if Ccs is not None:
-            Ccs = Ccs.split(' ')
-            for cc in Ccs:
-                res.append({'value' : cc, 'type' : 'Cc'})
-
-        BCcs = msg.getHeader('BCc')
-        if BCcs is not None:
-            BCcs = BCcs.split(' ')
-            for BC in BCcs:
-                res.append({'value' : BC, 'type' : 'BCc'})
-
-        return res
-
-    def saveMessageForm(self, msg_from=None, msg_to=None, msg_subject=None,
-            msg_body=None):
-        """ saves the form into the message
-        """
-        mailbox = self.context
-        msg = mailbox.getCurrentEditorMessage()
-        if msg_from is not None:
-            msg.setHeader('From', msg_from)
-        if msg_to is not None:
-            if type(msg_to) is str:
-                msg.setHeader('To', msg_to)
-            else:
-                msg.setHeader('To', ' '.join(msg_to))
-        if msg_subject is not None:
-            msg.setHeader('Subject', msg_subject)
-        if msg_body is not None:
-            msg.setPart(0, msg_body)
-
+    def traverse(self, path='', request=None):
+        if type(path) is list:
+            path = path[0]
+        # if the path starts with a number, we're on the editor message
+        # TODO
+        if path == 'editorMessage':
+            msg = self._subject.getCurrentEditorMessage()
+            return msg
+        # let the regular traverser do the job
+        return FiveTraversable.traverse(self, path, '')
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
