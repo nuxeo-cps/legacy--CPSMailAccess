@@ -39,14 +39,18 @@ from utils import makeId
 class MailCatalog(ZCatalog):
     user_id = ''
     indexed_headers = ['Subject', 'To', 'From']
+    index_body = 1
     stop_list = ['com', 'net', 'org', 'fr']
-    _v_cached_search = PersistentMapping()
 
     def __init__(self, id, user_id='', title='', vocab_id=None, container=None):
         ZCatalog.__init__(self, id, title, vocab_id, container)
         self.user_id = user_id
         self.addIndex('searchable_text', 'TextIndexNG')
-        self.Indexes['searchable_text'].indexed_fields = ['searchable_text']
+        indexer = self.Indexes['searchable_text']
+        # options, TODO : externalize as parameters
+        indexer.indexed_fields = ['searchable_text']
+        indexer.truncate_left = True
+        indexer.use_parser = 'FrenchQueryParser'
         self.addColumn('id')
         self.addColumn('uid')
         self.addColumn('digest')
@@ -84,6 +88,25 @@ class MailCatalog(ZCatalog):
                         if word not in searchable and word not in stop_list:
                             searchable.append(word)
 
+        if self.index_body:
+            if not msg.isMultipart():
+                part = msg.getPart()
+                if not isinstance(part, str):
+                    part = part._payload
+                words = part.split(' ')
+            else:
+                # for mutlipart message, nothing yet
+                # TODO
+                # right now just scanning first part if str
+                payload = msg.getPart(0)
+                if isinstance(payload, str):
+                    words = msg.getPart().split(' ')
+                else:
+                    words = []
+            for word in words:
+                if word not in searchable and word not in stop_list:
+                    searchable.append(word)
+
         msg.searchable_text = ' '.join(searchable)
 
     def unWrapMessage(self, msg):
@@ -91,28 +114,13 @@ class MailCatalog(ZCatalog):
         """
         msg.searchable_text = None
 
-    def _makeKey(self, query_request, sort_index, reverse, limit, merge):
-        """ create search key
-        """
-        search_key = str(query_request) + '___' + str(sort_index) + \
-             '___' + str(reverse) + '___' + str(limit) + \
-             '___' + str(merge)
-        return search_key
-
     def search(self, query_request, sort_index=None,
-        reverse=0, limit=None, merge=1):
-        """ speeding up things by caching searches
+            reverse=0, limit=None, merge=1):
+        """ search
         """
-        key = self._makeKey(query_request, sort_index, reverse, limit, merge)
-
-        if self._v_cached_search.has_key(key):
-            return self._v_cached_search[key]
-        else:
-            results = ZCatalog.search(self, query_request, sort_index,
-                reverse, limit, merge)
-
-            self._v_cached_search[key] = results
-            return results
+        # todo filter to supress duplicates
+        return ZCatalog.search(self, query_request, sort_index,
+            reverse, limit, merge)
 
 InitializeClass(MailCatalog)
 
