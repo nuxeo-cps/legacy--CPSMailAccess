@@ -44,30 +44,39 @@ class MailTool(Folder, UniqueObject):
     id = 'portal_webmail'
 
     _v_connection_list = ConnectionList()
+    initialized = 0
 
     def __init__(self):
+        Folder.__init__(self)
         self._initializeConnectionList()
 
+    def getConnectionList(self):
+        """ connection list getter
+        """
+        #if self.initialized <> 1:
+        self._initializeConnectionList()
+        return self._v_connection_list
 
     def _initializeConnectionList(self):
         """ registers all access plugins
         """
         registerConnections(self._v_connection_list)
+        self.initialized = 1
 
     def listConnectionTypes(self):
         """ see IMailTool
         """
-        return self._v_connection_list.listConnectionTypes()
+        return self.getConnectionList().listConnectionTypes()
 
     def reloadPlugins(self):
         """ see IMailTool
         """
         self._initializeConnectionList()
 
-    def getConnection(self, connection_type):
+    def getConnection(self, connection_params):
         """ see IMailTool
         """
-        return self._v_connection_list.getConnection(connection_type)
+        return self.getConnectionList().getConnection(connection_params)
 
 """ classic Zope 2 interface for class registering
 """
