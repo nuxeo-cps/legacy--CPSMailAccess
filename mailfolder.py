@@ -262,7 +262,6 @@ class MailFolder(BTreeFolder2):
     def _synchronizeFolder(self, return_log=False):
         """ See interfaces.IMailFolder
         """
-        raise 'ok'
         log = []
         mailbox = self.getMailBox()
         mail_cache = mailbox.mail_cache
