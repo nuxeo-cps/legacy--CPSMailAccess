@@ -75,6 +75,12 @@ class MailFolderView(BaseMailMessageView):
             part['object'] = element
             part['icon'] = self.getMsgIconName(element)
             part['url'] = element.absolute_url() +'/view'
+            part['uid'] = element.uid
+
+            if element.hasAttachment():
+                part['attachments'] = 1
+            else:
+                part['attachments'] = 0
             ob_title = self.createShortTitle(element)
             if ob_title is None or ob_title == '':
                 mail_title = '?'
@@ -127,3 +133,41 @@ class MailFolderView(BaseMailMessageView):
             new_folder = mailfolder[name]
         if self.request is not None and new_folder is not None:
             self.request.response.redirect(new_folder.absolute_url()+'/view')
+
+    def manageContent(self, action, **kw):
+        """ manage content
+        """
+        mailfolder = self.context
+        if self.request is not None:
+            if self.request.form is not None:
+                for element in self.request.form.keys():
+                    kw[element] = self.request.form[element]
+
+        if action not in('copy', 'cut', 'paste', 'delete'):
+            return
+
+        msg_list = []
+
+        for key in kw.keys():
+            if key.startswith('msg_'):
+                msg_list.append(key.replace('msg_', ''))
+
+        if msg_list == []:
+            return
+
+        if action == 'copy':
+            raise 'todo copy selection in the cache'
+
+        if action == 'cut':
+            raise 'todo cut selection in the cache'
+
+        if action == 'paste':
+            raise 'todo paste selection from the cache'
+
+        if action == 'delete':
+            raise 'todo delete selection'
+
+        if self.request is not None:
+            # let's go to the mailbox
+            url = mailfolder.absolute_url()
+            self.request.response.redirect(url+'/view')
