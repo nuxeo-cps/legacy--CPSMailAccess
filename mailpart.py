@@ -129,7 +129,11 @@ class MailPart:
         if not multi:
             store._payload = content
         else:
-            store._payload[index] = content
+            payload = store._payload
+            if index < len(payload):
+                store._payload[index] = content
+            elif index == 0 and len(payload) == 0:
+                store._payload.append(content)
 
     def getParts(self):
         """ returns parts in a sequence (or a string if monopart)
@@ -234,11 +238,24 @@ class MailPart:
             payload = store.get_payload()
             payload[part_index-1].del_param(param_name)
 
+    def getHeaders(self):
+        """Get a message header.
+        """
+        store = self._getStore()
+        res = {}
+        for header in store._headers:
+            res[header[0]] = header[1]
+        return res
+
     def getHeader(self, name):
         """Get a message header.
         """
         store = self._getStore()
-        return store[name]
+
+        elements = store.get_all(name, [])
+        if elements is None:
+            return None
+        return elements
 
     def setHeader(self, name, value):
         """Set a message header.
@@ -248,6 +265,23 @@ class MailPart:
             # Erase previous header
             del store[name]
         store[name] = value
+
+    def addHeader(self, name, value):
+        """ adds an header
+        """
+        store = self._getStore()
+        store[name] = value
+
+    def removeHeader(self, name, value):
+        """ removes header
+        """
+        headers = self.getHeader(name)
+        if value in headers:
+            headers.remove(value)
+            store = self._getStore()
+            del store[name]
+            for value in headers:
+                self.addHeader(name, value)
 
     def loadMessage(self, raw_msg):
         """ See interfaces.IMailMessage
