@@ -3,7 +3,7 @@
 # Authors: Tarek Ziadé <tz@nuxeo.com>
 #
 # This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License version 2 as published
+# # it under the terms of the GNU General Public License version 2 as published
 # by the Free Software Foundation.
 #
 # This program is distributed in the hope that it will be useful,
@@ -19,7 +19,7 @@
 # $Id$
 from zLOG import LOG, INFO, DEBUG
 from basemailview import BaseMailMessageView
-from utils import decodeHeader, localizeDateString, isToday
+from utils import decodeHeader, localizeDateString, isToday, getFolder
 from interfaces import IMailMessage
 
 class MailFolderView(BaseMailMessageView):
@@ -32,6 +32,7 @@ class MailFolderView(BaseMailMessageView):
             current folder
         """
         mailfolder = self.context
+        mailbox = mailfolder.getMailBox()
 
         if mailfolder.title == new_name:
             if self.request is not None:
@@ -50,17 +51,27 @@ class MailFolderView(BaseMailMessageView):
         renamed = mailfolder.rename(new_name, fullname)
 
         if self.request is not None and renamed is not None:
-            self.request.response.redirect(renamed.absolute_url()+'/view')
+            folder = getFolder(mailbox, new_name)
+            self.request.response.redirect(folder.absolute_url()+'/view')
 
     def delete(self):
         """ action called to rename the current folder
         """
         mailfolder = self.context
+        title = mailfolder.title
         deleted = mailfolder.delete()
-        if self.request is not None and deleted:
-            # let's go to the mailbox
-            url = mailfolder.getMailBox().absolute_url()
-            self.request.response.redirect(url+'/view')
+        # deleted is the new place for the folder
+        if self.request is not None and deleted is not None:
+            psm = 'Folder %s sent to the trash.' % title
+            # let's go to the mailbox INBOX
+            mailbox = mailfolder.getMailBox()
+            if hasattr(mailbox, 'INBOX'):
+                goto = mailbox['INBOX']
+            else:
+                goto = mailbox
+            url = goto.absolute_url()
+            self.request.response.redirect(url+'/view?portal_status_message=\
+                                           %s' % psm)
 
     def renderMailList(self):
         """ renders mailfolder content
@@ -100,7 +111,7 @@ class MailFolderView(BaseMailMessageView):
                 element_date = '?'
             date = decodeHeader(element_date[0])
             if isToday(date):
-                part['Date'] = localizeDateString(date, 2)
+                part['Date'] = localizeDateString(date, 1)
             else:
                 part['Date'] = localizeDateString(date, 3)
             returned.append(part)
@@ -163,36 +174,40 @@ class MailFolderView(BaseMailMessageView):
         return current, current[msg_uid].uid
 
     def manageContent(self, action, **kw):
-        """ manage content
-        """
+        """ manage content """
+
         mailfolder = self.context
         changed = 0
+        psm = ''
 
         if self.request is not None:
             if self.request.form is not None:
                 for element in self.request.form.keys():
                     kw[element] = self.request.form[element]
 
-        if action in('copy', 'cut', 'delete'):
+        if action in('copy', 'cut', 'delete', 'clear'):
             mailbox = mailfolder.getMailBox()
+            if action == 'clear':
+                mailbox.clearClipboard()
             msg_list = []
             for key in kw.keys():
                 if key.startswith('msg_'):
                     id = mailfolder.server_name +'.' + key.replace('msg_', '')
                     msg_list.append(id)
-
-            if msg_list == []:
-                return
-            if action == 'copy':
-                mailbox.fillClipboard('copy', msg_list)
-            if action == 'cut':
-                mailbox.fillClipboard('cut', msg_list)
-            if action == 'delete':
-                for msg in msg_list:
-                    folder, uid = self.getMessageUidAndFolder(msg)
-                    mailfolder.deleteMessage(uid)
-                    changed = 1
-
+            if msg_list != []:
+                if action == 'copy':
+                    mailbox.fillClipboard('copy', msg_list)
+                if action == 'cut':
+                    mailbox.fillClipboard('cut', msg_list)
+                if action == 'delete':
+                    for msg in msg_list:
+                        folder, uid = self.getMessageUidAndFolder(msg)
+                        mailfolder.deleteMessage(uid)
+                        changed = 1
+                    if len(msg_list) > 1:
+                        psm = 'Messages sent to Trash.'
+                    else:
+                        psm = 'Message sent to Trash.'
         if action == 'paste':
             mailbox = mailfolder.getMailBox()
             past_action, ids = mailbox.getClipboard()
@@ -217,4 +232,27 @@ class MailFolderView(BaseMailMessageView):
         if self.request is not None:
             # let's go to the mailbox
             url = mailfolder.absolute_url()
-            self.request.response.redirect(url+'/view')
+
+            if psm == '':
+                self.request.response.redirect(url+'/view')
+            else:
+                self.request.response.redirect(url+
+                    '/view?portal_status_message=%s' % psm)
+
+    def clipBoardEmpty(self):
+        """ tells if the clipboard is empty or not
+            if not empty, leaves the cut-copy-paste toolbar
+            on screen
+        """
+
+        mailfolder = self.context
+        mailbox = mailfolder.getMailBox()
+        return mailbox.clipBoardEmpty()
+
+    def clipBoardCount(self):
+        """ returns clipboard item count """
+
+        mailfolder = self.context
+        mailbox = mailfolder.getMailBox()
+        action, clipboard = mailbox.getClipboard()
+        return len(clipboard)
