@@ -180,7 +180,7 @@ class IMAPConnection(BaseConnection):
                 result.append(current)
         return result
 
-    def partial(self, mailbox, message_number, message_part, start, length):
+    def fetchPartial(self, mailbox, message_number, message_part, start, length):
         """ see interface for doc
         """
         result = ''
