@@ -37,27 +37,114 @@ def openfile(filename, mode='r'):
 
     
 class MailMessageTestCase(ZopeTestCase):    
-    
-    
-    
     def _msgobj(self, filename):
-        fp = openfile(filename)
         try:
-            data = fp.read()
-        finally:
-            fp.close()
+            fp = openfile(filename)
+            try:
+                data = fp.read()                
+            finally:
+                fp.close()
+            
+            return data
+        except:    
+            print str(filename) + ' not found'    
+            return ''
+               
+    def getAllMails(self):
+        res = []
+        for i in range(35):    
+            ob = MailMessage()
+            if i < 9:
+                data = self._msgobj('msg_0'+str(i+1)+'.txt')
+            else:
+                data = self._msgobj('msg_'+str(i+1)+'.txt')
+                    
+            if data <> '':
+                try:
+                    ob.loadMessage(data)
+                    res.append(ob)
+                except:
+                    pass
+        return res                
+                                
+            
+    def getMailInstance(self,number):
+        ob = MailMessage()
         
-        return data
-        
+        if number < 9:
+            data = self._msgobj('msg_0'+str(number+1)+'.txt')
+        else:
+            data = self._msgobj('msg_'+str(number+1)+'.txt')   
+                
+        ob.loadMessage(data)
+        return ob
+                             
     def test_base(self):
-        """ loading a mail
+        """ loading a lot of different mails
         """
         ob = MailMessage() 
-        data = self._msgobj('msg_01.txt')
-        ob.loadMessage(data)
+        for i in range(35):            
+            if i < 9:
+                data = self._msgobj('msg_0'+str(i+1)+'.txt')
+            else:
+                data = self._msgobj('msg_'+str(i+1)+'.txt')
+                    
+            if data <> '':
+                try:
+                    ob.loadMessage(data)
+                except:
+                    print '\nmsg_0'+str(i+1)+'.txt fails\n'   
+                    
+
+    def test_getPartCount(self):
+        """ testing part count on msg_07.txt
+        """
+        ob = self.getMailInstance(7)                
+        part_count = ob.getPartCount()        
+        self.assertEquals(part_count, 4)
         
+        ob = self.getMailInstance(2)                
+        part_count = ob.getPartCount()        
+        self.assertEquals(part_count, 1)
         
             
+    def test_getCharset(self):
+        """ testing charsets on msg_07.txt
+        """
+        ob = self.getMailInstance(7)
+        
+        self.assertEquals(ob.getCharset(0), None)
+        self.assertEquals(ob.getCharset(1), "us-ascii")
+        self.assertEquals(ob.getCharset(2), "iso-8859-1")
+        self.assertEquals(ob.getCharset(3), "iso-8859-2")
+        
+        ob = self.getMailInstance(2)        
+        self.assertEquals(ob.getCharset(), None)
+
+ 
+    def test_getCharset(self):
+        """ testing charsets on msg_07.txt
+        """
+        ob = self.getMailInstance(7)
+        self.assertEquals(ob.getCharset(1), "us-ascii")
+        ob.setCharset("iso-8859-1", 1)      
+        self.assertEquals(ob.getCharset(1), "iso-8859-1")
+        
+        ob = self.getMailInstance(2)
+        self.assertEquals(ob.getCharset(), None)
+        ob.setCharset("iso-8859-1")     
+        self.assertEquals(ob.getCharset(), "iso-8859-1")
+                        
+    def test_isMultipart(self):
+        """ testing Multipart
+        """
+        ob = self.getMailInstance(7)
+        self.assertEquals(ob.isMultipart(), True)
+        
+        ob = self.getMailInstance(2)
+        self.assertEquals(ob.isMultipart(), False)
+        
+                                
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageTestCase),        
