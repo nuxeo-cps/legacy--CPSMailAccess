@@ -37,15 +37,22 @@ from baseconnection import CANNOT_SEARCH_MAILBOX
 
 class IMAPConnection(BaseConnection):
     """ IMAP4 v1 implementation for Connection
+
+    >>> f = IMAPConnection({'HOST': 'localhost'})
+    >>> IConnection.providedBy(f)
+    True
     """
     implements(IConnection)
-
     _connection = None
     _selected_mailbox = None
 
 
     def __init__(self, connection_params= {}):
-
+        """
+        >>> f = IMAPConnection({'HOST': 'my.host', 'connection_type': 'IMAP'})
+        >>> f.connection_type
+        'IMAP'
+        """
         BaseConnection.__init__(self, connection_params)
 
         # instanciate a imap4 object
@@ -73,10 +80,18 @@ class IMAPConnection(BaseConnection):
     #
 
     def _isSSL(self):
+        """
+        >>> f = IMAPConnection({'HOST': 'my.host', 'connection_type': 'IMAP'})
+        >>> f._isSSL()
+        False
+        >>> f = IMAPConnection({'SSL': 1, 'HOST': 'my.host', 'connection_type': 'IMAP'})
+        >>> f._isSSL()
+        True
+        """
         if self._connection:
             if isinstance(self._connection, IMAP4_SSL):
-                return self._connection.ssl()
-        return None
+                return True
+        return False
 
     #
     # Overriden methods
@@ -90,14 +105,15 @@ class IMAPConnection(BaseConnection):
         # extra paramcheck will fit here
 
     def login(self, user, password):
+        """ see interface for doc
+        """
         self._respawn()
         try:
             typ, dat = self._connection.login(user, password)
         except self._connection.error:
             raise ConnectionError(LOGIN_FAILED)
 
-
-        # _connection sate is AUTH if login succeeded
+        # _connection state is AUTH if login succeeded
         if typ == 'OK' :
             self.connected = True
             return True
@@ -105,45 +121,41 @@ class IMAPConnection(BaseConnection):
             return False
 
     def logout(self):
+        """ see interface for doc
+        """
         self._respawn()
         typ, dat = self._connection.logout()
 
         if typ == 'BYE' :
             self.connected = False
 
-
     def list(self, directory='""', pattern='*'):
+        """ see interface for doc
+        """
         self._respawn()
         result = []
-
         imap_list = self._connection.list(directory, pattern)
-
         if imap_list[0] == 'OK':
             for element in imap_list[1]:
                 folder = {}
                 folder_attributes = []
-
                 parts = element.split(' "." ')
-
                 # first part contains attributes
                 attributes = parts[0].strip('(')
                 attributes = attributes.strip(')')
-
                 attributes = attributes.split('\\')
-
                 for attribute in attributes:
                     if attribute:
                         folder_attributes.append(attribute)
-
                 # second part contains folder name
                 folder['Attributes'] = folder_attributes
                 folder['Name'] = parts[1].strip('"')
                 result.append(folder)
-
         return result
 
-
     def getacl(self, mailbox):
+        """ see interface for doc
+        """
         self._respawn()
         result = []
         imap_acl = self._connection.getacl(mailbox)
@@ -167,6 +179,8 @@ class IMAPConnection(BaseConnection):
         return result
 
     def fetch(self, mailbox, message_number, message_parts):
+        """ see interface for doc
+        """
         self._respawn()
         results =  {}
         # XXX forcing each time but
@@ -236,29 +250,20 @@ class IMAPConnection(BaseConnection):
                 if first_semicolumn == -1:
                     first_semicolumn = raw_part.find('=')
                 #raw_parts = raw_part.split(':')
-
                 if first_semicolumn > -1:
                     raw_name = raw_part[0:first_semicolumn].strip()
                     raw_data = raw_part[first_semicolumn+1:].strip()
                 else:
                     raw_name = raw_part
                     raw_data = ''
-
                 returned[raw_name] = raw_data
-
                 i += 1
-
-
         else:
             returned[element] = element
-
         return returned
 
-
     def search(self, mailbox, charset, *criteria):
-
-        """
-            will perform a seach on the given mailbox
+        """ see interface for doc
         """
         self._respawn()
         results = []
@@ -284,29 +289,28 @@ class IMAPConnection(BaseConnection):
             for result in imap_results:
                 if result:
                     i_results = results + result.split(' ')
-
         # we want ints
         for item in i_results:
             results.append(int(item))
-
         return results
 
     def noop(self):
+        """
+        >>> f = IMAPConnection({'HOST': 'my.host', 'connection_type': 'IMAP'})
+        >>> f.noop()
+        """
         self._respawn()
         self._connection.noop()
-
 
 connection_type = 'IMAP'
 
 def makeMailObject(connection_params):
-
     try:
         newob =  IMAPConnection(connection_params)
     except IMAP4.abort:
         # we probablyhave a socket error here
         raise ConnectionError("socket error")
     else:
-
         newob.login(uid, password)
         print str('created '+str(newob))
         return newob
