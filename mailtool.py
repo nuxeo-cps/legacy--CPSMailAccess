@@ -31,6 +31,7 @@ from Products.CPSMailAccess.connectionlist import registerConnections,\
 import thread
 from Products.Five import BrowserView
 from mailsearch import MailCatalogDict
+from smtpmailer import SmtpQueuedMailer
 
 lock = thread.allocate_lock()
 connector = ConnectionList()
@@ -58,6 +59,8 @@ class MailTool(Folder): # UniqueObject
     connection_list = getConnection()
     initialized = 0
     mail_catalogs = None
+    # to be externalized
+    maildeliverer = SmtpQueuedMailer('/tmp')
 
     def __init__(self):
         Folder.__init__(self)
