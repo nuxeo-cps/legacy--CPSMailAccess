@@ -248,6 +248,9 @@
       for=".interfaces.IMailBox"
       />
 
-
+  <browser:resource
+    file="www/cpsmailaccess.css"
+    name="cpsmailaccess.css"
+    />
 
 </configure>
