@@ -35,7 +35,7 @@ from Products.TextIndexNG2.TextIndexNG import TextIndexNG
 from Products.TextIndexNG2.Stopwords import FileStopwords
 
 from configuration import __file__ as landmark
-from utils import makeId
+from utils import makeId, parseDateString
 from interfaces import IMailCatalog
 
 from zemantic.triplestore import TripleStore
@@ -155,7 +155,15 @@ class ZemanticMessageAdapter:
                 if isinstance(value, str):
                     value = value.decode('ISO8859-15')     # need to use mail encoding
 
-                value = Literal(value)
+                if header_name == 'date':
+                    # fixed string date indexing
+                    cdate = parseDateString(value)
+                    value = unicode(cdate.strftime('%d/%m/%Y'))
+                    print value
+                    value = URIRef(value)
+                else:
+                    value = Literal(value)
+
                 triple = (ob_uri, relation, value)
                 triples.append(triple)
 
