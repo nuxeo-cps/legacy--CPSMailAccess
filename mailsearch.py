@@ -71,10 +71,10 @@ class MailCatalog(ZCatalog):
                         if word not in searchable and word not in stop_list:
                             searchable.append(word)
 
-        msg._v_searchable_text = ' '.join(searchable)
+        msg.searchable_text = ' '.join(searchable)
 
     def unWrapMessage(self, msg):
-        msg._v_searchable_text = None
+        msg.searchable_text = None
 
 InitializeClass(MailCatalog)
 
