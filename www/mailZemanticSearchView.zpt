@@ -10,12 +10,63 @@
     </script>
   </metal:main>
   <metal:block metal:fill-slot="main"
-      tal:define="searchable_text request/searchable_text|python:'';
+      tal:define="value_0 request/value_0|python:'';
+                  value_1 request/value_1|python:'';
+                  value_2 request/value_2|python:'';
+                  value_3 request/value_3|python:'';
+                  intersection request/intersection|python:'';
                   numblocs request/numblocs|python:1;
                   numblocs python:range(int(numblocs))">
-      zemantic
     <form action="zemanticSearchMessage.html">
 
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            Message Subject :
+          </td>
+          <td>
+            <input type="hidden" name="relation_0" value="subject"/>
+            <input type="text" name="value_0" tal:attributes="value value_0"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Message From :
+          </td>
+          <td>
+            <input type="hidden" name="relation_1" value="from"/>
+            <input type="text" name="value_1" tal:attributes="value value_1"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Message Carbon Copy :
+          </td>
+          <td>
+            <input type="hidden" name="relation_2" value="cc"/>
+            <input type="text" name="value_2" tal:attributes="value value_2"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Message Contains :
+          </td>
+          <td>
+            <input type="hidden" name="relation_3" value="body"/>
+            <input type="text" name="value_3" tal:attributes="value value_3"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Intersection :
+          </td>
+          <td>
+            <input type="checkbox" name="intersection" tal:attributes="checked intersection"/>
+          </td>
+        </tr>
+      </table>
+
+      <!--
       <div tal:repeat="bloc numblocs">
         <select tal:attributes="name python:'relation_'+str(bloc)">
           <tal:block tal:repeat="predicate here/zemanticPredicateList">
@@ -26,7 +77,7 @@
         </select>
         <input type="text" tal:attributes="name python:'value_'+str(bloc)"/>
       </div>
-
+      -->
 
       <input type="submit" name="search_submitted" value="search"/>
 
@@ -41,17 +92,7 @@
                 Found <tal:block tal:replace="num_results"/> results :
               </div>
               <div id="searchResults">
-                <tal:block tal:repeat="result results">
-                  <div>
-                    <a tal:attributes="href python:result[0]">
-                    Message
-                    </a>
-                    &#160;
-                    <tal:block tal:replace="python:result[1]"/>
-                    &#160;
-                    <tal:block tal:replace="python:result[2]"/>
-                  </div>
-                </tal:block>
+                <metal:block metal:use-macro="here/messagelist_macros/search_messagelist"/>
               </div>
               <script langage="javascript">
                 truncateFields(32);
