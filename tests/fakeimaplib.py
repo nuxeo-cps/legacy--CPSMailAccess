@@ -41,7 +41,7 @@ class IMAP4:
     def login(self, user, password):
         self.user= user
         self.password = password
-        return 'OK', 'AUTH'
+        return ('OK', 'AUTH')
 
     def select(self, mailbox):
         pass
@@ -49,7 +49,8 @@ class IMAP4:
     def fetch(self, message_number, message_part):
         """ XXX we willuse Data subdirectory later here
         """
-        return 'OK', '(UID 123)'
+        result = [('OK', '(UID 123)')]
+        return result
 
     def list(self, directory='""', pattern='*'):
         """ see how to manage this to provide a list
