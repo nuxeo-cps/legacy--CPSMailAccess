@@ -36,10 +36,9 @@ connector = ConnectionList()
 def getConnection():
     lock.acquire()
     try:
-        res = connector
+        return connector
     finally:
         lock.release()
-        return res
 
 class MailTool(Folder, UniqueObject):
     """ the portal tool wich holds
