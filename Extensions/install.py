@@ -28,6 +28,13 @@ from Products.ExternalMethod.ExternalMethod import ExternalMethod
 from Products.CPSInstaller.CPSInstaller import CPSInstaller
 from OFS.ObjectManager import BadRequestException
 from Products.CPSMailAccess.mailtool import manage_addMailTool
+try:
+  from Products.CPSSubscriptions.CPSSubscriptionsPermissions import \
+     CanNotifyContent
+  CPSSubscriptions = 1
+except ImportError:
+  CPSSubscriptions = 0
+
 
 SKINS = {'cpsmailaccess_default' : 'Products/CPSMailAccess/skins',
          'cpsmailaccess_icons'   : 'Products/CPSMailAccess/skins/icons',
@@ -768,7 +775,7 @@ class CPSMailAccessInstaller(CPSInstaller):
 
     def addWMAction(self):
         """ adds an action in user actions """
-        redir = '${portal_url}/portal_webmail/webmail_redirect?user_id=${member}'
+        redir = '${portal_url}/portal_webmail/webmailRedirect.html?user_id=${member}'
         cond = "member and member.getProperty('webmail_enabled', 0)==1"
         action = {
                 'id': 'webmail',
@@ -778,7 +785,26 @@ class CPSMailAccessInstaller(CPSInstaller):
                 'permission': 'View',
                 'category': 'user',
                 }
+
+        self.deleteActions({'portal_actions': ['webmail',]})
         self.verifyAction('portal_actions', **action)
+
+        # we don't want to see notify_content in the webmail
+        if CPSSubscriptions == 0:
+            return
+
+        ptypes = "('Portal', 'CPSMailAccess Message', 'CPSMailAccess Box',  'CPSMailAccess Folder')"
+        condition = "object.portal_type not in %s" % ptypes
+
+        action = {'id' : 'notify_content',
+                  'name' : 'action_notify_content',
+                  'action' : 'string:${object_url}/content_notify_email_form',
+                  'condition' : 'python:%s' % condition,
+                  'permission' :  (CanNotifyContent,),
+                  'category' : 'object',
+                  }
+        self.deleteActions({'portal_subscriptions': ['notify_content',]})
+        self.verifyAction('portal_subscriptions', **action)
 
 def install(self):
     """Installation is done here.
