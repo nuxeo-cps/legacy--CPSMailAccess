@@ -46,13 +46,20 @@ class MailFolder(Folder):
     >>> IMailFolder.providedBy(f)
     True
     """
+    ### XXX see if "properties" are ok in zope3/five context
+    _properties = Folder._properties + \
+        ({'id': 'server_name', 'type': 'string', 'mode': 'w',
+         'label': 'Server name'},)
+
     meta_type = "CPSMailAccess Folder"
 
     implements(IMailFolder)
     server_name = FieldProperty(IMailFolder['server_name'])
     mail_prefix = FieldProperty(IMailFolder['mail_prefix'])
 
-    def __init__(self, uid=None, server_name='', **kw):
+    sync_state = False
+
+    def __init__(self, uid=None, server_name='""', **kw):
         """
         >>> f = MailFolder('ok', 'Open.INBOX.Stuffs')
         >>> f.getServerName()
@@ -164,9 +171,12 @@ class MailFolder(Folder):
         """"See interfaces.IMailFolder
         """
         if uid == '':
-            uid = uniqueId(self, 'folder_')
+            uid = uniqueId(self, 'folder_', use_primary=False)
         else:
             uid = makeId(uid)
+
+        if server_name == '':
+            server_name = uid
 
         new_folder = MailFolder(uid, server_name)
         self._setObject(new_folder.getId(), new_folder)
@@ -178,7 +188,8 @@ class MailFolder(Folder):
         """ See interfaces.IMailFolder
         """
         # XXX see for caching here
-        message_list = self.getMailMessages(False, True, recursive)
+        message_list = self.getMailMessages(list_folder=False, list_messages=True, \
+            recursive=recursive)
 
         for message in message_list:
             if message.msg_key == msg_key:
@@ -189,13 +200,35 @@ class MailFolder(Folder):
     def childFoldersCount(self):
         """ See interfaces.IMailFolder
         """
-        return self.getMailMessagesCount(True, False, False)
+        return self.getMailMessagesCount(count_folder=True, count_messages=False, \
+            recursive=False)
+
+    def getchildFolders(self):
+        """ See interfaces.IMailFolder
+        """
+        return self.getMailMessages(list_folder=True, list_messages=False)
+
+    def setSyncState(self, state=False, recursive=False):
+        """ sets state
+        """
+        self.sync_state = state
+        if recursive:
+            folders = self.getchildFolders()
+            for folder in folders:
+                folder.setSyncState(state, True)
 
     def _synchronizeFolder(self):
         """ See interfaces.IMailFolder
         """
         # XXXX using pass for unit testing
-        pass
+        connector = self._getconnector()
+
+        server_content = connector.search(self.server_name, None,'ALL')
+        zodb_messages = self.getMailMessages(False, True, False)
+
+        # now syncing server_folder and current one
+        #raise str(zodb_messages)
+
 
     def checkMessages(self):
         """See interfaces.IMailFolder
