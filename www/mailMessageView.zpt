@@ -19,6 +19,9 @@
     <div tal:condition="show_folder"
          tal:define="is_folder python:0">
       <metal:block use-macro="here/messagelist_macros/messagelist"/>
+      <script langage="javascript">
+        truncateFields(32);
+      </script>
     </div>
     <div class="mailHeaders">
       <metal:block use-macro="here/messagelist_macros/messagetoolbar"/>
