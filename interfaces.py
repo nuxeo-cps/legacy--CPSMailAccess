@@ -372,3 +372,29 @@ class IMailRenderer(Interface):
         """ renders a human readable body
             from given part
         """
+
+class IMailMessageCache(Interface):
+    """ this is useful when synchronizing email accounts
+        to make alist of orphan message that
+        can be checked before downloading
+        messages from server that might be already on
+        client side
+    """
+    def retrieveMessage(uid, remove=False):
+        """ gets a message and eventually deletes it from the list
+            returns none if not in the list
+        """
+    def putMessage(message):
+        """ puts a message in the list
+            raises if message does not provide IMailMessage
+        """
+
+    def emptyList():
+        """ empty the list and delete
+            objects
+        """
+
+    def inCache(self):
+        """ checks if the given message is in the list
+            returns False if not *or* if the given object is not a IMailMessage
+        """
