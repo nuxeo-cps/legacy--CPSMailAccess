@@ -236,33 +236,32 @@ class MailMessage(MailPart):
         """ attach an element
         """
         store = self._getStore()
+
         if not self.isMultipart():
             new_message = Message.Message()
-            new_message['Content-Type'] = 'multipart/mixed; boundary=BOUNDARY'
+            main_heads = ('date', 'to', 'from', 'cc', 'bcc')
             for header in self.getHeaders().keys():
                 head = self.getHeader(header)
                 for part in head:
-                    new_message.add_header(header, part)
-            new_message.attach(MIMEText(store.get_payload(),
-                _encoder=Encoders.encode_7or8bit))
-            store = new_message
+                    if header.lower() not in main_heads:
+                        new_message.add_header(header, part)
+            new_message._payload = store._payload
+            store._payload = [new_message]
+            store['Content-Type'] = 'multipart/mixed; boundary="BOUNDARY"'
 
-            self._setStore(new_message)
         file.seek(0)
         try:
             part_file = Message.Message()
-            part_file['filename'] = file.filename
-            part_file['name'] = file.filename
-            part_file['content-disposition'] = 'attachment'
-            part_file['content-transfer-encoding'] = 'base64'
+            part_file['Content-Disposition'] = 'attachment; filename= %s' % file.filename
+            part_file['Content-Transfer-Encoding'] = 'base64'
             data = file.read()
             mime_type = mimeGuess(data)
             data = base64MIME.encode(data)
             part_file.set_payload(data)
-            part_file['Content-Type'] = mime_type
-            #raise str(part_file)
+            part_file['Content-Type'] = '%s; name=%s' % (mime_type, file.filename)
         finally:
             file.close()
+
         store.attach(part_file)
 
     def hasAttachment(self):
