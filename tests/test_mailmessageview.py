@@ -165,7 +165,18 @@ class MailMessageViewTestCase(MailTestCase):
         self.assertEquals(body, u' ezezf<br/> ezf<br/> <b>ezf</b><br/> ef<br/> <br/> <u>ez<br/> <br/> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> </u>ezf<br/> ')
 
 
+    def test_renderHeaderList(self):
+        # checks unicoding
+        ob = self.getMailInstance(6)
+        ob.setHeader('From', u'Tarek Ziadé')
 
+        ob.getPhysicalPath = self.fakePhysicalPath
+
+        # need to set up context and request object here
+        view = MailMessageView(ob, None)
+
+        hl = view.renderHeaderList('From')
+        self.assertEquals(hl, u'Tarek Ziadé')
 
 def test_suite():
     return unittest.TestSuite((

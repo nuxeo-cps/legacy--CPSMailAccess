@@ -268,6 +268,13 @@ class MailMessageTestCase(MailTestCase):
         self.assertEquals(ob.volatile_parts, ob2.volatile_parts)
         self.assertEquals(ob.read, ob2.read)
 
+    def test_copyFromHeaders(self):
+        ob = self.getMailInstance(6)
+        ob2 = MailMessage('uid2', 'uid2')
+        ob2.copyFrom(ob)
+        self.assertEquals(ob2.getHeader('Subject') , ob.getHeader('Subject'))
+
+
     def test_attachfile(self):
         ob = self.getMailInstance(2)
         initial_message = ob.getRawMessage()
