@@ -249,8 +249,13 @@ class IConnection(Interface):
     def rename(oldmailbox, newmailbox):
         """ renames a mailbox
         """
+
     def copy(from_mailbox, to_mailbox, message_number):
         """ copy a message from a box to another
+        """
+
+    def create(mailbox):
+        """ creates the given mailbox
         """
 
 class IConnectionList(Interface):
