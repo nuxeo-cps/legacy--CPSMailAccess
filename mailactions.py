@@ -65,8 +65,8 @@ class MailActionsView(BrowserView):
                 send = {'icon' : 'cpsma_sendmsg.png',
                                  'title' : 'send message',
                                  'long_title' : 'send the message',
-                                 'action' : 'sendMessage',
-                                 'onclick' : 'saveMessageDatas()'}
+                                 'action' : 'editMessage.html',
+                                 'onclick' : 'saveMessageDatas();alert("click below");'}
 
                 return [[save, attach_file], [send]]
 
@@ -108,6 +108,12 @@ class MailActionsView(BrowserView):
                                 'long_title' : 'rename current folder',
                                 'action' : 'view?edit_name=1'}
                     actions.extend([delete, rename, move_folder])
+
+            manage = {'icon' : 'cpsma_manage_content.png',
+                'title' : 'manage content',
+                'long_title' : 'manage current folder',
+                'action' : 'view?manage_content=1'}
+            actions.append(manage)
 
         elif IMailMessage.providedBy(container):
             root = container.getMailBox().absolute_url()
