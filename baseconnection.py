@@ -39,7 +39,6 @@ NO_CONNECTOR = 'Could find a connector'
 CANNOT_READ_MESSAGE = 'Could not read message %s in %s'
 SOCKET_ERROR  = 'Could not open a socket to the server'
 
-
 class BaseConnection:
     """ base class used for any mail server connexion
     """

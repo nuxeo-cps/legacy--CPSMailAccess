@@ -18,7 +18,6 @@
 #
 # $Id$
 from zLOG import LOG, DEBUG, INFO
-
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem

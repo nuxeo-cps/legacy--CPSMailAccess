@@ -17,7 +17,6 @@
 # 02111-1307, USA.
 #
 # $Id$
-
 from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 import sys

@@ -22,7 +22,6 @@
     A MailPart is a part of a message
 """
 from zLOG import LOG, INFO, DEBUG
-
 from zope.interface import implements
 from interfaces import IMailPart
 from email import Message as Message
