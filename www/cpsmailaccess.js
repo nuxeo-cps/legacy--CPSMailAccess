@@ -67,5 +67,18 @@ function removeToSection() {
 }
 
 function saveMessageDatas() {
-  alert('hello');
+  // for mozilla, need to find the same for ie
+  alert('a finir');
+  msg_subject = document.getElementById('msg_subject');
+  msg_from = document.getElementById('msg_from');
+  msg_tos = document.getElementById('msg_to');
+
+  url = "saveMessageForm?msg_subject=" + msg_subject.value + "&msg_from=" + msg_from
+  var xml = new XMLHttpRequest();
+  xml.open("GET", url,true);
+  xml.send(null);
+  alert(msg_tos);
+
 }
+
+
