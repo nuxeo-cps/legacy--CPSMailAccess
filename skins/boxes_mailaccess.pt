@@ -44,6 +44,36 @@
   </tal:block>
 </metal:block>
 
+<metal:block define-macro="basebox_moveview">
+  <tal:block tal:define="treeview here/treeview|nothing">
+    <tal:block tal:condition="treeview">
+      <div class="form_title" i18n:translate="">
+        Choose a new parent folder
+      </div>
+      <tal:block tal:repeat="element treeview">
+        <metal:block use-macro="here/boxes_mailaccess/macros/move_node"/>
+      </tal:block>
+    </tal:block>
+  </tal:block>
+</metal:block>
+
+<metal:block define-macro="move_node">
+  <div tal:condition="not:element/not_for_move">
+    <tal:block tal:repeat="icon_ob element/front_icons">
+      &#160;&#160;&#160;
+    </tal:block>
+    <a tal:attributes="href element/rename_url">
+      <img src="cpsma_selectfolder.png"/>
+      <span tal:replace="element/short_title"/>
+    </a>
+    <div tal:attributes="id element/short_title_id">
+      <tal:block tal:repeat="element element/childs">
+        <metal:block use-macro="here/boxes_mailaccess/macros/move_node"/>
+      </tal:block>
+    </div>
+  </div>
+</metal:block>
+
 <metal:block define-macro="basebox_actions">
  <tal:block tal:define="actions here/actionview|nothing">
    <tal:block tal:condition="actions">
