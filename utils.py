@@ -30,6 +30,8 @@ from email.Utils import fix_eols
 from html2text import HTML2Text
 from random import randrange
 from zLOG import LOG, INFO
+from encodings import exceptions as encoding_exceptions
+
 _translation_table = string.maketrans(
     # XXX candidates: @°+=`|
     '"' r"""'/\:; &ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜİàáâãäåçèéêëìíîïñòóôõöøùúûüıÿ""",
@@ -82,21 +84,34 @@ def md5Hash(string):
     m.update(string)
     return m.hexdigest()
 
-def decodeHeader(header):
-    """ decodes a mail header
-    """
-    # see here if this encoding is ok
+def decodeHeader(header, encoding='ISO8859-15'):
+    """ decodes a mail header """
+    # python 2.3 email Header.py works with strings
+    # we don't !
+    if isinstance(header,unicode):
+        header = header.encode(encoding)
+
+    decoded_header = decode_header(header)
+
+    cdecoded_header = []
+    for part in decoded_header:
+        if part[1] is None and encoding is not None:
+            cdecoded_header.append((part[0], encoding))
+        else:
+            cdecoded_header.append((part[0], part[1]))
+
+    # controling encodings
     try:
-        decoded_header = decode_header(header)
-        hu = make_header(decoded_header)
+        hu = make_header(cdecoded_header)
         hu = hu.__unicode__()
-
-    #except UnicodeDecodeError, LookupError:
-    #    hu = header
-
-    ### need to find wich LookupError is
-    except:
-        hu = header
+    except encoding_exceptions.LookupError:
+        # unknown encoding or uninstalled (iso-2022-jp maybe)
+        # we'll do iso here
+        cdecoded_header = []
+        for part in decoded_header:
+            cdecoded_header.append((part[0], 'ISO8859-15'))
+        hu = make_header(cdecoded_header)
+        hu = hu.__unicode__()
     return hu
 
 
@@ -209,7 +224,8 @@ def getCurrentDateStr():
     """
     date = datetime(1970, 1, 1)
     now = date.now()
-    return now.strftime('%a %d/%m/%y %H:%M')
+    # english style
+    return now.strftime('%a %m/%d/%y %H:%M')
 
 _marker = object()
 def getToolByName(obj, name, default=_marker):
