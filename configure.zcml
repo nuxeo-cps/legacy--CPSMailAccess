@@ -146,11 +146,20 @@
       permission="zope2.View"
       />
 
+
   <browser:page
       for=".interfaces.IMailBox"
       class=".adressbook.AddressBookViewer"
       template="www/mailAdressBookView.zpt"
       name="addressBooks.html"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".basemailview.BaseMailMessageView"
+      name="getBaseUrl"
+      attribute="getBaseUrl"
       permission="zope2.View"
       />
 
@@ -431,6 +440,14 @@
       class=".mailmessageeditview.MailMessageEdit"
       template="www/mailEditorView.zpt"
       name="editMessage.html"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
+      name="writeTo.html"
+      attribute="writeTo"
       permission="zope2.View"
       />
 
