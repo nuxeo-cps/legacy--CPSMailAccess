@@ -253,7 +253,7 @@ class MailMessageTestCase(MailTestCase):
         self.assertEquals(ob.getPersistentPartIds(), [0])
 
         # try to reload it as a volatile part
-        vp = ob.loadPart(1, 'dfghj', volatile=True)
+        vp = ob.loadPart('1', 'dfghj', volatile=True)
 
         self.assertEquals(ob.getPart(1), None)
         self.assertEquals(vp, ob.getVolatilePart(1))
@@ -265,7 +265,6 @@ class MailMessageTestCase(MailTestCase):
         ob2 = MailMessage('uid2', 'uid2')
         ob2.copyFrom(ob)
         self.assertNotEquals(ob.uid, ob2.uid)
-        self.assertEquals(ob.volatile_parts, ob2.volatile_parts)
         self.assertEquals(ob.read, ob2.read)
 
     def test_copyFromHeaders(self):

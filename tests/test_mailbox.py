@@ -27,11 +27,33 @@ from Products.CPSMailAccess.interfaces import IMailBox, IMailFolder
 from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView
 from basetestcase import MailTestCase
 from Testing.ZopeTestCase import installProduct
+from OFS.Folder import Folder
 
 from Products.CPSMailAccess import mailbox
 
 
 installProduct('TextIndexNG2')
+
+class FakeDirectory(Folder):
+    pass
+
+class FakeDirectoryTool(Folder):
+
+    members = FakeDirectory()
+    addressbook = FakeDirectory()
+
+    def listVisibleDirectories(self):
+        return ['members', 'roles', 'groups', 'addressbook']
+
+    def searchEntries(self, return_fields, **kw):
+
+        return [('tarek', {'id': 'tarek', 'fullname' : 'Tarek Ziadé',
+                 'email' : 'tz@nuxeo.com', 'mails_sent' : 32})]
+
+    def _searchEntries(self, directory_name, return_fields=None, **kw):
+        """ search for entries """
+        return [('tarek', {'id': 'tarek', 'fullname' : 'Tarek Ziadé',
+                 'email' : 'tz@nuxeo.com', 'mails_sent' : 32})]
 
 class FakeFieldStorage:
     file = None
@@ -230,6 +252,14 @@ class MailBoxTestCase(MailTestCase):
         logs = mailbox.synchronize()
         self.assert_(len(logs)>100)
 
+    def test_searchUsers(self):
+        self.portal.portal_directory = FakeDirectoryTool()
+        portal_dir = self.portal.portal_directory
+        mailbox = self._getMailBox()
+        mailbox._searchEntries = portal_dir._searchEntries
+
+        results = mailbox.searchDirectoryEntries('tarek')
+        self.assertEquals(len(results), 2)
 
 
 def test_suite():

@@ -34,7 +34,7 @@ class FakeDirectoryTool(Folder):
 
     def searchEntries(self, return_fields, **kw):
 
-        return [{'id': 'tarek', 'fullname' : 'Tarek Ziadé'}]
+        return [{'id': 'tarek', 'fullname' : 'Tarek Ziadé', 'email' : 'tz@nuxeo.com'}]
 
 class DirectoryPickerTestCase(MailTestCase):
 

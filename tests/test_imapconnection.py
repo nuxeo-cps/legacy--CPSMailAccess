@@ -173,6 +173,55 @@ class IMAPConnectionTestCase(MailTestCase):
         self.assertEquals(results[0], ['Seen'])
         self.assertEquals(results[1], '515')
 
+    def test_extractInfos(self):
+        infos = ['related', ['alternative', ['text', 'plain', None, None,
+          'quoted-printable', 3949, 104, ['charset', 'utf-8']], ['text', 'html',
+          None, None, 'quoted-printable', 29240, 582, ['charset', 'utf-8']]],
+           ['image', 'jpeg',
+         '<004d01c4c8c5$4a5c6c20$6a012515@mairiedijon.org>', None,
+         'base64', 30732, ['name', 'clip_image002.jpg']], ['image', 'jpeg',
+          '<004e01c4c8c5$4a5c6c20$6a012515@mairiedijon.org>', None,
+         'base64', 14904, ['name', 'clip_image004.jpg']]]
+
+        box = self._getMailBox()
+        ob = self.makeConnection()
+
+        results = ob._extractInfos(infos, 1)
+        self.assertEquals(results, ['alternative', ['text', 'plain', None, None,
+          'quoted-printable', 3949, 104, ['charset', 'utf-8']], ['text', 'html',
+          None, None, 'quoted-printable', 29240, 582, ['charset', 'utf-8']]])
+
+        infos = ['text', 'plain', None, None, None, '8bit', 92, 6]
+        results = ob._extractInfos(infos, 1)
+        self.assertEquals(infos, results)
+
+        infos = ['text', 'plain', None, None, '7bit', 841, 28, ['charset', 'us-ascii']]
+        results = ob._extractInfos(infos, 1)
+        self.assertEquals(infos, results)
+
+
+        infos = ['related', ['text', 'html', None, None, '7bit', 384, 1,
+         ['charset', 'us-ascii']], ['image', 'gif', '', None, 'base64', 15632,
+          ['name', 'perpetual.gif']]]
+        results = ob._extractInfos(infos, 2)
+        self.assertEquals(results, ['image', 'gif', '', None,
+         'base64', 15632, ['name', 'perpetual.gif']])
+
+
+        infos = ['related', ['text', 'html', None, None, '7bit', 384, 1,
+          ['charset', 'us-ascii']], ['image', 'gif',
+           '<part1.08020703.07060906@vptfod@yahoo.com>', None, 'base64',
+           15632, ['name', 'perpetual.gif']]]
+
+        results = ob._extractInfos(infos, 1)
+        self.assertEquals(results, ['text', 'html', None, None, '7bit', 384, 1,
+          ['charset', 'us-ascii']])
+
+        results = ob._extractInfos(infos, 2)
+        self.assertEquals(results, ['image', 'gif',
+           '<part1.08020703.07060906@vptfod@yahoo.com>', None, 'base64',
+           15632, ['name', 'perpetual.gif']])
+
 
 
 def test_suite():
