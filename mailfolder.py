@@ -411,12 +411,9 @@ class MailFolder(BTreeFolder2):
             uids = []
 
         for uid in uids:
-            #start = time.time()
-            #LOG('synchro', INFO, '%s %s' % (str(uid), self.server_name))
-
             sync_id = '%s.%s' % (self.server_name, uid)
-
             msg = self.findMessageByUid(uid)
+
             if msg is not None:
                 sync_states[sync_id] = True
                 continue
@@ -430,7 +427,7 @@ class MailFolder(BTreeFolder2):
                 mailfailed = True
 
             # msg_flags = fetched[0]
-            # msg_size = fetched[1]
+            msg_size = fetched[1]
             if not mailfailed:
                 msg_headers = fetched[2]
 
@@ -440,7 +437,7 @@ class MailFolder(BTreeFolder2):
 
             if msg is None and not mailfailed:
                 msg = self._addMessage(uid, digest, index=False)
-
+                raw_msg = ''
                 skip = False
                 # Message is not in cache
                 if cache_level == 0:
@@ -472,22 +469,13 @@ class MailFolder(BTreeFolder2):
                         msg_body = msg_content[1]
                         if msg_content:
                             raw_msg = msg_body
-                        else:
-                            raw_msg = ''
 
                 if not skip:
                     log.append('adding message %s in %s' % (uid, self.server_name))
-
-                    # todo: parse flags
-                    startf = time.time()
-
                     msg.loadMessage(raw_msg, cache_level)
-                    #self._indexMessage(msg)
+                    msg.size = msg_size
                     indexStack.append(msg)
                     self._updateDirectories(msg)
-
-                    total = time.time() - startf
-                    #LOG('synchro', INFO, 'load  %0.2f' % (total))
                 else:
                     self.manage_delObjects([msg.getId()])
             else:
@@ -516,8 +504,8 @@ class MailFolder(BTreeFolder2):
 
         # print '%s synchro' % self.server_name
         # print time.asctime() + ' : zodb commit'
-        get_transaction().commit()
-        get_transaction().begin()
+        get_transaction().commit()    # implicitly usable without import
+        get_transaction().begin()     # implicitly usable without import
 
         if return_log:
             return log
