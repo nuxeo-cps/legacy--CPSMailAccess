@@ -292,12 +292,18 @@ class MailFolder(BTreeFolder2):
             return True
         return False
 
+    def onFlagChanged(self, msg, flag, value):
+        """ event triggered when a message flag changes """
+        print 'hey'
+
     def _addMessage(self, uid, digest, index=True):
         """ See interfaces.IMailFolder """
         self.clearMailBoxTreeViewCache()
         self.message_count +=1
         id = self.getIdFromUid(uid)
         msg = MailMessage(id, uid, digest)
+        # set flag change event
+        msg.onflagchanged = self.onFlagChanged
         self._setObject(id, msg)
         msg.parent_folder = self
         msg = self._getOb(id)
