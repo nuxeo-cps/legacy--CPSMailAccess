@@ -141,6 +141,8 @@ class MailTestCase(ZopeTestCase):
         mailbox._connection_params['smtp_port'] = 25
         mailbox._connection_params['cache_level'] = 2
         mailbox._connection_params['email_adress'] = 'tz@nuxeo.com'
+        mailbox._connection_params['max_folder_depth'] = 0
+        mailbox._connection_params['treeview_style'] = 'lotus'
         return mailbox
 
     def _msgobj(self, filename):

@@ -339,6 +339,32 @@ class MailFolderTestCase(MailTestCase):
         folder1.rename('folde')
         self.assertEquals(folder1.server_name, 'folde')
 
+    def test_subcreation(self):
+
+        mailbox = self._getMailBox()
+        folder1 = mailbox._addFolder('folder1', 'folder1')
+        folder11 = folder1._addFolder('folder11', 'folder1.folder11')
+        folder111 = folder11._addFolder('folder111', 'folder1.folder11.folder111')
+
+        self.assertEquals(folder1.depth(), 1)
+        self.assertEquals(folder11.depth(), 2)
+        self.assertEquals(folder111.depth(), 3)
+
+        self.assert_(folder1.canCreateSubFolder())
+        self.assert_(folder11.canCreateSubFolder())
+        self.assert_(folder111.canCreateSubFolder())
+
+        mailbox._connection_params['max_folder_depth'] = 3
+
+        self.assert_(folder1.canCreateSubFolder())
+        self.assert_(folder11.canCreateSubFolder())
+        self.assert_(not folder111.canCreateSubFolder())
+
+
+
+
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailFolderTestCase),

@@ -163,6 +163,7 @@ class MailFolderViewTestCase(MailTestCase):
                 sub_sub_folder = sub_folder._addFolder('folder_'+str(y))
 
         view = MailFolderView(ob, None)
+        view = view.__of__(ob)
 
         treeview = view.renderTreeView()
 
