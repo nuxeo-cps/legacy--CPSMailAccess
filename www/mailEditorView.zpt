@@ -1,0 +1,47 @@
+<html metal:use-macro="here/main_template/macros/master">
+  <metal:block fill-slot="css_slot">
+    <style type="text/css" media="all"
+      tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
+  </metal:block>
+  <metal:main fill-slot="javascript_head_slot">
+    <script type="text/javascript"
+      tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
+      src="++resource++cpsmailaccess.js">
+    </script>
+  </metal:main>
+  <metal:block metal:fill-slot="main">
+    <form action="sendMessage"
+          tal:define="came_from request/came_from|nothing">
+      <input type="hidden" tal:attributes="value came_from" name="came_from"/>
+      <div> <!-- here we'll get person's different ids -->
+        <span>From:</span>
+        <select name="msg_from">
+          <option value="tarek@ziade.org">Tarek &lt;tarek@ziade.org&gt;</option>
+          <option value="tz@nuxeo.com" selected="selected">Tarek Boulot &lt;tz@nuxeo.com&gt;</option>
+        </select>
+      </div>
+      <div id="Tos">
+        <div id="to1">
+          <select name="sent_type_1">
+            <option value="To" selected="selected">To</option>
+            <option value="Cc">Cc</option>
+            <option value="BCc">BCc</option>
+          </select>
+          <input name="msg_to" type="text" value=""/>
+          <span onclick="addToSection();">More</span>
+        </div>
+      </div>
+      <div id="Subject">
+        <span>Subject:</span>
+        <input type="text" name="msg_subject" value="" />
+      </div>
+      <div id="Body">
+        <textarea name="msg_body">mailbody</textarea>
+      </div>
+      <div id="toolbar">
+        <input type="submit" value="send"/>
+      </div>
+      <input type="hidden" name="msg_attachments" value="" />
+    </form>
+  </metal:block>
+</html>
