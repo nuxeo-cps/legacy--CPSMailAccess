@@ -157,18 +157,20 @@ class MailBoxTestCase(MailTestCase):
         mailbox = self._getMailBox()
 
         res = mailbox._createMailDirectoryEntry('Tarek Ziadé <tarek@ziade.org>')
-        self.assertEquals(res, {'id': u'tarekziade.org', 'fullname':
+        self.assertEquals(res, {'mails_sent': 0, 'id': u'tarekziade.org', 'fullname':
             u'Tarek Ziad\xe9', 'email': u'tarek@ziade.org', 'givenName':
             u'Tarek', 'email': u'tarek@ziade.org', 'sn': u'Ziad\xe9'})
 
         res = mailbox._createMailDirectoryEntry('Tarek <tarek@nuxeo.com>')
-        self.assertEquals(res, {'fullname': u'Tarek', 'givenName': u'Tarek',
+        self.assertEquals(res, {'mails_sent': 0, 'fullname': u'Tarek',
+                                'givenName': u'Tarek',
                                 'email': 'tarek@nuxeo.com', 'id':
                                 'tareknuxeo.com'})
 
         res = mailbox._createMailDirectoryEntry('tz@nuxeo.com>')
-        self.assertEquals(res, {'fullname': u'', 'email': 'tz@nuxeo.com',
-                          'id': 'tznuxeo.com'})
+        self.assertEquals(res, {'mails_sent': 0,'fullname': u'',
+                                'email': 'tz@nuxeo.com',
+                                'id': 'tznuxeo.com'})
 
     def test_readDirectoryValue(self):
 
