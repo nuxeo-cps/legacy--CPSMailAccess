@@ -58,6 +58,12 @@ class MailRenderer:
 
     html_engine = HTMLMail()
 
+    def HTMLize(self, content):
+        """ transforms a text into a html bloc
+        """
+        content = content.replace('\n', '<br/>')
+        return content
+
     def extractPartTypes(self, part_type):
         if part_type is None:
             return {'type' : 'text/plain'}
@@ -171,9 +177,11 @@ class MailRenderer:
             if is_msg:
                 volatile = True
                 part = root_msg.loadPart(part_index, part_content='', volatile=volatile)
-                return self._extractBodies(part)
+                body = self._extractBodies(part)
             else:
                 #need to load the whole branch
                 raise NotImplementedError
 
-        return self._extractBodies(part)
+        body = self._extractBodies(part)
+
+        return self.HTMLize(body)
