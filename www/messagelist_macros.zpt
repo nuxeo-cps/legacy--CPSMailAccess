@@ -35,7 +35,15 @@
     </metal:block>
 
     <metal:block define-macro="messagelist">
-    <tal:block tal:define="messages view/renderMailList;">
+    <tal:block tal:define="page request/page|python:1;
+                           nb_items request/nb_items|python:20;
+                           sort_with request/sort_with|string:Date;
+                           sort_asc request/sort_asc|python:0;
+                           messagesl python:view.renderMailList(int(page), int(nb_items),
+                                                               sort_with, int(sort_asc));
+                           messages python:messagesl[1];
+                           nbpages python:messagesl[0]">
+
        <div tal:attributes="class
               python:test(is_folder,'folder_msglist','message_msglist')">
         <table id="tableMessageList"
@@ -47,14 +55,25 @@
             </th>
             <th class="mailToolBarElement mailToolBarInsideElement"
                 tal:repeat="col cols">
-              <tal:block tal:condition="python:col not in ('Attachments', 'Icon')">
-                <span tal:replace="col"/>
-              </tal:block>
-              <tal:block tal:condition="python:col=='Attachments'">
-                A
-              </tal:block>
-              <tal:block tal:condition="python:col=='Icon'">
-                I
+              <tal:block tal:define="sort_order
+                                     python:test(sort_with==col, not int(sort_asc), int(sort_asc));
+                                     sort_order python:test(sort_order, 1, 0)">
+                <a tal:attributes="href    python:here.absolute_url()+'/view?page=%s&nb_items=%s&sort_with=%s&sort_asc=%s' %(page, nb_items, col, sort_order)">
+
+                <tal:block tal:condition="python:col not in ('Attachments', 'Icon')">
+                    <span tal:replace="col"/>
+                </tal:block>
+                <tal:block tal:condition="python:col=='Attachments'">
+                    A
+                </tal:block>
+                <tal:block tal:condition="python:col=='Icon'">
+                    I
+                </tal:block>
+                <tal:block tal:condition="python:sort_with==col">
+                  <tal:block tal:condition="python:int(sort_asc)==0">^</tal:block>
+                  <tal:block tal:condition="python:int(sort_asc)==1">v</tal:block>
+                </tal:block>
+                </a>
               </tal:block>
             </th>
           </tr>
@@ -65,7 +84,7 @@
                 class_selected python:test(odd, 'selected_odd', 'selected_even');
                 class_not_selected python:test(odd,
                     'not_selected_odd', 'not_selected_even');
-                gotoUrl python:message['url']+'?showfolders=1';
+                gotoUrl python:message['url'];
                 onmouseover python:'setCursor(this)'+chr(59);
                 onclickurl python:'gotoUrl('+chr(34)+gotoUrl+chr(34)+')';
                 base_url here/getBaseUrl;
@@ -80,14 +99,11 @@
                      tal:attributes="name python:'msg_'+message['uid']"/>
             </td>
             <td tal:repeat="col cols">
-              <input type="hidden" name="sorter" id="sorter"
-                     tal:attributes="value python:message[col+'_sort']"/>
-
              <div tal:attributes="class divclass;
                                   onclick onclickurl;
                                   onmouseover onmouseover">
 
-              <a tal:attributes="href python:message['url']+'?showfolders=1'">
+              <a tal:attributes="href python:message['url']">
 
                 <tal:block tal:condition="python:col=='Attachments'">
                   <img src="cpsma_attach_mini.png" tal:condition="python:message[col]==1"/>
@@ -109,7 +125,21 @@
           </tal:block>
           </tal:block>
         </table>
+        <div class="batcher" tal:condition="python:nbpages &gt; 1">
+          pages :
+          <tal:block tal:repeat="i python:range(nbpages)">
+            <tal:block tal:condition="python:i+1==int(page)">
+              <span tal:replace="python:i+1"/>
+            </tal:block>
+            <tal:block tal:condition="python:i+1!=int(page)">
+
+              <a tal:attributes="href    python:here.absolute_url()+'/view?page=%s&nb_items=%s&sort_with=%s&sort_asc=%s' %(i+1, nb_items, sort_with, sort_asc)">
+                <span tal:replace="python:i+1"/>
+              </a>
+            </tal:block>
+          </tal:block>
         </div>
+      </div>
     </tal:block>
     </metal:block>
 
@@ -119,11 +149,6 @@
             tal:attributes="href python:here.absolute_url()+'/viewAlone.html'" target="_blank">
             <img id="new_page" src="launch.png"/>
           </a>
-        <tal:block tal:condition="not:request/showfolders|python:0">
-            <a tal:attributes="href python:here.absolute_url()+'/view?showfolders=1'">
-              <img id="midPageButton" src="cpsma_down.png" style="margin-right: 4px"/>
-            </a>
-        </tal:block>
         <tal:block tal:condition="request/showfolders|python:0">
             <a tal:attributes="href python:here.absolute_url()+'/view'">
             <img id="fullPageButton" src="cpsma_up.png" style="margin-right: 4px"/>
