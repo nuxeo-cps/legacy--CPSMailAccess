@@ -40,8 +40,8 @@ from zope.app.cache.ram import RAMCache
 from utils import getToolByName, getCurrentDateStr, \
     _isinstance, decodeHeader, uniqueId, makeId, getFolder
 from interfaces import IMailBox, IMailMessage, IMailFolder, IMessageTraverser
-from mailmessage import MailMessage
 from mailfolder import MailFolder, manage_addMailFolder
+from maileditormessage import MailEditorMessage
 from mailfolderview import MailFolderView
 from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
 from basemailview import BaseMailMessageView
@@ -49,9 +49,10 @@ from mailmessageview import MailMessageView
 from Products.Five.traversable import FiveTraversable
 from mailsearch import MailCatalog
 from directorypicker import DirectoryPicker
+from baseconnection import has_connection
 import re
 
-has_connection = 1
+
 
 class MailBoxBaseCaching(MailFolder):
     """ a mailfolder that implements
@@ -69,7 +70,7 @@ class MailBoxBaseCaching(MailFolder):
     def getMailFromCache(self, key, remove=True):
         key = {'digest' : key}
         mail = self._cache.query('mails', key)
-        if mail is not None:
+        if mail is not None and remove:
             self._cache.invalidate('mails', key)
         return mail
 
@@ -92,7 +93,7 @@ class MailBoxBaseCaching(MailFolder):
         """
         editor = self._cache.query('maileditor')
         if editor is None:
-            msg = MailMessage()
+            msg = MailEditorMessage()
             # hack to identify it , need to do this better
             msg.editor_msg = 1
             msg.setHeader('Date', getCurrentDateStr())
@@ -181,8 +182,9 @@ class MailBox(MailBoxBaseCaching):
             self.synchronize()
 
     def synchronize(self, no_log=False):
-        """ see interface
-        """
+        """ see interface """
+        if not has_connection:
+            return
         # retrieving folder list from server
         connector = self._getconnector()
         server_directory = connector.list()
@@ -715,7 +717,7 @@ class MailBoxParametersView(BrowserView):
 
     def renderParametersForm(self):
         """ returns a form with parameters
-            XXXX see for zope 3 form use here
+        XXXX see for zope 3 schema/widget use here
         """
         if self.request is not None:
             if self.request.has_key('submit'):
@@ -725,13 +727,19 @@ class MailBoxParametersView(BrowserView):
         rendered_params = []
 
         for param in params:
+            value = params[param]
             rendered_param = {}
             rendered_param['name'] = param
-            rendered_param['value'] = params[param]
+            rendered_param['value'] = value
             if param == 'password' and not params[param].startswith('${'):
                 rendered_param['type'] = 'password'
             else:
                 rendered_param['type'] = 'text'
+
+            if isinstance(value, int):
+                rendered_param['ptype'] = 'int'
+            else:
+                rendered_param['ptype'] = 'string'
 
             rendered_params.append(rendered_param)
 
