@@ -26,7 +26,7 @@ from Globals import InitializeClass
 import sys
 from smtplib import SMTP
 from utils import getToolByName, getCurrentDateStr, \
-    _isinstance, decodeHeader, verifyBody
+    _isinstance, decodeHeader
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
@@ -47,7 +47,7 @@ from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
 from Products.Five.traversable import FiveTraversable
 
-has_connection = 0
+has_connection = 1
 
 lock = thread.allocate_lock()
 cache = MailCache()
@@ -234,6 +234,9 @@ class MailBox(MailFolder):
         if connector is None:
             raise ValueError(NO_CONNECTOR)
 
+        if not connector.connected:
+            connector._cache_login()
+
         return connector
 
     def setTreeViewCache(self, treeview):
@@ -275,7 +278,7 @@ class MailBox(MailFolder):
             return False
         msg_from = msg.getHeader('From')
         msg_to = msg.getHeader('To')
-        verifyBody(msg)
+
         result = self._sendMailMessage(msg_from, msg_to, msg)
         if result:
             connector = self._getconnector()
@@ -384,14 +387,23 @@ class MailBox(MailFolder):
         # TODO to do this we need first of all to add message flag managment
         # at this this is a local rough deletion
         trash = self.getTrashFolder()
+        connector = self._getconnector()
+        if has_connection:
+            connector.select(trash.server_name)
+
+        trash = self.getTrashFolder()
         ids = []
         for id, ob in trash.objectItems():
             ids.append(id)
+            if IMailFolder.providedBy(ob):
+                if has_connection:
+                    connector.deleteMailBox(ob.server_name)
+
         trash.manage_delObjects(ids)
         trash.message_count = 0
         trash.folder_count = 0
-        connector = self._getconnector()
-        connector.select(trash.server_name)
+
+        # calls expunge
         self.validateChanges()
         self.clearMailBoxTreeViewCache()
 
@@ -469,7 +481,7 @@ class MailBox(MailFolder):
         msg_copy = drafts._addMessage(new_uid, msg.digest)
         msg_copy.copyFrom(msg)
         # todo check flag on server's side
-        msg_copy.draft = 0
+        msg_copy.draft = 1
 
         if has_connection:
             connector = self._getconnector()
