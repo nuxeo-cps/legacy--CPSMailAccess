@@ -86,12 +86,10 @@ class MailMessageEdit(BrowserView):
 
         msg.setHeader('From', msg_from)
         msg_body = verifyBody(msg_body)
-
         msg.setDirectBody(msg_body)
 
         # using the message instance that might have attached files already
         result, error = self.context.sendEditorsMessage()
-
 
         if self.request is not None:
             if result:
@@ -194,8 +192,7 @@ class MailMessageEdit(BrowserView):
             self.request.response.redirect('editMessage.html')
 
     def getBodyValue(self):
-        """ returns body value
-        """
+        """ returns body value """
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
         return msg.getDirectBody()
