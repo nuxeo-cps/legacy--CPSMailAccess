@@ -240,11 +240,18 @@ function popupRecipientPicker()
  {
     var args;
     url = "selectRecipients.html";
-    popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=500, height=500');
+    popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=400, height=600');
     if(!popup.opener)
         popup.opener = window;
 }
 
+function closeDirectoryPicker()
+{
+    mailer = document.forms[0];
+    //mailer.refresh();
+    // need to refresh and open right textareas
+    window.close();
+}
 /*
   Will popup a message if the text gets too big,given a max_size
   and a message to pop
