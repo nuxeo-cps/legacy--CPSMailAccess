@@ -93,6 +93,9 @@ class MailRenderer:
             if not isinstance(result, unicode):
                 try:
                     result = unicode(result, pcharset)
+                except UnicodeDecodeError:
+                    # wrong  charset ?
+                    result = unicode(result, 'ISO-8859-15')
                 except LookupError:
                     # typically hapenning when wrong charset
                     # or when the codec was not installed in python codec
