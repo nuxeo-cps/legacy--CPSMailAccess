@@ -79,42 +79,49 @@ class MessageTraversable(FiveTraversable):
                 part = None
                 # if the path is a number,
                 # let's try to find it
-                if context.isMultipart():
-                    try:
-                        # beware that in user side, parts starts at 1
-                        path_num = int(path)-1
-                    except ValueError:
-                        path_num = -1
+                #if context.isMultipart():
+                try:
+                    # beware that in user side, parts starts at 1
+                    path_num = int(cpath)-1
+                except ValueError:
+                    path_num = -1
 
-                    if path_num >= 0:
+                if path_num >= 0:
+                    if context.isMultipart():
                         part_count = context.getPartCount()
                         # part are starting at 1
                         if path_num <= part_count:
                             # it's a persistent one
                             if path_num in context.getPersistentPartIds():
-                              part = context.getPart(path_num)
-                              if part is not None:
-                                  # python raw msg, let's adapt it
-                                  part = self.adaptPart(context, str(path_num), part)
-                              else:
-                                  # we need to fetch it
-                                  raise 'TODO fetch needed  + add in persistent'
+                                part = context.getPart(path_num)
+                                if part is not None:
+                                    # python raw msg, let's adapt it
+                                    part = self.adaptPart(context, str(path_num), part)
+                                else:
+                                    # TODO we need to fetch it and add it in persistent
+                                    raise NotImplementedError
                             # on the fly please
                             else:
                                 # XXX TODO
                                 part = self.fetchPart(context, path_num)
                                 part = self.adaptPart(context, str(path_num), part)
                                 context._v_volatile_parts[str(path_num)] = part
-                    else:
-                        # let's try to find if it's a filename
-                        index = 0
-                        for element in context.getParts():
-                            if element.get_filename() == path:
+                else:
+                    # let's try to find if it's a filename
+                    index = 0
+                    parts = context.getParts()
+                    if parts is not None:
+                        for element in parts:
+                            if element.get_filename() == cpath:
                                 part = self.adaptPart(context, str(index), element)
                             else:
                                 index +=1
             if part is not None:
                 return part
+
+        # traversed all, this is a showable thing
+        if type(path) is list:
+            path = path[0]
 
         return FiveTraversable.traverse(self, path, '')
 
