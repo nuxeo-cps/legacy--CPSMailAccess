@@ -74,6 +74,25 @@ class MailBoxTestCase(MailTestCase):
         self.assertNotEquals(params, '')
 
 
+    def test_clipboard(self):
+        # test clipboard
+        mailbox = MailBox('mailbox')
+        action, ids = mailbox.getClipboard()
+        self.assertEquals(action,'')
+        self.assertEquals(ids, [])
+        mailbox.fillClipboard('cut', ['msg1'])
+        action, ids = mailbox.getClipboard()
+        self.assertEquals(action, 'cut')
+        self.assertEquals(ids, ['msg1'])
+        mailbox.fillClipboard('copy', ['msg8', 'msg1'])
+        action, ids = mailbox.getClipboard()
+        self.assertEquals(action, 'copy')
+        self.assertEquals(ids, ['msg8', 'msg1'])
+        mailbox.clearClipboard()
+        action, ids = mailbox.getClipboard()
+        self.assertEquals(action,'')
+        self.assertEquals(ids, [])
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),
