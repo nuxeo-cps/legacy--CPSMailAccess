@@ -69,13 +69,26 @@ td.mailToolBarInsideElement {
   float: right;
 }
 
-tr.line_selected_odd {
+div.selected_even {
   background-color: #d6faff;
+  width : 100%;
 }
 
-tr.line_selected_even {
-  background-color: #d6faff
+div.selected_odd {
+  background-color: #d6faff;
+  width : 100%;
 }
+
+div.not_selected_even {
+  background-color: transparent;
+  width : 100%;
+}
+
+div.not_selected_odd {
+  background-color: transparent;
+  width : 100%;
+}
+
 
 
 tr.line_selectable_odd {
@@ -92,7 +105,6 @@ tr.line_selectable_odd:hover {
 
 tr.line_selectable_even:hover {
   background-color:  #c0ff75;
-
 }
 
 div.folder_msglist {
