@@ -30,15 +30,14 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
 from utils import uniqueId, makeId, md5Hash, decodeHeader
-from Products.CPSMailAccess.mailmessage import MailMessage
+from Products.CPSMailAccess.mailmessage import MailMessage, MailMessageView
+from Products.CPSMailAccess.mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from Globals import InitializeClass
 from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
-from Products.CPSMailAccess.baseconnection import ConnectionError
-
-class MailContainerError(Exception) :
-    pass
+from baseconnection import ConnectionError
+from basemailview import BaseMailMessageView
 
 class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
@@ -129,6 +128,7 @@ class MailFolder(BTreeFolder2):
             results.extend(list(r))
 
         return results
+
 
     def getMailMessagesCount(self, count_folder=True,
                              count_messages=True, recursive=False):
@@ -262,6 +262,7 @@ class MailFolder(BTreeFolder2):
     def _synchronizeFolder(self, return_log=False):
         """ See interfaces.IMailFolder
         """
+        raise 'ok'
         log = []
         mailbox = self.getMailBox()
         mail_cache = mailbox.mail_cache
@@ -351,116 +352,26 @@ class MailFolder(BTreeFolder2):
 #
 # MailFolderView Views
 #
-class MailFolderView(BrowserView):
+class MailFolderView(BaseMailMessageView):
 
     def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-
-    def sortFolderContent(self, elements):
-        """ sorts the content
-            so folder gets on top
-        """
-        sorted_elements = []
-        i = 0
-        for element in elements:
-            if IMailFolder.providedBy(element):
-                sorted_elements.append(('A'+str(i), element))
-            else:
-                sorted_elements.append(('B'+str(i), element))
-            i+=1
-        sorted_elements.sort()
-        results = []
-        for element in sorted_elements:
-            results.append(element[1])
-        return results
-
-    def createShortTitle(self, object):
-        """ creates a short title
-        """
-        title = object.title
-        titles = title.split('.')
-        return titles[len(titles)-1]
-
-    def renderTreeView(self, flags=[]):
-        """ returns a tree view
-            XXX need optimisation and cache use
-        """
-        mailbox = self.context.getMailBox()
-
-        if mailbox is None:
-            raise MailContainerError('object is not contained in a mailbox')
-
-        # let's check if the treeview has been already calculated
-        treeview = mailbox.getTreeViewCache()
-
-        if treeview is not None:
-            return treeview
-        else:
-            treeview = []
-
-        childs = mailbox.getMailMessages(list_folder=True, \
-            list_messages=False, recursive=False)
-
-        if len(childs) > 0:
-            childview = MailFolderView(None, self.request)
-
-            for child in childs:
-                selected = child == self.context
-                childview.context = child
-                short_title = self.createShortTitle(child)
-                treeview.append({'object' :child,
-                                 'url' :child.absolute_url()+'/view',
-                                 'short_title' :short_title,
-                                 'selected' : selected,
-                                 'childs' : childview._renderTreeView(self.context, flags)})
-
-        mailbox.setTreeViewCache(treeview)
-
-        return treeview
-
-    def _renderTreeView(self, current, flags=[]):
-        """ returns a tree view
-            XXX need optimisation and cache use
-        """
-        treeview = []
-        current_place = self.context
-        childs = current_place.getMailMessages(list_folder=True, \
-            list_messages=False, recursive=False)
-
-        childview = MailFolderView(None, self.request)
-
-        for child in childs:
-            childview.context = child
-            short_title = self.createShortTitle(child)
-            selected = child == current
-
-            treeview.append({'object' :child,
-                             'url' :child.absolute_url()+'/view',
-                             'short_title' :short_title,
-                             'selected' : selected,
-                             'childs' : childview._renderTreeView(current, flags)})
-
-        return treeview
+        BaseMailMessageView.__init__(self, context, request)
 
     def renderMailList(self):
         """ renders mailfolder content
             XXX need to externalize html here
         """
         mailfolder = self.context
-
-        returned = '<div id="folder_content">'
-        elements = mailfolder.getMailMessages(list_folder=True,
+        returned = []
+        elements = mailfolder.getMailMessages(list_folder=False,
             list_messages=True, recursive=False)
 
-        elements = self.sortFolderContent(elements)
-
         for element in elements:
-
-            returned += '<div id="folder_element">'
-            returned += '<a href="%s/view">' % element.absolute_url()
+            part = {}
+            part['object'] = element
+            part['url'] = element.absolute_url() +'/view'
             ob_title = self.createShortTitle(element)
-
-            if ob_title is None:
+            if ob_title is None or ob_title == '':
                 mail_title = '?'
             else:
                 if IMailMessage.providedBy(element):
@@ -468,11 +379,10 @@ class MailFolderView(BrowserView):
                     mail_title = translated_title
                 else:
                     mail_title = ob_title
-            returned += str(mail_title)
-            returned += '</a>'
-            returned += '</div>'
-        returned += '</div>'
+            part['title'] = mail_title
+            returned.append(part)
         return returned
+
 
 """ classic Zope 2 interface for class registering
 """
