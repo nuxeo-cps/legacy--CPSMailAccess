@@ -280,7 +280,7 @@ class MailFolder(BTreeFolder2):
         for message in zodb_messages:
             message.setSyncState(state=False)
 
-        try:_synchronizeFolder
+        try:
             uids = connector.search(self.server_name, None,'ALL')
         except ConnectionError:
             # XXX should be a more specific exception (no such dir)
