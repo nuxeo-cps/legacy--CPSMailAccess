@@ -393,8 +393,8 @@ class MailFolder(BTreeFolder2):
             # this will happen if the directory has been
             # deleted form the server
             uids = []
-
         for uid in uids:
+            LOG('synchro', INFO, '%s %s' % (str(uid), self.server_name))
             msg = self.findMessageByUid(uid)
 
             if msg is not None:
@@ -415,6 +415,7 @@ class MailFolder(BTreeFolder2):
 
             if msg is None:
                 msg = self._addMessage(uid, digest, index=False)
+                skip = False
 
                 # Message is not in cache
                 if cache_level == 0:
@@ -435,23 +436,31 @@ class MailFolder(BTreeFolder2):
                 else:
                     # XXX Only simplest case where all message is cached
                     # we also get flags
-                    #try:
-                    msg_content = connector.fetch(self.server_name, uid,
-                                                '(FLAGS RFC822)')
+                    try:
+                        msg_content = connector.fetch(self.server_name, uid,
+                                                      '(FLAGS RFC822)')
+                    except ConnectionError:
+                        skip = True
+
                     #msg_flags = msg_content[0]
-                    msg_body = msg_content[1]
-                    if msg_content:
-                        raw_msg = msg_body
-                    else:
-                        raw_msg = ''
+                    if not skip:
+                        msg_body = msg_content[1]
+                        if msg_content:
+                            raw_msg = msg_body
+                        else:
+                            raw_msg = ''
 
-                log.append('adding message %s in %s' % (uid, self.server_name))
+                if not skip:
+                    log.append('adding message %s in %s' % (uid, self.server_name))
 
-                # todo: parse flags
-                msg.loadMessage(raw_msg, cache_level)
+                    # todo: parse flags
+                    msg.loadMessage(raw_msg, cache_level)
 
-                self._indexMessage(msg)
-                self._updateDirectories(msg)
+
+                    self._indexMessage(msg)
+                    self._updateDirectories(msg)
+                else:
+                    self.manage_delObjects([msg.getId()])
             else:
                 # Message was in cache, adding it to self
                 log.append('moving message %s in %s' % (uid, self.server_name))
