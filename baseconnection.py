@@ -131,3 +131,5 @@ class BaseConnection:
         """
         raise NotImplementedError
 
+    def create(self, mailbox):
+        raise NotImplementedError
