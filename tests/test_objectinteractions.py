@@ -217,6 +217,20 @@ class ObjectInteractionTest(ZopeTestCase):
         actions = view.renderActions()
         self.assertNotEquals(actions, [])
 
+    def test_parents(self):
+        # testing parents
+        mailbox = self._getMailBox()
+        mailbox._addMessage('msg1' , 'i-love-pizzas-with-fresh-tomatoes')
+
+        self.assert_(getattr(mailbox, '.msg1', None))
+        ob = getattr(mailbox, '.msg1')
+
+        folder = ob.getMailFolder()
+        box = ob.getMailBox()
+
+
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ObjectInteractionTest),
