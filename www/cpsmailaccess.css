@@ -300,3 +300,8 @@ div.subject {
   margin-right: 4px;
   width: 100px;
 }
+
+a.selectable:hover {
+  background-color:  #c0ff75;
+}
+
