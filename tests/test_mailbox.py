@@ -1,5 +1,5 @@
 # Copyright (C) 2004 Nuxeo SARL <http://nuxeo.com>
-# Author: Florent Guillaume <fg@nuxeo.com>
+# Author: Tarek Ziadé <tz@nuxeo.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as published
@@ -30,39 +30,39 @@ installProduct('FiveTest')
 installProduct('Five')
 
 
-class MailBoxTestCase(ZopeTestCase):    
-    
+class MailBoxTestCase(ZopeTestCase):
+
     msg_key = 0
-    
+
     def msgKeyGen(self):
         result = 'msg_' + str(self.msg_key)
         self.msg_key += 1
-        return result 
-        
+        return result
+
     def test_base(self):
         """ single instance
         """
         ob = MailBox()
         self.assertNotEquals(ob, None)
-        
+
     def test_synchronize(self):
         """ testing synchronize calls
         """
         mailbox = MailBox()
-        
+
         for i in range(10):
-            ob = mailbox._addFolder()   
-            
+            ob = mailbox._addFolder()
+
             for i in range(10):
                 ob._addFolder()
-                
+
             for i in range(123):
                 key = self.msgKeyGen()
-                ob._addMessage(key, key)        
-    
+                ob._addMessage(key, key)
+
         mailbox.synchronize()
-                        
-            
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),
