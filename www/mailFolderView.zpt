@@ -12,7 +12,8 @@
   <metal:block metal:fill-slot="main"
               tal:define="edit_name request/edit_name|nothing;
                           add_folder request/add_folder|nothing;
-                          move_folder request/move_folder|nothing;">
+                          move_folder request/move_folder|nothing;
+                          content_managment request/manage_content|nothing;">
     <div tal:condition="edit_name">
      <a href="view"
         class="close_rename_form"
@@ -50,7 +51,27 @@
 
     <div id="maillist"
          tal:define="is_folder python:1">
-      <metal:block use-macro="here/messagelist_macros/messagelist"/>
+      <tal:block tal:condition="content_managment">
+        <form action="manageContent">
+          <a href="view"
+            class="close_rename_form"
+            title="close">
+            <img src="cpsma_delete_file.png"/>
+          </a>
+          <div class="rename_form">
+            <p><b i18n:translate="">Make a selection and choose an action</b></p>
+
+            <input class="manage_copy" type="submit" name="action" value="copy"/>
+            <input class="manage_cut" type="submit" name="action" value="cut"/>
+            <input class="manage_paste" type="submit" name="action" value="paste"/>
+            <input class="manage_delete" type="submit" name="action" value="delete"/>
+          </div>
+          <metal:block use-macro="here/messagelist_macros/messagelist"/>
+        </form>
+      </tal:block>
+      <tal:block tal:condition="not:content_managment">
+        <metal:block use-macro="here/messagelist_macros/messagelist"/>
+      </tal:block>
     </div>
   </metal:block>
 </html>
