@@ -32,7 +32,7 @@
 </metal:block>
 
 <metal:block define-macro="basebox_treeview">
-  <tal:block tal:define="treeview here/treeview|nothing">
+  <tal:block tal:define="treeview here/treeview.html|nothing">
     <tal:block tal:condition="treeview">
       <div class="box">
         <div class="body">
@@ -51,7 +51,7 @@
 </metal:block>
 
 <metal:block define-macro="basebox_moveview">
-  <tal:block tal:define="treeview here/treeview|nothing">
+  <tal:block tal:define="treeview here/treeview.html|nothing">
     <tal:block tal:condition="treeview">
       <div class="form_title" i18n:translate="">
         Choose a new parent folder
@@ -81,7 +81,7 @@
 </metal:block>
 
 <metal:block define-macro="basebox_actions">
- <tal:block tal:define="actions here/actionview|nothing">
+ <tal:block tal:define="actions here/actionView.html|nothing">
    <tal:block tal:condition="actions">
      <div class="box">
        <div class="body">
@@ -118,7 +118,7 @@
 </metal:block>
 
 <metal:block define-macro="basebox_attached_files">
- <tal:block tal:define="attached_files here/attached_files|nothing;
+ <tal:block tal:define="attached_files here/attachedFiles.html|nothing;
                         mailedit here/is_editor|nothing">
    <tal:block tal:condition="attached_files">
       <div class="box">

@@ -27,7 +27,7 @@
       <div id="attacher"
        tal:attributes="style python:test(attacher_on==0,'visibility: hidden','visibility: visible');class python:test(attacher_on==0,'hidden_part','')">
         <form class="attach_form"
-              action="attach_file"
+              action="attachFile.html"
               method="post" enctype="multipart/form-data">
           <input type="hidden" value="1" name="attach"/>
           <table>
@@ -45,12 +45,12 @@
         </form>
        </div>
 
-      <form action="editAction"
+      <form action="editAction.html"
             method="post"
             enctype="multipart/form-data"
             tal:define="dummy here/initMessage;
                       came_from request/came_from|nothing;
-                      body_value here/bodyvalue;
+                      body_value here/getBodyValue;
                       from_indentities here/getIdentitites;">
 
       <input type="hidden" tal:attributes="value came_from" name="came_from"/>
@@ -129,7 +129,7 @@
           <div class="message_edit_input">
             <input class="message_edit_input" type="text" name="msg_subject"
                 id="msg_subject"
-                tal:attributes="value here/subject" />
+                tal:attributes="value here/getSubject" />
           </div>
           </td>
         </tr>

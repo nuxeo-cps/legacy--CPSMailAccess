@@ -46,7 +46,8 @@ class MailFolderView(BaseMailMessageView):
             if self.request is not None:
                 psm  = '%s already exists' % new_name
                 self.request.response.redirect(
-                    mailfolder.absolute_url()+'/view?edit_name=1&portal_status_message=%s' % psm)
+                    mailfolder.absolute_url()+
+                    '/view?edit_name=1&portal_status_message=%s' % psm)
             return
 
         # truncates the name in case it's bigger than 20

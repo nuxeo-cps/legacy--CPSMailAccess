@@ -92,7 +92,7 @@
     <metal:block define-macro="messagetoolbar">
       <div class="mailToolBar">
           <a style="float: right; margin-right: 4px"
-            tal:attributes="href python:here.absolute_url()+'/view_alone'" target="_blank">
+            tal:attributes="href python:here.absolute_url()+'/viewAlone.html'" target="_blank">
             <img id="new_page" src="launch.png"/>
           </a>
           <!--

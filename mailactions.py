@@ -59,7 +59,7 @@ class MailActionsView(BrowserView):
                      'title' : 'save message',
                      'long_title' : 'save the message in Drafts',
                      'onclick' : 'saveMessageDatas()',
-                     'action' : 'saveMessage'}
+                     'action' : 'saveMessage.html'}
 
                 """
                 attach_file = {'icon' : base_url + '/cpsma_attach.png',
@@ -72,7 +72,7 @@ class MailActionsView(BrowserView):
                 init = {'icon' : base_url + '/cpsma_initeditor.png',
                      'title' : 'init editor',
                      'long_title' : 'initialize editor',
-                     'action' : 'initializeEditor',
+                     'action' : 'initializeEditor.html',
                      'onclick' : ''}
 
                 """
@@ -94,7 +94,7 @@ class MailActionsView(BrowserView):
                                'title' : 'empty trash',
                                'long_title' : 'empty the trashcan',
                                'onclick' : "return window.confirm('Are you sure?')",
-                               'action' : root + '/emptyTrash'}
+                               'action' : root + '/emptyTrash.html'}
                 actions.append(empty_trash)
 
             elif container == mailbox.getDraftFolder():
@@ -110,14 +110,14 @@ class MailActionsView(BrowserView):
 
                 if container.server_name != 'INBOX':
                     move_folder = {'icon' : root + '/cpsma_movefolder.png',
-                            'title' : 'move folder',
-                            'long_title' : 'move the folder',
-                            'action' : 'view?move_folder=1'}
+                                   'title' : 'move folder',
+                                   'long_title' : 'move the folder',
+                                   'action' : 'view?move_folder=1'}
                     delete = {'icon' : base_url + '/cpsma_delete.png',
                                 'title' : 'delete folder',
                                 'long_title' : 'delete current folder',
                                 'onclick' : "return window.confirm('Are you sure?')",
-                                'action' : 'delete'}
+                                'action' : 'delete.html'}
                     rename = {'icon' : base_url + '/cpsma_rename.png',
                                 'title' : 'rename folder',
                                 'long_title' : 'rename current folder',
@@ -137,30 +137,30 @@ class MailActionsView(BrowserView):
             reply = {'icon' : base_url + '/cpsma_reply.png',
                      'title' : 'reply',
                      'long_title' : 'reply to message',
-                     'action' : 'reply'}
+                     'action' : 'reply.html'}
 
             reply_all = {'icon' : base_url + '/cpsma_replyall.png',
                      'title' : 'reply all',
                      'long_title' : 'reply to message (all)',
-                     'action' : 'reply_all'}
+                     'action' : 'replyAll.html'}
 
             forward = {'icon' : base_url + '/cpsma_forward.png',
                      'title' : 'forward',
                      'long_title' : 'forward the message',
-                     'action' : 'forward'}
+                     'action' : 'forward.html'}
 
             delete = {'icon' : base_url + '/cpsma_delete.png',
                      'title' : 'delete message',
                      'long_title' : 'delete the message',
                      'onclick' : "return window.confirm('Are you sure?')",
-                     'action' : 'delete'}
+                     'action' : 'delete.html'}
 
             actions.extend([reply, reply_all, forward, delete])
             if container.draft:
                 draft = {'icon' : base_url + '/cpsma_reload.png',
                      'title' : 'load message',
                      'long_title' : 'load the message into the editor',
-                     'action' : 'reload'}
+                     'action' : 'reload.html'}
                 actions.append(draft)
         else:
             return []
@@ -172,7 +172,7 @@ class MailActionsView(BrowserView):
         synchro = {'icon' : base_url + '/cpsma_getmails.png',
                    'title' : 'get messages',
                    'long_title' : 'get all messages',
-                   'action' : root + '/synchronize'}
+                   'action' : root + '/synchronize.html'}
 
         search = {'icon' : base_url + '/cspma_mail_find.png',
                    'title' : 'search messages',
