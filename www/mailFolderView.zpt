@@ -8,6 +8,10 @@
       tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
       src="++resource++cpsmailaccess.js">
     </script>
+    <script type="text/javascript"
+      tal:attributes="src string:${context/portal_url}/++resource++sorttable.js;"
+      src="++resource++sorttable.js">
+    </script>
   </metal:main>
   <metal:block metal:fill-slot="main"
               tal:define="edit_name request/edit_name|nothing;
@@ -16,6 +20,7 @@
                           content_managment request/manage_content|nothing;
                           clipboard not:here/clipBoardEmpty;
                           show_content_toolbar python:content_managment or clipboard">
+
     <div tal:condition="edit_name">
      <a href="view"
         class="close_rename_form"
@@ -87,6 +92,7 @@
       <tal:block tal:condition="not:show_content_toolbar">
         <metal:block use-macro="here/messagelist_macros/messagelist"/>
       </tal:block>
+
     </div>
   </metal:block>
 </html>

@@ -5,6 +5,10 @@
   </metal:block>
   <metal:main fill-slot="javascript_head_slot">
     <script type="text/javascript"
+      tal:attributes="src string:${context/portal_url}/++resource++sorttable.js;"
+      src="++resource++sorttable.js">
+    </script>
+    <script type="text/javascript"
       tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
       src="++resource++cpsmailaccess.js">
     </script>
