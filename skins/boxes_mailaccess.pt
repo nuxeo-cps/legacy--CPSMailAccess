@@ -135,7 +135,7 @@
                      <a tal:attributes="href attached_file/url">
                        <center>
                          <img tal:attributes="src attached_file/icon;
-                                    title attached_file/title;
+                                    title attached_file/fulltitle;
                                     onclick attached_file/onclick|nothing"/>
                           <br/>
                           <span i18n:translate=""
