@@ -17,27 +17,28 @@
 # 02111-1307, USA.
 #
 # $Id$
+from email import message_from_string
+from email import base64MIME
+
 from zLOG import LOG, DEBUG, INFO
+from Globals import InitializeClass
+from Products.Five import BrowserView
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
+
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
-from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
-from utils import decodeHeader, parseDateString, localizeDateString, \
-    truncateString, sanitizeHTML, mimetype_to_icon_name, getFolder,\
-    replyToBody, HTMLize, sameMail
-from Globals import InitializeClass
-from Products.Five import BrowserView
 
+from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
 from baseconnection import ConnectionError
 from mailrenderer import MailRenderer
 from basemailview import BaseMailMessageView
 from mailpart import MailPart
 from mailfolderview import MailFolderView
-from email import message_from_string
-from email import base64MIME
 from mailexceptions import MailPartError
+from utils import *
+
 
 class MailMessageView(BaseMailMessageView):
 
@@ -140,13 +141,8 @@ class MailMessageView(BaseMailMessageView):
                 pass
 
             try:
-                # do we have everything to show ?
-                # here loadParts will automatically
-                # create caches, fetchs things
                 part_count = mail.getPartCount()
                 if part_count > 0:
-                    for i in range(part_count):
-                        mail.loadPart(i)
                     body = self._bodyRender(mail, 0)
                 else:
                     body = ''
@@ -269,9 +265,9 @@ class MailMessageView(BaseMailMessageView):
     def attached_files(self):
         # todo :scans attached files
         message = self.context
+
         if not message.isMultipart():
             return []
-        list_files = []
 
         # XX hack : need to do better
         if hasattr(message, 'editor_msg'):
@@ -279,26 +275,19 @@ class MailMessageView(BaseMailMessageView):
         else:
             prefix = message.absolute_url()
 
-        for part in range(message.getPartCount()):
-            # XX todo : avoid re-generate part on each visit : use caching
-            part_ob = MailPart('part_'+str(part), message, message.getPart(part))
-            infos = part_ob.getFileInfos()
-            if infos is not None:
-                # let's append icon, url, and title
-                # BEWARE THAT INDEX STARTS AT 1 ON USER SIDE FOR TRAVERSERS
-                infos['url'] = '%s/%s/viewFile.html?filename=%s' \
-                    %(prefix, str(part+1), str(infos['filename']))
-                infos['icon'] =  mimetype_to_icon_name(infos['mimetype'])
-                title = infos['filename']
-                # TODO this should be done in javascript
-                infos['fulltitle'] = title
-                if len(title) > 12:
-                    title = title[:9] +'...'
-                infos['title'] = title
-                infos['delete_url'] = 'deleteAttachement.html?filename=' + infos['filename']
-                list_files.append(infos)
-        if list_files == []:
-            return []
+        files = message.getFileList()
+        list_files = []
+
+        for file in files:
+            file['url'] = '%s/%s/viewFile.html?filename=%s' \
+                    %(prefix, str(file['part']+1), str(file['filename']))
+            file['icon'] =  mimetype_to_icon_name(file['mimetype'])
+            file['fulltitle'] = file['filename']
+            file['title'] = file['filename']
+            file['delete_url'] = ('deleteAttachement.html?filename=' +
+                                  file['filename'])
+            list_files.append(file)
+
         i = 0
         clist_files = []
         while i < len(list_files):
@@ -310,8 +299,7 @@ class MailMessageView(BaseMailMessageView):
         return clist_files
 
     def viewFile(self, filename):
-        """ returns a file
-        """
+        """ returns a file """
         ### XXX todo : add a view page to be able to save the file
         part = self.context
         infos = part.getFileInfos()
