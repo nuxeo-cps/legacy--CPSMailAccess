@@ -35,6 +35,7 @@ from OFS.SimpleItem import SimpleItem
 
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
+from zope.app.cache.ram import RAMCache
 
 from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
 from utils import decodeHeader, parseDateString, localizeDateString
@@ -65,7 +66,7 @@ class MailMessage(MailPart):
 
     store = None
     sync_state = False
-    volatile_parts = {}
+
     read = 0
     answered = 0
     deleted = 0
@@ -78,13 +79,29 @@ class MailMessage(MailPart):
         Folder.__init__(self, id, **kw)
         self.uid = uid
         self.digest = digest
+        self._cache = RAMCache()
+        self.cache_level = 0
+
+    def _addCache(self, key, data):
+        """ to be extern. in mailfolder """
+        if not hasattr(self, '_cache'):
+            self._cache = RAMCache()
+        self._cache.set(data, key)
+
+    def _getCache(self, key):
+        """ to be extern. in mailfolder """
+        if not hasattr(self, '_cache'):
+            self._cache = RAMCache()
+            return None
+        elements = self._cache.query(key)
+        return elements
+
 
     def copyFrom(self, msg):
         """ make a copy (all but uid) """
         self.digest = msg.digest
         self.store = msg.store
         self.sync_state = msg.sync_state
-        self.volatile_parts = msg.volatile_parts
         self.read = msg.read
         self.answered = msg.answered
         self.deleted = msg.deleted
@@ -154,15 +171,10 @@ class MailMessage(MailPart):
         return self.aq_inner.aq_parent
 
     def getVolatilePart(self, part_name):
-        """ gets volatile part
-        """
+        """ gets volatile part """
         # keys *are* string
         part_name = str(part_name)
-
-        if self.volatile_parts.has_key(part_name):
-            return self.volatile_parts[part_name]
-        else:
-            return None
+        return self._getCache(part_name)
 
     def loadPart(self, part_num, part_content='', volatile=True):
         """ loads a part in the volatile list
@@ -174,15 +186,20 @@ class MailMessage(MailPart):
         # this api has to be used for the primary load
         # optimization = if the part is already here *never*
         # reloads it, it has to be cleared if reload is needed somehow
-        part_num_str = str(part_num)
+        part = self.getVolatilePart(part_num)
 
-        if self.volatile_parts.has_key(part_num_str):
-            return self.volatile_parts[part_num_str]
+        if part is not None:
+            LOG('loadPart', INFO, 'i had it men')
+            return part
 
-        if part_num < self.getPartCount():
-            part = self.getPart(part_num, True)
-            if part is not None and part.get_payload() is not None:
-                return part
+        if part_num.find('.') == -1 and self.cache_level == 2:
+            part_num_int = int(part_num)
+            if part_num_int < self.getPartCount():
+                part = self.getPart(part_num_int, True)
+                if part is not None and part.get_payload() is not None:
+                    return part
+
+        LOG('loadPart - part', INFO, str(part))
 
         if part_content != '':
             part_str = part_content
@@ -191,35 +208,43 @@ class MailMessage(MailPart):
             mailfolder = self.getMailFolder()
             connector = mailfolder._getconnector()
             if connector is not None:
-                #just loading direct body at this time
-                if not self.isMultipart():
-                    part_structure = connector.fetch(mailfolder.server_name, self.uid, '(BODY)')
+                splitted = part_num.split('.')
+                indexed = []
+                for item in splitted:
+                    indexed.append(int(item))
 
-                    if part_structure[0] == 'alternative':
-                        #let's take the best viewed part
-                        part_structure = part_structure[2]
+                raw_part = connector.getMessagePart(mailfolder.server_name,
+                                                      self.uid, part_num)
 
-                    cte = '%s/%s' % (part_structure[0], part_structure[1])
-                    charset  ='ISO8859-15'
-                    for item in part_structure:
-                        if isinstance(item, list):
-                            if item[0] == 'charset':
-                                charset = item[1]
-                    # todo: load different parts and outsource
-                    directbody = connector.fetch(mailfolder.server_name, self.uid, '(BODY.PEEK[1])')
-                    part = Message.Message()
-                    part['Content-type'] = cte
-                    part['Charset'] = charset
-                    part._payload = directbody
-                else:
-                    part = None
-                    raise NotImplementedError
+                part_infos = connector.getPartInfos(mailfolder.server_name,
+                                                    self.uid, indexed[0])
+
+                LOG('loadPart - part_infos', INFO, str(part_infos))
+                part = Message.Message()
+                charset = 'ISO8859-15'
+                for item in part_infos:
+                    if isinstance(item, list):
+                        if item[0] == 'charset':
+                            charset = item[1]
+
+                for item in part_infos:
+                    if isinstance(item, list):
+                        if item[0] == 'name':
+                            part['name'] = item[1]
+
+                part['Content-type'] = '%s/%s' % (part_infos[0], part_infos[1])
+                part['Content-transfer-encoding'] = part_infos[4]
+                part['Charset'] = charset
+                part._payload = raw_part
+                LOG('loadPart', INFO, 'got it from server %s !' % str(part_infos))
+
             else:
                 part = None
                 raise NotImplementedError
 
         if volatile:
-            self.volatile_parts[str(part_num)] = part
+            self._addCache(str(part_num), part)
+            LOG('_addCache', INFO, 'saving it')
             return part
         else:
             ## todo : creates a real part
@@ -294,6 +319,9 @@ class MailMessage(MailPart):
 
     def hasAttachment(self):
         """ tells if the message has an attachment """
+        if self.cache_level == 1:
+            return False
+
         for part in range(self.getPartCount()):
             part_ob = MailPart('part_'+str(part), self, self.getPart(part))
             infos = part_ob.getFileInfos()
@@ -327,6 +355,9 @@ class MailMessage(MailPart):
         This is a facility for editor's need
         sets the first body content
         """
+        if self.cache_level == 1:
+            raise NotImplementedError
+
         if not self.isMultipart():
             self.setPart(0, content)
         else:
@@ -344,6 +375,9 @@ class MailMessage(MailPart):
         This is a facility for editor's need
         sets the first body content
         """
+        if self.cache_level == 1:
+            return ''
+
         try:
             res = self.getPart(0)
             if res is None:
@@ -355,6 +389,87 @@ class MailMessage(MailPart):
             return res
         else:
             return res.get_payload()
+
+    def getPartCount(self):                                #XXXXXXXXXXXXXXXXX
+        """ gets part count
+
+        If cache is set to 1, this retrieves the structure
+        on the server and count number of parts
+        """
+        if self.cache_level == 1:
+            structure = self.getServerStructure()
+            # counting parts
+            # the first item is telling the type of structure
+            if structure[0] not in ('relative', 'alteranive'):
+                return 1
+            return len(structure) - 1
+        else:
+            return MailPart.getPartCount(self)
+
+    def getServerStructure(self):                        #XXXXXXXXXXXXXXXXX
+        """ retrieves server structure """
+        folder = self.getMailFolder()
+        if folder is None:
+            return []
+        connector = folder._getconnector()
+        server_name = folder.server_name
+        return connector.getMessageStructure(server_name, self.uid)
+
+    def isMultipart(self):                                #XXXXXXXXXXXXXXXXX
+        """ gets part count
+
+        If cache is set to 1, this retrieves the structure
+        on the server and count number of parts totellif its multiparted
+        """
+        if self.cache_level == 1:
+            part_count = self._getCache('part_count')
+            if part_count is None:
+                part_count = self.getPartCount()
+                self._addCache('part_count', part_count)
+            return part_count > 1
+        else:
+            return MailPart.isMultipart(self)
+
+    def getContentType(self, part_index=0):
+        if self.cache_level == 1:
+            structure = self.getServerStructure()
+            if isinstance(structure[1], list):
+                return 'multipart/%s' % structure[0]
+            else:
+                return '%s/%s' % (structure[0], structure[1])
+        else:
+            return MailPart.getContentType(self, part_index)
+
+    def getFileList(self):
+        """ returns a filelist """
+        files = []
+        for part in range(self.getPartCount()):
+            file = None
+            if self.cache_level != 1:
+                # XX todo : avoid re-generate part on each visit : use caching
+                part_ob = MailPart('part_'+str(part), self, self.getPart(part))
+                file = part_ob.getFileInfos()
+            else:
+                mailfolder = self.getMailFolder()
+                if mailfolder is None:
+                    return []
+                connector = mailfolder._getconnector()
+
+                infos = connector.getPartInfos(mailfolder.server_name,
+                                               self.uid, part+1)
+                for info in infos:
+                    if isinstance(info, list):
+                        list_ = info
+                        if len(list_) == 2 and list_[0] == 'name':
+                            file = {}
+                            file['filename'] = list_[1]
+                            file['mimetype'] = '%s/%s' % (infos[0], infos[1])
+
+            if file is not None:
+                file['part'] = part
+                files.append(file)
+        return files
+
 
 """ classic Zope 2 interface for class registering
 """
