@@ -85,7 +85,7 @@ class MailActionsView(BrowserView):
                                'title' : 'empty trash',
                                'long_title' : 'empty the trashcan',
                                'onclick' : "return window.confirm('Are you sure?')",
-                               'action' : 'emptyTrash'}
+                               'action' : root + '/emptyTrash'}
                 actions.append(empty_trash)
 
             elif container == mailbox.getDraftFolder():
@@ -116,9 +116,9 @@ class MailActionsView(BrowserView):
                     actions.extend([delete, rename, move_folder])
 
             manage = {'icon' : 'cpsma_manage_content.png',
-                'title' : 'manage content',
-                'long_title' : 'manage current folder',
-                'action' : 'view?manage_content=1'}
+                      'title' : 'manage content',
+                      'long_title' : 'manage current folder',
+                      'action' : 'view?manage_content=1'}
             actions.append(manage)
 
         elif IMailMessage.providedBy(container):
@@ -146,7 +146,12 @@ class MailActionsView(BrowserView):
                      'action' : 'delete'}
 
             actions.extend([reply, reply_all, forward, delete])
-
+            if container.draft:
+                draft = {'icon' : 'cpsma_reload.png',
+                     'title' : 'load message',
+                     'long_title' : 'load the message into the editor',
+                     'action' : 'reload'}
+                actions.append(draft)
         else:
             return []
 
