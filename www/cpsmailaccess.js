@@ -58,10 +58,10 @@ function delay(ms)
 function saveMessageDatas()
 {
   msg_subject = document.getElementById('msg_subject');
-  msg_subject = msg_subject.value
+  msg_subject = msg_subject.value;
 
   msg_body = document.getElementById('msg_body');
-  msg_body = msg_body.innerHTML
+  msg_body = msg_body.value;
 
   msg_to = document.getElementById('msg_to');
   msg_to = msg_to.value;
@@ -114,7 +114,7 @@ function saveMessageDatas()
   }
   if (xml)
   {
-    url = "saveMessageForm";
+    url = "saveMessageForm.html";
     status = 503;
     msg_body = escape(msg_body);
     msg_subject = escape(msg_subject);
@@ -148,21 +148,20 @@ function toggleElementVisibility(id)
     if (element.className == "hidden_part")
     {
       element.className = "not_hidden_part";
-      element.style.visibility = "visible"
+      element.style.visibility = "visible";
     }
     else
     {
       element.className = "hidden_part";
-      element.style.visibility = "hidden"
+      element.style.visibility = "hidden";
     }
   }
-
 }
 
 function popupRecipientPicker()
  {
     var args;
-    url = "selectRecipients"
+    url = "selectRecipients.html";
     popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=400, height=300');
     if(!popup.opener)
         popup.opener = window;
