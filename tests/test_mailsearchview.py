@@ -72,7 +72,7 @@ class MailSearchViewTestCase(MailTestCase):
         for brain in res:
             direct_search.append(brain.getPath())
 
-        results = searchview.searchMessages('Dingus Lovers')
+        results = searchview.searchMessages('Dingus Lovers')[0]
 
         for res in results:
             self.assert_(res['path'] in direct_search)
@@ -111,7 +111,7 @@ class MailSearchViewTestCase(MailTestCase):
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = '*'    # all
-        results = searchview.zemanticSearchMessages(**query)
+        results = searchview.zemanticSearchMessages(**query)[0]
 
         # results order won't be known
         self.assertEquals(len(results), 3)
@@ -119,7 +119,7 @@ class MailSearchViewTestCase(MailTestCase):
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = 'ccc*'
-        results = searchview.zemanticSearchMessages(**query)
+        results = searchview.zemanticSearchMessages(**query)[0]
 
         self.assertEquals(len(results), 1)
 
@@ -128,7 +128,7 @@ class MailSearchViewTestCase(MailTestCase):
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = 'ccc*'
         query['intersection'] = 'store is open'
-        results = searchview.zemanticSearchMessages(**query)
+        results = searchview.zemanticSearchMessages(**query)[0]
 
         self.assertEquals(len(results), 1)
 
@@ -139,13 +139,13 @@ class MailSearchViewTestCase(MailTestCase):
         query['relation_1'] = 'subject'        # relations keys are normalized (lower)
         query['value_1'] = 'test'
         query['intersection'] = 'store is open'
-        results = searchview.zemanticSearchMessages(**query)
+        results = searchview.zemanticSearchMessages(**query)[0]
 
         self.assertEquals(len(results), 3)
 
         query = {}
         query['intersection'] = 'store is open'
-        results = searchview.zemanticSearchMessages(**query)
+        results = searchview.zemanticSearchMessages(**query)[0]
         self.assertEquals(len(results), 0)
 
 
