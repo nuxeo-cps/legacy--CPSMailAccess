@@ -20,7 +20,7 @@
 from zLOG import LOG, INFO, DEBUG
 from basemailview import BaseMailMessageView
 from utils import decodeHeader, localizeDateString, parseDateString, \
-    isToday, getFolder
+    isToday, getFolder, getHumanReadableSize, intToSortableStr
 from interfaces import IMailMessage
 
 from zope.app.cache.ram import RAMCache
@@ -63,15 +63,12 @@ class MailFolderView(BaseMailMessageView):
             new_name = new_name[:max_folder_size]
 
         renamed = mailfolder.rename(new_name)
-
         fullname = mailfolder.server_name
-
         folder = getFolder(mailbox, fullname)
 
         if self.request is not None and renamed is not None:
             self.request.response.redirect(folder.absolute_url()+'/view')
-        else:
-            return folder
+        return folder
 
     def delete(self):
         """ action called to rename the current folder
@@ -107,17 +104,27 @@ class MailFolderView(BaseMailMessageView):
         elements = mailfolder.getMailMessages(list_folder=False,
             list_messages=True, recursive=False)
 
+        elements_sizes = [element.size for element in elements]
+        elements_sizes = intToSortableStr(elements_sizes)
+        i = 0
+
         for element in elements:
             part = {}
             part['object'] = element
-            part['icon'] = self.getMsgIconName(element)
+
+            part['Icon'] = self.getMsgIconName(element)
+            part['Icon_sort'] = part['Icon']
+
             part['url'] = element.absolute_url() +'/view'
             part['uid'] = element.uid
 
             if element.hasAttachment():
-                part['attachments'] = 1
+                part['Attachments'] = 1
+                part['Attachments_sort'] = 'a'
             else:
-                part['attachments'] = 0
+                part['Attachments'] = 0
+                part['Attachments_sort'] = 'z'
+
             ob_title = self.createShortTitle(element)
             if ob_title is None or ob_title == '':
                 mail_title = '?'
@@ -127,11 +134,16 @@ class MailFolderView(BaseMailMessageView):
                     mail_title = translated_title
                 else:
                     mail_title = ob_title
-            part['title'] = mail_title
+
+            part['Subject_sort'] = mail_title
+            part['Subject'] = mail_title
+
             element_from = element.getHeader('From')
             if element_from is None or element_from == []:
                 element_from = '?'
             part['From'] = decodeHeader(element_from[0])
+            part['From_sort'] = part['From']
+
             element_date = element.getHeader('Date')
             if element_date is None or element_date == []:
                 element_date = '?'
@@ -140,8 +152,18 @@ class MailFolderView(BaseMailMessageView):
                 part['Date'] = localizeDateString(date, 1)
             else:
                 part['Date'] = localizeDateString(date, 3)
-            part['FullDate'] = parseDateString(date)
-            returned.append((part['FullDate'], part))
+
+            part['Date_sort'] = parseDateString(date)
+
+            if element.size is not None:
+                part['Size'] = getHumanReadableSize(element.size)
+                part['Size_sort'] = elements_sizes[i]
+            else:
+                part['Size'] = 0
+                part['Size_sort'] = '0'
+
+            returned.append((part['Date_sort'], part))
+            i += 1
 
         # now sorting upon date
         returned.sort()
@@ -181,18 +203,11 @@ class MailFolderView(BaseMailMessageView):
         return 'cpsma_message.png'
 
     def addFolder(self, name):
-        """ adds a folder
-            XXX todo:do it on server's side
-        """
-        # ugly transtypnig
+        """ adds a folder """
         mailfolder = self.context
-        mailbox = mailfolder.getMailBox()
-
         max_folder_size = self.getMaxFolderSize()
         if len(name) > max_folder_size:
             name = name[:max_folder_size]
-
-
         if not mailfolder.hasKey(name):
             server_name = mailfolder.server_name + '.' + name
             new_folder = mailfolder._addFolder(name, server_name, True)
@@ -314,3 +329,13 @@ class MailFolderView(BaseMailMessageView):
         if clipboard is None:
             return 0
         return len(clipboard)
+
+    def getMessageListCols(self):
+        """ returns the list of cols """
+        mailfolder = self.context
+        mailbox = mailfolder.getMailBox()
+        list_cols = mailbox.getConnectionParams()['message_list_cols']
+        if isinstance(list_cols, str):
+            list_cols = [item.strip() for item in list_cols.split(',')]
+        return list_cols
+
