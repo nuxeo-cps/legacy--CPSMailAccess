@@ -108,14 +108,20 @@ class MessageTraversable(FiveTraversable):
                                 context._v_volatile_parts[str(path_num)] = part
                 else:
                     # let's try to find if it's a filename
-                    index = 0
-                    parts = context.getParts()
-                    if parts is not None:
-                        for element in parts:
-                            if element.get_filename() == cpath:
-                                part = self.adaptPart(context, str(index), element)
-                            else:
-                                index +=1
+                    if context.isMultipart():
+                        index = 0
+                        parts = context.getParts()
+                        if parts is not None:
+                            for element in parts:
+                                if element.get_filename() == cpath:
+                                    part = self.adaptPart(context, str(index), element)
+                                else:
+                                    index +=1
+                    else:
+                        file_infos = context.getFileInfos()
+                        if file_infos is not None and \
+                            file_infos['filename'] == cpath :
+                            part = context
             if part is not None:
                 return part
 
