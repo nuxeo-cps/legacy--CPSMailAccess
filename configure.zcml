@@ -194,59 +194,7 @@
       permission="zope2.View"
       />
 
-  <five:pagesFromDirectory
-      module="Products.CPSDefault"
-      directory="skins/cps_default"
-      for=".interfaces.IMailMessage"
-      />
-
-  <five:pagesFromDirectory
-      module="Products.CPSDefault"
-      directory="skins/cps_devel"
-      for=".interfaces.IMailMessage"
-      />
-
-  <five:pagesFromDirectory
-      module="Products.CPSDefault"
-      directory="skins/cps_styles"
-      for=".interfaces.IMailMessage"
-      />
-
-  <five:pagesFromDirectory
-      module="Products.CPSDefault"
-      directory="skins/cps_default"
-      for=".interfaces.IMailFolder"
-      />
-
-  <five:pagesFromDirectory
-      module="Products.CPSDefault"
-      directory="skins/cps_devel"
-      for=".interfaces.IMailFolder"
-      />
-
-  <five:pagesFromDirectory
-      module="Products.CPSDefault"
-      directory="skins/cps_styles"
-      for=".interfaces.IMailFolder"
-      />
-
-  <five:pagesFromDirectory
-      module="Products.CPSDefault"
-      directory="skins/cps_default"
-      for=".interfaces.IMailBox"
-      />
-
-  <five:pagesFromDirectory
-      module="Products.CPSDefault"
-      directory="skins/cps_devel"
-      for=".interfaces.IMailBox"
-      />
-
-  <five:pagesFromDirectory
-      module="Products.CPSDefault"
-      directory="skins/cps_styles"
-      for=".interfaces.IMailBox"
-      />
+  <include file="cpsdefault.zcml" />
 
   <browser:resource
     file="www/cpsmailaccess.css"
