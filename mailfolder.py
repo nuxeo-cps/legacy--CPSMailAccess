@@ -391,7 +391,6 @@ class MailFolder(BTreeFolder2):
         log = []
         mailbox = self.getMailBox()
         cache_level = self.getCacheLevel()
-        mail_cache = mailbox.mail_cache
         connector = self._getconnector()
         zodb_messages = self.getMailMessages(list_folder=False,
             list_messages=True, recursive=False)
@@ -423,7 +422,7 @@ class MailFolder(BTreeFolder2):
             msg_headers = fetched[2]
 
             digest = self._createKey(msg_headers)
-            msg = mail_cache.get(digest, remove=True)
+            msg = mailbox.getMailFromCache(digest, remove=True)
             raw_msg = ''
 
             if msg is None:
@@ -476,9 +475,7 @@ class MailFolder(BTreeFolder2):
         for message in zodb_messages:
             if not message.sync_state:
                 digest = message.digest
-                if not mail_cache.has_key(digest):
-                    log.append('adding %s message in cache' % message.uid)
-                    mail_cache[digest] = message
+                mailbox.addMailToCache(message, digest)
                 self.manage_delObjects([message.getId()])
         if return_log:
             return log
