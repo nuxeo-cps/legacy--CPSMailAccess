@@ -19,6 +19,7 @@
 # $Id$
 """ a few utilities
 """
+import os
 import string, re, md5
 from email.Header import decode_header, make_header
 from exceptions import UnicodeDecodeError
@@ -27,13 +28,10 @@ from time import strftime
 from random import randrange
 from email.Utils import fix_eols
 from encodings import exceptions as encoding_exceptions
-
 from zLOG import LOG, INFO
 from DateTime import DateTime
 from Acquisition import aq_get
-
 from zope.app.datetimeutils import DateTimeParser, SyntaxError as ZSyntaxError
-
 from html2text import HTML2Text
 from Products.CPSUtil.html import HTMLSanitizer
 
@@ -313,12 +311,17 @@ def cleanUploadedFileName(filename):
     return splitted[-1]
 
 class HTMLMailSanitizer(HTMLSanitizer):
-    white_list = ('a', 'b', 'i', 'strong', 'br', 'p', 'h1', 'h2', 'h3', 'h4',
-                  'h5', 'div', 'span', 'table', 'tr', 'th', 'td', 'font',
-                  'style')
+    """ very tolerant sanitizer
+        for the mail to render
+        like it's intended
+    """
+    tags_to_keep = ('a', 'b', 'i', 'strong', 'br', 'p', 'h1', 'h2', 'h3',
+                    'h4', 'h5', 'div', 'span', 'table', 'tr', 'th', 'td',
+                    'font', 'style')
 
     tolerant_tags = ('br', 'p')
-
+    attributes_to_keep = ('size', 'face', 'class')
+    attributes_to_remove = ('accesskey', 'onclick')
 
 def sanitizeHTML(content):
     """ satinize html """
@@ -328,7 +331,7 @@ def sanitizeHTML(content):
     work = fix_eols(work)
     work = work.replace('\r\n', '')    # nothing to care about in HTML
 
-    parser = HTMLMailSanitizer(attributes_to_remove=('accesskey', 'onclick'))
+    parser = HTMLMailSanitizer()
     parser.feed(work)
     parser.close()
     parser.cleanup()
