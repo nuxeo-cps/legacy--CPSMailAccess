@@ -313,7 +313,15 @@
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailmessageeditview.MailMessageEdit"
-      name="tos"
+      name="getFlag"
+      attribute="getFlag"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
+      name="getDestList"
       attribute="getDestList"
       permission="zope2.View"
       />
