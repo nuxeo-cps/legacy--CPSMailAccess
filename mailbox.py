@@ -185,20 +185,33 @@ class MailBox(MailBoxBaseCaching):
         """ see interface """
         if not has_connection:
             return []
+
+        indexStack = []
         # retrieving folder list from server
         connector = self._getconnector()
         server_directory = connector.list()
 
         if no_log:
-            return self._syncdirs(server_directory)
+            returned = self._syncdirs(server_directory, False, indexStack)
         else:
-            log = self._syncdirs(server_directory, True)
+            log = self._syncdirs(server_directory, True, indexStack)
             log.insert(0, 'synchronizing mailbox...')
             log.append('... done')
             logtext = '\n'.join(log)
-            return logtext
+            returned = logtext
 
-    def _syncdirs(self, server_directories = [], return_log=False):
+        # now indexing XXX detach in thread
+        max_ = len(indexStack)
+        i = 1
+        for item in indexStack:
+            # print 'indexing %s (%s/%s)' % (item.uid, str(i), str(max_))
+            self.indexMessage(item)
+            i+=1
+
+        return returned
+
+    def _syncdirs(self, server_directories=[], return_log=False,
+                  indexStack=[]):
         """ syncing dirs """
         log = []
 
@@ -254,7 +267,7 @@ class MailBox(MailBoxBaseCaching):
         # let's order folder : leaves at first
         for folder in folders:
             if not folder.sync_state:
-                # before deleti_synchronizeFolderng message that this folder hold,
+                # before deleting message that this folder hold,
                 # we want to put them in orphan list
                 for id, item in folder.objectItems():
                     if IMailMessage.providedBy(item):
@@ -273,10 +286,10 @@ class MailBox(MailBoxBaseCaching):
         for folder in folders:
             # let's synchronize messages now
             if return_log:
-                flog = folder._synchronizeFolder(True)
+                flog = folder._synchronizeFolder(True, indexStack)
                 log.extend(flog)
             else:
-                folder._synchronizeFolder()
+                folder._synchronizeFolder(False, indexStack)
             folder.setSyncState(state=False)
 
         # if there's still elements in mail_cache,
@@ -420,6 +433,8 @@ class MailBox(MailBoxBaseCaching):
             return
 
         trash = self.getTrashFolder()
+        trash._cache.invalidate(trash.server_name)
+
         connector = self._getconnector()
         connector.select(trash.server_name)
 
@@ -936,6 +951,7 @@ class MailBoxTraversable(FiveTraversable):
         return FiveTraversable.traverse(self, path, '')
 
 
+
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
 
@@ -956,4 +972,3 @@ def manage_addMailBox(container, id=None, server_name ='',
         REQUEST.RESPONSE.redirect(ob.absolute_url()+'/manage_main')
     else:
         return ob
-
