@@ -47,7 +47,7 @@
         </table>
       </div>
       <input type="submit" class="standalone"
-         name="submit" value="submit" i18n:translate="value"/>
+             name="submit" value="submit" i18n:attributes="value"/>
    </form>
    <br/>
 
@@ -57,7 +57,8 @@
     <form action="reindexMailCatalog.html">
       <input type="submit" name="reindex"
         class="standalone"
-          value="reindex mail catalog"/>
+        value="cpsma_reindex_mail_catalog"
+        i18n:attributes="value"/>
     </form>
     </div>
 
