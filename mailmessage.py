@@ -176,7 +176,7 @@ class MailMessage(Folder, MailPart):
 
         if part_num < self.getPartCount():
             part = self.getPart(part_num, True)
-            if part is not None:
+            if part is not None and part.get_payload() is not None:
                 return part
 
         if part_content != '':
@@ -259,6 +259,16 @@ class MailMessage(Folder, MailPart):
         finally:
             file.close()
         store.attach(part_file)
+
+    def hasAttachment(self):
+        """ tells if the message has an attachment
+        """
+        for part in range(self.getPartCount()):
+            part_ob = MailPart('part_'+str(part), self, self.getPart(part))
+            infos = part_ob.getFileInfos()
+            if infos is not None:
+                return True
+        return False
 
     def _parseFlags(self, flags):
         """ parses given raw flags
