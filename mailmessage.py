@@ -63,17 +63,16 @@ class MailMessage(MailPart):
     """
     implements(IMailMessage, IMailPart)
     meta_type = "CPSMailAccess Message"
-    uid = '' # server uid
-    digest = ''
+
     store = None
     sync_state = False
-    _v_volatile_parts = {}
+    volatile_parts = {}
     read = 0
     answered = 0
     deleted = 0
     flagged = 0
     forwarded = 0
-    draft =0
+    draft = 0
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
@@ -86,7 +85,7 @@ class MailMessage(MailPart):
         self.digest = msg.digest
         self.store = msg.store
         self.sync_state = msg.sync_state
-        self._v_volatile_parts = msg._v_volatile_parts
+        self.volatile_parts = msg.volatile_parts
         self.read = msg.read
         self.answered = msg.answered
         self.deleted = msg.deleted
@@ -156,8 +155,8 @@ class MailMessage(MailPart):
         # keys *are* string
         part_name = str(part_name)
 
-        if self._v_volatile_parts.has_key(part_name):
-            return self._v_volatile_parts[part_name]
+        if self.volatile_parts.has_key(part_name):
+            return self.volatile_parts[part_name]
         else:
             return None
 
@@ -173,8 +172,8 @@ class MailMessage(MailPart):
         # reloads it, it has to be cleared if reload is needed somehow
         part_num_str = str(part_num)
 
-        if self._v_volatile_parts.has_key(part_num_str):
-            return self._v_volatile_parts[part_num_str]
+        if self.volatile_parts.has_key(part_num_str):
+            return self.volatile_parts[part_num_str]
 
         if part_num < self.getPartCount():
             part = self.getPart(part_num, True)
@@ -183,22 +182,38 @@ class MailMessage(MailPart):
 
         if part_content != '':
             part_str = part_content
+            part = message_from_string(part_str)
         else:
             mailfolder = self.getMailFolder()
             connector = mailfolder._getconnector()
             if connector is not None:
-                """
-                part_str = connector.fetchPartial(mailfolder.server_name, self.uid,
-                    'RFC822.BODY', 0, 10)
-                """
-                part_str = connector.fetch(mailfolder.server_name, self.uid, '(RFC822.BODY)')
+                #just loading direct body at this time
+                if not self.isMultipart():
+                    part_structure = connector.fetch(mailfolder.server_name, self.uid, '(BODY)')
+
+                    if part_structure[0] == 'alternative':
+                        #let's take the best viewed part
+                        part_structure = part_structure[2]
+
+                    cte = '%s/%s' % (part_structure[0], part_structure[1])
+                    charset  ='ISO8859-15'
+                    for item in part_structure:
+                        if isinstance(item, list):
+                            if item[0] == 'charset':
+                                charset = item[1]
+                    # todo: load different parts and outsource
+                    directbody = connector.fetch(mailfolder.server_name, self.uid, '(BODY.PEEK[1])')
+                    part = Message.Message()
+                    part['Content-type'] = cte
+                    part['Charset'] = charset
+                    part._payload = directbody
+                else:
+                    raise NotImplementedError
             else:
                 raise NotImplementedError
 
-        part = message_from_string(part_str)
-
         if volatile:
-            self._v_volatile_parts[str(part_num)] = part
+            self.volatile_parts[str(part_num)] = part
             return part
         else:
             ## todo : creates a real part
