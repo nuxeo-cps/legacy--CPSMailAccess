@@ -22,7 +22,8 @@ from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 import sys
 from smtplib import SMTP
-from utils import getToolByName, getCurrentDateStr, _isinstance, decodeHeader
+from utils import getToolByName, getCurrentDateStr, _isinstance,\
+     decodeHeader, verifyBody
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
@@ -55,24 +56,49 @@ class MailMessageEdit(BrowserView):
     def sendMessage(self, msg_from, msg_subject, msg_body, came_from=None):
         """ calls MailTool
         """
+        """self.context.GetHTML
+        raise str(msg_body)
+        """
         # call mail box to send a message and to copy it to "send" section
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
-
         msg.addHeader('Subject', msg_subject)
+        Tos = msg.getHeader('To')
+        if Tos == []:
+            if self.request is not None:
+                # todo : need to be externalized in i18n
+                psm = 'Recipient is required'
+                self.request.response.redirect('editMessage.html?portal_status_message=%s'\
+                    % (psm))
+            return
+
         msg.addHeader('From', msg_from)
-        msg.setPart(0, msg_body)
+        msg_body = verifyBody(msg_body)
+        # this needs to be done in an api inside mailpart
+        if not msg.isMultipart():
+            msg.setPart(0, msg_body)
+        else:
+            # the mail editor message structure does not move
+            sub = msg.getPart(0)
+            sub._payload = msg_body
+            msg.setPart(0, sub)
 
         # using the message instance that might have attached files already
         result = self.context.sendEditorsMessage()
 
-        if self.request is not None and came_from is not None:
-            if result:
-                self.request.response.redirect(came_from)
+        if self.request is not None:
+            if came_from is not None:
+                goto = came_from
             else:
-                #XXXX need to redirect to an error screen here later
-                psm ='Message sent.'
-                self.request.response.redirect('view?portal_status_message=%s' % psm)
+                if hasattr(mailbox, 'INBOX'):
+                    goto = mailbox.INBOX.absolute_url()
+                else:
+                    goto = mailbox.absolute_url()
+
+            # todo : need to be externalized
+            psm = 'Message sent.'
+            self.request.response.redirect('%s/view?portal_status_message=%s'\
+                % (goto, psm))
 
     def getIdentitites(self):
         """ gives to the editor the list of current mùailbox idendities
@@ -141,6 +167,8 @@ class MailMessageEdit(BrowserView):
         # XXX should be inside message and called thru an api
         try:
             res = msg.getPart(0)
+            if res is None:
+                return ''
         except IndexError:
             res = ''
 
