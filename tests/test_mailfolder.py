@@ -24,8 +24,8 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
-from Products.CPSMailAccess.mailfolder import MailFolder, MailFolderView,\
-    MailContainerError
+from Products.CPSMailAccess.mailfolder import MailFolder, MailFolderView
+from Products.CPSMailAccess.mailexceptions import MailContainerError
 from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.mailbox import MailBox
 from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
@@ -211,7 +211,7 @@ class MailFolderTestCase(ZopeTestCase):
         rendered_list = view.renderMailList()
 
         # empty folder
-        self.assertEquals(rendered_list, '<div id="folder_content"></div>')
+        self.assertEquals(rendered_list, [])
 
         # 5 sub folders and 2 messages
         ob = self.test_getMailMessagesCountRecursive()
@@ -222,24 +222,7 @@ class MailFolderTestCase(ZopeTestCase):
         view = MailFolderView(ob, None)
         rendered_list = view.renderMailList()
 
-        self.assertNotEquals(rendered_list.index('folder_0'), -1)
-
-    def test_sortFolderContent(self):
-        # testing mail folder view instanciation
-        elements = []
-        elements.append(MailFolder('folder_1'))
-        elements.append(MailMessage('msg_1'))
-        elements.append(MailFolder('folder_2'))
-        elements.append(MailMessage('msg_2'))
-
-        ob = MailFolder()
-        view = MailFolderView(ob, None)
-
-        elements = view.sortFolderContent(elements)
-        self.assertEquals(elements[0].getId(), 'folder_1')
-        self.assertEquals(elements[1].getId(), 'folder_2')
-        self.assertEquals(elements[2].getId(), 'msg_1')
-        self.assertEquals(elements[3].getId(), 'msg_2')
+        self.assertEquals(rendered_list[len(rendered_list)-1]['url'], '.msg_232/view')
 
     def test_TreeView(self):
         # testing treeview renderer
@@ -308,8 +291,20 @@ class MailFolderTestCase(ZopeTestCase):
         self.assertNotEquals(treeviewagain, treeview)
 
 
+    def test_createShortTitle(self):
+        # test createShortTitle
+        view = MailFolderView(None, None)
 
+        ob = MailFolder('ok', 'INBOX.Trash.ok')
 
+        title = view.createShortTitle(ob)
+        self.assertEquals(title, 'ok')
+
+        ob = MailMessage('.message1')
+        ob.title = '.message1'
+
+        title = view.createShortTitle(ob)
+        self.assertEquals(title, 'message1')
 
 
 
