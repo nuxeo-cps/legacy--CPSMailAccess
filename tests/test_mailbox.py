@@ -161,6 +161,30 @@ class MailBoxTestCase(MailTestCase):
         self.assertEquals(res, {'fullname': u'', 'email': 'tz@nuxeo.com',
                           'id': 'tznuxeo.com'})
 
+    def test_readDirectoryValue(self):
+
+        mailbox = self._getMailBox()
+        res = mailbox.readDirectoryValue('members', 'tziade', ['fullname'])
+        self.assert_(isinstance(results, dict))
+
+    def test_readDirectoryValue(self):
+
+        mailbox = self._getMailBox()
+        res = mailbox.getIdentitites()
+        self.assertEquals(res, [{'fullname': 'Tarek Ziad\xe9',
+                                 'email': 'tz@nuxeo.com'}])
+
+    def test_directoryToParam(self):
+        mailbox = self._getMailBox()
+
+        res = mailbox._directoryToParam('${members.webmail_login}')
+        self.assertEquals(res, 'tziade')
+
+        res = mailbox._directoryToParam('${members.webmail_password}')
+        self.assertEquals(res, 'do_not_reveal_it_please')
+
+        res = mailbox._directoryToParam('nothing')
+        self.assertEquals(res, 'nothing')
 
 def test_suite():
     return unittest.TestSuite((

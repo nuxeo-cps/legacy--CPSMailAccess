@@ -44,7 +44,9 @@ installProduct('Five')
 class FakeDirectory:
     def searchEntries(self, return_fields=None, **kw):
         return [('tziade', {'email': 'tz@nuxeo.com',
-            'givenName': 'Tarek', 'sn' : 'Ziadé'})]
+                 'givenName': 'Tarek', 'sn' : 'Ziadé',
+                 'webmail_login' : 'tziade',
+                 'webmail_password' : 'do_not_reveal_it_please'})]
 
     def hasEntry(self, id):
         return False

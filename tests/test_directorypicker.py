@@ -32,7 +32,7 @@ class FakeDirectoryTool(Folder):
     def listVisibleDirectories(self):
         return ['members', 'roles', 'groups']
 
-    def searchEntries(self, directory_name, return_fields, **kw):
+    def searchEntries(self, return_fields, **kw):
 
         return [{'id': 'tarek', 'fullname' : 'Tarek Ziadé'}]
 
@@ -62,10 +62,6 @@ class DirectoryPickerTestCase(MailTestCase):
         # ok now let's get all members entry
         entries = ob.searchEntries('members')
         self.assertNotEquals(entries, None)
-
-
-
-
 
 def test_suite():
     return unittest.TestSuite((

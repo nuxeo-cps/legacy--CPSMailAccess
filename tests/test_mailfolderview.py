@@ -209,7 +209,7 @@ class MailFolderViewTestCase(MailTestCase):
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
-        view.rename('bolo', False)
+        view.rename('bolo')
         self.assertEquals(ob.title, 'bolo')
         self.assertEquals(ob.id, 'bolo')
 
@@ -220,18 +220,15 @@ class MailFolderViewTestCase(MailTestCase):
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
 
-        res = view.rename('bolo', False)
+        res = view.rename('bolo')
         self.assertEquals(ob.title, 'bolo')
         self.assertEquals(ob.id, 'bolo')
         self.assertEquals(res, ob)
 
-        res = view.rename('bol', False)
+        res = view.rename('bol')
         self.assertEquals(ob.title, 'bol')
         self.assertEquals(ob.id, 'bol')
         self.assertEquals(res, ob)
-
-
-
 
     def test_renamemaxsize(self):
         box = self._getMailBox()
@@ -239,7 +236,7 @@ class MailFolderViewTestCase(MailTestCase):
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
-        view.rename('boloyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', False)
+        view.rename('boloyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy')
         self.assertEquals(ob.title, 'boloyyyyyyyyyyyyyyyy')
         self.assertEquals(ob.id, 'boloyyyyyyyyyyyyyyyy')
 
@@ -249,10 +246,10 @@ class MailFolderViewTestCase(MailTestCase):
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
-        view.rename('boloyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', False)
+        view.rename('boloyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy')
         self.assertEquals(ob.title, 'boloyyyyyyyyyyyyyyyy')
         self.assertEquals(ob.id, 'boloyyyyyyyyyyyyyyyy')
-        view.rename('bolod', False)
+        view.rename('bolod')
         self.assertEquals(ob.title, 'bolod')
         self.assertEquals(ob.id, 'bolod')
 

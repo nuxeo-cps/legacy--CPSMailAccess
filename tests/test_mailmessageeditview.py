@@ -182,6 +182,12 @@ class MailMessageEditTestCase(MailTestCase):
         view.sendMessage('from me', 'subject', 'body')
 
 
+    def test_getIdentitites(self):
+        mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()        # clean previous tests
+        view = MailMessageEdit(mailbox, None)
+        self.assertEquals(view.getIdentitites(), [{'fullname': 'Tarek Ziad\xe9',
+                                                   'email': 'tz@nuxeo.com'}])
 
     ### need more tests here on EditorMessage
 
