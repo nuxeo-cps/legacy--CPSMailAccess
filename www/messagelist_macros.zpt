@@ -4,7 +4,6 @@
     <tal:block tal:define="messages view/renderMailList;">
        <div tal:attributes="class
               python:test(is_folder,'folder_msglist','message_msglist')">
-
         <table with="100%"
           id="folder_content"
             >
@@ -19,42 +18,38 @@
               Date
             </th>
           </tr>
-
-
-            <tal:block tal:repeat="message messages">
-              <metal:block tal:define="is_current
-                      python:here.absolute_url()+'/view'==message['url'];
-                      odd repeat/message/odd;
-                      class_selected python:test(odd, 'line_selected_odd', 'line_selected_even');
-                      class_notselected
-                          python:test(odd, 'line_selectable_odd', 'line_selectable_even');">
-
-
-                <tr tal:attributes="class python:test(is_current, class_selected,
-                    class_notselected)">
-                  <td width="320px">
-
-                    <img tal:attributes="src message/icon"
-                         src="cpsma_message.png"/>
-                    <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                      <span tal:replace="message/title"/>
-                    </a>
-                  </td>
-                  <td width="130px">
-                    <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                      <span tal:replace="message/From|string:?"/>
-                    </a>
-                  </td>
-                  <td width="80px">
-                    <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                      <span tal:replace="message/Date|string:?"/>
-                    </a>
-                  </td>
-                </tr>
-
-              </metal:block>
-            </tal:block>
-
+          <tal:block tal:repeat="message messages">
+          <metal:block tal:define="is_current
+                python:here.absolute_url()+'/view'==message['url'];
+                odd repeat/message/odd;
+                class_selected python:test(odd, 'line_selected_odd', 'line_selected_even');
+                class_notselected
+                    python:test(odd, 'line_selectable_odd', 'line_selectable_even');">
+          <tr tal:attributes="class python:test(is_current, class_selected,
+            class_notselected)">
+            <td width="320px">
+              <input type="checkbox" tal:attributes="name python:'msg_'+message['uid']"
+                  tal:condition="content_managment"/>
+              <img src="cpsma_attach_mini.png" tal:condition="message/attachments"/>
+              <img tal:attributes="src message/icon"
+                    src="cpsma_message.png"/>
+              <a tal:attributes="href python:message['url']+'?showfolders=1'">
+                <span tal:replace="message/title"/>
+              </a>
+            </td>
+            <td width="130px">
+            <a tal:attributes="href python:message['url']+'?showfolders=1'">
+                <span tal:replace="message/From|string:?"/>
+            </a>
+            </td>
+            <td width="80px">
+            <a tal:attributes="href python:message['url']+'?showfolders=1'">
+                <span tal:replace="message/Date|string:?"/>
+            </a>
+            </td>
+          </tr>
+          </metal:block>
+          </tal:block>
         </table>
         </div>
     </tal:block>
