@@ -76,17 +76,6 @@ def md5Hash(string):
     m.update(string)
     return m.hexdigest()
 
-def checkOrdinalInRange(value, replacing_char='?'):
-    """ checks if ordinal are in range, otherwise changes it
-    """
-    returned_value = ''
-    for char in value:
-        if ord(char) < 128:
-            returned_value += char
-        else:
-            returned_value += replacing_char
-    return returned_value
-
 def decodeHeader(header):
     """ decodes a mail header
     """
@@ -95,10 +84,10 @@ def decodeHeader(header):
     try:
         hu = make_header(decoded_header)
         hu = hu.__unicode__()
-        hu = hu.encode('iso-8859-15', 'replace')
     except UnicodeDecodeError:
         hu = header
-    return checkOrdinalInRange(hu)
+    return hu
+
 
 
 _marker = object()
