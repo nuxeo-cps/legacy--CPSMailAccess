@@ -69,9 +69,9 @@ class MailRenderer:
             return ''
 
         ptypes = self.extractPartTypes(part_type)
-        ptype = ptypes['type']
+        ptype = ptypes['type'].lower()
         if ptypes.has_key('format'):
-            pformat = ptypes['format']
+            pformat = ptypes['format'].lower()
         else:
             pformat = ''
         if ptypes.has_key('charset'):
