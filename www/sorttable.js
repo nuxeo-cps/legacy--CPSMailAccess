@@ -72,7 +72,7 @@ var titleSpanCellArray = new Array();   // Title elelments from row-spanned
 var colSpanArray = new Array();         // Rows col-spanned
 var colTitleFilled = new Array();       // Indicates whether title is filled
 var sortIndex;                          // Selected index for sort
-var descending = false;                 // Descending order
+var descending = true;                 // Descending order
 var nRow, actualNRow, maxNCol;          // Various table stats
 var origColor;                          // Holds original default color
 var isIE;                               // True if IE
@@ -98,6 +98,17 @@ var updownColor = 'gray';               // Specified the color for up/downs
 // to be sorted. The rest of the functions are simply called by this
 // function.
 //*****************************************************************************
+
+function prepareTableSorting()
+{
+  table = document.getElementById("tableMessageList");
+  if (table)
+  {
+    initTable(table);
+    sortTable(2, table);
+  }
+}
+
 function initTable(obj)
 {
         // Check whether it's viewed by IE 5.0 or greater
@@ -235,15 +246,25 @@ function initTable(obj)
                         {
                                 // Can't have row span in record rows ...
                                 if (table.rows[i].cells[j].rowSpan > 1) return;
+                                /*
                                 nChildNodes =
                                         table.rows[i].
                                         cells[j].firstChild.childNodes.
                                         length;
-
+                                */
                                 innerMostNode =
                                         table.rows[i].
                                         cells[j].firstChild;
 
+                                for (var k=0; k<table.rows[i].cells[j].childNodes.length; k++)
+                                {
+                                  if (table.rows[i].cells[j].childNodes[k].id == "sorter")
+                                  {
+                                    innerMostNode = table.rows[i].cells[j].childNodes[k];
+                                  }
+                                }
+
+                                /*
                                 while ( nChildNodes != 0)
                                 {
                                         innerMostNode =
@@ -254,17 +275,15 @@ function initTable(obj)
                                                 childNodes.
                                                 length;
                                 }
-
-                                if (j == 0)
+                                */
+                                if (j==0)
                                 {
-                                        rowArray[actualNRow] =
-                                                innerMostNode.data;
+                                  rowArray[actualNRow] = new Array(table.rows[i].cells.length);
                                 }
-                                else
-                                {
-                                        rowArray[actualNRow] += recDelimiter +
-                                                innerMostNode.data;
-                                }
+                                onecell = new Array(2);
+                                onecell[0] = innerMostNode.value;
+                                onecell[1] = table.rows[i].cells[j].innerHTML;
+                                rowArray[actualNRow][j] = onecell;
                         }
                         // Inconsistent col lengh for data rows
                         if (table.rows[i].cells.length > maxNCol)
@@ -350,7 +369,10 @@ function sortTable(index,obj)
 
         // Assignment of sort index
         sortIndex = index;
+
+
         // Doing the sort using JavaScript generic function for an Array
+
         rowArray.sort(compare);
 
         // Re-drawing the title row
@@ -376,35 +398,21 @@ function sortTable(index,obj)
                 titleRowCellArray[j].innerHTML = newTitle;
         }
 
+
         // Re-drawing the table
         rowCount = 0;
-        for (var i=0; i<nRow; i++)
+        for (var i=1; i<nRow; i++)
         {
-                if (! colSpanArray[i])
-                {
+
+                        currentLine = rowArray[i-1];
+
                         for (var j=0; j<maxNCol; j++)
                         {
-                                rowContent = rowArray[rowCount].
-                                        split(recDelimiter);
-                                nChildNodes =
-                                        table.rows[i].cells[j].firstChild.
-                                        childNodes.length;
-                                innerMostNode =
-                                        table.rows[i].cells[j].firstChild;
-
-                                while ( nChildNodes != 0)
-                                {
-                                        innerMostNode =
-                                                innerMostNode.firstChild;
-                                        nChildNodes =
-                                                innerMostNode.
-                                                childNodes.
-                                                length;
-                                }
-                                innerMostNode.data = rowContent[j];
-                        }
+                          table.rows[i].cells[j].innerHTML = currentLine[j][1];
+                         // alert(currentLine[j][1]);
+                         }
                         rowCount++;
-                }
+
         }
 
         // Switching btw descending/ascending sort
@@ -419,42 +427,48 @@ function sortTable(index,obj)
 //*****************************************************************************
 function compare(a, b)
 {
-        // Getting the element array for inputs (a,b)
-        var aRowContent = a.split(recDelimiter);
-        var bRowContent = b.split(recDelimiter);
+    ca = a[sortIndex][0];
+    cb = b[sortIndex][0];
 
-        // Needed in case the data conversion is necessary
-        var aToBeCompared, bToBeCompared;
 
-        if (! isNaN(aRowContent[sortIndex]))
-                aToBeCompared = parseInt(aRowContent[sortIndex], 10);
-        else
-                aToBeCompared = aRowContent[sortIndex];
 
-        if (! isNaN(bRowContent[sortIndex]))
-                bToBeCompared = parseInt(bRowContent[sortIndex], 10);
-        else
-                bToBeCompared = bRowContent[sortIndex];
+    if (ca == cb)
+    {
 
-        if (aToBeCompared < bToBeCompared)
-                if (!descending)
-                {
-                        return -1;
-                }
-                else
-                {
-                        return 1;
-                }
-        if (aToBeCompared > bToBeCompared)
-                if (!descending)
-                {
-                        return 1;
-                }
-                else
-                {
-                        return -1;
-                }
         return 0;
+    }
+    sorter = Array(ca, cb);
+
+    //alert(sorter);
+
+    sorter = sorter.sort();
+
+    //alert(sorter);
+
+    if (sorter[0] == ca)
+    {
+
+        if (descending)
+        {
+          return 1;
+        }
+        else
+        {
+          return -1;
+        }
+    }
+    else
+    {
+
+        if (descending)
+        {
+          return -1;
+        }
+        else
+        {
+          return 1;
+        }
+    }
 }
 
 //*****************************************************************************
