@@ -202,6 +202,11 @@ class MailFolder(BTreeFolder2):
         id = self.getIdFromUid(uid)
         msg = MailMessage(id, uid, digest)
         self._setObject(id, msg)
+
+        ### ask florent if this is ok with
+        # zope 2 and zope 3 compatibilities
+        msg.parent_folder = self
+
         msg = self._getOb(id)
         return msg
 
