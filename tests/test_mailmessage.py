@@ -181,7 +181,45 @@ class MailMessageTestCase(ZopeTestCase):
         ct = ob.getContentType(1)
         self.assertEquals(ct, 'image/gif')        
                 
-                                
+    def test_getParams(self):        
+        """ testing getParams
+        """
+        ob = self.getMailInstance(6)
+
+        ct = ob.getParams()
+        self.assertEquals(ct, [('multipart/mixed', ''), ('boundary', 'BOUNDARY')])
+        
+        ct = ob.getParam('boundary')
+        self.assertEquals(ct, 'BOUNDARY')
+        
+        ct = ob.getParams(1)
+        self.assertEquals(ct, [('text/plain', ''), ('charset', 'us-ascii')])
+        
+        ct = ob.getParams(2)
+        self.assertEquals(ct, [('image/gif', ''), ('name', 'dingusfish.gif')])
+
+        ob = self.getMailInstance(2)
+        
+        ct = ob.getParams()
+        self.assertEquals(ct, None)
+        
+    def test_setParams(self):        
+        """ testing getParams
+        """
+        ob = self.getMailInstance(6)
+
+        ob.setParam('boundary', 'FRONTIERE')
+        ct = ob.getParams()
+        self.assertEquals(ct, [('multipart/mixed', ''), ('boundary', 'FRONTIERE')])
+        ct = ob.getParam('boundary')
+        self.assertEquals(ct, 'FRONTIERE')
+        
+        ob = self.getMailInstance(2)
+        ob.setParam('boundary', 'FRONTIERE')
+        ct = ob.getParam('boundary')
+        self.assertEquals(ct, 'FRONTIERE')
+
+                                                
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageTestCase),        

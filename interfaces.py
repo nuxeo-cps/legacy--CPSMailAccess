@@ -143,3 +143,24 @@ class IMailMessageStore(IContainer):
             for single part messages, part_index is 0       
         """      
                
+    def getContentTypeParams(part_index=0):
+        """ gets the content type param list as tuple
+            for single part messages, part_index is 0       
+        """          
+        
+    def getParams(part_index=0):
+        """ gets params in tuple (name, value)
+            for single part messages, part_index is 0       
+        """  
+            
+    def getParam(param_name, part_index=0):
+        """ gets value for given param 
+            for single part messages, part_index is 0       
+        """  
+        
+    def setParam(param_name, param_value, part_index=0):     
+        """ sets the param to given value
+            for single part messages, part_index is 0       
+        """             
+        
+        

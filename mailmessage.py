@@ -144,7 +144,43 @@ class MailMessage(Folder):
             payload = store.get_payload()
             payload[part_index-1].set_type(content_type)
 
-                
+    def getParams(self, part_index=0):
+        """ See interfaces.IMailMessage
+        """
+        store = self._getStore()
+        
+        if not self.isMultipart() or part_index == 0:
+            if part_index > 0:
+                raise IndexError('Index out of bounds')
+            return store.get_params()
+        else:       
+            payload = store.get_payload()
+            return payload[part_index-1].get_params()    
+        
+    def getParam(self, param_name, part_index=0):
+        """ See interfaces.IMailMessage
+        """
+        store = self._getStore()
+        
+        if not self.isMultipart() or part_index == 0:
+            if part_index > 0:
+                raise IndexError('Index out of bounds')
+            return store.get_param(param_name)
+        else:       
+            payload = store.get_payload()
+            return payload[part_index-1].get_param(param_name)    
+        
+    def setParam(self, param_name, param_value, part_index=0):
+        """ See interfaces.IMailMessage
+        """  
+        store = self._getStore()
+        if not self.isMultipart() or part_index == 0:
+            if part_index > 0:
+                raise IndexError('Index out of bounds')
+            store.set_param(param_name, param_value)
+        else:
+            payload = store.get_payload()
+            payload[part_index-1].set_param(param_name, param_value)               
             
 """ classic Zope 2 interface for class registering
 """        
