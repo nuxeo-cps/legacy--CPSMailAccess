@@ -18,43 +18,20 @@
 # 02111-1307, USA.
 #
 # $Id$
-
 import unittest, os
 from zope.testing import doctest
-from Testing.ZopeTestCase import installProduct
-from Testing.ZopeTestCase import ZopeTestCase, _print
-
+from Testing.ZopeTestCase import _print
 from Products.CPSMailAccess.mailrenderer import MailRenderer
 from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.interfaces import IMailRenderer
-
+from Products.CPSMailAccess.mailtool import MailTool
+from Products.CPSMailAccess.mailbox import manage_addMailBox
 from CPSMailAccess.tests import __file__ as landmark
-
 from email.Errors import BoundaryError
+from basetestcase import MailTestCase
 
-installProduct('FiveTest')
-installProduct('Five')
 
-def openfile(filename, mode='r'):
-    path = os.path.join(os.path.dirname(landmark), 'data', filename)
-    return open(path, mode)
-
-class MailRendererTestCase(ZopeTestCase):
-
-    def _msgobj(self, filename):
-        try:
-            fp = openfile(filename)
-            try:
-                data = fp.read()
-            finally:
-                fp.close()
-
-            return data
-        except IOError:
-             # this is a warning when mail test file is missing
-             _print('\n!!!!!!!!!!!!!!!!!!!!!!'+ str(filename) +
-                 ' not found for MailRendererTestCase')
-             return ''
+class MailRendererTestCase(MailTestCase):
 
     def getAllMails(self):
         res = []
@@ -91,19 +68,22 @@ class MailRendererTestCase(ZopeTestCase):
     def test_bodyRendering(self):
         # testing the simplest mail structure
         mail = self.getMailInstance(0)
+        box = self._getMailBox()
+        box._setObject('mail', mail)
+        mail = box.mail
         ob = MailRenderer()
-        part = mail.getPart()
         rendered = ob.renderBody(mail)
         self.assertNotEqual(rendered, '')
         self.assertNotEqual(rendered, None)
         self.assertEquals(rendered, '\nHi,\n\nDo you like this message?\n\n-Me\n')
 
-
-    def test_bodyRendering(self):
+    def test_bodyRendering2(self):
         # testing a mail with an attached file
         mail = self.getMailInstance(6)
+        box = self._getMailBox()
+        box._setObject('mail2', mail)
+        mail = box.mail2
         ob = MailRenderer()
-        part = mail.getPart()
         rendered = ob.renderBody(mail)
         self.assertNotEqual(rendered, '')
         self.assertNotEqual(rendered, None)
@@ -114,13 +94,11 @@ class MailRendererTestCase(ZopeTestCase):
         ob = MailRenderer()
         for i in range(35):
             mail = self.getMailInstance(i)
-
-            # for multiparts, just get first part
-            #raise str(mail)
-            part = mail.getPart()
-
+            # need soem acquisition here
+            container = self._getMailBox()
+            container._setObject('my_mail'+str(i), mail)
+            mail = getattr(container, 'my_mail'+str(i))
             rendered = ob.renderBody(mail)
-
             # see here for deeper checks on rendered body
             self.assertNotEqual(rendered, None)
 

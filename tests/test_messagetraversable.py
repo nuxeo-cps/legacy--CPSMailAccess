@@ -20,77 +20,14 @@
 # $Id$
 import unittest, os
 from zope.testing import doctest
-from Testing.ZopeTestCase import installProduct
-from Testing.ZopeTestCase import ZopeTestCase
 from Products.CPSMailAccess.interfaces import IMessageTraverser, IMailMessage
 from Products.CPSMailAccess.messagetraversable import MessageTraversable
 from Products.CPSMailAccess.mailmessage import MailMessage
 from CPSMailAccess.mailtool import manage_addMailTool, MailTool
 from CPSMailAccess.mailbox import manage_addMailBox
+from basetestcase import MailTestCase, FakeRequest
 
-installProduct('FiveTest')
-installProduct('Five')
-
-from CPSMailAccess.tests import __file__ as landmark
-from Acquisition import Implicit
-
-def openfile(filename, mode='r'):
-    path = os.path.join(os.path.dirname(landmark), 'data', filename)
-    return open(path, mode)
-
-
-class FakePortal(Implicit):
-    def this(self):
-        return self
-
-    def _setObject(self, id, ob):
-        setattr(self, id, ob)
-
-    def getPhysicalPath(self):
-        return ('http://nowhere',)
-
-fakePortal = FakePortal()
-portal_webmail = MailTool()
-fakePortal.portal_webmail = portal_webmail
-
-
-class FakeRequest:
-
-    maybe_webdav_client = False
-
-    def getPresentationSkin(self):
-        return None
-
-    def get(self, element1, element2):
-        return ''
-
-
-class MessageTraversableTestCase(ZopeTestCase):
-
-    def __init__(self, methodName='runTest'):
-        ZopeTestCase.__init__(self, methodName)
-        self.portal = fakePortal
-
-    def _getMailBox(self):
-        """ testing connector getter
-        """
-        container = fakePortal
-        manage_addMailBox(container, 'INBOX')
-        mailbox = self.portal.INBOX
-        mailbox.connection_params['uid'] = 'tziade'
-        mailbox.connection_params['connection_type'] = 'IMAP'
-        mailbox.connection_params['password'] = 'secret'
-        mailbox.connection_params['HOST'] = 'localhost'
-        return mailbox
-
-    def _msgobj(self, filename):
-        fp = openfile(filename)
-        try:
-            data = fp.read()
-        finally:
-            fp.close()
-
-        return data
+class MessageTraversableTestCase(MailTestCase):
 
     def getMailInstance(self,number):
         ob = MailMessage()
@@ -147,8 +84,8 @@ class MessageTraversableTestCase(ZopeTestCase):
         req = FakeRequest()
 
         ob = self.getMailInstance(7)
-        container._setObject('ob', ob)
-        ob = container.ob
+        container._setObject('ob3', ob)
+        ob = container.ob3
 
         ob.persistent_parts = (1, 3)
         mt = MessageTraversable(ob)
@@ -181,10 +118,10 @@ class MessageTraversableTestCase(ZopeTestCase):
     def test_loadParts(self):
         # testing part loading
         mailbox = self._getMailBox()
-        mailbox._addMessage('msg1' , 'i-love-pizzas-with-fresh-tomatoes')
+        mailbox._addMessage('msgA' , 'i-love-pizzas-with-fresh-tomatoes')
         ob = self.getMailInstance(6)
 
-        msg1 = getattr(mailbox, '.msg1')
+        msg1 = getattr(mailbox, '.msgA')
         msg1.cache_level = 2
 
         msg1.loadMessage(ob.getRawMessage())
@@ -216,10 +153,6 @@ class MessageTraversableTestCase(ZopeTestCase):
         self.assert_(result)
 
 
-
-
-
-### TODO :  test parts of parts
 
 
 def test_suite():
