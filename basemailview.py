@@ -31,7 +31,7 @@ class BaseMailMessageView(BrowserView):
         return portal_url.getPortalPath()     # check if ok behind apache
 
     def getIconName(self, short_title, selected, root):
-        """ returns icon name
+        """Return icon name
         """
         if short_title == 'Trash':
             return root + '/cpsma_trashcan.png'
@@ -48,7 +48,7 @@ class BaseMailMessageView(BrowserView):
                 return root + '/cpsma_folder_selected.png'
 
     def createShortTitle(self, object):
-        """ creates a short title
+        """Create a short title
         """
         title = object.title
         if title is None or title == '':
@@ -57,14 +57,12 @@ class BaseMailMessageView(BrowserView):
         return titles[len(titles)-1]
 
     def _setSelected(self, treeview, selected, root):
-        """ sets selection
-            XXX linear need optimisation
-            this part used to refresh
-            the selected folder
-            makes the treeview cache
-            not very useful
-            selected folder should be found
-            differently
+        """Set selection
+
+           XXX linear need optimisation
+           this part used to refresh the selected folder makes the treeview
+           cache not very useful
+           selected folder should be found differently
         """
         ## XX add icon name
         for element in treeview:
@@ -75,8 +73,9 @@ class BaseMailMessageView(BrowserView):
             self._setSelected(element['childs'], selected, root)
 
     def renderTreeView(self, flags=[]):
-        """ returns a tree view
-            XXX need optimisation and cache use
+        """Return a tree view
+
+           XXX need optimisation and cache use
         """
         mailbox = self.context.getMailBox()
         mailbox.clearTreeViewCache()
@@ -103,7 +102,7 @@ class BaseMailMessageView(BrowserView):
         else:
             treeview = []
 
-        childs = mailbox.getMailMessages(list_folder=True, \
+        childs = mailbox.getMailMessages(list_folder=True,
             list_messages=False, recursive=False)
 
         level = 1
@@ -132,36 +131,36 @@ class BaseMailMessageView(BrowserView):
 
     def _createTreeViewElement(self, element, selected_folder, index, length,
             level, parent_index, parent_length, root):
-        """ creates a node for the tree
+        """Create a node for the tree
         """
-        selected = element == selected_folder
+        selected = (element == selected_folder)
         short_title = self.createShortTitle(element)
         icon_name = self.getIconName(short_title, selected, root)
 
-        if element.childFoldersCount()==0:
+        if element.childFoldersCount() == 0:
             if index == 0 and length > 1:
                 front_icons = [{'icon': root + '/cma_center_empty.png',
-                                'clickable' : False}]
+                                'clickable': False}]
             elif index == length - 1:
                 front_icons = [{'icon': root + '/cma_bottom_corner.png',
-                                'clickable' : False}]
+                                'clickable': False}]
             else:
                 front_icons = [{'icon': root + '/cma_center_empty.png',
-                                'clickable' : False}]
+                                'clickable': False}]
         else:
 
             if index == 0 and length >1 :
-                front_icons = [{'icon':root + '/cma_top_minus.png',
-                                'clickable' : True}]
+                front_icons = [{'icon': root + '/cma_top_minus.png',
+                                'clickable': True}]
             elif index == 0:
-                front_icons = [{'icon':root + '/cma_minus.png',
-                                'clickable' : True}]
+                front_icons = [{'icon': root + '/cma_minus.png',
+                                'clickable': True}]
             elif index == length - 1:
-                front_icons = [{'icon':root + '/cma_bottom_minus.png',
-                                'clickable' : True}]
+                front_icons = [{'icon': root + '/cma_bottom_minus.png',
+                                'clickable': True}]
             else:
-                front_icons = [{'icon':root + '/cma_bottom_minus.png',
-                                'clickable' : True}]
+                front_icons = [{'icon': root + '/cma_bottom_minus.png',
+                                'clickable': True}]
 
         for i in range(level-1):
             if self._hasParentNext(parent_index, parent_length):
@@ -169,11 +168,11 @@ class BaseMailMessageView(BrowserView):
                 front_icons.insert(0, {'icon': root + '/cma_center_line.png',
                                        'clickable' : False})
                 """
-                front_icons.insert(0, {'icon':root + '/cma_empty.png',
+                front_icons.insert(0, {'icon': root + '/cma_empty.png',
                                        'clickable' : False})
             else:
-                front_icons.insert(0, {'icon':root + '/cma_empty.png',
-                                       'clickable' : False})
+                front_icons.insert(0, {'icon': root + '/cma_empty.png',
+                                       'clickable': False})
 
         short_title_id = short_title.replace(' ', '.')
 
@@ -189,35 +188,36 @@ class BaseMailMessageView(BrowserView):
             element.getMailFolder().id == selected_folder.id or  \
             element.id in ('Trash', 'Sent', 'Drafts')
 
-        return {'object' :element,
-                'level' : level,
-                'url' : url +'/view',
-                'short_title' : short_title,
-                'javacall' : 'switchFolderState("'+short_title_id+'")',
-                'img_id' : 'img_' + short_title_id,
-                'selected' : selected,
-                'icon_name' : icon_name,
-                'count' : length,
-                'index' : index,
+        return {'object': element,
+                'level': level,
+                'url': url +'/view',
+                'short_title': short_title,
+                'javacall': 'switchFolderState("'+short_title_id+'")',
+                'img_id': 'img_' + short_title_id,
+                'selected': selected,
+                'icon_name': icon_name,
+                'count': length,
+                'index': index,
                 'server_name': element.server_name,
-                'rename_url' : rename_url,
-                'short_title_id' : short_title_id,
-                'not_for_move' : not_for_move,
-                'front_icons' : front_icons}
+                'rename_url': rename_url,
+                'short_title_id': short_title_id,
+                'not_for_move': not_for_move,
+                'front_icons': front_icons}
 
     def _hasParentNext(self, parent_index, parent_length):
-        """ see if up level has some elements
+        """See if up level has some elements
         """
         return parent_index < parent_length -1
 
     def _renderTreeView(self, current, level, parent_index, parent_length,
                         root, flags=[]):
-        """ returns a tree view
-            XXX need optimisation and cache use
+        """Return a tree view
+
+           XXX need optimisation and cache use
         """
         treeview = []
         current_place = self.context
-        childs = current_place.getMailMessages(list_folder=True, \
+        childs = current_place.getMailMessages(list_folder=True,
             list_messages=False, recursive=False)
 
         childview = BaseMailMessageView(None, self.request)
