@@ -18,6 +18,7 @@
 #
 """ fakeimap provided for testings
 """
+is_fake = 1
 IMAP4_PORT = 25
 
 IMAPError = Exception
@@ -40,6 +41,12 @@ class IMAP4:
         self.user= user
         self.password = password
         return 'OK', 'AUTH'
+
+    def list(self, directory='""', pattern='*'):
+        """ see how to manage this to provide a list
+
+        """
+        return 'OK', []
 
 class IMAP4_SSL(IMAP4):
     pass
