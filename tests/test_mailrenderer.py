@@ -75,7 +75,7 @@ class MailRendererTestCase(MailTestCase):
         rendered = ob.renderBody(mail)
         self.assertNotEqual(rendered, '')
         self.assertNotEqual(rendered, None)
-        self.assertEquals(rendered, '\nHi,\n\nDo you like this message?\n\n-Me\n')
+        self.assertEquals(rendered, '<br/>Hi,<br/><br/>Do you like this message?<br/><br/>-Me<br/>')
 
     def test_bodyRendering2(self):
         # testing a mail with an attached file
@@ -87,7 +87,7 @@ class MailRendererTestCase(MailTestCase):
         rendered = ob.renderBody(mail)
         self.assertNotEqual(rendered, '')
         self.assertNotEqual(rendered, None)
-        self.assertEquals(rendered, 'Hi there,\n\nThis is the dingus fish.\n')
+        self.assertEquals(rendered, 'Hi there,<br/><br/>This is the dingus fish.<br/>')
 
     def test_allRendering(self):
         # testing all mails with MIME engine
