@@ -282,8 +282,16 @@
       permission="zope2.View"
       />
 
+  <!-- need to set this up better -->
   <browser:page
-      for="*"
+      for=".interfaces.IMailFolder"
+      class=".basemailview.BaseMailMessageView"
+      name="treeview.html"
+      attribute="renderTreeView"
+      permission="zope2.View"
+      />
+  <browser:page
+      for=".interfaces.IMailMessage"
       class=".basemailview.BaseMailMessageView"
       name="treeview.html"
       attribute="renderTreeView"
