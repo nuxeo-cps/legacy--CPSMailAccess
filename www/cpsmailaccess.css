@@ -116,12 +116,7 @@ table.editor_header {
   background-color: #e7e7e7;
 }
 
-input.message_edit_input {
-  width: 100%;
-}
-
 input.message_edit_input:hover {
-  width: 100%;
   background-color:  #c0ff75;
 }
 
@@ -257,4 +252,52 @@ input.manage_delete {
 
 input.manage_delete:hover {
   background-color:  #c0ff75;
+}
+
+div.recipient {
+  float: left;
+  width: 80%;
+}
+
+input.message_edit_input {
+  width: 80%;
+  float: left;
+}
+
+div.recipient_header {
+  float: left;
+  font-weight: bold;
+  margin-right: 4px;
+  width: 100px;
+}
+
+div.recipient_toggler {
+  padding: 4px;
+  float: right;
+}
+
+textarea.recipients {
+  width: 100%;
+}
+
+textarea.recipients:hover {
+  background-color:  #c0ff75;
+}
+
+div.hidden_part {
+  display: none;
+  margin-bottom: 5px;
+}
+
+span.link {
+  cursor: hand;
+  color: blue; /* put cps color here*/
+}
+
+
+div.subject {
+  float: left;
+  font-weight: bold;
+  margin-right: 4px;
+  width: 100px;
 }
