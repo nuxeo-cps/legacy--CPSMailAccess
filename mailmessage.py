@@ -21,26 +21,28 @@
 
 A MailMessage is an individual message from the server.
 """
-from zLOG import LOG, DEBUG, INFO
-
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from OFS.Folder import Folder
-from OFS.SimpleItem import SimpleItem
-from zope.interface import implements
-from zope.schema.fieldproperty import FieldProperty
-from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
-from utils import decodeHeader, parseDateString, localizeDateString
-from mimeguess import mimeGuess
-from Globals import InitializeClass
-from Products.Five import BrowserView
-from mailrenderer import MailRenderer
-from basemailview import BaseMailMessageView
-from mailpart import MailPart
-from mailfolderview import MailFolderView
 from email import message_from_string, Message
 from email.MIMEText import MIMEText
 from email import base64MIME
 from email import Encoders
+
+from zLOG import LOG, DEBUG, INFO
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from Globals import InitializeClass
+from Products.Five import BrowserView
+from OFS.Folder import Folder
+from OFS.SimpleItem import SimpleItem
+
+from zope.interface import implements
+from zope.schema.fieldproperty import FieldProperty
+
+from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
+from utils import decodeHeader, parseDateString, localizeDateString
+from mimeguess import mimeGuess
+from mailrenderer import MailRenderer
+from basemailview import BaseMailMessageView
+from mailpart import MailPart
+from mailfolderview import MailFolderView
 
 class MailMessage(MailPart):
     """A mail message.
