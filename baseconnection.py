@@ -51,8 +51,6 @@ class BaseConnection:
     connection_type = ''
     connection_params = {}
     connection_timeout = 10
-    _v_user = None
-    _v_password = None
 
     def __init__(self, connection_params = {}):
 
@@ -71,9 +69,6 @@ class BaseConnection:
 
     def login(self, user, password):
         return False
-
-    def _cache_login(self):
-        self.login(self._v_user, self._v_password)
 
     def logout(self):
         return False
