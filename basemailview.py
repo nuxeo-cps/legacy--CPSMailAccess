@@ -98,7 +98,7 @@ class BaseMailMessageView(BrowserView):
         treeview = mailbox.getTreeViewCache()
 
         if treeview is not None:
-            self._setSelected(treeview, firstfolder, root)
+            self._setSelected(treeview, firstfolder, base_url)
             return treeview
         else:
             treeview = []
