@@ -301,18 +301,29 @@ class MailMessage(MailPart):
             else:
                 self.setFlag(item, 0)
 
-    def setBody(self, content):
-        """ sets body content """
+    def setDirectBody(self, content):
+        """ sets direct body content
+
+        This is a facility for editor's need
+        sets the first body content
+        """
         if not self.isMultipart():
             self.setPart(0, content)
         else:
             # the mail editor message structure does not move
             sub = self.getPart(0)
-            sub._payload = content
-            self.setPart(0, sub)
+            if isinstance(sub, str):
+                self.setPart(0, content)
+            else:
+                sub._payload = content
+                self.setPart(0, sub)
 
-    def getBody(self):
-        """ gets body """
+    def getDirectBody(self):
+        """ gets direct body
+
+        This is a facility for editor's need
+        sets the first body content
+        """
         try:
             res = self.getPart(0)
             if res is None:
