@@ -28,7 +28,7 @@ class MailEditorMessage(MailMessage):
     _cache = RAMCache()
 
     def __init__(self, id=None, uid='', digest='', **kw):
-        MailMessage.__init__(self, id=None, uid='', digest='', **kw)
+        MailMessage.__init__(self, id, uid, digest, **kw)
         self.answerType = ''
         self.origin_message = None
 
