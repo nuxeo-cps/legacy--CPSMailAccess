@@ -46,6 +46,8 @@ class BaseMailMessageView(BrowserView):
         """ creates a short title
         """
         title = object.title
+        if title is None or title == '':
+            return ''
         titles = title.split('.')
         return titles[len(titles)-1]
 
@@ -72,6 +74,7 @@ class BaseMailMessageView(BrowserView):
             XXX need optimisation and cache use
         """
         mailbox = self.context.getMailBox()
+        mailbox.clearTreeViewCache()
 
         # XXX hack to avoid round import
         if hasattr(self.context, 'message_cache'):
@@ -151,25 +154,37 @@ class BaseMailMessageView(BrowserView):
 
         short_title_id = short_title.replace(' ', '.')
 
+        # todo : see for localhost problems here
+        # all this is done due to python interpreting problems
+        # (should be ok when Five is merged tisupport Z2 page templates)
+        url = element.absolute_url()
+        rename_url = 'rename?fullname=1&new_name=%s.%s' % (element.server_name,
+            selected_folder.simpleFolderName())
+
+        not_for_move = element.id == selected_folder.id or \
+            element.getMailFolder().id == selected_folder.id or  \
+            element.id in ('Trash', 'Sent', 'Drafts')
+
         return {'object' :element,
                 'level' : level,
-                'url' :element.absolute_url()+'/view',
-                'short_title' :short_title,
+                'url' : url +'/view',
+                'short_title' : short_title,
                 'javacall' : 'switchFolderState("'+short_title_id+'")',
                 'img_id' : 'img_' + short_title_id,
                 'selected' : selected,
                 'icon_name' : icon_name,
                 'count' : length,
                 'index' : index,
+                'server_name': element.server_name,
+                'rename_url' : rename_url,
                 'short_title_id' : short_title_id,
+                'not_for_move' : not_for_move,
                 'front_icons' : front_icons}
 
     def _hasParentNext(self, parent_index, parent_length):
         """ see if up level has some elements
         """
         return parent_index < parent_length -1
-
-
 
     def _renderTreeView(self, current, level, parent_index, parent_length,
             flags=[]):
