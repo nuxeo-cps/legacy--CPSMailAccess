@@ -2,6 +2,8 @@
   <head>
     <style type="text/css" media="all"
       tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
+    <style type="text/css" media="all"
+      tal:content="string:@import url(${context/portal_url}/nuxeo_css2.css);"/>
     <script type="text/javascript"
       tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
       src="++resource++cpsmailaccess.js">
@@ -10,7 +12,52 @@
     </script>
   </head>
   <body>
-    <tal:block replace="here/getEntries"/>
-    pickup
+    <h2>
+      add users
+    </h2>
+
+    <tal:block define="publics python:here.getEntries()[1];
+                       privates python:here.getEntries()[0];">
+    <div style="width :100%">
+      <div style="clear:both"/>
+        <div style="float:left;width :49%">
+        <h3><img src="cpsma_users.png"/>&#160;Personal address book</h3>
+        <div tal:repeat="private privates">
+            <div tal:replace="python:private[1]['fullname']"/>
+        </div>
+
+        <h3><img src="cpsma_users.png"/>&#160;Global address book</h3>
+        <div tal:repeat="public publics">
+            <div tal:replace="python:public[1]['fullname']"/>
+        </div>
+        </div>
+        <div style="float:left; width : 49%">
+        <div>
+            <div class="recipient_header">To:</div>
+            <div  class="recipient">
+            <textarea name="msg_to" id="msg_to" class="recipients"></textarea>
+            </div>
+        </div>
+        <div>
+            <div class="recipient_header">Cc:</div>
+            <div  class="recipient">
+            <textarea name="msg_to" id="msg_cc" class="recipients"></textarea>
+            </div>
+        </div>
+        <div>
+            <div class="recipient_header">Bcc:</div>
+            <div  class="recipient">
+            <textarea name="msg_to" id="msg_bcc" class="recipients"></textarea>
+            </div>
+        </div>
+
+        </div>
+      <div style="clear:both"/>
+     <input type="submit" value="validate"/>
+
+
+    </div>
+    </tal:block>
+
   </body>
 </html>
