@@ -23,6 +23,23 @@ from Products.CPSMailAccess.mailexceptions import MailContainerError
 
 class BaseMailMessageView(BrowserView):
 
+    def getIconName(self, short_title, selected):
+        """ returns icon name
+        """
+        if short_title == 'Trash':
+            return 'trashcan.png'
+        elif short_title == 'INBOX':
+            return 'cpsma_mailbox.png'
+        elif short_title == 'Drafts':
+            return 'draft.png'
+        elif short_title == 'Sent':
+            return 'cpsma_mailsent.png'
+        else:
+            if not selected:
+                return 'folder.png'
+            else:
+                return 'folder_selected.png'
+
     def createShortTitle(self, object):
         """ creates a short title
         """
@@ -40,6 +57,7 @@ class BaseMailMessageView(BrowserView):
             selected folder should be found
             differently
         """
+        ## XX add icon name
         for element in treeview:
             if element['object'] == selected:
                 element['selected'] = True
@@ -81,10 +99,12 @@ class BaseMailMessageView(BrowserView):
                 selected = child == firstfolder
                 childview.context = child
                 short_title = self.createShortTitle(child)
+                icon_name = self.getIconName(short_title, selected)
                 treeview.append({'object' :child,
                                  'url' :child.absolute_url()+'/view',
                                  'short_title' :short_title,
                                  'selected' : selected,
+                                 'icon_name' : icon_name,
                                  'childs' : childview._renderTreeView(firstfolder, flags)})
 
         mailbox.setTreeViewCache(treeview)
@@ -106,11 +126,12 @@ class BaseMailMessageView(BrowserView):
             childview.context = child
             short_title = self.createShortTitle(child)
             selected = child == current
-
+            icon_name = self.getIconName(short_title, selected)
             treeview.append({'object' :child,
                              'url' :child.absolute_url()+'/view',
                              'short_title' :short_title,
                              'selected' : selected,
+                             'icon_name' : icon_name,
                              'childs' : childview._renderTreeView(current, flags)})
 
         return treeview
