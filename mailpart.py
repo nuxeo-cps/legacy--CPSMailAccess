@@ -77,9 +77,9 @@ class MailPart(Folder):
         Otherwise return an empty string
         """
         store = self._getStore()
-        if type(store) is str:
+        if type(store) is str and self.cache_level != 1:
             return None
-        filename = store.get_filename() or store['filename']
+        filename = store.get_filename() or store['filename'] or store['name']
         if filename is None:
             return None
         mimetype = store['Content-Type']
