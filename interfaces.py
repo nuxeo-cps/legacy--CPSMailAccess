@@ -214,6 +214,9 @@ class IMailTool(Interface):
     def deleteMailBox(user_id):
         """ adds a mail box for the given user """
 
+    def hasMailBox(user_id):
+        """ tells if a user has a box """
+
 
 class IConnection(Interface):
     """ important a mail folder is called an mailbox in IConnection
