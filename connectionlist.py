@@ -34,6 +34,10 @@ class ConnectionList(UserList):
         wich keep connection alive
         or kills them
         and also maintain idle times
+
+    >>> f = ConnectionList()
+    >>> IConnectionList.providedBy(f)
+    True
     """
     implements(IConnectionList)
 
