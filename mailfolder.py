@@ -304,8 +304,8 @@ class MailFolder(BTreeFolder2):
         self._setObject(id, msg)
         msg.parent_folder = self
         msg = self._getOb(id)
-        # index message
         if index:
+            # index message into catalog
             self._indexMessage(msg)
         return msg
 
@@ -463,6 +463,7 @@ class MailFolder(BTreeFolder2):
                 msg.loadMessage(raw_msg, cache_level)
 
                 self._indexMessage(msg)
+                self._updateDirectories(msg)
             else:
                 # Message was in cache, adding it to self
                 log.append('moving message %s in %s' % (uid, self.server_name))
@@ -661,6 +662,14 @@ class MailFolder(BTreeFolder2):
             msg.deleted = 1
         else:
             return False
+
+    def _updateDirectories(self, message):
+        """ update a directory given a message """
+        mailbox = self.getMailBox()
+        froms = message.getHeader('From')
+        for from_ in froms:
+            mailbox.addMailDirectoryEntry(from_)
+
 
 """ classic Zope 2 interface for class registering
 """
