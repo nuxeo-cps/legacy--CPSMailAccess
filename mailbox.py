@@ -156,6 +156,9 @@ class MailBox(MailBoxBaseCaching):
     _directory_picker = None
     _connection_params = {}
 
+    zcatalog_id = '.zemantic_catalog'
+    catalog_id = '.zcatalog'
+
     def __init__(self, uid=None, server_name='', **kw):
         MailBoxBaseCaching.__init__(self, uid, server_name, **kw)
 
@@ -200,10 +203,18 @@ class MailBox(MailBoxBaseCaching):
             logtext = '\n'.join(log)
             returned = logtext
 
-        # now indexing XXX detach in thread
+        # now indexing
+        i = 0
+        y = 0
+        len_ = len(indexStack)
         for item in indexStack:
             self.indexMessage(item)
-
+            if i == 99:
+                get_transaction().commit(1)     # used to prevent swapping
+                i = 0
+            else:
+                i += 1
+            y += 1
         return returned
 
     def _syncdirs(self, server_directories=[], return_log=False,
@@ -470,12 +481,9 @@ class MailBox(MailBoxBaseCaching):
 
     def _getCatalog(self):
         """ returns the catalog """
-        if not self.getConnectionParams().has_key('uid'):
-            raise Exception('Need a uid to get the catalog')
+        uid = self.id
+        catalog_id = self.catalog_id
 
-        uid = self.getConnectionParams()['uid']
-
-        catalog_id = '.zcatalog'
         if hasattr(self, catalog_id):
             return getattr(self, catalog_id)
         else:
@@ -486,34 +494,36 @@ class MailBox(MailBoxBaseCaching):
 
     def _getZemanticCatalog(self):
         """ returns the catalog """
-        if not self.getConnectionParams().has_key('uid'):
-            raise Exception('Need a uid to get the catalog')
+        zcatalog_id = self.zcatalog_id
 
-        catalog_id = '.zemanticcatalog'
-        if hasattr(self, catalog_id):
-            return getattr(self, catalog_id)
+        if hasattr(self, zcatalog_id):
+            return getattr(self, zcatalog_id)
         else:
-            cat = ZemanticMailCatalog()
-            #self._setObject(catalog_id, cat)
-            setattr(self, catalog_id, cat)
+            cat = ZemanticMailCatalog(zcatalog_id)
+            self._setObject(zcatalog_id, cat)
+            setattr(self, zcatalog_id, cat)
 
-        return getattr(self, catalog_id)
+        return getattr(self, zcatalog_id)
 
     def reindexMailCatalog(self):
         """ reindex the catalog """
-        #cat = self._getCatalog()
-        zemantic_cat = self._getZemanticCatalog()
+        if hasattr(self, self.zcatalog_id):
+            self.manage_delObjects([self.zcatalog_id])
+        zemantic_cat = self._getZemanticCatalog()    # regeneratea new cat
 
         mails = self.getMailMessages(list_folder=False,
-            list_messages=True, recursive=True)
-
+                                     list_messages=True, recursive=True)
         len_ = len(mails)
         i = 0
-        zemantic_cat.clear()
+        y = 0
         for mail in mails:
             #cat.indexMessage(mail)
-            LOG('indexing', INFO, '%d/%d' % (i, len_))
             zemantic_cat.indexMessage(mail)
+            if y == 99:
+                get_transaction().commit(1)     # used to prevent swapping
+                y = 0
+            else:
+                y += 1
             i += 1
 
     def indexMessage(self, msg):
