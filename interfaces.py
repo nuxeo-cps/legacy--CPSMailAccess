@@ -177,6 +177,12 @@ class IMailTool(Interface):
         readonly=False,
         required=True)
 
+    default_connection_params = List(
+        title=u'Default connection parameters',
+        description=u'Connection parameters properties',
+        readonly=False,
+        required=False)
+
     def listConnectionTypes():
         """ returns a list of founded connection
             types, based on what plugins have been successfully
@@ -431,3 +437,15 @@ class IMailPart(Interface):
     def loadMessage(raw_msg):
         """ loads a message from a string raw content
         """
+
+class IDirectoryPicker(Interface):
+    """ IDirectoryPicker provides an adapter to
+        CPS Directory, thus making
+        things easier to refactor when it comes
+        to migrate CPSSchemas to Zope 3
+    """
+
+    def getDirectoryList():
+        """ returns a list of available directories """
+
+
