@@ -28,11 +28,16 @@ class MailFolderView(BaseMailMessageView):
     def __init__(self, context, request):
         BaseMailMessageView.__init__(self, context, request)
 
+    def getMaxFolderSize(self):
+        mailfolder = self.context
+        mailbox = mailfolder.getMailBox()
+        return int(mailbox.getConnectionParams()['max_folder_size'])
+
     def rename(self, new_name):
         """ action called to rename the current folder """
         mailfolder = self.context
         mailbox = mailfolder.getMailBox()
-        max_folder_size = int(mailbox.getConnectionParams()['max_folder_size'])
+        max_folder_size = self.getMaxFolderSize()
         if len(new_name) > max_folder_size:
             new_name = new_name[:max_folder_size]
 
@@ -149,7 +154,15 @@ class MailFolderView(BaseMailMessageView):
         """ adds a folder
             XXX todo:do it on server's side
         """
+        # ugly transtypnig
         mailfolder = self.context
+        mailbox = mailfolder.getMailBox()
+
+        max_folder_size = self.getMaxFolderSize()
+        if len(name) > max_folder_size:
+            name = name[:max_folder_size]
+
+
         if not mailfolder.hasKey(name):
             server_name = mailfolder.server_name + '.' + name
             new_folder = mailfolder._addFolder(name, server_name, True)
