@@ -63,20 +63,19 @@ class MailTool(Folder): # UniqueObject
     # to be externalized
     maildeliverer = SmtpQueuedMailer()
 
-    default_connection_params = {
-                         'connection_type' : 'IMAP',
-                         'HOST' : 'localhost',
-                         'PORT' : 143,
-                         'password' :'${members.webmail_password}',
-                         'login' : '${members.webmail_login}',
-                         'smtp_host' : 'localhost',
-                         'smtp_port' : 25,
-                         'trash_folder_name' : 'INBOX.Trash',
-                         'draft_folder_name' : 'INBOX.Drafts',
-                         'sent_folder_name' : 'INBOX.Sent',
-                         'cache_level' :  2,
-                         'max_folder_size' : 20}
-
+    default_connection_params = {'connection_type' : 'IMAP',
+                                 'HOST' : 'localhost',
+                                 'PORT' : 143,
+                                 'SSH' :  0,
+                                 'login' : '${members.webmail_login}',
+                                 'password' :'${members.webmail_password}',
+                                 'smtp_host' : 'localhost',
+                                 'smtp_port' : 25,
+                                 'trash_folder_name' : 'INBOX.Trash',
+                                 'draft_folder_name' : 'INBOX.Drafts',
+                                 'sent_folder_name' : 'INBOX.Sent',
+                                 'cache_level' :  2,
+                                 'max_folder_size' : 20}
 
     def __init__(self):
         Folder.__init__(self)
