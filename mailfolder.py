@@ -335,7 +335,7 @@ class MailFolder(BTreeFolder2):
         self._setObject(new_id, new_folder)
         new_folder = self[new_id]
 
-        if server:
+        if server and has_connection:
             connector = self._getconnector()
             # todo : look at the result
             connector.create(new_folder.server_name)
@@ -602,10 +602,13 @@ class MailFolder(BTreeFolder2):
         self._v_mailbox = None
         return self.rename(newmailbox, fullname=True)
 
-    def simpleFolderName(self):
+    def simpleFolderName(self, server_name=''):
         """ retrieves the simple folder name
         """
-        fullname = self.server_name
+        if server_name == '':
+            fullname = self.server_name
+        else:
+            fullname = server_name
         prefix = fullname.split('.')
         return prefix[len(prefix)-1]
 
