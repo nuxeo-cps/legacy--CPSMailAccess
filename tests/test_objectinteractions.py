@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- encoding: iso-8859-15 -*-
-# (C) Copyright 2003 Nuxeo SARL <http://nuxeo.com>
+# (C) Copyright 2005 Nuxeo SARL <http://nuxeo.com>
 # Author: Tarek Ziadé <tz@nuxeo.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,45 +21,22 @@ import unittest
 
 from Testing.ZopeTestCase import user_name, folder_name
 from Testing.ZopeTestCase import installProduct
-from CPSMailAccess.mailbox import manage_addMailBox, MailBoxActionsView
+from CPSMailAccess.mailbox import manage_addMailBox
 from CPSMailAccess.mailtool import manage_addMailTool, MailTool
 from CPSMailAccess.mailfolder import MailFolder
 from Products.CPSMailAccess.mailexceptions import MailContainerError
 from CPSMailAccess.utils import uniqueId
+
 import sys
 import fakesmtplib
 if sys.modules.has_key('smtplib'):
     del sys.modules['smtplib']
 sys.modules['smtplib'] = fakesmtplib
 from CPSMailAccess.mailbox import MailBox, MailBoxParametersView
-from Acquisition import Implicit
-from Testing.ZopeTestCase import ZopeTestCase
+from basetestcase import MailTestCase
 
-class FakePortal(Implicit):
-    def this(self):
-        return self
 
-    def _setObject(self, id, ob):
-        setattr(self, id, ob)
-
-    def getPhysicalPath(self):
-        return ('http://nowhere',)
-
-fakePortal = FakePortal()
-portal_webmail = MailTool()
-fakePortal.portal_webmail = portal_webmail
-
-class ObjectInteractionTest(ZopeTestCase):
-    msg_key = 0
-
-    def __init__(self, methodName='runTest'):
-        ZopeTestCase.__init__(self, methodName)
-        self.portal = fakePortal
-
-    def msgKeyGen(self):
-        result = 'msg_' + str(self.msg_key)
-        self.msg_key += 1
-        return result
+class ObjectInteractionTest(MailTestCase):
 
     def afterSetUp(self):
         user = self.folder.acl_users.getUser(user_name)
@@ -68,19 +45,6 @@ class ObjectInteractionTest(ZopeTestCase):
         # installing portal_webmail
         if not hasattr(self.portal, 'portal_webmail'):
             manage_addMailTool(self.portal)
-
-    def _getMailBox(self):
-        """ testing connector getter
-        """
-        container = fakePortal
-        manage_addMailBox(container, 'INBOX')
-        mailbox = self.portal.INBOX
-        mailbox.connection_params['uid'] = 'tziade'
-        mailbox.connection_params['connection_type'] = 'IMAP'
-        mailbox.connection_params['password'] = 'secret'
-        mailbox.connection_params['HOST'] = 'localhost'
-        return mailbox
-
 
     def test_getconnectors(self):
         # testing connector getter thru portal_webmail
@@ -197,39 +161,25 @@ class ObjectInteractionTest(ZopeTestCase):
         view.setParameters(params)
         self.assertEquals(mailbox.connection_params['ok'], '12')
 
-    def test_sendMessage(self):
+    def oldtest_sendMessage(self):
         # sendMessage
         msg_from = 'Tarek Ziadé <tarek@ziade.org>'
         msg_to = ''
         msg_subject = []
         msg_body = ''
-        msg_attachments = []
         mailbox = self._getMailBox()
-        mailbox.sendMessage(msg_from, msg_to, msg_subject, msg_body,
-            msg_attachments)
-
-    def test_MailBoxActionsView(self):
-        # mailmessageedit view
-        mailbox = self._getMailBox()
-        view = MailBoxActionsView(mailbox, None)
-        self.assertNotEquals(view, None)
-
-        actions = view.renderActions()
-        self.assertNotEquals(actions, [])
+        mailbox.sendMessage(msg_from, msg_to, msg_subject, msg_body)
 
     def test_parents(self):
         # testing parents
         mailbox = self._getMailBox()
-        mailbox._addMessage('msg1' , 'i-love-pizzas-with-fresh-tomatoes')
+        mailbox._addMessage('msgu' , 'i-love-pizzas-with-fresh-tomatoes')
 
-        self.assert_(getattr(mailbox, '.msg1', None))
-        ob = getattr(mailbox, '.msg1')
+        self.assert_(getattr(mailbox, '.msgu', None))
+        ob = getattr(mailbox, '.msgu')
 
         folder = ob.getMailFolder()
         box = ob.getMailBox()
-
-
-
 
 def test_suite():
     return unittest.TestSuite((
