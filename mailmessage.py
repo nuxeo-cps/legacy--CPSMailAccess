@@ -1,7 +1,6 @@
 # -*- coding: ISO-8859-15 -*-
 # Copyright (c) 2004 Nuxeo SARL <http://nuxeo.com>
 # Authors: Tarek Ziadé <tz@nuxeo.com>
-#          Florent Guillaume <tz@nuxeo.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as published
@@ -24,37 +23,37 @@ A MailFolder contains mail messages and other mail folders.
 """
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
-
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
-
 from interfaces import IMailMessage, IMailMessageStore
-
 from email import Message as Message
 from email import message_from_string
 from email.Charset import Charset
+from Globals import InitializeClass
 
 class MailMessage(Folder):
-    """A folderish mail 
+    """A folderish mail
     A MailMessage implements IMailMessage:
     >>> f = MailMessage()
     >>> IMailMessage.providedBy(f)
     True
 
     """
+    meta_type = "CPSMailAccess Message"
+
     implements(IMailMessage, IMailMessageStore)
-    
-    msg_uid = FieldProperty(IMailMessage['msg_uid'])    
+
+    msg_uid = FieldProperty(IMailMessage['msg_uid'])
     msg_key = FieldProperty(IMailMessage['msg_key'])
-    
+
     store = None
-    
+
     def __init__(self, id=None, msg_uid='', msg_key='', **kw):
-        Folder.__init__(self, id, **kw)        
+        Folder.__init__(self, id, **kw)
         self.msg_uid = msg_uid
         self.msg_key = msg_key
-    
-    def _getStore(self):        
+
+    def _getStore(self):
         """
         >>> f = MailMessage()
         >>> f.loadMessage('ok')
@@ -62,79 +61,79 @@ class MailMessage(Folder):
         >>> store <> None
         True
         """
-        
+
         if self.store is None:
             raise AttributeError('Nothing stored')
-        
-        return self.store            
-    
-    
+
+        return self.store
+
+
     def loadMessage(self, raw_msg):
-        """ See interfaces.IMailMessage  
+        """ See interfaces.IMailMessage
         """
         self.store = message_from_string(raw_msg)
-        
+
     def getPartCount(self):
-        """ See interfaces.IMailMessage      
+        """ See interfaces.IMailMessage
         """
-        store = self._getStore()   
+        store = self._getStore()
         if self.isMultipart():
             return len(store.get_payload())
         else:
             return 1
-    
+
     def getPart(self, index):
-        """ See interfaces.IMailMessage      
+        """ See interfaces.IMailMessage
         """
-        store = self._getStore()   
+        store = self._getStore()
         return store.get_payload(index)
-    
+
     def getCharset(self, part_index=0):
-        """ See interfaces.IMailMessage      
+        """ See interfaces.IMailMessage
         """
-        store = self._getStore()   
+        store = self._getStore()
         return store.get_charsets()[part_index]
-        
-    def setCharset(self, charset, part_index=0): 
-        """ See interfaces.IMailMessage      
-        """        
-        store = self._getStore()   
+
+    def setCharset(self, charset, part_index=0):
+        """ See interfaces.IMailMessage
+        """
+        store = self._getStore()
         ob_charset = Charset(charset)
-        
+
         if not self.isMultipart():
             if part_index > 0:
                 raise IndexError('Index out of bounds')
             store.set_charset(ob_charset)
         else:
             payload = store.get_payload()
-            payload[part_index-1].set_charset(ob_charset)    
-            
-    def isMultipart(self):            
-        """ See interfaces.IMailMessage           
+            payload[part_index-1].set_charset(ob_charset)
+
+    def isMultipart(self):
+        """ See interfaces.IMailMessage
         >>> f = MailMessage()
         >>> f.loadMessage('mmdclkdshkdjg')
         >>> f.isMultipart()
         False
         """
         store = self._getStore()
-        return store.is_multipart()    
-        
+        return store.is_multipart()
+
     def getContentType(self, part_index=0):
         """ See interfaces.IMailMessage
         """
         store = self._getStore()
-        
+
         if not self.isMultipart() or part_index == 0:
             if part_index > 0:
                 raise IndexError('Index out of bounds')
             return store.get_content_type()
-        else:       
+        else:
             payload = store.get_payload()
-            return payload[part_index-1].get_content_type()    
-        
+            return payload[part_index-1].get_content_type()
+
     def setContentType(self, content_type, part_index=0):
         """ See interfaces.IMailMessage
-        """  
+        """
         store = self._getStore()
         if not self.isMultipart() or part_index == 0:
             if part_index > 0:
@@ -148,31 +147,31 @@ class MailMessage(Folder):
         """ See interfaces.IMailMessage
         """
         store = self._getStore()
-        
+
         if not self.isMultipart() or part_index == 0:
             if part_index > 0:
                 raise IndexError('Index out of bounds')
             return store.get_params()
-        else:       
+        else:
             payload = store.get_payload()
-            return payload[part_index-1].get_params()    
-        
+            return payload[part_index-1].get_params()
+
     def getParam(self, param_name, part_index=0):
         """ See interfaces.IMailMessage
         """
         store = self._getStore()
-        
+
         if not self.isMultipart() or part_index == 0:
             if part_index > 0:
                 raise IndexError('Index out of bounds')
             return store.get_param(param_name)
-        else:       
+        else:
             payload = store.get_payload()
-            return payload[part_index-1].get_param(param_name)    
-        
+            return payload[part_index-1].get_param(param_name)
+
     def setParam(self, param_name, param_value, part_index=0):
         """ See interfaces.IMailMessage
-        """  
+        """
         store = self._getStore()
         if not self.isMultipart() or part_index == 0:
             if part_index > 0:
@@ -180,11 +179,11 @@ class MailMessage(Folder):
             store.set_param(param_name, param_value)
         else:
             payload = store.get_payload()
-            payload[part_index-1].set_param(param_name, param_value)               
-            
+            payload[part_index-1].set_param(param_name, param_value)
+
     def delParam(self, param_name, part_index=0):
         """ See interfaces.IMailMessage
-        """  
+        """
         store = self._getStore()
         if not self.isMultipart() or part_index == 0:
             if part_index > 0:
@@ -192,15 +191,17 @@ class MailMessage(Folder):
             store.del_param(param_name)
         else:
             payload = store.get_payload()
-            payload[part_index-1].del_param(param_name)               
-                    
+            payload[part_index-1].del_param(param_name)
+
 """ classic Zope 2 interface for class registering
-"""        
+"""
+InitializeClass(MailMessage)
+
 manage_addMailMessage = PageTemplateFile(
     "www/zmi_addmailmessage", globals(),
     __name__ = 'manage_addMailMessage')
-    
-def manage_addMailMessage(container, id=None, msg_uid='', 
+
+def manage_addMailMessage(container, id=None, msg_uid='',
         msg_key='', REQUEST=None, **kw):
     """Add a calendar to a container (self).
     >>> from OFS.Folder import Folder
@@ -208,7 +209,7 @@ def manage_addMailMessage(container, id=None, msg_uid='',
     >>> manage_addMailMessage(f, 'message')
     >>> f.message.getId()
     'message'
-    
+
     """
     container = container.this()
     ob = MailMessage(id, msg_uid, msg_key, **kw)
@@ -216,4 +217,3 @@ def manage_addMailMessage(container, id=None, msg_uid='',
     if REQUEST is not None:
         ob = container._getOb(ob.getId())
         REQUEST.RESPONSE.redirect(ob.absolute_url()+'/manage_main')
-    
