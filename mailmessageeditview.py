@@ -23,7 +23,7 @@ from Globals import InitializeClass
 import sys
 from smtplib import SMTP
 from utils import getToolByName, getCurrentDateStr, _isinstance,\
-     decodeHeader, verifyBody
+     decodeHeader, verifyBody, cleanUploadedFileName
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
@@ -142,6 +142,12 @@ class MailMessageEdit(BrowserView):
             return
         elif max_size and len(file.read(max_size)) == max_size:
             raise FileError('file is too big')
+
+        # beware of IE under win : need to get rid of filename path
+        # and this is specific on client side
+        # hack : try to see if it's a windows path
+        # by searching ':/'
+        file.filename = cleanUploadedFileName(file.filename)
 
         msg.attachFile(file)
         if self.request is not None:
