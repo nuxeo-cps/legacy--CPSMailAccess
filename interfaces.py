@@ -316,7 +316,7 @@ class IConnectionList(Interface):
         """ registers a newconnectino type thru a given method
         """
 
-    def getConnection(connection_type, password):
+    def getConnection(connection_params):
         """ gets a connection for the current user
         """
 
