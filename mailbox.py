@@ -38,6 +38,7 @@ from interfaces import IMailFolder, IMailMessage
 from Globals import InitializeClass
 from zope.schema.fieldproperty import FieldProperty
 from Products.Five import BrowserView
+from Products.CPSMailAccess.basemailview import BaseMailMessageView
 
 ### see for CMF dependency here
 #from Products.CMFCore.utils import getToolByName
@@ -334,7 +335,7 @@ class MailBoxParametersView(BrowserView):
 #
 # MailBoxView Views
 #
-class MailBoxView(MailFolderView):
+class MailBoxView(BaseMailMessageView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
