@@ -103,7 +103,6 @@ function saveMessageDatas(EditorHTML)
   }
 
   BCc = document.getElementById('BCc');
-  alert(BCc.style.visibility);
 
   if (BCc.style.visibility == 'hidden')
   {
