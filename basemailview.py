@@ -17,12 +17,13 @@
 # 02111-1307, USA.
 #
 # $Id$
+from zLOG import LOG, INFO
 from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
-from Products.CPSMailAccess.mailexceptions import MailContainerError
-from zLOG import LOG, INFO
+
 from interfaces import IMailMessage
 from utils import getToolByName
+from mailexceptions import MailContainerError
 
 class BaseMailMessageView(BrowserView):
 
