@@ -305,6 +305,10 @@ class IConnection(Interface):
         """ writes a message to the given mailbox
         """
 
+    def partial(mailbox, message_number, message_part, start, length):
+        """ gets a part of a message
+        """
+
 
 class IConnectionList(Interface):
 

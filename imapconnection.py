@@ -180,6 +180,30 @@ class IMAPConnection(BaseConnection):
                 result.append(current)
         return result
 
+    def partial(self, mailbox, message_number, message_part, start, length):
+        """ see interface for doc
+        """
+        result = ''
+        self._respawn()
+        self._connection.select(mailbox)
+
+        try:
+            imap_result =  self._connection.partial(message_number, \
+                message_part, start, length)
+        except self._connection.error:
+            raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
+        except IndexError:
+            raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number, mailbox))
+
+        if imap_result[0] == 'OK':
+            imap_raw = imap_result[1]
+
+            return imap_raw
+        return results
+
+
+
+
     def fetch(self, mailbox, message_number, message_parts):
         """ see interface for doc
         """
