@@ -448,6 +448,7 @@ class MailBox(MailBoxBaseCaching):
     def emptyTrashFolder(self):
         """ empty the trash """
         trash = self.getTrashFolder()
+        trash._clearCache()
         ids = []
         for id, ob in trash.objectItems():
             ids.append(id)
