@@ -47,6 +47,8 @@ from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
 from Products.Five.traversable import FiveTraversable
 
+has_connection = 0
+
 lock = thread.allocate_lock()
 cache = MailCache()
 
@@ -416,24 +418,63 @@ class MailBox(MailFolder):
     def validateChanges(self):
         """ call expunger
         """
-        connector = self._getconnector()
-        connector.expunge()
+        if has_connection:
+            connector = self._getconnector()
+            connector.expunge()
+
+    def _getCatalog(self):
+        """ returns the catalog
+        """
+        mailtool = getToolByName(self, 'portal_webmail')
+        if not self.connection_params.has_key('uid'):
+            raise MailCatalogError('Need a uid to get the catalog')
+        uid = self.connection_params['uid']
+        cats = mailtool.mail_catalogs
+        cat = cats.getCatalog(uid)
+        if cat is None:
+            cats.addCatalog(uid)
+            cat = cats.getCatalog(uid)
+        return cat
 
     def reindexMailCatalog(self):
         """ reindex the catalog
         """
-        mailtool = getToolByName(self, 'portal_webmail')
-        if not self.connection_params.has_key('uid'):
-            return
-        uid = self.connection_params['uid']
-        cat = mailtool.mail_catalogs.getCatalog(uid)
-        if cat is None:
-            mailtool.mail_catalogs.addCatalog(uid)
-            cat = mailtool.mail_catalogs.getCatalog(uid)
+        cat = self._getCatalog()
         mails = self.getMailMessages(list_folder=False,
             list_messages=True, recursive=True)
         for mail in mails:
             cat.indexMessage(mail)
+
+    def indexMessage(self, msg):
+        """ indexes message
+        """
+        cat = self._getCatalog()
+        cat.indexMessage(msg)
+
+    def unIndexMessage(self, msg):
+        """ indexes message
+        """
+        cat = self._getCatalog()
+        cat.unIndexMessage(msg)
+
+    def saveEditorMessage(self):
+        """ make a copy of editor message
+            into Drafts
+        """
+        # TODO: add a TO section
+        msg = self.getCurrentEditorMessage()
+        drafts = self.getDraftFolder()
+        uid = drafts.getNextMessageUid()
+        new_uid = drafts.getNextMessageUid()
+        msg_copy = drafts._addMessage(new_uid, msg.digest)
+        msg_copy.copyFrom(msg)
+        # todo check flag on server's side
+        msg_copy.draft = 0
+
+        if has_connection:
+            connector = self._getconnector()
+            # need to create the message on server side
+            connector.writeMessage(drafts.server_name, msg.getRawMessage())
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
