@@ -159,7 +159,6 @@ class ZemanticMessageAdapter:
                     # fixed string date indexing
                     cdate = parseDateString(value)
                     value = unicode(cdate.strftime('%d/%m/%Y'))
-                    print value
                     value = URIRef(value)
                 else:
                     value = Literal(value)
