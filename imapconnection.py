@@ -22,6 +22,7 @@
 
 """
 import re
+from time import sleep
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
 from zope.interface import implements
 from interfaces import IConnection
@@ -29,7 +30,8 @@ from baseconnection import BaseConnection
 from baseconnection import LOGIN_FAILED
 from baseconnection import ConnectionError
 from baseconnection import ConnectionParamsError
-from baseconnection import CANNOT_SEARCH_MAILBOX, MAILBOX_INDEX_ERROR
+from baseconnection import CANNOT_SEARCH_MAILBOX, MAILBOX_INDEX_ERROR, \
+    CANNOT_READ_MESSAGE, SOCKET_ERROR
 
 class IMAPConnection(BaseConnection):
     """ IMAP4 v1 implementation for Connection
@@ -50,6 +52,7 @@ class IMAPConnection(BaseConnection):
         'IMAP'
         """
         BaseConnection.__init__(self, connection_params)
+
         # instanciate a imap4 object
         params = self.connection_params
         host = params['HOST']
@@ -64,11 +67,22 @@ class IMAPConnection(BaseConnection):
                 port = IMAP4_SSL_PORT
             else:
                 port = IMAP4_PORT
-        if is_ssl:
-            self._connection = IMAP4_SSL(host, port)
-        else:
-            self._connection = IMAP4(host, port)
 
+        failures = 0
+        connected = False
+        while not connected and failures < 5:
+            try:
+                if is_ssl:
+                    self._connection = IMAP4_SSL(host, port)
+                else:
+                    self._connection = IMAP4(host, port)
+                connected = True
+            except IMAP4.abort:
+                sleep(0.3)
+                failures += 1
+
+        if not connected:
+            raise ConnectionError(SOCKET_ERROR)
     #
     # Internal methods
     #
@@ -103,7 +117,9 @@ class IMAPConnection(BaseConnection):
         self._respawn()
         try:
             typ, dat = self._connection.login(user, password)
-        except self._connection.error:
+            self._v_user = user
+            self._v_password = password
+        except IMAP4.error:
             raise ConnectionError(LOGIN_FAILED + ' for user %s' % user)
 
         # _connection state is AUTH if login succeeded
@@ -285,6 +301,8 @@ class IMAPConnection(BaseConnection):
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
         except IndexError:
             raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number, mailbox))
+        except AttributeError:
+            raise ConnectionError(CANNOT_READ_MESSAGE % (message_number, mailbox))
 
         if imap_result[0] == 'OK':
             imap_raw = imap_result[1]
@@ -417,6 +435,13 @@ class IMAPConnection(BaseConnection):
         """
         self._respawn()
         self._connection.select(mailbox)
+
+    def deleteMailBox(self, mailbox):
+        """ delete mailbox
+        """
+        self._respawn()
+        self._connection.delete(mailbox)
+
 
 connection_type = 'IMAP'
 
