@@ -30,6 +30,7 @@ from email import Message as Message
 from email import message_from_string
 from email.Charset import Charset
 from Globals import InitializeClass
+from Products.Five import BrowserView
 
 class MailMessage(Folder):
     """A folderish mail
@@ -63,7 +64,7 @@ class MailMessage(Folder):
         """
 
         if self.store is None:
-            raise AttributeError('Nothing stored')
+            self.store = message_from_string('')
 
         return self.store
 
@@ -192,6 +193,29 @@ class MailMessage(Folder):
         else:
             payload = store.get_payload()
             payload[part_index-1].del_param(param_name)
+
+#
+# MailMessage Views
+#
+class MailMessageView(BrowserView):
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+
+    def _getHeader(self):
+        if self.context is not None:
+            headers = self.context.getParams()
+            return headers
+        else:
+            return ''
+
+    def render(self):
+        """ renders the mail
+        """
+        title = self._getHeader()
+
+        return title
+
 
 """ classic Zope 2 interface for class registering
 """
