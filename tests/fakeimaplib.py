@@ -84,6 +84,9 @@ class IMAP4:
     def append(self, mailbox, flags, date_time, message):
         return ('OK', ['', ''])
 
+    def partial(self, message_num, message_part, start, length):
+        return ('OK', '')
+
 class IMAP4_SSL(IMAP4):
     pass
 
