@@ -28,23 +28,38 @@ import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from Products.Five import BrowserView
+
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from zope.publisher.browser import FileUpload
+
+
 from utils import uniqueId, makeId, getFolder
 from interfaces import IMailBox, IMailMessage, IMailFolder
 from mailmessage import MailMessage
 from mailfolder import MailFolder, manage_addMailFolder
 from mailfolderview import MailFolderView
 from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
-from mailcache import MailCache
+
 from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
 from email import base64MIME
 
 class MailMessageEdit(BrowserView):
+
+    cc_on = 0
+    bcc_on = 0
+    attacher_on = 0
+
+    def getFlag(self, name):
+        """ returns a flag
+        """
+        if hasattr(self,name):
+            return getattr(self, name)
+        else:
+            return None
 
     def initMessage(self):
         """ will init message editor
@@ -142,6 +157,11 @@ class MailMessageEdit(BrowserView):
         """
         if file == '':
             return
+        for line in self.attached_files():
+            for cfile in line:
+                if cfile['filename'].lower() == file.filename.lower():
+                    return
+
         # file is the file name
         # need to load binary here
         mailbox = self.context
@@ -206,18 +226,16 @@ class MailMessageEdit(BrowserView):
         #msg_viewer = MailMessageView(msg, self.request)
         return decodeHeader(res[0])
 
-    def getDestList(self):
+    def getDestList(self, type_='To'):
         """ returns dest list
         """
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
         res = []
-        for part in ('To', 'Cc', 'BCc'):
-            content = msg.getHeader(part)
-            if content is not None and content <> []:
-                for element in content:
-                    res.append({'value' : decodeHeader(element),
-                        'type' : part})
+        content = msg.getHeader(type_)
+        if content is not None and content <> []:
+            for element in content:
+                res.append(decodeHeader(element))
         return res
 
     def saveMessageForm(self):
@@ -236,6 +254,23 @@ class MailMessageEdit(BrowserView):
         if form.has_key('msg_subject'):
             msg_subject = form['msg_subject']
             msg.setHeader('Subject', msg_subject)
+
+        textareas = (('msg_to', 'To'), ('msg_cc', 'Cc'), ('msg_bcc', 'BCc'))
+
+        for area, id in textareas:
+            if form.has_key(area):
+                msg_body = form[area]
+                lines = msg_body.split('\r\n')
+                self.addRecipient(msg_body, id)
+
+        if form.has_key('cc_on'):
+            self.cc_on = int(form['cc_on'])
+
+        if form.has_key('bcc_on'):
+            self.bcc_on = int(form['bcc_on'])
+
+        if form.has_key('attacher_on'):
+            self.attacher_on = int(form['attacher_on'])
 
         return 'ok'
 
@@ -261,7 +296,7 @@ class MailMessageEdit(BrowserView):
         content = content.strip()
         if content == '':
             return
-        if not type in('To', 'Cc', 'BCc'):
+        if not type in ('To', 'Cc', 'BCc'):
             type = 'To'
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
