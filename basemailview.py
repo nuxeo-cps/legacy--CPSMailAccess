@@ -27,6 +27,8 @@ from mailexceptions import MailContainerError
 
 class BaseMailMessageView(BrowserView):
 
+    lotus_style = True
+
     def getBaseUrl(self):
         portal_url = getToolByName(self.context, 'portal_url')
         return portal_url.getPortalPath()     # check if ok behind apache
@@ -79,7 +81,7 @@ class BaseMailMessageView(BrowserView):
            XXX need optimisation and cache use
         """
         mailbox = self.context.getMailBox()
-        mailbox.clearTreeViewCache()
+        mailbox.clearTreeViewCache()            # XXX to be commented
 
         portal_url = getToolByName(mailbox, 'portal_url')
         base_url = portal_url.getPortalPath()
@@ -111,6 +113,8 @@ class BaseMailMessageView(BrowserView):
         parent_length = 1
         parent_index = 0
 
+        lotusfolders = []
+
         if len(childs) > 0:
             ## should call interface instead here
             childview = BaseMailMessageView(None, self.request)
@@ -121,10 +125,18 @@ class BaseMailMessageView(BrowserView):
                 element = self._createTreeViewElement(child, firstfolder,
                     index, length, level, parent_index, parent_length, base_url)
                 unreads, element['childs'] = childview._renderTreeView(firstfolder, level+1,
-                    parent_index, parent_length, base_url, flags)
+                    parent_index, parent_length, base_url, flags, lotusfolders)
                 element['unreads'] = unreads
                 treeview.append(element)
                 index += 1
+
+        lotusfolders.sort()
+        for folder in lotusfolders:
+            element = folder[1]
+            element['level'] = element['level'] - 1
+            if len(element['front_icons']) > 0:
+                del element['front_icons'][0]
+            treeview.append(element)
 
         mailbox.setTreeViewCache(treeview)
 
@@ -189,11 +201,13 @@ class BaseMailMessageView(BrowserView):
             element.getMailFolder().id == selected_folder.id or  \
             element.id in ('Trash', 'Sent', 'Drafts')
 
+        short_title_id = 'tree_' + short_title_id
+
         return {'object': element,
                 'level': level,
                 'url': url +'/view',
                 'short_title': short_title,
-                'javacall': 'switchFolderState("'+short_title_id+'")',
+                'javacall': 'switchFolderState("%s")' % short_title_id,
                 'img_id': 'img_' + short_title_id,
                 'selected': selected,
                 'icon_name': icon_name,
@@ -211,7 +225,7 @@ class BaseMailMessageView(BrowserView):
         return parent_index < parent_length -1
 
     def _renderTreeView(self, current, level, parent_index, parent_length,
-                        root, flags=[]):
+                        root, flags=[], lotusfolders=[]):
         """Return a tree view
 
            XXX need optimisation and cache use
@@ -243,14 +257,29 @@ class BaseMailMessageView(BrowserView):
         # sort the treeview
         stree = []
         for element in treeview:
-            if element['short_title'] == 'Sent':
-                stree.append((1, element))
-            elif element['short_title'] == 'Drafts':
-                stree.append((0, element))
-            elif element['short_title'] == 'Trash':
-                stree.append((2, element))
+            stitle = element['short_title']
+
+            if self.lotus_style and level == 2:
+                if stitle not in ('Sent', 'Drafts', 'Trash'):
+                    stree.append((stitle, element))
+                else:
+                    if stitle == 'Sent':
+                        lotusfolders.append((1, element))
+                    elif stitle == 'Drafts':
+                        lotusfolders.append((0, element))
+                    elif stitle == 'Trash':
+                        lotusfolders.append((2, element))
+                    else:
+                        lotusfolders.append((stitle, element))
             else:
-                stree.append((element['short_title'], element))
+                if stitle == 'Sent':
+                    stree.append((1, element))
+                elif stitle == 'Drafts':
+                    stree.append((0, element))
+                elif stitle == 'Trash':
+                    stree.append((2, element))
+                else:
+                    stree.append((stitle, element))
         stree.sort()
         ntreeview = []
         for element in stree:
