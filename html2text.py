@@ -5,6 +5,10 @@
 # See license.txt for more details.
 #
 # $Id$
+"""
+    corrections by tarek ziade <tz@nuxeo.com>
+    fixeols
+"""
 
 import sgmllib
 from string import lower, replace, split, join
@@ -26,6 +30,7 @@ class HTML2Text(sgmllib.SGMLParser):
 
     def add_text(self,text):
         # convert text into words
+        text = replace(text,'\r\n',' ')
         words = split(replace(text,'\n',' '))
         self.line.extend(words)
 
@@ -39,7 +44,6 @@ class HTML2Text(sgmllib.SGMLParser):
         page_width = self.page_width
         out_paras=[]
         for indent,line in self.lines+[(self.indent,self.line)]:
-
             i=indent*indent_width
             indent_string = i*' '
             line_width = page_width-i
@@ -53,15 +57,14 @@ class HTML2Text(sgmllib.SGMLParser):
                     out_line.append(word)
                     len_out_line = len_out_line + len_word
                 else:
-                    out_para = out_para + indent_string + join(out_line, ' ') + '\n'
+                    out_para = out_para + indent_string + join(out_line, ' ') + '\r\n'
                     out_line=[word]
                     len_out_line=len_word
 
             out_para = out_para + indent_string + join(out_line, ' ')
             out_paras.append(out_para)
 
-        self.result = join(out_paras,'\n\n')
-
+        self.result = join(out_paras,'\r\n\r\n')
 
     def mod_indent(self,i):
         self.indent = self.indent + i
@@ -75,7 +78,6 @@ class HTML2Text(sgmllib.SGMLParser):
     def unknown_starttag(self, tag, attrs):
         """ Convert HTML to something meaningful in plain text """
         tag = lower(tag)
-
         if tag not in self.ignore_tags:
             if tag[0]=='h' or tag in ['br','pre','p','hr']:
                 # insert a blank line
