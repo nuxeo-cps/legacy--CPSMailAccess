@@ -21,19 +21,27 @@
 
 A MailMessage is an individual message from the server.
 """
+from zLOG import LOG, DEBUG, INFO
+
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
-from utils import decodeHeader
+from utils import decodeHeader, parseDateString, localizeDateString
+from mimeguess import mimeGuess
 from Globals import InitializeClass
 from Products.Five import BrowserView
 from mailrenderer import MailRenderer
 from basemailview import BaseMailMessageView
 from mailpart import MailPart
-from email import message_from_string
+from mailfolderview import MailFolderView
+from email import message_from_string, Message
+from email.MIMEText import MIMEText
+from email import base64MIME
+from email import Encoders
+
 
 ## XX todo : need to add a setPart to add parts on the fly
 
@@ -55,18 +63,48 @@ class MailMessage(Folder, MailPart):
     """
     implements(IMailMessage, IMailPart)
     meta_type = "CPSMailAccess Message"
-
     uid = '' # server uid
     digest = ''
     store = None
     sync_state = False
-
     _v_volatile_parts = {}
+    read = 0
+    answered = 0
+    deleted = 0
+    flagged = 0
+    forwarded = 0
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
         self.uid = uid
         self.digest = digest
+
+    def copyFrom(self, msg):
+        """ make a copy (all but uid)
+        """
+        self.digest = msg.digest
+        self.store = msg.store
+        self.sync_state = msg.sync_state
+        self._v_volatile_parts = msg._v_volatile_parts
+        self.read = msg.read
+        self.answered = msg.answered
+        self.deleted = msg.deleted
+        self.flagged = msg.flagged
+        self.forwarded = msg.forwarded
+        self.title = msg.title
+        MailPart.copyFrom(self, msg)
+
+    def setFlag(self, flag, value):
+        """ sets a flag
+        """
+        if hasattr(self, flag):
+            setattr(self,flag,value)
+
+    def getFlag(self, flag):
+        """ gets a flag
+        """
+        return getattr(self, flag, None)
+
 
     def setSyncState(self, state=False):
         """ sets state
@@ -106,8 +144,20 @@ class MailMessage(Folder, MailPart):
 
     def getMailFolder(self):
         """ gets parent folder
+            XXX zope 2 style
         """
         return self.aq_inner.aq_parent
+
+    def getVolatilePart(self, part_name):
+        """ gets volatile part
+        """
+        # keys *are* string
+        part_name = str(part_name)
+
+        if self._v_volatile_parts.has_key(part_name):
+            return self._v_volatile_parts[part_name]
+        else:
+            return None
 
     def loadPart(self, part_num, part_content='', volatile=True):
         """ loads a part in the volatile list
@@ -125,7 +175,7 @@ class MailMessage(Folder, MailPart):
             return self._v_volatile_parts[part_num_str]
 
         if part_num < self.getPartCount():
-            part = self.getPart(part_num)
+            part = self.getPart(part_num, True)
             if part is not None:
                 return part
 
@@ -134,176 +184,91 @@ class MailMessage(Folder, MailPart):
         else:
             mailfolder = self.getMailFolder()
             connector = mailfolder._getconnector()
-
             if connector is not None:
                 part_str = connector.fetchPartial(mailfolder.server_name, self.uid,
                     part_num, 0, 0)
+            else:
+                raise NotImplementedError
 
         part = message_from_string(part_str)
+
         if volatile:
             self._v_volatile_parts[str(part_num)] = part
+            return part
         else:
             ## todo : creates a real part
-            raise 'todo create a real part here'
+            raise NotImplementedError
 
-
-
-#
-# MailMessage Views
-#
-class MailMessageView(BaseMailMessageView):
-
-    _RenderEngine = MailRenderer()
-
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-
-    def renderSubject(self):
-        """ renders the mail subject
+    def loadMessage(self, raw_msg, cache_level=2):
+        """ XXXX next we will
+            implement here partial message load
+            with part with None
         """
-        if self.context is not None:
-            subject = self.context.getHeader('Subject')
-            if subject is None:
-                subject = '?'
+        self.cache_level = cache_level
+        MailPart.loadMessage(self, raw_msg)
+
+    def detachFile(self, filename):
+        """ detach a file
+        """
+        store = self._getStore()
+
+        if not self.isMultipart():
+            # it cant' be
+            return False
+
+        part_count = self.getPartCount()
+        # we'll need to get back to a
+        # simple string payload
+        for part in range(part_count):
+            part_ob = MailPart('part_'+str(part), self, self.getPart(part))
+            infos = part_ob.getFileInfos()
+            if infos is not None:
+                if infos['filename'] == filename:
+                    # founded
+                    part_num = part
+                    return self.deletePart(part_num)
+
+    def attachFile(self, file):
+        """ attach an element
+        """
+        store = self._getStore()
+        if not self.isMultipart():
+            new_message = Message.Message()
+            new_message['From'] = self.getHeader('From')
+            new_message['To'] = self.getHeader('To')
+            new_message['Subject'] = self.getHeader('Subject')
+            new_message.add_header('Content-Type', 'multipart/mixed', boundary='BOUNDARY')
+            new_message.attach(MIMEText(store.get_payload(),
+                _encoder=Encoders.encode_7or8bit))
+            store = new_message
+            self._setStore(new_message)
+        file.seek(0)
+        try:
+            part_file = Message.Message()
+            part_file['filename'] = file.filename
+            part_file['name'] = file.filename
+            part_file['content-disposition'] = 'attachment'
+            part_file['content-transfer-encoding'] = 'base64'
+            data = file.read()
+            mime_type = mimeGuess(data)
+            data = base64MIME.encode(data)
+            part_file.set_payload(data)
+            part_file['Content-Type'] = mime_type
+            #raise str(part_file)
+        finally:
+            file.close()
+        store.attach(part_file)
+
+    def _parseFlags(self, flags):
+        """ parses given raw flags
+        """
+        flags = flags.lower()
+        for item in ('read', 'answered', 'deleted', 'flagged', 'forwarded'):
+            if flags.find(item) > -1:
+                self.setFlag(item, 1)
             else:
-                subject = decodeHeader(subject)
+                self.setFlag(item, 0)
 
-        else:
-            subject = '?'
-        return subject
-
-    def renderFromList(self):
-        """ renders the mail From
-        """
-        if self.context is not None:
-            froms = self.context.getHeader('From')
-            if froms is None:
-                froms = '?'
-            else:
-                froms = decodeHeader(froms)
-        else:
-            froms = '?'
-        return froms
-
-    def renderToList(self):
-        """ renders the mail list
-        """
-        if self.context is not None:
-            tos = self.context.getHeader('To')
-            if tos is None:
-                tos = '?'
-            else:
-                tos = decodeHeader(tos)
-        else:
-            tos = '?'
-        return tos
-
-
-    def _bodyRender(self, mail, part_index):
-        return self._RenderEngine.renderBody(mail, part_index)
-
-    def renderBody(self):
-        """ renders the mail body
-        """
-        if self.context is not None:
-            mail = self.context
-            if mail.isMultipart():
-                ### XXXXXX todo here : recursively parse multipart
-                ### messages
-                body = self._bodyRender(mail, 0)
-                # XXXXXXXXXXhere we need part parsing
-
-                #raise str(body)
-            else:
-                body = ''
-                if mail.getPartCount() > 0 :
-                    body = self._bodyRender(mail, 0)
-                else:
-                    body = ''
-        else:
-            body = ''
-        return body
-
-    def renderMailList(self):
-        """ renders mail message list given by the folder
-            XXX duplicated from folder view,
-            need to get folder's view
-            if this list does not differ from the folder's one
-        """
-        mailfolder = self.context.aq_inner.aq_parent
-
-        returned = []
-        elements = mailfolder.getMailMessages(list_folder=False,
-            list_messages=True, recursive=False)
-
-        for element in elements:
-            part = {}
-            part['object'] = element
-            part['url'] = element.absolute_url() +'/view'
-            ob_title = self.createShortTitle(element)
-            if ob_title is None or ob_title == '':
-                mail_title = '?'
-            else:
-                if IMailMessage.providedBy(element):
-                    translated_title = decodeHeader(ob_title)
-                    mail_title = translated_title
-                else:
-                    mail_title = ob_title
-            part['title'] = mail_title
-            element_from = element.getHeader('From')
-            if element_from is None:
-                element_from = '?'
-            part['From'] = decodeHeader(element_from)
-
-            element_date = element.getHeader('Date')
-            if element_date is None:
-                element_date = '?'
-            part['Date'] = decodeHeader(element_date)
-
-            returned.append(part)
-        return returned
-
-    def reply(self):
-        """ replying to a message
-            is writing a message with a given "to" "from"
-            and with a given body
-        """
-        # getting mailbox
-        # Zope 2 code, need to put in in utils
-        mailbox = self.context.getMailBox()
-
-        if self.request is not None:
-            self.request.form['came_from'] = self.context.absolute_url()
-            self.request.response.redirect('%s/editMessage.html' % mailbox.absolute_url())
-
-    def reply_all(self):
-        """ replying to a message
-            is writing a message with a given "to" "from"
-            and with a given body
-        """
-        # getting mailbox
-        # Zope 2 code, need to put in in utils
-        mailbox = self.context.getMailBox()
-
-        if self.request is not None:
-            self.request.form['came_from'] = self.context.absolute_url()
-            self.request.response.redirect('%s/editMessage.html' % mailbox.absolute_url())
-
-    def forward(self):
-        """ replying to a message
-            is writing a message with a given "to" "from"
-            and with a given body
-        """
-        # getting mailbox
-        # Zope 2 code, need to put in in utils
-        mailbox = self.context.getMailBox()
-
-        if self.request is not None:
-            self.request.form['came_from'] = self.context.absolute_url()
-            self.request.response.redirect('%s/editMessage.html' % mailbox.absolute_url())
-
-    def delete(self):
-        pass
 
 """ classic Zope 2 interface for class registering
 """
