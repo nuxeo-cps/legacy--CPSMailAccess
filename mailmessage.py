@@ -21,7 +21,6 @@
 
 A MailMessage is an individual message from the server.
 """
-
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
@@ -33,10 +32,10 @@ from email import Message as Message
 from email import message_from_string
 from email.Charset import Charset
 from email.Header import decode_header
-
 from Globals import InitializeClass
 from Products.Five import BrowserView
 from mailrenderer import MailRenderer
+from basemailview import BaseMailMessageView
 
 class MailMessage(Folder):
     """A mail message.
@@ -242,7 +241,7 @@ class MailMessage(Folder):
 #
 # MailMessage Views
 #
-class MailMessageView(BrowserView):
+class MailMessageView(BaseMailMessageView):
 
     _RenderEngine = MailRenderer()
 
@@ -261,8 +260,7 @@ class MailMessageView(BrowserView):
 
         else:
             subject = '?'
-        rendering = '<span>' + subject + '</span>'
-        return rendering
+        return subject
 
     def renderFromList(self):
         """ renders the mail From
@@ -275,8 +273,7 @@ class MailMessageView(BrowserView):
                 froms = decodeHeader(froms)
         else:
             froms = '?'
-        rendering = '<span>' + froms + '</span>'
-        return rendering
+        return froms
 
     def renderToList(self):
         """ renders the mail list
@@ -289,8 +286,8 @@ class MailMessageView(BrowserView):
                 tos = decodeHeader(tos)
         else:
             tos = '?'
-        rendering = '<span>'  + tos + '</span>'
-        return rendering
+        return tos
+
 
     def _bodyRender(self, mail, part_index):
         return self._RenderEngine.renderBody(mail, part_index)
@@ -315,25 +312,7 @@ class MailMessageView(BrowserView):
                     body = ''
         else:
             body = ''
-        rendering = '<span>' + body + '</span>'
-        return rendering
-
-
-    def render(self):
-        """ renders the whole mail
-        """
-        html = self.renderSubject()
-        #see if this is reliable
-        html = html + '\n'
-        html = html + self.renderFromList()
-        #see if this is reliable
-        html = html + '\n'
-        html = html + self.renderToList()
-        #see if this is reliable
-        html = html + '\n'
-        html = html + self.renderBody()
-        return html
-
+        return body
 
 """ classic Zope 2 interface for class registering
 """
