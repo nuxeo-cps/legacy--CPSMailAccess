@@ -29,6 +29,7 @@ from zope.app import zapi
 from zope.interface import implements
 from utils import uniqueId, makeId
 from Products.CPSMailAccess.interfaces import IMailBox
+from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.mailfolder import MailFolder, MailFolderView, \
     manage_addMailFolder
 from Products.CPSMailAccess.baseconnection import ConnectionError, BAD_LOGIN, \
@@ -39,11 +40,9 @@ from Globals import InitializeClass
 from zope.schema.fieldproperty import FieldProperty
 from Products.Five import BrowserView
 from Products.CPSMailAccess.basemailview import BaseMailMessageView
-
-### see for CMF dependency here
-#from Products.CMFCore.utils import getToolByName
+import sys
+from smtplib import SMTP
 from utils import getToolByName
-
 import thread
 
 lock = thread.allocate_lock()
@@ -77,7 +76,9 @@ class MailBox(MailFolder):
                          'connection_type' : '',
                          'HOST' : '',
                          'password' :'',
-                         'login' : ''}
+                         'login' : '',
+                         'smtp_host' : 'localhost',
+                         'smtp_port' : 25}
 
     cache_level = 1
 
@@ -126,14 +127,10 @@ class MailBox(MailFolder):
             # servers directory are delimited by dots
             dirname = directory['Name']
             dirattr = directory['Attributes']
-
             dir_fullpath = dirname.split('.')
-
             current_dir = self
-
             size = len(dir_fullpath)
             current = 1
-
             relative_name = ''
 
             for part in dir_fullpath :
@@ -247,6 +244,54 @@ class MailBox(MailFolder):
             self._v_treeview_cache = None
 
 
+    def _sendMailMessage(self, msg_from, msg_to, msg):
+        """ sends an instance of MailMessage
+        """
+        # sends it
+        smtp_host = self.connection_params['smtp_host']
+        smtp_port = self.connection_params['smtp_port']
+        server = SMTP(smtp_host, smtp_port)
+        res = server.sendmail(msg_from, msg_to, msg)
+        server.quit()
+        if res != {}:
+            # TODO: look upon failures here
+            pass
+
+    def sendMessage(self, msg_from, msg_to, msg_subject, msg_body,
+            msg_attachments):
+        """ see interface
+        """
+        # first create a message
+        # TODO: needs date
+        ob = MailMessage()
+        ob.setHeader('Subject', msg_subject)
+        ob.setHeader('From', msg_from)
+        if type(msg_to) is list:
+            ob.setHeader('To', ", ".join(msg_to))
+        else:
+            ob.setHeader('To', msg_to)
+        #XXX todo : fill body
+
+        # sends it
+        self._sendMailMessage(msg_from, msg_to, ob.getRawMessage())
+
+        # if the sent was ok, copy it to the Send folder
+        # a) on the server
+        connector = self._getconnector()
+        res = connector.writeMessage('INBOX.Sent', ob.getRawMessage())
+
+        # b) on the zodb, by synchronizing INBOX.Sent folder
+        if hasattr(self, 'INBOX'):
+            if hasattr(self.INBOX, 'Sent'):
+                self.INBOX.Sent._synchronizeFolder(return_log=False)
+            else:
+                self._syncdirs()
+                self.INBOX._synchronizeFolder(return_log=False)
+        else:
+            self._syncdirs()
+            self._synchronizeFolder(return_log=False)
+
+
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
 
@@ -278,7 +323,7 @@ class MailBoxParametersView(BrowserView):
     def addParameter(self, name):
         """ sets given parameters
         """
-        self.context[name] = ''
+        self.context.connection_params[name] = ''
         if self.request is not None:
             self.request.response.redirect('configure.html')
 
@@ -350,6 +395,28 @@ class MailBoxView(MailFolderView):
         else:
             # todo (flag view)
             return ''
+
+#
+# MailMessageEdit view
+#
+class MailMessageEdit(BrowserView):
+
+    def sendMessage(self, msg_from, msg_to, msg_subject, msg_body,
+            msg_attachments, came_from=None):
+        """ calls MailTool
+        """
+        # call mail box to send a message and to copy it to "send" section
+        result = self.context.sendMessage(msg_from, msg_to, msg_subject, msg_body,
+            msg_attachments)
+
+        if self.request is not None and came_from is not None:
+            if result:
+                self.request.response.redirect(came_from)
+            else:
+                #XXXX need to redirect to an error screen here later
+                self.request.response.redirect(came_from)
+
+
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
