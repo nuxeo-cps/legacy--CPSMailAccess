@@ -72,7 +72,6 @@ class MailMessage(MailPart):
     flagged = 0
     forwarded = 0
     draft = 0
-    onflagchanged = None
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
@@ -100,8 +99,11 @@ class MailMessage(MailPart):
             if getattr(self, flag) != value:
                 setattr(self, flag, value)
                 # call the event trigger
-                if self.onflagchanged is not None:
-                    self.onflagchanged(self, flag, value)
+                self.onFlagChanged(self, flag, value)
+
+    def onFlagChanged(self, msg, flag, value):
+        """ can be used for event triggers """
+        pass
 
     def getFlag(self, flag):
         """ gets a flag """
