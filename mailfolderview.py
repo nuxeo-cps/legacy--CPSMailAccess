@@ -33,6 +33,7 @@ class MailFolderView(BaseMailMessageView):
         """
         mailfolder = self.context
         mailbox = mailfolder.getMailBox()
+        max_folder_size = mailbox.connection_params['max_folder_size']
 
         if mailfolder.title == new_name:
             if self.request is not None:
@@ -48,10 +49,16 @@ class MailFolderView(BaseMailMessageView):
                     mailfolder.absolute_url()+'/view?edit_name=1&portal_status_message=%s' % psm)
             return
 
+        # truncates the name in case it's bigger than 20
+        if len(new_name) > max_folder_size:
+            new_name = new_name[:max_folder_size]
+
         renamed = mailfolder.rename(new_name, fullname)
 
         if self.request is not None and renamed is not None:
             folder = getFolder(mailbox, new_name)
+            if folder is None:
+                folder = mailbox
             self.request.response.redirect(folder.absolute_url()+'/view')
 
     def delete(self):
