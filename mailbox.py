@@ -417,6 +417,27 @@ class MailMessageEdit(BrowserView):
                 self.request.response.redirect(came_from)
 
 
+class MailBoxActionsView(BrowserView):
+    """ XXXX using a view to retrieve actions
+        to avoid the use of portal_actions
+        in the rendering process
+    """
+    def renderActions(self):
+        """ XXX need to use the mapping menuItems in CMFOnFive instead
+        """
+        root = self.context.absolute_url()
+
+        synchro = {'icon' : 'cpsma_getmails.png',
+                   'title' : 'synchronize',
+                   'action' : root + '/synchronize'}
+
+        write   = {'icon' : 'cpsma_writemail.png',
+                   'title' : 'write_mail',
+                   'action' : root + '/editMessage.html'}
+
+        return [synchro, write]
+
+
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
