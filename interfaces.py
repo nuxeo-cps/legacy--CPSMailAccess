@@ -152,19 +152,6 @@ class IMailBox(IContainer):
             if resync is True, resyncs with the server
         """
 
-    def setTreeViewCache(treeview):
-        """ sets a non persistent value
-            used to keep a calculated treeview
-        """
-
-    def getTreeViewCache():
-        """ retrieves the cached treeview
-        """
-
-    def clearTreeViewCache():
-        """ empty the cache
-        """
-
     def sendMessage(msg_from, msg_to, msg_subject, msg_body,
             msg_attachments):
         """ creates a message, sends it and copy it to Send folder
@@ -354,36 +341,6 @@ class IMailRenderer(Interface):
         """ renders a human readable body
             from given part
         """
-
-class IMailMessageCache(Interface):
-    """Cache used to hold temporary mail messages.
-
-    This is useful to hold deleted message during synchronization
-    when the may actually have been just moved.
-
-    This cache is keyed by a digest which is usually based on the
-    headers only.
-    """
-    def clear():
-        """Clear the message cache."""
-
-    def get(digest, default=None, remove=False):
-        """Get a message and maybe delete it from the cache."""
-
-    def __getitem__(digest):
-        """Get a message.
-
-        Returns None if the message is not present
-        """
-
-    def __setitem__(digest, message):
-        """Put a message in the cache."""
-
-    def has_key(digest):
-        """Check if a message is in the cache."""
-
-    def __len__():
-        """Get the number of messages cached."""
 
 class IMessageTraverser(ITraverser):
     """ Traversable interface, used to render
