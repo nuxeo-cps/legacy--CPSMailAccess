@@ -70,11 +70,7 @@ class MailMessageEdit(BrowserView):
         #mailbox.getCurrentEditorMessage()
 
     def sendMessage(self, msg_from, msg_subject, msg_body, came_from=None):
-        """ calls MailTool
-        """
-        """self.context.GetHTML
-        raise str(msg_body)
-        """
+        """ calls MailTool """
         # call mail box to send a message and to copy it to "send" section
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
@@ -91,7 +87,7 @@ class MailMessageEdit(BrowserView):
         msg.setHeader('From', msg_from)
         msg_body = verifyBody(msg_body)
 
-        msg.setBody(msg_body)
+        msg.setDirectBody(msg_body)
 
         # using the message instance that might have attached files already
         result, error = self.context.sendEditorsMessage()
@@ -121,15 +117,22 @@ class MailMessageEdit(BrowserView):
 
 
     def getIdentitites(self):
-        """ gives to the editor the list of current mùailbox idendities
-        """
+        """ gives to the editor the list of current mùailbox idendities """
         mailbox = self.context
         identities = mailbox.getIdentitites()
         return identities
 
+    def _identyToMsgHeader(self):
+        """ takes a directory entry to fit it in From header """
+        identities = self.getIdentitites()
+        if len(identities) > 0:
+            identity = identities[0]        # think about multi-identity later
+            return '%s <%s>' %(identity['fullname'], identity['email'])
+        else:
+            return '?'
+
     def is_editor(self):
-        """ tells if we are in editor view (hack)
-        """
+        """ tells if we are in editor view (hack) """
         if self.request is not None:
             url_elements = self.request['URL'].split('/')
             len_url = len(url_elements)
@@ -175,6 +178,7 @@ class MailMessageEdit(BrowserView):
         file.filename = cleanUploadedFileName(file.filename)
 
         msg.attachFile(file)
+
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
 
@@ -194,7 +198,7 @@ class MailMessageEdit(BrowserView):
         """
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
-        return msg.getBody()
+        return msg.getDirectBody()
 
     def getSubject(self):
         """ returns subject value
@@ -221,8 +225,7 @@ class MailMessageEdit(BrowserView):
         return res
 
     def saveMessageForm(self):
-        """ saves the form into the message
-        """
+        """ saves the form into the message """
         if self.request is None:
             return
         form = self.request.form
@@ -231,7 +234,7 @@ class MailMessageEdit(BrowserView):
 
         if form.has_key('msg_body'):
             msg_body = form['msg_body']
-            msg.setPart(0, msg_body)
+            msg.setDirectBody(msg_body)
 
         if form.has_key('msg_subject'):
             msg_subject = form['msg_subject']
@@ -322,8 +325,7 @@ class MailMessageEdit(BrowserView):
         """
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
-        identity = mailbox.getIdentitites()[0]
-        msg_from = '%s <%s>' %(identity['fullname'], identity['email'])
+        msg_from = self._identyToMsgHeader()
         msg_subject = '?'
         msg.setHeader('From', msg_from)
         msg.setHeader('Subject', msg_subject)
