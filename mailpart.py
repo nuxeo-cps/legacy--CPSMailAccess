@@ -79,9 +79,8 @@ class MailPart:
             otherwise return an empty string
         """
         store = self._getStore()
-
-        #LOG('getFileInfos', INFO,'%s %s' % (store['filename'], store.get_filename()))
-
+        if type(store) is str:
+            return None
         filename = store.get_filename() or store['filename']
         if filename is None:
             return None
@@ -282,6 +281,7 @@ class MailPart:
                 body = raw_msg[1]
             else:
                 flags = ''
+                # body shall content headers also
                 body = raw_msg
             store = message_from_string(body)
             self._setStore(store)
