@@ -405,6 +405,16 @@ class MailFolderView(BaseMailMessageView):
                 else:
                     mail_title = ob_title
             part['title'] = mail_title
+            element_from = element.getHeader('From')
+            if element_from is None:
+                element_from = '?'
+            part['From'] = decodeHeader(element_from)
+
+            element_date = element.getHeader('Date')
+            if element_date is None:
+                element_date = '?'
+            part['Date'] = decodeHeader(element_date)
+
             returned.append(part)
         return returned
 
