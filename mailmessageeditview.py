@@ -84,21 +84,31 @@ class MailMessageEdit(BrowserView):
             msg.setPart(0, sub)
 
         # using the message instance that might have attached files already
-        result = self.context.sendEditorsMessage()
+        result, error = self.context.sendEditorsMessage()
+
 
         if self.request is not None:
-            if came_from is not None and came_from !='':
-                goto = came_from
-            else:
-                if hasattr(mailbox, 'INBOX'):
-                    goto = mailbox.INBOX.absolute_url()
+            if result:
+                if came_from is not None and came_from !='':
+                    goto = came_from
                 else:
-                    goto = mailbox.absolute_url()
+                    if hasattr(mailbox, 'INBOX'):
+                        goto = mailbox.INBOX.absolute_url()
+                    else:
+                        goto = mailbox.absolute_url()
 
-            # todo : need to be externalized
-            psm = 'Message sent.'
-            self.request.response.redirect('%s/view?portal_status_message=%s'\
-                % (goto, psm))
+                # todo : need to be externalized
+                psm = 'Message sent.'
+                self.request.response.redirect('%s/view?portal_status_message=%s'\
+                    % (goto, psm))
+            else:
+                goto = mailbox.absolute_url()+'/editMessage.html'
+                psm = error
+                self.request.response.redirect('%s?portal_status_message=%s'\
+                    % (goto, psm))
+        else:
+            return result, error
+
 
     def getIdentitites(self):
         """ gives to the editor the list of current mùailbox idendities
@@ -252,9 +262,12 @@ class MailMessageEdit(BrowserView):
             type = 'To'
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
-        List = msg.getHeader(type)
-        if content not in List:
-            msg.addHeader(type, content)
+
+        mails = content.split(',')
+        for mail in mails:
+            List = msg.getHeader(type)
+            if mail not in List:
+                msg.addHeader(type, mail)
 
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
