@@ -98,7 +98,7 @@ class MailCatalog(ZCatalog):
 
         # todo : index body even for message with cache_level = 1
         if self.index_body:
-            body = msg.getBody()
+            body = msg.getDirectBody()
             if isinstance(body, str):
                 words = body.split(' ')
             else:
