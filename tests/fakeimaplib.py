@@ -46,6 +46,11 @@ class IMAP4:
     def select(self, mailbox):
         pass
 
+    def fetch(self, message_number, message_part):
+        """ XXX we willuse Data subdirectory later here
+        """
+        return 'OK', '(UID 123)'
+
     def list(self, directory='""', pattern='*'):
         """ see how to manage this to provide a list
         """
@@ -56,3 +61,5 @@ class IMAP4:
 
 class IMAP4_SSL(IMAP4):
     pass
+
+
