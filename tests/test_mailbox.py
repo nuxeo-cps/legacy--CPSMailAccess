@@ -130,12 +130,12 @@ class MailBoxTestCase(MailTestCase):
         msg = mailbox._addMessage('ok', 'ok')
         mailbox.setCurrentEditorMessage(msg)
         cached = mailbox.getCurrentEditorMessage()
-        self.assertEquals(cached, msg)
+        self.assertEquals(cached.getRawMessage(), msg.getRawMessage())
         mailbox.clearEditorMessage()
         # getCurrentEditorMessage creates a message if it does not exists
         cached = mailbox.getCurrentEditorMessage()
         self.assertNotEquals(cached, None)
-        self.assertNotEquals(cached, msg)
+        self.assertNotEquals(cached.getRawMessage(), msg.getRawMessage())
 
     def test_mailcache(self):
         mailbox = self._getMailBox()
@@ -157,9 +157,9 @@ class MailBoxTestCase(MailTestCase):
         mailbox = self._getMailBox()
 
         res = mailbox._createMailDirectoryEntry('Tarek Ziadé <tarek@ziade.org>')
-        self.assertEquals(res, {'id': 'tarekziade.org', 'fullname':
-            'Tarek Ziad\xe9', 'email': 'tarek@ziade.org', 'givenName':
-            'Tarek', 'email': 'tarek@ziade.org', 'sn': 'Ziad\xe9'})
+        self.assertEquals(res, {'id': u'tarekziade.org', 'fullname':
+            u'Tarek Ziad\xe9', 'email': u'tarek@ziade.org', 'givenName':
+            u'Tarek', 'email': u'tarek@ziade.org', 'sn': u'Ziad\xe9'})
 
         res = mailbox._createMailDirectoryEntry('Tarek <tarek@nuxeo.com>')
         self.assertEquals(res, {'fullname': u'Tarek', 'givenName': u'Tarek',

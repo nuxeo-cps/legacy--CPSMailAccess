@@ -33,7 +33,7 @@ class FakeDirectoryTool(Folder):
     def listVisibleDirectories(self):
         return ['members', 'roles', 'groups', 'addressbook']
 
-    def searchEntries(self, dir_, return_fields, **kw):
+    def searchEntries(self, dir_, return_fields=None, **kw):
 
         return [{'id': 'tarek', 'fullname' : 'Tarek Ziadé'}]
 
