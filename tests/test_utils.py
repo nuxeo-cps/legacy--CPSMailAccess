@@ -20,7 +20,7 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import ZopeTestCase
 from datetime import datetime
-from CPSMailAccess.utils import isToday, replyToBody, verifyBody
+from CPSMailAccess.utils import isToday, replyToBody, verifyBody, HTMLize
 from basetestcase import MailTestCase
 
 class UtilsTestCase(MailTestCase):
@@ -36,13 +36,39 @@ class UtilsTestCase(MailTestCase):
         body = 'voici\r\nun petit message'
         from_ = 'me'
         result = replyToBody(from_, body)
-        self.assertEquals(result, '>>> me wrote<br/>>>> voici<br/>>>> un petit message')
+        self.assertEquals(result, '> me wrote\r\n> voici\r\n> un petit message')
         result = replyToBody(from_, body, 'Yo> ')
-        self.assertEquals(result, 'Yo> me wrote<br/>Yo> voici<br/>Yo> un petit message')
+        self.assertEquals(result, 'Yo> me wrote\r\nYo> voici\r\nYo> un petit message')
 
     def test_verifyBody(self):
         msg = self.getMailInstance(2)
         verifyBody(msg)
+
+    def test_replyToBodywithHTML(self):
+        body = ['Welcome to your cps webmail, webmailtest4 !']
+        body.append('')
+        body.append('The CPS Team.')
+        body = '\r\n'.join(body)
+        result = replyToBody('Tarek Ziadé <tz@nuxeo.com>', body)
+
+        result = result.split('\r\n')
+
+        self.assertEqual(result[0], '> Tarek Ziad\xe9 <tz@nuxeo.com> wrote')
+        self.assertEqual(result[1], '> Welcome to your cps webmail, webmailtest4 !')
+        self.assertEqual(result[2], '> ')
+        self.assertEqual(result[3], '> The CPS Team.')
+
+        result = replyToBody('Tarek Ziadé <tz@nuxeo.com>', body)
+        result = HTMLize(result)
+
+        result = result.split('<br/>')
+
+        self.assertEqual(result[0], '&gt; Tarek Ziad\xe9 &lt;tz@nuxeo.com&gt; wrote')
+        self.assertEqual(result[1], '&gt; Welcome to your cps webmail, webmailtest4 !')
+        self.assertEqual(result[2], '&gt; ')
+        self.assertEqual(result[3], '&gt; The CPS Team.')
+
+
 
 
 def test_suite():
