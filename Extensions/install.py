@@ -720,67 +720,61 @@ class CPSMailAccessInstaller(CPSInstaller):
         portal = self.portal
         stool = portal.portal_schemas
         memberschema = stool.members
-        fields = memberschema.objectIds()
+        existing_fields = memberschema.objectIds()
         pmd = portal.portal_memberdata
 
-        if not 'f__webmail_enabled' in fields:
-            memberschema.addField('webmail_enabled', 'CPS Int Field',
-                                    acl_write_roles_str='Manager, Owner')
-        if not pmd.hasProperty('webmail_enabled'):
-            pmd.manage_addProperty('webmail_enabled', '', 'boolean')
+        fields = [('webmail_enabled', 'CPS Int Field', 'boolean',
+                   'Boolean Widget'),
+                  ('webmail_login', 'CPS String Field', 'string',
+                   'String Widget'),
+                  ('webmail_password', 'CPS String Field', 'string',
+                   'String Widget')]
 
-        if not 'f__webmail_password' in fields:
-            memberschema.addField('webmail_password', 'CPS String Field',
-                                    acl_write_roles_str='Manager, Owner')
-
-        if not 'f__webmail_login' in fields:
-            memberschema.addField('webmail_login', 'CPS String Field',
-                                    acl_write_roles_str='Manager, Owner')
+        for field in fields:
+            if not 'f__%s' % field[0] in existing_fields:
+                memberschema.addField(field[0], field[1],
+                                      acl_write_roles_str='Manager, Owner')
+            if not pmd.hasProperty(field[0]):
+                pmd.manage_addProperty(field[0], '', field[2])
 
 
         ltool = portal.portal_layouts
         memberlayout = ltool.members
         widgets = memberlayout.objectIds()
         layout_def = memberlayout.getLayoutDefinition()
-        if not 'w__webmail_enabled' in widgets:
-            memberlayout.addWidget('webmail_enabled', 'Boolean Widget',
-                                   fields='webmail_enabled',
-                                   label='label_webmail_enabled',
-                                   label_edit='label_webmail_enabled',
-                                   is_i18n=1,
-                                   )
-            layout_def['rows'] += [[{'ncols': 1, 'widget_id': 'webmail_enabled'}]]
 
-        if not 'w__webmail_login' in widgets:
-            memberlayout.addWidget('webmail_login', 'String Widget',
-                                   fields='webmail_login',
-                                   label='label_webmail_login',
-                                   label_edit='label_webmail_login',
-                                   is_i18n=1,
-                                   )
-            layout_def['rows'] += [[{'ncols': 1, 'widget_id': 'webmail_login'}]]
 
-        if not 'w__webmail_password' in widgets:
-            memberlayout.addWidget('webmail_password', 'Password Widget',
-                                   fields='webmail_password',
-                                   hidden_layout_modes= ('view'),
-                                   label='label_webmail_password',
-                                   label_edit='label_webmail_password',
-                                   is_i18n=1,
-                                   )
-            layout_def['rows'] += [[{'ncols': 1, 'widget_id': 'webmail_password'}]]
+        for field in fields:
+            if not 'w__%s' % field[0] in widgets:
+                memberlayout.addWidget(field[0], field[3],
+                                    fields=field[0],
+                                    label='label_%s' % field[0],
+                                    label_edit='label_%s' % field[0],
+                                    is_i18n=1,
+                                    )
+                rows = layout_def['rows']
+                exists = False
+                for row in rows:
+                    for widget in row:
+                        wid = widget['widget_id']
+                        if wid == field[0]:
+                            exists = True
+                            break
+
+                if not exists:
+                    layout_def['rows'] += [[{'ncols': 1, 'widget_id': field[0]}]]
 
         memberlayout.setLayoutDefinition(layout_def)
 
     def addWMAction(self):
-        """ adds an action in user actions
-        """
+        """ adds an action in user actions """
+        redir = '${portal_url}/portal_webmail/webmail_redirect?user_id=${member}'
+        cond = "member and member.getProperty('webmail_enabled', 0)==1"
         action = {
                 'id': 'webmail',
                 'name': '_list_mail_',
-                'action':
-         'string:${portal_url}/portal_webmail/webmail_redirect?user_id=${member}',
-                'condition': 'member',
+                'action': 'string:%s' % redir,
+                'condition': 'python: %s' % cond,
                 'permission': 'View',
                 'category': 'user',
                 }
