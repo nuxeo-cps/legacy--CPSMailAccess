@@ -28,6 +28,7 @@ from time import strftime
 from Acquisition import aq_get
 from email.Utils import fix_eols
 from html2text import HTML2Text
+from random import randrange
 
 _translation_table = string.maketrans(
     # XXX candidates: @°+=`|
@@ -290,5 +291,4 @@ def cleanUploadedFileName(filename):
         splitted = filename.split('/')
 
     return splitted[-1]
-
 
