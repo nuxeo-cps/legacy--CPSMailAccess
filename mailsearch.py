@@ -71,8 +71,7 @@ class MailCatalog(ZCatalog):
         self.uncatalog_object(url)
 
     def indexMessage(self, message):
-        """ index or reindex a mail content
-        """
+        """ index or reindex a mail content """
         # temporarely append searchable_content attribute to msg
         self.wrapMessage(message)
         try:
@@ -81,8 +80,7 @@ class MailCatalog(ZCatalog):
             self.unWrapMessage(message)
 
     def wrapMessage(self, msg):
-        """ wraps a message for indexation
-        """
+        """ wraps a message for indexation """
         searchable = []
         # indexing part of headers at this time
         indexed_headers = self.indexed_headers
