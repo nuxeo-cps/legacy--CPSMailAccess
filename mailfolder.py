@@ -154,12 +154,11 @@ class MailFolder(BTreeFolder2):
                 folders = list(r1) + list(r2)
 
             for folder in folders:
-                if list_folder:
-                    results.append(folder)
                 subresults = folder.getMailMessages(list_folder,
                                                     list_messages,
                                                     recursive)
-                results.extend(subresults)
+                if list_folder:
+                    results.extend(subresults)
 
         return results
 
