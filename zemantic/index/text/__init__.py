@@ -1,0 +1,1 @@
+from textindexwrapper import TextIndexWrapper as TextIndex

@@ -1,0 +1,28 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<body>
+   <p id="error"
+      tal:condition="request/error | nothing"
+      tal:content="request/error" />
+   <p id="message"
+      tal:condition="request/message | nothing"
+      tal:content="request/message" />
+   <div metal:fill-slot="body"
+     tal:define="subject request/subject | nothing;
+		 predicate request/predicate | nothing;
+		 obj request/obj | nothing;
+
+		 subarg python: subject and '&subject=' + subject or '';
+		 predarg python: predicate and '&predicate=' + predicate or '';
+		 objarg python: obj and '&obj=' + obj or '';
+		 clear request/clear | nothing;
+		 cleared  python: clear and view.clear();
+
+		 reset python: subject or predicate or obj;">
+
+
+      <p>Download the catalog graph in <a href="./@@graph.dot">DOT Format</a>.</p>
+      <p>Download the catalog graph in <a href="./@@graph.svg">SVG</a>.</p>
+      <p>Download the catalog graph in <a href="./@@graph.jpg">JPG</a>.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<tal:block i18n:domain="zope">
+
+  <tal:block repeat="i [1]">
+    <div tal:define="oddrow repeat/i/odd;"
+      	tal:attributes="class python:oddrow and 'content even' or 'content odd'"
+	class="even">
+      <a href="#" i18n:translate="" tal:content="i">Folder</a>
+    </div>
+  </tal:block>
+</tal:block>

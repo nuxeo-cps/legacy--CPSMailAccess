@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!-- This RDF template is used by the BookToRDFXMLAdapter to represent -->
+<!-- IBook content objects to the semantic catalog (or any resource that can parse RDF). -->
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:rss="http://purl.org/rss/1.0/"
+  xmlns="http://purl.org/dc/elements/1.1/"> 
+  <rss:item 
+    rdf:about="http://url/" 
+    tal:attributes="rdf:about options/path"
+    tal:define = "book             options/book;
+                  title            book/Title | nothing;
+		  creator          book/Creator | nothing;
+		  subject          book/Subject | nothing;
+		  description      book/Description | nothing;
+		  publisher        book/Publisher | nothing;
+		  contributors     book/Contributors | nothing;
+		  date             book/Date | nothing;
+		  creationdate     book/CreationDate | nothing;
+		  effectivedate    book/EffectiveDate | nothing;
+		  expirationdate   book/ExpirationDate | nothing;
+		  modificationdate book/ModificationDate | nothing;
+		  type             book/Type | nothing;
+		  format           book/Format | nothing;
+		  identifier       book/Identifier | nothing;
+		  language         book/Language | nothing;
+		  rights           book/Rights | nothing;">
+    <rss:link tal:content="options/path"/>
+    <title tal:condition="title" tal:content="title"/>
+    <creator tal:repeat="i creator" tal:content="i"/>
+    <subject tal:repeat="i subject" tal:content="i"/>
+    <description tal:condition="description" tal:content="description"/>
+    <publisher tal:condition="publisher" tal:content="publisher"/>
+    <contributors tal:condition="contributors" tal:content="contributors"/>
+    <date tal:condition="date" tal:content="date"/>
+    <creationdate tal:condition="creationdate" tal:content="creationdate"/>
+    <effectivedate tal:condition="effectivedate" tal:content="effectivedate"/>
+    <expirationdate tal:condition="expirationdate" tal:content="expirationdate"/>
+    <modificationdate tal:condition="modificationdate" tal:content="modificationdate"/>
+    <type tal:condition="type" tal:content="type"/>
+    <format tal:condition="format" tal:content="format"/>
+    <identifier tal:condition="identifier" tal:content="identifier"/>
+    <language tal:condition="language" tal:content="language"/>
+    <rights tal:condition="rights" tal:content="rights"/>
+  </rss:item>
+</rdf:RDF>

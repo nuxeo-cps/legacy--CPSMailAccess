@@ -1,0 +1,92 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  i18n_domain="zemantic">
+
+  <content class=".triplestore.TripleStore">
+    <implements interface="zope.app.annotation.IAttributeAnnotatable" />
+    <implements interface="zope.app.utility.interfaces.ILocalUtility" />
+    <allow interface=".interfaces.ITripleStore" />
+  </content>
+
+  <content class=".informationstore.InformationStore">
+    <implements interface="zope.app.annotation.IAttributeAnnotatable" />
+    <implements interface="zope.app.utility.interfaces.ILocalUtility" />
+    <allow interface=".interfaces.IInformationStore" />
+  </content>
+
+  <module module="rdflib.BNode">
+    <allow attributes="BNode" />
+  </module>
+
+  <module module="rdflib.URIRef">
+    <allow attributes="URIRef" />
+  </module>
+
+  <module module="rdflib.Literal">
+    <allow attributes="Literal" />
+  </module>
+
+  <module module="rdflib.Identifier">
+    <allow attributes="Identifier" />
+  </module>
+
+  <content class="rdflib.BNode.BNode">
+    <implements interface=".interfaces.IIdentifier" />
+    <allow interface=".interfaces.IIdentifier" />
+  </content>
+
+
+  <content class="rdflib.URIRef.URIRef">
+    <implements interface=".interfaces.IIdentifier" />
+    <allow interface=".interfaces.IIdentifier" />
+  </content>
+
+  <content class="rdflib.Literal.Literal">
+    <implements interface=".interfaces.IIdentifier" />
+    <allow interface=".interfaces.IIdentifier" />
+  </content>
+
+  <content class="rdflib.Identifier.Identifier">
+    <implements interface=".interfaces.IIdentifier" />
+    <allow interface=".interfaces.IIdentifier" />
+  </content>
+
+
+  <content class=".result.Result">
+    <implements interface=".interfaces.IResult" />
+    <allow interface=".interfaces.IResult" />
+  </content>
+
+  <content class=".query.Query">
+    <implements interface=".interfaces.IQuery" />
+    <allow interface=".interfaces.IQuery" />
+  </content>
+
+  <content class=".query.UnionChain">
+    <implements interface=".interfaces.IQueryChain" />
+    <allow interface=".interfaces.IQueryChain" />
+  </content>
+
+  <content class=".query.IntersectionChain">
+    <implements interface=".interfaces.IQueryChain" />
+    <allow interface=".interfaces.IQueryChain" />
+  </content>
+
+<adapter
+    factory=".triplestore.TripleStoreSized"
+    provides="zope.app.size.interfaces.ISized"
+    for=".interfaces.ITripleStore"
+    />
+
+
+<adapter
+    factory=".informationstore.InformationStore"
+    provides="zope.app.size.interfaces.ISized"
+    for=".interfaces.IInformationStore"
+    />
+
+  <include package=".browser" />
+
+</configure>
+

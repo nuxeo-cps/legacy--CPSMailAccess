@@ -1,0 +1,30 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<body>pp
+
+   <p>Schemata</p>
+
+   <p id="error"
+      tal:condition="request/error | nothing"
+      tal:content="request/error" />
+
+   <p id="message"
+      tal:condition="request/message | nothing"
+      tal:content="request/message" />
+
+   <div metal:fill-slot="body">
+
+      <p>Total Triples <span tal:content="view/getTotalTriples"/></p>
+      <p>Total Contexts <span tal:content="view/getTotalContexts"/></p>
+
+   <p>Clicking "Load Stuff" will snarf down 200+ ontologies from <a
+   href="http://schemaweb.info">schemaweb.info</a>.  This could take
+   several minutes to load the 100K+ triples.</p>
+
+   <form action="./@@loadStuff">
+     <input type="submit" name="loadStuff" value="Load Stuff">
+   </form>
+
+   </div>
+
+</body>
+</html>

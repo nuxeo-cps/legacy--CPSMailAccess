@@ -1,0 +1,134 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  i18n_domain="zemantic">
+
+  <browser:addMenuItem
+    class="zemantic.triplestore.TripleStore"
+    description="A Semantic Web Triple Store"
+    title="Triple Store"
+    permission="zope.ManageContent"
+    />
+
+
+  <browser:addMenuItem
+    class="zemantic.informationstore.InformationStore"
+    description="A Semantic Web Information Store"
+    title="Information Store"
+    permission="zope.ManageContent"
+    />
+
+  <browser:page
+    for="zemantic.interfaces.ITripleStore"
+    name="zemantic.html"
+    class=".TripleStoreView"
+    template="tstore_view.pt"
+    menu="zmi_views"
+    title="Triple Store"
+    permission="zope.ManageContent"
+    />
+
+
+<!--
+  <browser:page
+    for="zemantic.interfaces.ITripleStore"
+    name="graph.svg"
+    class=".TripleStoreView"
+    attribute="genSVG"
+    permission="zope.ManageContent"
+    />
+
+
+  <browser:page
+    for="zemantic.interfaces.ITripleStore"
+    name="graph.jpg"
+    class=".TripleStoreView"
+    attribute="genJPG"
+    permission="zope.ManageContent"
+    />
+
+
+  <browser:page
+    for="zemantic.interfaces.ITripleStore"
+    name="graph.dot"
+    class=".TripleStoreView"
+    attribute="genDOT"
+    permission="zope.ManageContent"
+    />
+
+-->
+
+  <browser:page
+    for="zemantic.interfaces.ITripleStore"
+    name="queryRDF"
+    class="zemantic.browser.TripleStoreView"
+    attribute="queryRDF"
+    permission="zope.ManageContent"
+    />
+
+  <browser:page
+    for="zemantic.interfaces.ITripleStore"
+    name="addURL"
+    class=".TripleStoreView"
+    attribute="addURL"
+    permission="zope.ManageContent"
+    />
+
+  <browser:page
+    for="zemantic.interfaces.ITripleStore"
+    name="clear"
+    class=".TripleStoreView"
+    attribute="clear"
+    permission="zope.ManageContent"
+    />
+
+
+  <browser:page
+    for="zemantic.interfaces.ITripleStore"
+    name="commonTasks"
+    class="zemantic.triplestore.TripleStore"
+    template="commontasks.pt" 
+    permission="zope.ManageContent"
+    />
+
+<!--
+
+  < browser:page
+    for="zemantic.interfaces.ITripleStore"
+    name="viz.html"
+    class=".TripleStoreView"
+    template="viz_view.pt"
+    menu="zmi_views"
+    title="Visualize"
+    permission="zope.ManageContent"
+    />
+
+-->
+
+
+  <browser:page
+    for="zemantic.interfaces.IInformationStore"
+    name="loadStuff"
+    class=".InformationStoreView"
+    attribute="loadstuff"
+    permission="zope.ManageContent"
+    />
+
+
+  <browser:page
+    for="zemantic.interfaces.IInformationStore"
+    name="information.html"
+    class=".InformationStoreView"
+    template="istore_view.pt"
+    menu="zmi_views"
+    title="InformationStore"
+    permission="zope.ManageContent"
+    />
+
+  <browser:resourceDirectory
+    name="lib"
+    permission="zope.ManageContent"
+    directory="jars/"
+    />
+
+</configure>

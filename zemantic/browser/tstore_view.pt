@@ -1,0 +1,73 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<body>
+
+   <p>Zemantic</p>
+
+   <p id="error"
+      tal:condition="request/error | nothing"
+      tal:content="request/error" />
+
+   <p id="message"
+      tal:condition="request/message | nothing"
+      tal:content="request/message" />
+
+
+   <div metal:fill-slot="body"
+     tal:define="subject request/subject | nothing;
+		 predicate request/predicate | nothing;
+		 object request/object | nothing;
+
+		 subarg python: subject and '&subject=' + view.quote(subject) or '';
+		 predarg python: predicate and '&predicate=' + view.quote(predicate) or '';
+		 objarg python: object and '&object=' + view.quote(object) or '';
+		 clear request/clear | nothing;
+		 cleared  python: clear and view.clear();
+		 reset python: subject or predicate or object;">
+
+      <p>Query Zemantic with the following terms:
+
+        <p tal:condition="subject"><b>Current Subject Term</b>: <span tal:content="subject"/> </p>
+	<p tal:condition="predicate"><b>Current Predicate Term</b>: <span tal:content="predicate"/> </p>
+	<p tal:condition="object"><b>Current Object Term</b>: <b tal:content="object"/></p>
+
+	<form action="." method="get">
+	  <select class="form-element" name=":action" 
+		  onChange="location.href='./zemantic.html?predicate='+this.options[this.selectedIndex].value">
+	    <option value="." disabled>Select Predicate...</option>
+	    <option tal:repeat="item context/uniquePredicates"
+		    tal:attributes="value python: view.quote(item.n3())"
+		    tal:content="item/n3">Select predicate...</option>
+	  </select>
+	</form>
+	<form  action="./zemantic.html" method="get">
+	  <input type="text" name="object"/>
+	</form>
+  <p tal:condition="reset"><a href="./zemantic.html">Click here to reset query</a></p>
+
+  <table border>
+    <tr>
+      <th tal:content="python: subject or 'Subject'">Subject</th>
+      <th tal:content="python: predicate  or 'Predicate'">Predicate</th>
+      <th tal:content="python: object or 'Object'">Object</th>
+    </tr>
+    <div tal:repeat="result python: view.query(subject, predicate, object)" >
+      <tr tal:define="subject   python: result.subject.n3();
+		      predicate python: result.predicate.n3();
+		      object       python: result.object.n3();
+		      sq        python: view.quote(subject);
+		      pq        python: view.quote(predicate);
+		      oq        python: view.quote(object);"
+>
+
+	<td><a tal:content="python: view.shorty(subject)" 
+	      tal:attributes="href string: ./zemantic.html?subject=$sq$predarg$objarg">subject</a></td>
+	<td><a tal:content="python: view.shorty(predicate)" 
+	      tal:attributes="href string: ./zemantic.html?predicate=$pq$subarg$objarg">predicate</a></td>
+	<td><a tal:content="python: view.shorty(object)" 
+	      tal:attributes="href string: ./zemantic.html?object=$oq$subarg$predarg">object</a></td>
+      </tr>
+    </div>
+  </table>
+</div>
+</body>
+</html>

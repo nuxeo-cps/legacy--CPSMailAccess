@@ -1,0 +1,28 @@
+<html metal:use-macro="context/@@standard_macros/view">
+<body>
+
+   <p>Schemata</p>
+
+   <p id="error"
+      tal:condition="request/error | nothing"
+      tal:content="request/error" />
+
+   <p id="message"
+      tal:condition="request/message | nothing"
+      tal:content="request/message" />
+
+
+   <div metal:fill-slot="body">
+
+      <p>Total Triples <span tal:content="view/getTotalTriples"/></p>
+      <p>Unique Subjects <span tal:content="view/getUniqueSubjectLen"/></p>
+      <p>Unique Predicates <span tal:content="view/getUniquePredicateLen"/></p>
+      <p>Unique Objects <span tal:content="view/getUniqueObjectLen"/></p>
+
+      <p tal:condition="view/getClassLen">Classes <span tal:content="view/getClassLen"/></p>
+      <p  tal:condition="view/getPropertyLen">Properties <span tal:content="view/getPropertyLen"/></p>
+
+   </div>
+
+</body>
+</html>
