@@ -204,8 +204,6 @@ class BaseMailMessageView(BrowserView):
             childview.context = child
             element = self.createTreeViewElement(child, current,
                 index, length, level, parent_index, parent_length)
-
-
             if hasattr(element, 'getFlaggedMessageList'):
                 # todo : a finir
                 list = element.getFlaggedMessageList(['read'])
@@ -218,7 +216,6 @@ class BaseMailMessageView(BrowserView):
             index += 1
 
         # sort the treeview
-
         stree = []
         for element in treeview:
             if element['short_title'] == 'Sent':
