@@ -56,11 +56,11 @@ class IMAPConnection(BaseConnection):
         params = self.connection_params
         host = params['HOST']
         if params.has_key('SSL'):
-            is_ssl = str(params['SSL']) == '1'
+            is_ssl = params['SSL'] == 1
         else:
             is_ssl = 0
         if params.has_key('PORT'):
-            port = int(params['PORT'])
+            port = params['PORT']
         else:
             if is_ssl:
                 port = IMAP4_SSL_PORT
