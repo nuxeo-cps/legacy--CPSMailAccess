@@ -44,6 +44,9 @@ class MailMessage(Folder):
     A mail message wraps an email.Message object.
     It makes its subparts accessible as subobjects.
 
+    It may be incomplete: some parts may be missing (None).
+    XXX still unclear whose responsibility it is to fetch missing parts.
+
     A MailMessage implements IMailMessage:
     >>> f = MailMessage()
     >>> IMailMessage.providedBy(f)
@@ -51,12 +54,11 @@ class MailMessage(Folder):
 
     """
     implements(IMailMessage, IMailMessageStore)
-
     meta_type = "CPSMailAccess Message"
-    uid = ''
+
+    uid = '' # server uid
     digest = ''
     message_cache = ''
-    message_cache_level = 0
     store = None
     sync_state = False
 
@@ -171,6 +173,7 @@ class MailMessage(Folder):
         else:
             payload = store.get_payload()
             payload[part_index-1].set_type(content_type)
+
 
     def getParams(self, part_index=0):
         """ See interfaces.IMailMessage

@@ -208,19 +208,6 @@ class MailFolder(BTreeFolder2):
 
         return new_folder
 
-    def findMessage(self, digest, recursive=True):
-        """ See interfaces.IMailFolder
-        """
-        # XXX see for caching here
-        message_list = self.getMailMessages(list_folder=False, list_messages=True, \
-            recursive=recursive)
-
-        for message in message_list:
-            if message.digest == digest:
-                return message
-
-        return None
-
     def findMessageByUid(self, uid):
         """ See interfaces.IMailFolder
         """
@@ -290,7 +277,7 @@ class MailFolder(BTreeFolder2):
                                           '(RFC822.HEADER)')
             digest = self._createKey(msg_headers)
 
-            msg = mail_cache.retrieveMessage(digest, remove=True)
+            msg = mail_cache.get(digest, remove=True)
 
             if msg is None:
                 # Message is not in cache
@@ -324,10 +311,11 @@ class MailFolder(BTreeFolder2):
         # and put them in the cache
         for message in zodb_messages:
             if not message.sync_state:
-                if not mail_cache.inCache(message):
+                digest = message.digest
+                if not mail_cache.has_key(digest):
                     log.append('adding %s message ni cache' % message.uid)
-                    mail_cache.putMessage(message)
-                self.manage_delObjects([message.getId(),])
+                    mail_cache[digest] = message
+                self.manage_delObjects([message.getId()])
         if return_log:
             return log
 

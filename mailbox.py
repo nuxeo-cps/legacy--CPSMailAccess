@@ -175,8 +175,9 @@ class MailBox(MailFolder):
                 # we want to put them in orphan list
                 for id, item in folder.objectItems():
                     if IMailMessage.providedBy(item):
-                        if not self.mail_cache.inCache(item):
-                            self.mail_cache.putMessage(item)
+                        digest = item.digest
+                        if not self.mail_cache.has_key(digest):
+                            self.mail_cache[digest] = item
 
                 # delete the folder (see for order problem later here)
                 parent_folder = folder.aq_inner.aq_parent

@@ -39,46 +39,64 @@ class MailCacheTestCase(ZopeTestCase):
         self.msg_key += 1
         return result
 
-    def test_putMessage(self):
-        # test putMessage
-        ob = MailCache()
+    def test_set(self):
+        cache = MailCache()
 
-        message = MailMessage()
-        message.digest = 'uniqueid'
+        m1 = MailMessage()
+        d1 = 'uniqueid'
+        cache[d1] = m1
+        self.assertEquals(len(cache), 1)
 
-        ob.putMessage(message)
+        # Set again
+        cache[d1] = m1
+        self.assertEquals(len(cache), 1)
 
-        self.assertEquals(len(ob), 1)
+        m2 = MailMessage()
+        d2 = 'otherid'
+        cache[d2] = m2
+        self.assertEquals(len(cache), 2)
 
+    def test_clear(self):
+        cache = MailCache()
 
-        not_a_message = MailCache()
-        self.assertRaises(Exception, ob.putMessage, not_a_message)
+        m1 = MailMessage()
+        d1 = 'uniqueid'
+        cache[d1] = m1
+        self.assertEquals(len(cache), 1)
 
+        self.assert_(cache.has_key(d1))
+        self.assert_(not cache.has_key('blarg'))
 
-    def test_retrieveMessage(self):
-        # testing retrieveMessage
-        ob = MailCache()
+        cache.clear()
+        self.assertEquals(len(cache), 0)
+        self.assert_(not cache.has_key(d1))
+        self.assert_(not cache.has_key('blarg'))
 
-        message = MailMessage()
-        message.digest = 'uniqueid'
+    def test_get(self):
+        cache = MailCache()
 
-        ob.putMessage(message)
+        m1= MailMessage()
+        d1 = 'uniqueid'
+        cache[d1] = m1
 
-        message = MailMessage()
-        message.digest = 'uniqueid2'
+        m2 = MailMessage()
+        d2 = 'uniqueid2'
+        cache[d2] = m2
 
-        ob.putMessage(message)
-        self.assertEquals(len(ob), 2)
+        self.assertEquals(len(cache), 2)
 
-        result = ob.retrieveMessage('uniqueid', False)
+        result = cache.get(d1, remove=False)
         self.assertNotEquals(result, None)
 
-        result = ob.retrieveMessage('uniqueid2', True)
+        result = cache.get(d2, remove=True)
         self.assertNotEquals(result, None)
-        self.assertEquals(len(ob), 1)
+        self.assertEquals(len(cache), 1)
 
-        result = ob.retrieveMessage('ssazdzuniqueid2', True)
+        result = cache.get('barf')
         self.assertEquals(result, None)
+
+        result = cache.get('barf', default=123)
+        self.assertEquals(result, 123)
 
 def test_suite():
     return unittest.TestSuite((

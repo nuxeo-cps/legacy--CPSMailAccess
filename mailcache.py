@@ -17,13 +17,17 @@
 # 02111-1307, USA.
 #
 
-from UserList import UserList
-from zope.interface import implements
-from Products.CPSMailAccess.interfaces import IMailMessageCache, IMailMessage
 import thread
+from zope.interface import implements
 
-class MailCache(UserList):
-    """ mailcache is a thread-safe list that holds temporarly messages
+from Products.CPSMailAccess.interfaces import IMailMessageCache, IMailMessage
+
+
+class MailCache(object):
+    """MailCache
+
+    This is a thread-safe datastructure that holds temporary messages.
+
     >>> f = MailCache()
     >>> IMailMessageCache.providedBy(f)
     True
@@ -32,59 +36,58 @@ class MailCache(UserList):
 
     lock = thread.allocate_lock()
 
-    def __init__(self, initlist=None):
-        UserList.__init__(self, initlist)
+    def __init__(self):
+        self.clear()
 
-    def retrieveMessage(self, digest, remove=False):
-        """ see interface
+    def clear(self):
+        """See IMailMessageCache.
         """
         self.lock.acquire()
         try:
-            for message in self:
-                if message.digest == digest:
-                    if remove:
-                        self.remove(message)
-                    return message
-            return None
+            self.cache = {}
         finally:
             self.lock.release()
 
-    def putMessage(self, message):
-        """ see interface
+    def get(self, digest, default=None, remove=False):
+        """See IMailMessageCache.
         """
         self.lock.acquire()
         try:
-            if IMailMessage.providedBy(message):
-                digest = message.digest
-                found = False
-
-                # we can't use retrieveMessage because of deadlock
-                for cached_message in self:
-                    if cached_message.digest == digest:
-                        found = True
-                        break
-
-                if not found:
-                    self.append(message)
-                else:
-                    raise Exception('%s already in the list' % message.digest)
-            else:
-                raise Exception('%s (%s) object has to implement IMailMessage' % (str(message),
-                    message.getId()))
+            message = self.cache.get(digest, default)
+            if remove and self.cache.has_key(digest):
+                del self.cache[digest]
+            return message
         finally:
             self.lock.release()
 
-    def emptyList(self):
-        """ see interface
+    def __getitem__(self, digest):
+        """See IMailMessageCache.
         """
-        for message in self:
-            self.remove(message)
-            del message
+        return self.get(digest)
 
-    def inCache(self, message):
-        """ see interface
+    def __setitem__(self, digest, message):
+        """See IMailMessageCache.
         """
-        if IMailMessage.providedBy(message):
-            msg = self.retrieveMessage(message.digest)
-            return msg is not None
-        return False
+        self.lock.acquire()
+        try:
+            self.cache[digest] = message
+        finally:
+            self.lock.release()
+
+    def has_key(self, digest):
+        """See IMailMessageCache.
+        """
+        self.lock.acquire()
+        try:
+            return self.cache.has_key(digest)
+        finally:
+            self.lock.release()
+
+    def __len__(self):
+        """See IMailMessageCache.
+        """
+        self.lock.acquire()
+        try:
+            return len(self.cache)
+        finally:
+            self.lock.release()

@@ -82,10 +82,6 @@ class IMailFolder(IContainer):
             to it and returns it
         """
 
-    def findMessage(digest, recursive=True):
-        """ finds a message by its digest
-        """
-
     def childFoldersCount():
         """ returns the number of child fodlers
         """
@@ -324,27 +320,32 @@ class IMailRenderer(Interface):
         """
 
 class IMailMessageCache(Interface):
-    """ this is useful when synchronizing email accounts
-        to make alist of orphan message that
-        can be checked before downloading
-        messages from server that might be already on
-        client side
+    """Cache used to hold temporary mail messages.
+
+    This is useful to hold deleted message during synchronization
+    when the may actually have been just moved.
+
+    This cache is keyed by a digest which is usually based on the
+    headers only.
     """
-    def retrieveMessage(uid, remove=False):
-        """ gets a message and eventually deletes it from the list
-            returns none if not in the list
-        """
-    def putMessage(message):
-        """ puts a message in the list
-            raises if message does not provide IMailMessage
+
+    def clear():
+        """Clear the message cache."""
+
+    def get(digest, default=None, remove=False):
+        """Get a message and maybe delete it from the cache."""
+
+    def __getitem__(digest):
+        """Get a message.
+
+        Returns None if the message is not present
         """
 
-    def emptyList():
-        """ empty the list and delete
-            objects
-        """
+    def __setitem__(digest, message):
+        """Put a message in the cache."""
 
-    def inCache(self):
-        """ checks if the given message is in the list
-            returns False if not *or* if the given object is not a IMailMessage
-        """
+    def has_key(digest):
+        """Check if a message is in the cache."""
+
+    def __len__():
+        """Get the number of messages cached."""

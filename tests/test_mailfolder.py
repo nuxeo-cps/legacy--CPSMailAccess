@@ -165,16 +165,6 @@ class MailFolderTestCase(ZopeTestCase):
         # for reuse
         return ob
 
-    def test_findMessage(self):
-        # testing message finder
-        ob = self.test_getMailMessagesCountRecursive()
-
-        msg = ob.findMessage('msg_223')
-        self.assertNotEquals(msg, None)
-
-        msg = ob.findMessage('XXXXX')
-        self.assertEquals(msg, None)
-
     def test_childFoldersCount(self):
         # testing child folder count
         ob = self.test_getMailMessagesCountRecursive()
