@@ -42,6 +42,12 @@ class MailMessage(Folder):
     True
 
     """
+    _properties = Folder._properties + \
+    ({'id': 'msg_uid', 'type': 'string', 'mode': 'r',
+        'label': 'Server ID'},
+     {'id': 'msg_key', 'type': 'string', 'mode': 'r',
+        'label': 'Key'})
+
     meta_type = "CPSMailAccess Message"
 
     implements(IMailMessage, IMailMessageStore, IMailMessageMapping)
@@ -50,11 +56,17 @@ class MailMessage(Folder):
     msg_key = FieldProperty(IMailMessage['msg_key'])
 
     store = None
+    sync_state = False
 
     def __init__(self, id=None, msg_uid='', msg_key='', **kw):
         Folder.__init__(self, id, **kw)
         self.msg_uid = msg_uid
         self.msg_key = msg_key
+
+    def setSyncState(self, state=False):
+        """ sets state
+        """
+        self.sync_state = state
 
     def _getStore(self):
         """
