@@ -26,7 +26,8 @@ from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
-from interfaces import IMailMessage, IMailMessageStore, IMailFolder
+from interfaces import IMailMessage, IMailMessageStore,\
+     IMailFolder, IMailBox
 from utils import decodeHeader
 from email import Message as Message
 from email import message_from_string
@@ -61,6 +62,8 @@ class MailMessage(Folder):
     sync_state = False
     cache_level = 1
     _v_volatile_parts = {}
+    persistent_parts = ()
+    parent_folder = None
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
@@ -126,6 +129,12 @@ class MailMessage(Folder):
                 part = None
 
         return part
+
+    def getParts(self):
+        """ returns parts in a sequence (or a string if monopart)
+        """
+        store = self._getStore()
+        return store.get_payload()
 
 
     def getCharset(self, part_index=0):
@@ -258,12 +267,45 @@ class MailMessage(Folder):
 
     def getMailBox(self):
         """ gets mailbox
+            XXXX might be kicked out in utils so
+            there's no dependencies with MailBox
         """
-        parent_folder = self.aq_inner.aq_parent
+        parent_folder = self.getMailFolder()
         if parent_folder is None:
             return None
         else:
-            return parent_folder.getMailBox()
+            if IMailBox.providedBy(parent_folder):
+                return parent_folder
+            else:
+                return parent_folder.getMailBox()
+
+    def getMailFolder(self):
+        """ gets parent folder
+        """
+        return self.parent_folder
+
+    def loadPart(self, part_num, volatile=True):
+        """ loads a part in the volatile list
+            or in the persistent one
+        """
+        # XXXX still unclear if this is the right place
+        # to do so
+        mailfolder = self.getMailFolder()
+        connector = mailfolder._getconnector()
+
+        if connector is not None:
+            part_str = connector.partial(mailfolder.server_name, self.uid,
+                part_num, 0, 0)
+
+            part = message_from_string(part_str)
+
+            if volatile:
+                self._v_volatile_parts[str(part_num)] = part
+            else:
+                ## todo : creates a real part
+                raise 'todo create a real part here'
+
+
 
 #
 # MailMessage Views
@@ -431,7 +473,7 @@ manage_addMailMessageForm = PageTemplateFile(
 
 def manage_addMailMessage(container, id=None, uid='',
         digest='', REQUEST=None, **kw):
-    """Add a calendar to a container (self).
+    """Add a mailmessage to a container (self).
     >>> from OFS.Folder import Folder
     >>> f = Folder()
     >>> manage_addMailMessage(f, 'message')
@@ -442,6 +484,9 @@ def manage_addMailMessage(container, id=None, uid='',
     container = container.this()
     ob = MailMessage(id, uid, digest, **kw)
     container._setObject(ob.getId(), ob)
+    ### ask florent if this is ok with
+    # zope 2 and zope 3 compatibilities
+    ob.parent_folder = container
     if IMailFolder.providedBy(container):
         container.message_count += 1
     if REQUEST is not None:
