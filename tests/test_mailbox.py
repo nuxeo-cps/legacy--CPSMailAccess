@@ -23,11 +23,15 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
+import sys
+import fakesmtplib
+if sys.modules.has_key('smtplib'):
+    del sys.modules['smtplib']
+sys.modules['smtplib'] = fakesmtplib
 
+from Products.CPSMailAccess.interfaces import IMailBox
 from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView, \
     MailMessageEdit
-from Products.CPSMailAccess.interfaces import IMailBox
-
 
 installProduct('FiveTest')
 installProduct('Five')
@@ -49,9 +53,7 @@ class MailBoxTestCase(ZopeTestCase):
     def test_MailBoxParametersView(self):
         # testing MailBoxParametersView generators
         mailbox = MailBox('mailbox')
-
         view = MailBoxParametersView(mailbox, None)
-
         self.assertNotEquals(view, None)
 
         params = view._getParameters()
@@ -71,8 +73,6 @@ class MailBoxTestCase(ZopeTestCase):
         mailbox = MailBox('mailbox')
         view = MailMessageEdit(mailbox, None)
         self.assertNotEquals(view, None)
-
-
 
 def test_suite():
     return unittest.TestSuite((

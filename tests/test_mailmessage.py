@@ -295,7 +295,7 @@ class MailMessageTestCase(ZopeTestCase):
             '?')
 
     def test_MailMessageparts(self):
-        # testing view instanciation
+        # testing message parts
         ob = self.getMailInstance(1)
         body = ob.getPart(0)
 
@@ -316,7 +316,18 @@ class MailMessageTestCase(ZopeTestCase):
 
         #self.assertEquals(body, viewbody)
 
+    def test_MailMessageViewMethods(self):
 
+        ob = self.getMailInstance(6)
+
+        # need to set up context and request object here
+        view = MailMessageView(ob, None)
+        """
+        view.reply()
+        view.reply_all()
+        view.forward()
+        view.delete()
+        """
 
 
 def test_suite():
