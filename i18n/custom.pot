@@ -1,0 +1,176 @@
+# ##########################################################
+# ################# DON'T EDIT THIS FILE! ##################
+# ##########################################################
+# Gettext Message File for default.
+# Your Name <your@email>, Year
+msgid ""
+msgstr ""
+"Project-Id-Version: default\n"
+"POT-Creation-Date: 2003-10-03 14:39default\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Your Name <your@email>\n"
+"Language-Team: Name <email>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-code: LL\n"
+"Language-name: Language\n"
+"Preferred-encodings: utf-8 latin1\n"
+"Domain: default\n"
+
+msgid "cpsma_personal_address_book"
+msgstr ""
+
+msgid "cpsma_global_address_book"
+msgstr ""
+
+msgid "cpsma_send_a_message"
+msgstr ""
+
+msgid "cpsma_mailbox_configuration"
+msgstr ""
+
+msgid "cpsma_mailbox_parameters"
+msgstr ""
+
+msgid "cpsma_mailbox_managment_tasks"
+msgstr ""
+
+msgid "cpsma_address_book"
+msgstr ""
+
+msgid "cpsma_configure_mailbox"
+msgstr ""
+
+msgid "cpsma_search_message"
+msgstr ""
+
+msgid "cpsma_write_message"
+msgstr ""
+
+msgid "cpsma_synchronize_mailbox"
+msgstr ""
+
+msgid "cpsma_js_disabled"
+msgstr ""
+
+msgid "cpsma_attach_file"
+msgstr ""
+
+msgid "cpsma_make_selection"
+msgstr ""
+
+msgid "cpsma_messages_in_clipboard"
+msgstr ""
+
+msgid "cpsma_message_in_clipboard"
+msgstr ""
+
+msgid "cpsma_subject"
+msgstr ""
+
+msgid "cpsma_to"
+msgstr ""
+
+msgid "cpsma_from"
+msgstr ""
+
+msgid "cpsma_mailbox_beeing_synchronized"
+msgstr ""
+
+msgid "cpsma_mailbox_force_synchronize"
+msgstr ""
+
+msgid "cpsma_found"
+msgstr ""
+
+msgid "cpsma_results"
+msgstr ""
+
+msgid "cpsma_no_results"
+msgstr ""
+
+msgid "cpsma_search_message_subject"
+msgstr ""
+
+msgid "cpsma_search_message_from"
+msgstr ""
+
+msgid "cpsma_search_message_cc"
+msgstr ""
+
+msgid "cpsma_search_message_contains"
+msgstr ""
+
+msgid "cpsma_search_message_date"
+msgstr ""
+
+msgid "cpsma_search_message_intersection"
+msgstr ""
+
+msgid "cpsma_results_in"
+msgstr ""
+
+msgid "cpsma_seconds"
+msgstr ""
+
+msgid "cpsma_date"
+msgstr ""
+
+msgid "cpsma_cc"
+msgstr ""
+
+msgid "cpsma_save_message"
+msgstr ""
+
+msgid "cpsma_init_editor"
+msgstr ""
+
+msgid "cpsma_empty_trash"
+msgstr ""
+
+msgid "cpsma_add_subfolder"
+msgstr ""
+
+msgid "cpsma_move_folder"
+msgstr ""
+
+msgid "cpsma_rename_folder"
+msgstr ""
+
+msgid "cpsma_delete_folder"
+msgstr ""
+
+msgid "cpsma_manage_content"
+msgstr ""
+
+msgid "cpsma_reply"
+msgstr ""
+
+msgid "cpsma_reply_all"
+msgstr ""
+
+msgid "cpsma_forward"
+msgstr ""
+
+msgid "cpsma_load_message"
+msgstr ""
+
+msgid "cpsma_delete_message"
+msgstr ""
+
+msgid "cpsma_configure"
+msgstr ""
+
+msgid "cpsma_getmessages"
+msgstr ""
+
+msgid "cpsma_search_messages"
+msgstr ""
+
+msgid "cpsma_write_message"
+msgstr ""
+
+msgid "cpsma_address_books"
+msgstr ""
