@@ -44,8 +44,13 @@
 
       <input type="hidden" tal:attributes="value came_from" name="came_from"/>
 
+      <input tal:condition="python:len(from_indentities) == 1"
+             type="hidden" tal:attributes="value python:'%s <%s>' %
+              (from_indentities[0]['fullname'],from_indentities[0]['email'])"
+             name="msg_from"/>
+
       <table width="100%" class="editor_header">
-        <tr>
+        <tr tal:condition="python:len(from_indentities) &gt; 1">
           <td class="tr_title">
            From
           </td>
