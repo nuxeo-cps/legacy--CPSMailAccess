@@ -28,7 +28,6 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
 from utils import uniqueId, makeId
-from zope.interface.common.mapping import IMapping
 from Products.CPSMailAccess.interfaces import IMailBox
 from Products.CPSMailAccess.mailfolder import MailFolder, manage_addMailFolder
 from Products.CPSMailAccess.baseconnection import ConnectionError, BAD_LOGIN, \
@@ -63,14 +62,12 @@ class MailBox(MailFolder):
     True
     >>> IMailBox.providedBy(f)
     True
-    >>> IMapping.providedBy(f)
-    True
     """
     ### XXX see if "properties" are ok in zope3/five context
     meta_type = "CPSMailAccess Box"
     portal_type = meta_type
 
-    implements(IMailBox, IMapping)
+    implements(IMailBox)
 
     # see here for security
     connection_params = {'uid' : '',
@@ -227,56 +224,9 @@ class MailBox(MailFolder):
 
         return connector
 
-    #
-    # MAPPING INTERFACE for connection params internal dict. (partial)
-    #
-    # this is used to catch property changes that might
-    # need to call some actions
-    def __len__(self):
-        """ see interface
-        """
-        return len(self.connection_params)
-
-    def __getitem__(self, name):
-        """ see interface
-        """
-        return self.connection_params[name]
-
-    def __setitem__(self, name, val):
-        """ see interface
-        """
-        found = False
-        self.connection_params[name] = val
-
-    def __delitem__(self, name):
-        """ see interface
-        """
-        del self.connection_params[name]
-
-    def has_key(self, name):
-        """ see interface
-        """
-        return self.connection_params.has_key(name)
-
-    def keys(self):
-        """ see interface
-        """
-        return self.connection_params.keys()
-
-    def values(self):
-        """ see interface
-        """
-        return self.connection_params.values()
-
-    def items(self):
-        """ see interface
-        """
-        return self.connection_params.items()
 
 
-
-""" classic Zope 2 interface for class registering
-"""
+# Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
 
 #

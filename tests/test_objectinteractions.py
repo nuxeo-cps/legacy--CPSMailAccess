@@ -66,10 +66,10 @@ class ObjectInteractionTest(ZopeTestCase):
         container = fakePortal
         manage_addMailBox(container, 'INBOX')
         mailbox = self.portal.INBOX
-        mailbox['uid'] = 'tziade'
-        mailbox['connection_type'] = 'IMAP'
-        mailbox['password'] = 'secret'
-        mailbox['HOST'] = 'localhost'
+        mailbox.connection_params['uid'] = 'tziade'
+        mailbox.connection_params['connection_type'] = 'IMAP'
+        mailbox.connection_params['password'] = 'secret'
+        mailbox.connection_params['HOST'] = 'localhost'
         return mailbox
 
 
@@ -176,7 +176,7 @@ class ObjectInteractionTest(ZopeTestCase):
         params = {'connection_type' : 'DUMMY',
             'uid' : 'tarek', 'ok': '12', 'submit' : 'ok'}
         view.setParameters(params)
-        self.assertEquals(mailbox['ok'], '12')
+        self.assertEquals(mailbox.connection_params['ok'], '12')
 
 def test_suite():
     return unittest.TestSuite((

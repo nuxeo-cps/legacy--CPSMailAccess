@@ -46,27 +46,6 @@ class MailBoxTestCase(ZopeTestCase):
         ob = MailBox('mailbox')
         self.assertNotEquals(ob, None)
 
-    def test_paramMapping(self):
-        """ testing mapping
-        """
-        mailbox = MailBox('mailbox')
-
-        mailbox['uid'] = 'tarek'
-        mailbox['connection_type'] = 'IMAP'
-        self.assertEquals('IMAP', mailbox['connection_type'])
-        self.assertEquals('tarek', mailbox['uid'])
-
-    def test_setters(self):
-        """ testing setters
-        """
-        mailbox = MailBox('mailbox')
-        params = {}
-        params['uid'] = 'tarek'
-        params['connection_type'] = 'IMAP'
-        mailbox.setParameters(params, False)
-        self.assertEquals('IMAP', mailbox['connection_type'])
-        self.assertEquals('tarek', mailbox['uid'])
-
     def test_MailBoxParametersView(self):
         """ testing MailBoxParametersView generators
         """

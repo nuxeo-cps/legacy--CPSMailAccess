@@ -64,6 +64,21 @@ class MailFolder(BTreeFolder2):
         self.setServerName(server_name)
         self.title = server_name
 
+    def getKeysSlice(self, key1, key2):
+        """Get a slice of BTreeFolder2 keys.
+
+        Returns the keys between key1 and key2.
+        """
+        return self._tree.keys(key1, key2)
+
+    def getValuesSlice(self, key1, key2):
+        """Get a slice of BTreeFolder2 objects.
+
+        Returns the objects between key1 and key2.
+        """
+        return [self[k] for k in self.getKeysSlice(key1, key2)]
+
+
     def getMailBox(self):
         """See interfaces.IMailFolder
         """
@@ -72,45 +87,43 @@ class MailFolder(BTreeFolder2):
             current = aq_inner(aq_parent(current))
         return current
 
-    def getMailMessages(self, list_folder=True, list_messages=True, recursive=False):
+    def getMailMessages(self, list_folder=True, list_messages=True,
+                        recursive=False):
         """See interfaces.IMailFolder
 
         >>> f = MailFolder()
         >>> f.getMailMessages()
         []
         """
-        providers = ()
-        result = []
+        results = []
 
         if list_folder:
-            providers = providers+ (IMailFolder,)
-
-        if list_messages:
-            providers = providers+ (IMailMessage,)
-
-        for element in self.objectValues():
-            for provider in providers :
-                if provider.providedBy(element):
-                    # see ***
-                    result.insert(0, element)
+            # use btree slices
+            r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
+            r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
+            folders = list(r1) + list(r2)
 
             if recursive:
-                if IMailFolder.providedBy(element):
-                    sub_folder = element.getMailMessages(list_folder,
-                        list_messages, recursive)
+                for folder in folders:
+                    results.append(folder)
+                    subresults = folder.getMailMessages(list_folder,
+                                                        list_messages,
+                                                        recursive)
+                    results.extend(subresults)
+            else:
+                results.extend(folders)
 
-                    # *** we rather insert messages in front
-                    # of the list, rather than extending it
-                    # for speed reasons so when elements are deleted,
-                    # a child gets found before its parent
-                    for element in sub_folder:
-                        result.insert(0, element)
+        if list_messages:
+            # use btree slices
+            r = self.getValuesSlice('.', '.\xff')
+            results.extend(list(r))
 
-        return result
+        return results
 
-    def getMailMessagesCount(self, count_folder=True, count_messages=True, recursive=False):
+    def getMailMessagesCount(self, count_folder=True,
+                             count_messages=True, recursive=False):
         """See interfaces.IMailFolder
-        examples of calls :
+
         >>> f = MailFolder()
         >>> f.getMailMessagesCount()
         0
@@ -119,25 +132,34 @@ class MailFolder(BTreeFolder2):
         >>> f.getMailMessagesCount(False, True)
         0
         """
-        providers = ()
-
-        if count_folder:
-            providers = providers+ (IMailFolder,)
-
-        if count_messages:
-            providers = providers+ (IMailMessage,)
-
         count = 0
 
-        if len(providers) > 0:
-            for element in self.objectValues():
-                for provider in providers :
-                    if provider.providedBy(element):
-                        count += 1
-                if recursive:
-                    if IMailFolder.providedBy(element):
-                        count += element.getMailMessagesCount(count_folder,
-                            count_messages, recursive)
+        if recursive:
+            # use btree slices
+            r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
+            r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
+            folders = list(r1) + list(r2)
+
+            if count_folder:
+                count += len(folders)
+
+            for folder in folders:
+                subcount = folder.getMailMessagesCount(count_folder,
+                                                       count_messages,
+                                                       recursive)
+                count += subcount
+
+        elif count_folder:
+            # use btree slices
+            r1 = self.getKeysSlice(' ', '-\xff') # '-' is before '.'
+            r2 = self.getKeysSlice('/', '\xff') # '/' is after '.'
+            count += len(r1) + len(r2)
+
+        if count_messages:
+            # use btree slices
+            r = self.getKeysSlice('.', '.\xff')
+            count += len(r)
+
         return count
 
     def getServerName(self):
