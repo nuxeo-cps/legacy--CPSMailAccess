@@ -23,6 +23,7 @@ from zope.interface import Interface
 from zope.interface.common.mapping import IMapping
 from zope.app.container.interfaces import IContained, IContainer
 from zope.app.container.constraints import ContainerTypesConstraint
+from zope.app.traversing.interfaces import ITraverser
 from zope.schema import Field, Text, List
 
 
@@ -389,3 +390,14 @@ class IMailMessageCache(Interface):
 
     def __len__():
         """Get the number of messages cached."""
+
+class IMessageTraverser(ITraverser):
+    """ Traversable interface, used to render
+        parts of a message according to the given url
+        useful to manage parts that are cached, on server, or stocked
+    """
+    def traverse(name, furtherPath):
+        """ traverses the message to render the right part
+        """
+
+
