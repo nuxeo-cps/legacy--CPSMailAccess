@@ -212,13 +212,16 @@ class MailBoxTestCase(MailTestCase):
         self.assert_(mb is not None)
 
     def test_checkIndexStack(self):
-        #checks that index stack gets filled
+        # checks that index stack gets filled
         mailbox = self._getMailBox()
         indexStack = []
         mailbox._syncdirs([{'Name' : 'INBOX'}], True, indexStack)
         self.assertEquals(len(indexStack), 1)
 
+    def test_checkIndexStack2(self):
+        mailbox = self._getMailBox()
         indexStack = []
+        mailbox.INBOX._addFolder('Trash', 'INBOX.Trash')
         mailbox._syncdirs([{'Name' : 'INBOX'}, {'Name' : 'INBOX.Trash'}], True, indexStack)
         self.assertEquals(len(indexStack), 2)
 

@@ -103,6 +103,9 @@ class MailTestCase(ZopeTestCase):
     portal = FakePortal()
     request = FakeRequest()
 
+    def setUp(self):
+        pass
+
     def getPhysicalPath(self):
         """ fake getPhysicalPath
         """
@@ -143,6 +146,8 @@ class MailTestCase(ZopeTestCase):
         mailbox._connection_params['email_adress'] = 'tz@nuxeo.com'
         mailbox._connection_params['max_folder_depth'] = 0
         mailbox._connection_params['treeview_style'] = 'lotus'
+        mailbox._connection_params['message_list_cols'] = ('From', 'Date',
+                                                           'Subject', 'Size')
         return mailbox
 
     def _msgobj(self, filename):
