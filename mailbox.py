@@ -21,14 +21,18 @@
 
 A MailBox is the root MailFolder for a given mail account
 """
-from zLOG import LOG, DEBUG, INFO
-from Globals import InitializeClass
 import sys
 import thread
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from OFS.Folder import Folder
-from Products.Five import BrowserView
+import re
 from email.Utils import parseaddr
+
+from zLOG import LOG, DEBUG, INFO
+from Globals import InitializeClass
+from OFS.Folder import Folder
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+
+from Products.Five import BrowserView
+from Products.Five.traversable import FiveTraversable
 
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
@@ -46,13 +50,9 @@ from mailfolderview import MailFolderView
 from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
 from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
-from Products.Five.traversable import FiveTraversable
 from mailsearch import MailCatalog
 from directorypicker import DirectoryPicker
 from baseconnection import has_connection
-import re
-
-
 
 class MailBoxBaseCaching(MailFolder):
     """ a mailfolder that implements
@@ -335,6 +335,7 @@ class MailBox(MailBoxBaseCaching):
 
         result, error = self._sendMailMessage(msg_from, msg_to, msg)
         if result:
+            self._givePoints(msg)
             connector = self._getconnector()
             res = connector.writeMessage('INBOX.Sent', msg.getRawMessage())
             # b) on the zodb, by synchronizing INBOX.Sent folder
@@ -533,8 +534,10 @@ class MailBox(MailBoxBaseCaching):
             return [{'email' : email, 'fullname' : fullname}]
 
     #
-    # cps apis
+    # cps directory apis
     #
+    # Will get kicked off when aq problem is resolved
+
 
     def readDirectoryValue(self, dirname, id, fields):
         """ see interface
@@ -556,7 +559,6 @@ class MailBox(MailBoxBaseCaching):
 
     def _searchEntries(self, directory_name, return_fields=None, **kw):
         """ search for entries """
-
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
         return dir_.searchEntries(return_fields, **kw)
@@ -567,7 +569,6 @@ class MailBox(MailBoxBaseCaching):
         """
     def _createEntry(self, directory_name, entry):
         """ search for entries """
-
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
         return dir_.createEntry(entry)
@@ -576,10 +577,19 @@ class MailBox(MailBoxBaseCaching):
         return self._getDirectoryPicker().createEntry(directory_name,
             entry)
         """
+    def _editEntry(self, directory_name, entry):
+        """ edit entry"""
+        portal_directories = getToolByName(self, 'portal_directories')
+        dir_ = portal_directories[directory_name]
+        return dir_.editEntry(entry)
+
+        """ acquisition pb not resolved yet
+        return self._getDirectoryPicker().createEntry(directory_name,
+            entry)
+        """
 
     def _hasEntry(self, directory_name, id):
         """ search for entries """
-
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
         return dir_.hasEntry(id)
@@ -589,12 +599,71 @@ class MailBox(MailBoxBaseCaching):
             entry)
         """
 
-    def getMailDirectoryEntries(self):
-        """ retrieves all entries """
+    def _sortDirectorySearchResult(self, entries, field, max_entries=10):
+        sorting = []
+
+        for item in entries:
+            key = item[1][field]
+            if isinstance(key, unicode):
+                key = key.encode('ISO8859-15')    # forcing str for sorting
+            sorting.append((key, item))
+
+        sorting.sort()
+        sorting.reverse()
+
+        if len(sorting) <= max_entries:
+            return [item[1] for item in sorting]
+
+        i = 0
+        res = []
+        while i <= max_entries:    # maybe souhld use reduce
+            res.append(sorting[i][1])
+            i += 1
+        return res
+
+
+    #
+    # apis that deals with directory manipulations
+    #
+
+    def getMailDirectoryEntries(self, max_entries=10):
+        """ retrieves all entries
+
+        Entries are sorted with mails_sent field
+        so the UI can show at first the buddies
+        """
         entries = []
-        adressbook = self._searchEntries('addressbook', ['fullname', 'email'])
-        private_adressbook = self._searchEntries('.addressbook', ['fullname', 'email'])
+        adressbook = self._searchEntries('addressbook',
+                                         ['fullname', 'email', 'id',
+                                          'mails_sent'])
+        adressbook = self._sortDirectorySearchResult(adressbook, 'mails_sent',
+                                                     max_entries)
+        private_adressbook = self._searchEntries('.addressbook',
+                                                  ['fullname', 'email',
+                                                   'id', 'mails_sent'])
+        private_adressbook = \
+            self._sortDirectorySearchResult(private_adressbook,
+                                            'mails_sent', max_entries)
         return [adressbook, private_adressbook]
+
+    def _givePoints(self, msg):
+        """ gives points to recipients """
+        parts = ('To', 'Cc', 'BCc')
+        for part in parts:
+            elements = msg.getHeader(part)
+            for element in elements:
+                entry = self._createMailDirectoryEntry(element)
+                id = entry['id']
+                if not self._hasEntry('.addressbook', id ):
+                    self._createEntry('.addressbook', entry)
+                else:
+                    entries = self._searchEntries('.addressbook',
+                                        ['fullname', 'email', 'id',
+                                         'mails_sent'],
+                                        **{'id' : id })
+                    entry = entries[0][1]
+                entry['mails_sent'] += 1
+                self._editEntry('.addressbook', entry)
 
     def _createMailDirectoryEntry(self, mail):
         """ translate a mail to an entry """
@@ -612,6 +681,7 @@ class MailBox(MailBoxBaseCaching):
             if len(extracted) > 1:
                 entry['sn'] = extracted[1]
         entry['id'] = makeId(email)
+        entry['mails_sent'] = 0
         return entry
 
     def addMailDirectoryEntry(self, mail, private=True):
@@ -772,7 +842,6 @@ class MailBoxParametersView(BrowserView):
         """
         box = self.context
         box.reindexMailCatalog()
-
 
         if self.request is not None:
             psm = 'All mails are indexed'
