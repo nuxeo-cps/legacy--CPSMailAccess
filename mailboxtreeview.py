@@ -22,12 +22,49 @@
     from the mail box
 """
 # XX see for dependencies
-from Products.CPSDefault.TextBox import TextBox
+from Products.CPSDefault.BaseBox import BaseBox
+from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
 
-class MailBoxTreeView(TextBox):
+from Globals import InitializeClass
 
+factory_type_information = (
+    {'id': 'MailBoxTreeView',
+     'title': 'portal_type_MailBoxTreeView_title',
+     'description': 'portal_type_MailBoxTreeView_description',
+     'meta_type': 'MailBoxTreeView',
+     'icon': 'box.png',
+     'product': 'CPSMailAccess',
+     'factory': 'manage_addMailBoxTreeview',
+     'immediate_view': 'basebox_edit_form',
+     'filter_content_types': 0,
+     'actions': ({'id': 'view',
+                  'name': 'View',
+                  'action': 'mailboxtreeview_view',
+                  'permissions': (View,)},
+                 {'id': 'edit',
+                  'name': 'Edit',
+                  'action': 'basebox_edit_form',
+                  'permissions': (ModifyPortalContent,)},
+                 ),
+     # additionnal cps stuff
+     'cps_is_portalbox': 1,
+     },
+    )
+
+class MailBoxTreeView(BaseBox):
     meta_type = 'MailBoxTreeView'
     portal_type = meta_type
 
-    def __init__(self, id, category='mailboxtreeview', **kw):
-        TextBox.__init__(self, id, category=category, **kw)
+
+InitializeClass(MailBoxTreeView)
+
+def manage_addMailBoxTreeview(dispatcher, id, REQUEST=None, **kw):
+    """Add a MailBoxTreeView Box."""
+    ob = MailBoxTreeView(id, **kw)
+    dispatcher._setObject(id, ob)
+    ob = getattr(dispatcher, id)
+    ob.manage_permission(View, ('Anonymous',), 1)
+    if REQUEST is not None:
+        url = dispatcher.DestinationURL()
+        REQUEST.RESPONSE.redirect('%s/manage_main' % url)
+
