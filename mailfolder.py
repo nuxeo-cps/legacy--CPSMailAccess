@@ -158,10 +158,14 @@ class MailFolder(Folder):
         # typically resync
         self.server_name = server_name
 
+    def getIdFromUid(self, uid):
+        """Get the Zope id used to store a message"""
+        return '.'+uid
+
     def _addMessage(self, uid, digest):
         """See interfaces.IMailFolder
         """
-        id = '.'+uid
+        id = self.getIdFromUid(uid)
         msg = MailMessage(id, uid, digest)
         self._setObject(id, msg)
         msg = self._getOb(id)
@@ -197,18 +201,17 @@ class MailFolder(Folder):
 
         return None
 
-    def findMessageByUid(self, uid, recursive=True):
+    def findMessageByUid(self, uid):
         """ See interfaces.IMailFolder
         """
-        # XXX see for caching here
-        message_list = self.getMailMessages(list_folder=False, list_messages=True, \
-            recursive=recursive)
-
-        for message in message_list:
-            if message.uid == uid:
-                return message
-
-        return None
+        id = self.getIdFromUid(uid)
+        try:
+            msg = self[id]
+        except KeyError:
+            return None
+        if not IMailMessage.providedBy(msg):
+            return None
+        return msg
 
     def childFoldersCount(self):
         """ See interfaces.IMailFolder
@@ -259,9 +262,7 @@ class MailFolder(Folder):
 
         for uid in uids:
 
-            # first of all, search message by uidwich is unique inside a folder
-            msg = self.findMessageByUid(uid, recursive=False)
-
+            msg = self.findMessageByUid(uid)
             if msg is None:
                 continue
 
