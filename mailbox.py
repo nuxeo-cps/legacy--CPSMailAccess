@@ -28,6 +28,7 @@ import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from Products.Five import BrowserView
+from email.Utils import parseaddr
 
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
@@ -48,7 +49,7 @@ from mailmessageview import MailMessageView
 from Products.Five.traversable import FiveTraversable
 from mailsearch import MailCatalog
 from directorypicker import DirectoryPicker
-
+import re
 
 has_connection = 1
 
@@ -502,7 +503,7 @@ class MailBox(MailBoxBaseCaching):
         """ returns identities
         """
         # reads in the directory entry
-        uid = self.getConnectionParams()['uid']
+        uid = self.wrapConnectionParams(self.getConnectionParams())['uid']
 
         results = self.readDirectoryValue(dirname='members',
             id=uid, fields=['email','givenName', 'sn'])
@@ -536,22 +537,84 @@ class MailBox(MailBoxBaseCaching):
 
     def getDirectoryList(self):
         """ see interface """
-
+        portal_directories = getToolByName(self, 'portal_directories')
+        return portal_directories.listVisibleDirectories()
+        """ acquisition pb not resolved yet
         return self._getDirectoryPicker().listVisibleDirectories()
+        """
 
     def _searchEntries(self, directory_name, return_fields=None, **kw):
         """ search for entries """
 
+        portal_directories = getToolByName(self, 'portal_directories')
+        dir_ = portal_directories[directory_name]
+        return dir_.searchEntries(return_fields, **kw)
+
+        """ acquisition pb not resolved yet
         return self._getDirectoryPicker().searchEntries(directory_name,
             return_fields, **kw)
+        """
+    def _createEntry(self, directory_name, entry):
+        """ search for entries """
 
+        portal_directories = getToolByName(self, 'portal_directories')
+        dir_ = portal_directories[directory_name]
+        return dir_.createEntry(entry)
+
+        """ acquisition pb not resolved yet
+        return self._getDirectoryPicker().createEntry(directory_name,
+            entry)
+        """
+
+    def _hasEntry(self, directory_name, id):
+        """ search for entries """
+
+        portal_directories = getToolByName(self, 'portal_directories')
+        dir_ = portal_directories[directory_name]
+        return dir_.hasEntry(id)
+
+        """ acquisition pb not resolved yet
+        return self._getDirectoryPicker().createEntry(directory_name,
+            entry)
+        """
 
     def getMailDirectoryEntries(self):
         """ retrieves all entries """
+        entries = []
+        adressbook = self._searchEntries('addressbook', ['fullname', 'email'])
+        private_adressbook = self._searchEntries('.addressbook', ['fullname', 'email'])
+        return [adressbook, private_adressbook]
 
-        adressbook = self._searchEntries('.addressbook')
-        private_adressbook = self._searchEntries('.addressbook')
-        return adressbook + private_adressbook
+    def _createMailDirectoryEntry(self, mail):
+        """ translate a mail to an entry """
+        entry = {}
+        parsed = parseaddr(mail)
+        fullname = decodeHeader(parsed[0])
+        email = parsed[1]
+        if re.match(r'^\w*@\w*\.\w{2,4}', email) is None:
+            return None
+        entry['fullname'] = fullname
+        entry['email'] = email
+        if fullname != '':
+            extracted = fullname.split(' ')
+            entry['givenName'] = extracted[0]
+            if len(extracted) > 1:
+                entry['sn'] = extracted[1]
+        entry['id'] = makeId(email)
+        LOG('_createMailDirectoryEntry', INFO, str(mail)+ '-->' +str(entry))
+        return entry
+
+    def addMailDirectoryEntry(self, mail, private=True):
+        """ adds an entry to one of the directory """
+        entry = self._createMailDirectoryEntry(mail)
+        if entry is None:
+            return
+        if private:
+            if not self._hasEntry('.addressbook', entry['id']):
+                self._createEntry('.addressbook', entry)
+        else:
+            if not self._hasEntry('addressbook', entry['id']):
+                self._createEntry('addressbook', entry)
 
     def wrapConnectionParams(self, params):
         """ wraps connection params """
@@ -569,7 +632,7 @@ class MailBox(MailBoxBaseCaching):
         return render
 
     def _directoryToParam(self, value):
-        """ check if a given parameter has to be taken from a directory """
+        """ check if a given parameter has to be taken from a directory """.strip()
 
         id = self.id.replace('box_', '')
         if isinstance(value, str) and value.startswith('${'):
