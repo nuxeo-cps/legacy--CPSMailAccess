@@ -234,9 +234,6 @@ class MailBox(MailFolder):
         if connector is None:
             raise ValueError(NO_CONNECTOR)
 
-        if not connector.connected:
-            connector._cache_login()
-
         return connector
 
     def setTreeViewCache(self, treeview):
@@ -398,6 +395,11 @@ class MailBox(MailFolder):
             if IMailFolder.providedBy(ob):
                 if has_connection:
                     connector.deleteMailBox(ob.server_name)
+            else:
+                folder = ob.getMailFolder()
+                if has_connection:
+                    connector.setFlags(folder.server_name,
+                        ob.uid, {'Deleted': 1})
 
         trash.manage_delObjects(ids)
         trash.message_count = 0
