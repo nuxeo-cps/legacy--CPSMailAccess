@@ -1,23 +1,35 @@
 <!-- mailaccess boxes macros -->
 <!-- $Id$ -->
 <metal:block define-macro="node">
+<div>
+  <tal:block tal:repeat="icon_ob element/front_icons">
+    <tal:block tal:condition="icon_ob/clickable">
 
-<div style="margin-left:8px;margin-top: 2px;">
+     <img tal:attributes="src icon_ob/icon;
+                          style string:cursor: hand;
+                          onclick element/javacall;
+                          id element/img_id;">
+    </tal:block>
+    <tal:block tal:condition="not:icon_ob/clickable">
+     <img tal:attributes="src icon_ob/icon">
+    </tal:block>
+  </tal:block>
   <img tal:attributes="src element/icon_name"/>
-
   <a tal:attributes="href element/url">
     <span tal:replace="element/short_title"/>
   </a>
+  <div tal:attributes="id element/short_title_id">
   <tal:block tal:repeat="element element/childs">
     <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
   </tal:block>
+  </div>
 
 </div>
 </metal:block>
 
 <metal:block define-macro="basebox_default">
   <div style="background-color: white;border:solid black 1px;
-              padding :8px;margin-bottom:10px;">
+              padding-bottom: 10px;padding-top: 10px;margin-bottom:10px;">
   <tal:block tal:define="treeview here/treeview|nothing">
     <tal:block tal:repeat="element treeview">
       <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
