@@ -4,7 +4,12 @@ div.mailHeaders {
   padding: 7px;
 }
 
-div.mailToolBarElement {
+tr.mailHeaders {
+  background-color: #e7e7e7;
+  padding: 7px;
+}
+
+td.mailToolBarElement {
   background-color: #e7e7e7;
   float: left;
   border-top: solid white 1px;
@@ -13,7 +18,7 @@ div.mailToolBarElement {
   border-left: solid white 1px;
 }
 
-div.mailToolBarInsideElement {
+td.mailToolBarInsideElement {
   background-color: transparent;
   border-right: solid #818181 1px;
   border-left: solid white 1px;
@@ -29,6 +34,7 @@ div.mailToolBarInsideElement {
 #imgMailMoreInfos {
   cursor: hand;
   vertical-align: middle;
+  float: left;
 }
 
 #maillist {
@@ -58,5 +64,101 @@ div.mailToolBarInsideElement {
 }
 
 #fullPageButton {
+  float: right;
+}
+
+tr.line_selected_odd {
+  background-color: #d6faff;
+}
+
+tr.line_selected_even {
+  background-color: #d6faff
+}
+
+
+tr.line_selectable_odd {
+  background-color: #ebebeb;
+}
+
+tr.line_selectable_even {
+  background-color: transparent;
+}
+
+tr.line_selectable_odd:hover {
+  background-color:  #c0ff75;
+
+}
+
+tr.line_selectable_even:hover {
+  background-color:  #c0ff75;
+
+}
+
+div.folder_msglist {
+}
+
+div.message_msglist {
+  overflow: scroll;
+  height: 200px;
+}
+
+td.selectable:hover {
+  background-color:  #c0ff75;
+
+}
+
+table.editor_header {
+  margin-bottom: 10px;
+  padding: 8px;
+  background-color: #e7e7e7;
+}
+
+input.message_edit_input {
+  width: 100%;
+}
+
+input.message_edit_input:hover {
+  width: 100%;
+  background-color:  #c0ff75;
+}
+
+.tr_title {
+  font-weight: bold;
+}
+
+form.attach_form {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: dotted black 1px;
+}
+
+input.attach_button {
+  width: 22px;
+  height: 22px;
+  cursor: hand;
+  background-image: url('cpsma_attach.png');
+  background-repeat: none;
+  background-position: left top;
+  border: none;
+}
+
+input.attach_name {
+  width: 100%;
+}
+
+a.close_attach_form {
+  padding: 4px;
+  float: right;
+}
+
+form.rename_form {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: dotted black 1px;
+}
+
+
+a.close_rename_form {
+  padding: 4px;
   float: right;
 }
