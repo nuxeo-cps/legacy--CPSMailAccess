@@ -43,19 +43,20 @@ class MailTool(Folder, UniqueObject):
     meta_type = "CPSMailAccess Tool"
     id = 'portal_webmail'
 
-    connection_list = ConnectionList()
+    _v_connection_list = None
 
     def __init__(self):
+        self._v_connection_list = ConnectionList()
         self._initializeConnectionList()
 
     def _initializeConnectionList(self):
         # registers all access plugins
-        registerConnections(self.connection_list)
+        registerConnections(self._v_connection_list)
 
     def listConnectionTypes(self):
         """ see IMailTool
         """
-        return self.connection_list.listConnectionTypes()
+        return self._v_connection_list.listConnectionTypes()
 
     def reloadPlugins(self):
         """ see IMailTool
@@ -65,8 +66,7 @@ class MailTool(Folder, UniqueObject):
     def getConnection(connection_type):
         """ see IMailTool
         """
-        return self.connection_list.getConnection(connection_type)
-
+        return self._v_connection_list.getConnection(connection_type)
 
 """ classic Zope 2 interface for class registering
 """
