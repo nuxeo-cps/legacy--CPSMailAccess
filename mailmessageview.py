@@ -44,8 +44,7 @@ class MailMessageView(BaseMailMessageView):
         BrowserView.__init__(self, context, request)
 
     def renderDate(self):
-        """ renders the mail date
-        """
+        """ renders the mail date """
         context = self.context
         if context is not None: # and IMailPart.providedBy(context):
             date = self.context.getHeader('Date')
@@ -59,8 +58,7 @@ class MailMessageView(BaseMailMessageView):
         return date
 
     def renderSmallDate(self):
-        """ renders the mail date
-        """
+        """ renders the mail date """
         context = self.context
         if context is not None: # and IMailPart.providedBy(context):
             date = self.context.getHeader('Date')
@@ -74,37 +72,35 @@ class MailMessageView(BaseMailMessageView):
         return date
 
     def renderSubject(self):
-        """ renders the mail subject
-        """
+        """ renders the mail subject """
         return self.renderHeaderList('Subject')
 
     def renderFromList(self):
-        """ renders the mail From
-        """
+        """ renders the mail From """
         return self.renderHeaderList('From')
 
     def renderToList(self):
-        """ renders the mail list
-        """
+        """ renders the mail list """
         return self.renderHeaderList('To')
 
     def renderCcList(self):
-        """ renders the mail list
-        """
+        """ renders the mail list """
         return self.renderHeaderList('Cc')
 
     def toCount(self):
+        """ returns number of To recipients """
         return self.headerCount('To')
 
     def ccCount(self):
+        """ returns number of Cc recipients """
         return self.headerCount('Cc')
 
     def fromCount(self):
+        """ returns number of From recipients """
         return self.headerCount('From')
 
     def headerCount(self, name):
-        """ tells the number of elements of a header
-        """
+        """ tells the number of elements of a header """
         return len(self.context.getHeader(name))
 
     def renderHeaderList(self, name):
@@ -113,25 +109,24 @@ class MailMessageView(BaseMailMessageView):
         if context is not None:# and IMailPart.providedBy(context):
             headers = self.context.getHeader(name)
             if headers == []:
-                headers = u'?'
+                return u'?'
             else:
                 decoded = []
                 for header in headers:
                     header = decodeHeader(header)
                     decoded.append(header)
-                return ' '.join(decoded)
+                return u' '.join(decoded)
         else:
-            headers = u'?'
-        return headers
+            return u'?'
 
     def _bodyRender(self, mail, part_index):
         return self._RenderEngine.renderBody(mail, part_index)
 
     def renderBody(self):
-        """ renders the mail body
-        """
+        """ renders the mail body """
         if self.context is not None:
             mail = self.context
+
             #### the user reads the messge, let's
             # sets the read message to 1
             mail.setFlag('read', 1)
@@ -152,18 +147,19 @@ class MailMessageView(BaseMailMessageView):
 
     def renderMailList(self):
         """ renders mail message list given by the folder
-            XXX duplicated from folder view,
-            need to get folder's view
-            if this list does not differ from the folder's one
+
+        XXX duplicated from folder view,
+        need to get folder's view
+        if this list does not differ from the folder's one
         """
         mailfolder = self.context.aq_inner.aq_parent
         mailfolder_view = MailFolderView(mailfolder, self.request)
         return mailfolder_view.renderMailList()
 
     def prepareReplyRecipient(self, reply_all=0, forward=0):
-        """ prepare msg recipient
-        """
-        mailbox = self.context.getMailBox()
+        """ prepare msg recipient """
+        origin_msg = self.context
+        mailbox = origin_msg.getMailBox()
         body_value = self.renderBody()
         from_value = self.renderFromList()
         reply_content = replyToBody(from_value, body_value)
@@ -172,25 +168,31 @@ class MailMessageView(BaseMailMessageView):
         msg.setPart(0, reply_content)
         recipients = []
         if not forward:
-            froms = self.context.getHeader('From')
+            froms = origin_msg.getHeader('From')
             for element in froms:
                 if element not in recipients:
                     recipients.append(element)
 
         if reply_all and not forward:
-            ccs = self.context.getHeader('Cc')
+            ccs = origin_msg.getHeader('Cc')
             for element in ccs:
                 if element not in recipients:
                     recipients.append(element)
 
         if not reply_all and forward:
             # todo : append attached files
-            pass
+            for part in range(origin_msg.getPartCount()):
+                # XX todo : avoid re-generate part on each visit : use caching
+                current_part = origin_msg.getPart(part)
+                part_ob = MailPart('part_'+str(part), origin_msg, current_part)
+                infos = part_ob.getFileInfos()
+                if infos is not None:
+                    msg.attachPart(current_part)
 
         for element in recipients:
             msg.addHeader('To', element)
 
-        subjects = self.context.getHeader('Subject')
+        subjects = origin_msg.getHeader('Subject')
         if subjects == []:
             subject = ''
         else:
@@ -202,32 +204,26 @@ class MailMessageView(BaseMailMessageView):
             msg.addHeader('Subject', 'Fwd: '+ subject)
 
         if self.request is not None:
-            came_from = self.context.absolute_url()
+            came_from = origin_msg.absolute_url()
             self.request.response.redirect('%s/editMessage.html?came_from=%s' \
                 % (mailbox.absolute_url(), came_from))
 
     def reply(self):
-        """ replying to a message
-            is writing a message with a given "to" "from"
-            and with a given body
-        """
+        """ replying to a message """
         self.prepareReplyRecipient(reply_all=0, forward=0)
 
     def reply_all(self):
-        """ replying to a message
-            is writing a message with a given "to" "from"
-            and with a given body
-        """
+        """ replying to a message """
         self.prepareReplyRecipient(reply_all=1, forward=0)
 
     def forward(self):
-        """ replying to a message is writing a message with a given "to" "from"
-            and with a given body
-        """
+        """ forwarding a message """
         self.prepareReplyRecipient(reply_all=0, forward=1)
 
     def delete(self):
-        """ "deletes" the message (copy it to the thrash indeed)
+        """ "deletes" the message
+
+        Copy it to the thrash in fact
         """
         mailbox = self.context.getMailBox()
         msg = self.context
@@ -268,7 +264,7 @@ class MailMessageView(BaseMailMessageView):
                     %(prefix, str(part+1), str(infos['filename']))
                 infos['icon'] =  mimetype_to_icon_name(infos['mimetype'])
                 title = infos['filename']
-                # TODO this should be done in jaavscript
+                # TODO this should be done in javascript
                 infos['fulltitle'] = title
                 if len(title) > 12:
                     title = title[:9] +'...'
