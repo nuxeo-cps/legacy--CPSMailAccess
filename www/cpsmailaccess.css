@@ -136,17 +136,24 @@ form.attach_form {
 }
 
 input.attach_button {
-  width: 22px;
-  height: 22px;
+  border: none;
+  padding-left: 23px;
+  padding-right: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   cursor: hand;
   background-image: url('cpsma_attach.png');
   background-repeat: no-repeat;
-  background-position: left top;
-  border: none;
+  background-position: left center;
+  font-weight: bold;
+}
+
+input.attach_button:hover {
+  background-color:  #c0ff75;
 }
 
 input.attach_name {
-  width: 100%;
+
 }
 
 a.close_attach_form {
