@@ -140,7 +140,7 @@ input.attach_button {
   height: 22px;
   cursor: hand;
   background-image: url('cpsma_attach.png');
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-position: left top;
   border: none;
 }
@@ -192,7 +192,7 @@ input.manage_copy {
   padding-bottom: 8px;
   cursor: hand;
   background-image: url('cpsma_editcopy.png');
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-position: left center;
   font-weight: bold;
 }
@@ -209,7 +209,7 @@ input.manage_cut {
   padding-bottom: 8px;
   cursor: hand;
   background-image: url('cpsma_editcut.png');
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-position: left center;
   font-weight: bold;
 }
@@ -226,7 +226,7 @@ input.manage_paste {
   padding-bottom: 8px;
   cursor: hand;
   background-image: url('cpsma_editpaste.png');
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-position: left center;
   font-weight: bold;
 }
@@ -243,7 +243,7 @@ input.manage_delete {
   padding-bottom: 8px;
   cursor: hand;
   background-image: url('cpsma_editdelete.png');
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-position: left center;
   font-weight: bold;
 }
