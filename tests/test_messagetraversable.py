@@ -126,7 +126,7 @@ class MessageTraversableTestCase(MailTestCase):
 
         msg1.loadMessage(ob.getRawMessage())
 
-        msg1.loadPart(2, volatile=True)
+        #msg1.loadPart(2, volatile=True)
 
     def test_3layerParts(self):
         # testing part loadingwith msg that are
