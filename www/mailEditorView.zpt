@@ -34,6 +34,7 @@
               <td>
                 <input class="attach_button" type="submit" name="submit"
                     value="attach"
+                    onmouseover="setCursor(this);"
                     onclick="saveMessageDatas()"/>
               </td>
             </tr>
@@ -109,11 +110,15 @@
            </div>
 
             <div class="recipient_toggler">
-                <span class="link" onclick="toggleElementVisibility('attacher')">
+                <span class="link" onmouseover="setCursor(this);"
+                      onclick="toggleElementVisibility('attacher')">
                 <img src="cma_small_attach.png"/>&#160;Attach file</span> |
-                <span class="link" onclick="toggleElementVisibility('Cc')">Cc</span> |
-                <span class="link" onclick="toggleElementVisibility('BCc')">Bcc</span> |
-                <span class="link" onclick="popupRecipientPicker()">Directories</span>
+                <span class="link" onmouseover="setCursor(this);"
+                    onclick="toggleElementVisibility('Cc')">Cc</span> |
+                <span class="link" onmouseover="setCursor(this);"
+                    onclick="toggleElementVisibility('BCc')">Bcc</span> |
+                <span class="link" onmouseover="setCursor(this);"
+                    onclick="popupRecipientPicker()">Directories</span>
             </div>
         </td>
 
