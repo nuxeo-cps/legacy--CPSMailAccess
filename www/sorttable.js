@@ -108,7 +108,7 @@ function prepareTableSorting()
   if (table)
   {
     initTable(table);
-    sortTable(2, table);
+    // sortTable(2, table);  not automatically sorting
   }
 }
 
