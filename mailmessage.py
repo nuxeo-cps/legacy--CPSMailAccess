@@ -26,7 +26,7 @@ from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
-from interfaces import IMailMessage, IMailMessageStore
+from interfaces import IMailMessage, IMailMessageStore, IMailFolder
 from utils import decodeHeader
 from email import Message as Message
 from email import message_from_string
@@ -384,6 +384,8 @@ def manage_addMailMessage(container, id=None, uid='',
     container = container.this()
     ob = MailMessage(id, uid, digest, **kw)
     container._setObject(ob.getId(), ob)
+    if IMailFolder.providedBy(container):
+        container.message_count += 1
     if REQUEST is not None:
         ob = container._getOb(ob.getId())
         REQUEST.RESPONSE.redirect(ob.absolute_url()+'/manage_main')
