@@ -20,7 +20,8 @@
 """ a few utilities
 """
 import string, re, md5
-
+from email.Header import decode_header, make_header
+from exceptions import UnicodeDecodeError
 
 
 _translation_table = string.maketrans(
@@ -73,3 +74,29 @@ def md5Hash(string):
     m = md5.new()
     m.update(string)
     return m.hexdigest()
+
+def checkOrdinalInRange(value, replacing_char='?'):
+    """ checks if ordinal are in range, otherwise changes it
+    """
+    returned_value = ''
+    for char in value:
+        if ord(char) < 128:
+            returned_value += char
+        else:
+            returned_value += replacing_char
+    return returned_value
+
+def decodeHeader(header):
+    """ decodes a mail header
+    """
+    # see here if this encoding is ok
+    decoded_header = decode_header(header)
+    try:
+        hu = make_header(decoded_header)
+        hu = hu.__unicode__()
+        hu = hu.encode('iso-8859-15', 'replace')
+    except UnicodeDecodeError:
+        hu = header
+    return checkOrdinalInRange(hu)
+
+
