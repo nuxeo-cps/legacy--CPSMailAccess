@@ -48,16 +48,46 @@ function switchFolderState(id)
 {
   node = document.getElementById(id);
   img_node = document.getElementById("img_"+id);
-
   if (node.style.display == "none")
   {
+    createCookie(id, "block");
     node.style.display = "block";
     img_node.src = img_node.src.replace("plus", "minus")
   }
   else
   {
+    createCookie(id, "none");
     node.style.display = "none";
     img_node.src = img_node.src.replace("minus", "plus")
+  }
+}
+
+/*
+  reads the cookie to set up the tree
+*/
+function controlStates()
+{
+  var name_starts_with = "tree_";
+  var ca = document.cookie.split(';');
+  for(var i=0;i < ca.length;i++)
+  {
+    var c = ca[i];
+    while (c.charAt(0)==' ')
+      c = c.substring(1,c.length);
+    if (c.indexOf(name_starts_with) == 0)
+    {
+      eq_index = c.indexOf("=");
+      cookie_name = c.substring(0, eq_index);
+      cookie_value = c.substring(eq_index+1, c.length);
+      node = document.getElementById(cookie_name);
+      if (node)
+      {
+        if (node.style.display !=  cookie_value)
+        {
+          switchFolderState(cookie_name);
+        }
+      }
+    }
   }
 }
 
@@ -259,4 +289,41 @@ function setCursor(obj)
     obj.style.cursor = "hand";
   else
     obj.style.cursor = "pointer";
+}
+
+
+/*
+    Cookies
+*/
+function createCookie(name, value, days)
+{
+  if (days)
+  {
+    var date = new Date();
+    date.setTime(date.getTime()+(days*24*60*60*1000));
+    var expires = "; expires="+date.toGMTString();
+  }
+  else
+    var expires = "";
+  document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name)
+{
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0;i < ca.length;i++)
+  {
+    var c = ca[i];
+    while (c.charAt(0)==' ')
+      c = c.substring(1,c.length);
+    if (c.indexOf(nameEQ) == 0)
+      return c.substring(nameEQ.length,c.length);
+  }
+  return null;
+}
+
+function eraseCookie(name)
+{
+  createCookie(name,"",-1);
 }
