@@ -222,13 +222,14 @@ magicNumbers = []
 
 class magicTest:
     def __init__(self, offset, t, op, value, msg, mask = None):
-        if t.count('&') > 0:
-            mask = strToNum(t[t.index('&')+1:])
-            t = t[:t.index('&')]
-        if type(offset) == type('a'):
-            self.offset = strToNum(offset)
-        else:
-            self.offset = offset
+        #if t.count('&') > 0:
+        #    mask = strToNum(t[t.index('&')+1:])
+        #    t = t[:t.index('&')]
+        #if type(offset) == type('a'):
+        #    self.offset = strToNum(offset)
+        #else:
+        #    self.offset = offset
+        self.offset = offset
         self.type = t
         self.msg = msg
         self.subTests = []
@@ -285,9 +286,9 @@ class magicTest:
 
 def _guessMime(data):
     for test in magicNumbers:
-        m = test.compare(data)
-        if m:
-            return m
+        mime = test.compare(data)
+        if mime:
+            return mime
     # no matching, magic number.
     return 'unknown'
 
