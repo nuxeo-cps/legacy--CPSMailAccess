@@ -32,7 +32,8 @@ function switchFolderState(id)
   }
 }
 
-function getLastToNode () {
+function getLastToNode ()
+{
   i = 0;
   stri = String.valueOf(i);
   node = document.getElementById('to'+String.valueOf(i));
@@ -165,4 +166,21 @@ function popupRecipientPicker()
     popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=400, height=300');
     if(!popup.opener)
         popup.opener = window;
+}
+
+function controlInputSize(ob, max_size, evt, warning_message)
+{
+  if ((evt.keyCode == 8) || (evt.keyCode == 46) ||
+      (evt.keyCode == 36) || (evt.keyCode == 37) ||
+      (evt.keyCode == 35) || (ob.value.length == 0)
+      )
+  {
+    return;
+  }
+  len = ob.value.length;
+  if (len>max_size)
+  {
+    alert(warning_message);
+    ob.value = ob.value.substring(0, max_size-1)
+  }
 }
