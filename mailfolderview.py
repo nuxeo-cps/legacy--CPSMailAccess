@@ -92,13 +92,13 @@ class MailFolderView(BaseMailMessageView):
                     mail_title = ob_title
             part['title'] = mail_title
             element_from = element.getHeader('From')
-            if element_from is None:
+            if element_from is None or element_from == []:
                 element_from = '?'
-            part['From'] = decodeHeader(element_from)
+            part['From'] = decodeHeader(element_from[0])
             element_date = element.getHeader('Date')
-            if element_date is None:
+            if element_date is None or element_date == []:
                 element_date = '?'
-            date = decodeHeader(element_date)
+            date = decodeHeader(element_date[0])
             if isToday(date):
                 part['Date'] = localizeDateString(date, 2)
             else:
@@ -134,38 +134,88 @@ class MailFolderView(BaseMailMessageView):
         if self.request is not None and new_folder is not None:
             self.request.response.redirect(new_folder.absolute_url()+'/view')
 
+    def getMessageUidAndFolder(self, id):
+        """ get message from id
+            structure : server_name.uid
+        """
+        mailfolder = self.context
+        mailbox = mailfolder.getMailBox()
+        path = id.split('.')
+        msg_id = path[len(path)-1]
+        del path[len(path)-1]
+        current = mailbox
+        for element in path:
+            childfolders = current.getchildFolders()
+            found = 0
+            for childfolder in childfolders:
+                if childfolder.title == element:
+                    found = 1
+                    break
+            if found == 1:
+                current = childfolder
+            else:
+                return None, None
+
+        msg_uid = current.getIdFromUid(msg_id)
+
+        if not hasattr(current, msg_uid):
+            return current, None
+        return current, current[msg_uid].uid
+
     def manageContent(self, action, **kw):
         """ manage content
         """
         mailfolder = self.context
+        changed = 0
+
         if self.request is not None:
             if self.request.form is not None:
                 for element in self.request.form.keys():
                     kw[element] = self.request.form[element]
 
-        if action not in('copy', 'cut', 'paste', 'delete'):
-            return
+        if action in('copy', 'cut', 'delete'):
+            mailbox = mailfolder.getMailBox()
+            msg_list = []
+            for key in kw.keys():
+                if key.startswith('msg_'):
+                    id = mailfolder.server_name +'.' + key.replace('msg_', '')
+                    msg_list.append(id)
 
-        msg_list = []
-
-        for key in kw.keys():
-            if key.startswith('msg_'):
-                msg_list.append(key.replace('msg_', ''))
-
-        if msg_list == []:
-            return
-
-        if action == 'copy':
-            raise 'todo copy selection in the cache'
-
-        if action == 'cut':
-            raise 'todo cut selection in the cache'
+            if msg_list == []:
+                return
+            if action == 'copy':
+                mailbox.fillClipboard('copy', msg_list)
+            if action == 'cut':
+                mailbox.fillClipboard('cut', msg_list)
+            if action == 'delete':
+                for msg in msg_list:
+                    folder, uid = self.getMessageUidAndFolder(msg)
+                    mailfolder.deleteMessage(uid)
+                    changed = 1
 
         if action == 'paste':
-            raise 'todo paste selection from the cache'
+            mailbox = mailfolder.getMailBox()
+            past_action, ids = mailbox.getClipboard()
+            try:
+                if past_action == 'cut':
+                    # it's a cut'n'paste
+                    for id in ids:
+                        folder, uid = self.getMessageUidAndFolder(id)
+                        try:
+                            folder.moveMessage(uid, mailfolder)
+                        except:
+                            raise str(folder) + '  '+ str(uid) + '  ' +str( id)
+                else:
+                    # it's a copy
+                    for id in ids:
+                        folder, uid = self.getMessageUidAndFolder(id)
+                        folder.copyMessage(uid, mailfolder)
+                changed = 1
+            finally:
+                mailbox.clearClipboard()
 
-        if action == 'delete':
-            raise 'todo delete selection'
+        if changed == 1:
+            mailbox.validateChanges()
 
         if self.request is not None:
             # let's go to the mailbox
