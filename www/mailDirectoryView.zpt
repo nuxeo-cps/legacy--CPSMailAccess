@@ -12,70 +12,94 @@
     </script>
   </head>
   <body tal:define="base_url here/getBaseUrl">
-    <h2>
-      add users
-    </h2>
-
- <tal:block define="publics python:here.getEntries()[0];
-                       privates python:here.getEntries()[1];">
-    <div style="width :100%">
-      <div style="clear:both"/>
-        <div style="float:left;width :49%;padding:4px;">
-          <h4><img src="cpsma_users.png"/>&#160;
-          <span i18n:translate="cpsma_personal_address_book">Personal address book</span>
-          </h4>
-          <div tal:repeat="private privates" style="margin-top:8px;">
-            <tal:block tal:define="email python:private[1]['email'];
-                                    fullname python:private[1]['fullname'];
-                                    id python:private[1]['id'];
-                                    msg_to python:'%s <%s>' % (fullname, email)">
-                <a tal:attributes="href python:'writeTo.html?msg_to='+msg_to">
-                <img src="cpsma_draft.png" title="send a message" alt="send a message"/>
-                </a>
-                &#160;
-                <a tal:attributes="href
-                    python:base_url+'/cpsdirectory_entry_view?dirname=.addressbook&id='+id;
-                    title email;
-                    alt email">
-                <span tal:replace="fullname"/>
-                </a>
-            </tal:block>
-          </div>
-          <div style="margin-top:8px">
-
-            search
-
-          </div>
-        </div>
-        <div style="float:left;width :49%">
-
-        <h4><img src="cpsma_users.png"/>&#160;
-        <span i18n:translate="cpsma_global_address_book">Global address book</span>
-        </h4>
-        <div tal:repeat="public publics" style="margin-top:8px;">
-            <tal:block tal:define="email python:public[1]['email'];
-                                    fullname python:public[1]['fullname'];
-                                    id python:public[1]['id'];
-                                    msg_to python:'%s <%s>' % (fullname, email)">
-                <a tal:attributes="href python:'writeTo.html?msg_to='+msg_to">
-                <img src="cpsma_draft.png" title="send a message" alt="send a message"/>
-                </a>
-                &#160;
-                <a tal:attributes="href
-                    python:base_url+'/cpsdirectory_entry_view?dirname=.addressbook&id='+id;
-                    title email;
-                    alt email">
-                <span tal:replace="fullname"/>
-                </a>
-            </tal:block>
-          </div>
-          <div style="margin-top:8px">
-            search
-          </div>
-        </div>
-      <div style="clear:both"/>
+  <div class="currentRecipients"
+             tal:define="containers here/getEditorContainers;
+                         Tos containers/To|python:[];
+                         Ccs containers/Cc|python:[];
+                         BCcs containers/BCc|python:[]">
+    <span style="font-size: 12">
+    <div class="recipientSection">
+      <h3>To</h3>
+      <tal:block tal:repeat="To Tos">
+        <span tal:replace="To"/>
+      </tal:block>
     </div>
+    <div class="recipientSection">
+      <h3>Cc</h3>
+      <tal:block tal:repeat="Cc Ccs">
+        <span tal:replace="Cc"/>
+      </tal:block>
+    </div>
+    <div class="recipientSection">
+      <h3>BCc</h3>
+      <tal:block tal:repeat="BCc BCcs">
+        <span tal:replace="BCc"/>
+      </tal:block>
+    </div>
+    </span>
+  </div>
+  <div style="clear: both"/>
+  <div class="adders">
+    <h4>
+      <img src="cpsma_users.png"/>&#160;add users
+    </h4>
+    <div tal:define="public python:here.getEntries()[0];
+                   private python:here.getEntries()[1]">
+
+        <span style="font-size: 12">
+        <tal:block tal:repeat="result private">
+          <tal:block tal:define="user python:result[1]">
+            <div>
+              <span tal:replace="user/fullname"/>&#160;&lt;<span tal:replace="user/email"/>&gt;
+              <a tal:attributes="href string:#">
+              To
+              </a>&#160;
+              <a tal:attributes="href string:#">
+              Cc
+              </a>&#160;
+              <a tal:attributes="href string:#">
+               Bcc
+              </a>
+            </div>
+          </tal:block>
+        </tal:block>
+
+
+        <tal:block tal:repeat="result public">
+          <tal:block tal:define="user python:result[1]">
+            <div>
+              <span tal:replace="user/fullname"/>&#160;&lt;<span tal:replace="user/email"/>&gt;
+              To Cc Bcc
+            </div>
+          </tal:block>
+        </tal:block>
+        </span>
+    </div>
+    <br/>
+    <span style="font-size: 12">
+    <form action="selectRecipients.html" m3ethod="post"
+            name="form" enctype="multipart/form-data">
+        <input type="text" tal:attributes="value request/email|nothing" name="email"/>
+
+        <input class="standalone" type="submit" value="Search more" name="search_submitted"/>
+    </form>
+    <tal:block tal:condition="request/search_submitted|python:0">
+
+        <tal:block tal:define="email request/email;
+                            results python:here.searchUsers(email)">
+            <hr/>
+            <tal:block tal:repeat="result results">
+            <tal:block tal:define="user python:result[1]">
+              <div>
+                <span tal:replace="user/fullname"/>&#160;&lt;<span tal:replace="user/email"/>&gt;
+              </div>
+            </tal:block>
+            </tal:block>
+        </tal:block>
+
     </tal:block>
+    </span>
+  </div>
 
   </body>
 </html>
