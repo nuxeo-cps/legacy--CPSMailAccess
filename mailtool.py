@@ -60,7 +60,7 @@ class MailTool(Folder): # UniqueObject
     initialized = 0
     mail_catalogs = None
     # to be externalized
-    maildeliverer = SmtpQueuedMailer('/tmp')
+    maildeliverer = SmtpQueuedMailer()
 
     def __init__(self):
         Folder.__init__(self)
