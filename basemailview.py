@@ -26,6 +26,10 @@ from utils import getToolByName
 
 class BaseMailMessageView(BrowserView):
 
+    def getBaseUrl(self):
+        portal_url = getToolByName(self.context, 'portal_url')
+        return portal_url.getPortalPath()     # check if ok behind apache
+
     def getIconName(self, short_title, selected, root):
         """ returns icon name
         """
