@@ -1,14 +1,35 @@
-+ faire des divs des glissières en javascript et conserver les tailles et les tris dans mailbox
-+ reussir à se positionner dans le scroll
-+ glisser-déposer de message dans les folders
+ajouté dernièrement (controle /refactoring ):
+
++ envois des messages
++ le cycle : création d'un message -> envoi smtp -> ajout dans INBOX/Send
+
+a) fonctionnel du plus important au moins
+
++ finaliser le mode traversable avec creation à la volée
++ en parallele du traversable, finaliser la gestion du caching
++ ajouter renommage, suppression de folder coté imap et dans l'interface
++ suppression de message
 + les reply, replyall, forward doivent pre-remplir le message
 + mettre un composant richedit pour le message
-+ créer le corps du message
-+ ajouter les actions de boite
-+ ajouter renommage, suppression de folder
-+ passer les formulaires en schemas zope 3
-+ regler le pb du japonais japanese.iso-2022-jp
-+ finaliser le mode traversable avec creation à la volée
-+ integrer les preferences persos
++ intégrer les préférences persos
 + brancher les annuaires
-+ utiliser les schemas dans les vues du types "propriété de la mailbox"
++ mettre en place les traductions
++ mettre en place la sécu
+
+b) features qui feront le "plus"
+
++ glisser-déposer de messages dans les folders
+
+c) esthétisme
+
++ faire des divs des glissières en javascript et conserver les tailles et les tris dans mailbox
++ réussir à se positionner dans le scroll
++ ajouter unevue détaché pour la création du message
+
+d) après
+
++ passer les formulaires en schemas zope 3
++ régler le pb du japonais japanese.iso-2022-jp
++ ajouter les actions de boite
++ refactorer les objets trop liés à Zope
+
