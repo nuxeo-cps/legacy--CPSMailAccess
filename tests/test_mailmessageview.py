@@ -145,8 +145,9 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_(view)
 
         body = view._bodyRender(ob, 0)
-        self.assertNotEquals(body, '')
+        self.assertEquals(body, '\n<br><font size=2 face="sans-serif">sqdsqd d</font>\n<br><font size=2 face="sans-serif">sqdsqd</font>\n<br><font size=2 face="sans-serif">qsd</font>\n<br><font size=2 face="sans-serif">sd</font>\n<br><font size=2 face="sans-serif">qs</font>\n<br><font size=2 face="sans-serif">dsqdqsdsq</font>\n<br>\n<br><font size=2 face="sans-serif"><br>\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br>\n &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>\nMme XXX  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <br>\nDirection Informatique<br>\nxxxx - SIEGE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>\nTel : X<br>\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ </font>')
         body = view.renderBody()
+
         self.assertNotEquals(body, '')
 
     def test_renderBody(self):
