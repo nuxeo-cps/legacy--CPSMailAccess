@@ -28,13 +28,6 @@ class MailSearchView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
 
-    def _getCatalog(self, user_id):
-        """ retrieves the right catalog
-        """
-        mailtool = getToolByName(self.context, 'portal_webmail')
-        cat = mailtool.mail_catalogs
-        return cat.getCatalog(user_id)
-
     def searchMessages(self, searchable_text):
         """ search the catalog
         """
@@ -44,7 +37,7 @@ class MailSearchView(BrowserView):
         box = self.context
         user_id = box.connection_params['uid']
         results = []
-        cat = self._getCatalog(user_id)
+        cat = box._getCatalog()
         msg_viewer = MailMessageView(None, self.request)
 
         if cat is not None:
