@@ -18,26 +18,63 @@
 # 02111-1307, USA.
 #
 # $Id$
+""" Zope 2 style installer
 
+"""
 from zLOG import LOG, INFO, DEBUG
-
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
-
+from Products.ExternalMethod.ExternalMethod import ExternalMethod
 from Products.CPSInstaller.CPSInstaller import CPSInstaller
+from OFS.ObjectManager import BadRequestException
 
 SKINS = {'cpsmailaccess_default' : 'Products/CPSMailAccess/skins',
-         'cpsmailaccess_icons' : 'Products/CPSMailAccess/skins/icons',}
+         'cpsmailaccess_icons'   : 'Products/CPSMailAccess/skins/icons',}
 
 class CPSMailAccessInstaller(CPSInstaller):
     """ Installer class for CPSMailAccess
     """
     product_name = 'CPSMailAccess'
 
+    def installProduct(self,ModuleName,
+        InstallModuleName='install',MethodName='install'):
+        """ creates an external method for a
+            product install and launches it
+        """
+
+        objectName ="cpsmailaccess_"+ModuleName+"_installer"
+
+        objectName = objectName.lower()
+
+
+        # Install the product
+        self.log(ModuleName+" INSTALL [ START ]")
+        installer = ExternalMethod(objectName,
+                                   "",
+                                   ModuleName+"."+InstallModuleName,
+                                   MethodName)
+        try:
+            self.portal._setObject(objectName,installer)
+
+        except BadRequestException:
+            self.log("External Method for "+ModuleName+" already installed")
+
+        method_link = getattr(self.portal,objectName)
+        method_link()
+        self.log(ModuleName+" INSTALL [ STOP ]")
+
+    def installProducts(self):
+        """ install third party products
+        """
+        self.log("Installing Kupu...")
+        self.installProduct('kupu', 'Install')
+        self.log("... done")
+
     def install(self):
         """ make the installation
         """
         self.log("Install/Update : CPSMailAccess Product")
+        self.installProducts()
         self.verifySkins(SKINS)
         self.setupPortalWebMail()
         self.setupTypes()
@@ -71,11 +108,22 @@ class CPSMailAccessInstaller(CPSInstaller):
                 'type': 'MailBoxTreeView',
                 'title': 'MailBox TreeView',
                 'provider': 'mailaccess',
-                'btype': 'default',
+                'btype': 'treeview',
                 'box_skin': 'here/box_lib/macros/wbox',
                 'slot': 'left',
-                'order': 3,
-                'display_in_subfolder': 0,
+                'order': 1,
+                'display_in_subfolder': 1,
+                'display_only_in_subfolder': 0,
+                },
+            'mailbox_actions': {
+                'type': 'MailBoxTreeView',
+                'title': 'MailBox Actions',
+                'provider': 'mailaccess',
+                'btype': 'actions',
+                'box_skin': 'here/box_lib/macros/wbox',
+                'slot': 'right',
+                'order': 1,
+                'display_in_subfolder': 1,
                 'display_only_in_subfolder': 0,
                 },
         }
