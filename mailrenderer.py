@@ -80,7 +80,7 @@ class MailRenderer:
         else:
             pcharset = 'ISO-8859-15'
 
-        if ptype in ('text/plain', 'text', 'message/rfc822'):
+        if ptype in ('text/plain', 'text', 'message/rfc822', 'text/html'):
 
             if part_cte not in ('7bit', '8bit', '', None):
                 result = StringIO(u'')
@@ -105,6 +105,7 @@ class MailRenderer:
         """ extracts the body
         """
         html = False
+
         part_type = mail['Content-type']
         part_cte =  mail['Content-transfert-encoding']
         if mail.is_multipart():
@@ -149,6 +150,7 @@ class MailRenderer:
             root_msg = mail.msg
         else:
             root_msg = mail
+
         # volatile ?
         # a sub part cannot be obtained thru the root
         # so this is only for the first level
