@@ -136,7 +136,7 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       template="www/mailMessageView.zpt"
       name="view.html"
       permission="zope2.View"
@@ -144,7 +144,7 @@
 
   <browser:page
       for=".interfaces.IMailFolder"
-      class=".mailfolder.MailFolderView"
+      class=".mailfolderview.MailFolderView"
       template="www/mailFolderView.zpt"
       name="view.html"
       permission="zope2.View"
@@ -152,7 +152,7 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       template="www/mailMessageViewAlone.zpt"
       name="view_alone"
       permission="zope2.View"
@@ -160,7 +160,7 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       template="www/mailMessageViewAlone.zpt"
       name="view_alone.html"
       permission="zope2.View"
@@ -168,7 +168,7 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       template="www/mailMessageView.zpt"
       name="view"
       permission="zope2.View"
@@ -176,7 +176,7 @@
 
   <browser:page
       for=".interfaces.IMailFolder"
-      class=".mailfolder.MailFolderView"
+      class=".mailfolderview.MailFolderView"
       template="www/mailFolderView.zpt"
       name="view"
       permission="zope2.View"
@@ -193,6 +193,15 @@
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailbox.MailBoxView"
+      name="emptyTrash"
+      attribute="emptyTrash"
+      permission="zope2.View"
+      />
+
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxView"
       template="www/mailBoxView.zpt"
       name="view.html"
       permission="zope2.View"
@@ -208,9 +217,57 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxActionsView"
+      class=".mailactions.MailActionsView"
       name="actionview"
       attribute="renderActions"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailactions.MailActionsView"
+      name="actionview"
+      attribute="renderActions"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailactions.MailActionsView"
+      name="actionview"
+      attribute="renderActions"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessageview.MailMessageView"
+      name="attached_files"
+      attribute="attached_files"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      name="is_editor"
+      attribute="is_editor"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      name="attached_files"
+      attribute="attached_files"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      name="delete_attachement"
+      attribute="detachFile"
       permission="zope2.View"
       />
 
@@ -240,7 +297,7 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       name="maillist"
       attribute="renderMailList"
       permission="zope2.View"
@@ -256,7 +313,7 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       name="treeview"
       attribute="renderTreeView"
       permission="zope2.View"
@@ -264,7 +321,7 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       name="reply"
       attribute="reply"
       permission="zope2.View"
@@ -272,7 +329,7 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       name="reply_all"
       attribute="reply_all"
       permission="zope2.View"
@@ -280,7 +337,7 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       name="forward"
       attribute="forward"
       permission="zope2.View"
@@ -288,17 +345,65 @@
 
   <browser:page
       for=".interfaces.IMailMessage"
-      class=".mailmessage.MailMessageView"
+      class=".mailmessageview.MailMessageView"
       name="delete"
       attribute="delete"
       permission="zope2.View"
       />
 
-    <browser:page
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailfolderview.MailFolderView"
+      name="delete"
+      attribute="delete"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailfolderview.MailFolderView"
+      name="rename"
+      attribute="rename"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailfolderview.MailFolderView"
+      name="addFolder"
+      attribute="addFolder"
+      permission="zope2.View"
+      />
+
+   <browser:page
       for=".interfaces.IMailBox"
       class=".mailbox.MailMessageEdit"
-      template="www/mailEditorView.zpt"
-      name="editMessage.html"
+      name="getIdentitites"
+      attribute="getIdentitites"
+      permission="zope2.View"
+      />
+
+   <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      template="www/mailAttachmentView.zpt"
+      name="attachfile_form"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      name="initMessage"
+      attribute="initMessage"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      name="attach_file"
+      attribute="attachFile"
       permission="zope2.View"
       />
 
@@ -307,6 +412,14 @@
       class=".mailbox.MailMessageEdit"
       name="sendMessage"
       attribute="sendMessage"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      template="www/mailEditorView.zpt"
+      name="editMessage.html"
       permission="zope2.View"
       />
 
@@ -320,6 +433,13 @@
   <browser:resource
     file="www/cpsmailaccess.js"
     name="cpsmailaccess.js"
-    />
+  />
+
+  <browser:page
+      for="*"
+      name="messagelist_macros"
+      permission="zope2.View"
+      template="www/messagelist_macros.zpt"
+   />
 
 </configure>
