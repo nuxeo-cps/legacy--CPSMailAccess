@@ -126,7 +126,7 @@ class MailFolder(BTreeFolder2):
         """ returns cache level
         """
         mailbox = self.getMailBox()
-        return int(mailbox.connection_params['cache_level'])
+        return int(mailbox.getConnectionParams()['cache_level'])
 
     def getMailMessages(self, list_folder=True, list_messages=True,
                         recursive=False):
