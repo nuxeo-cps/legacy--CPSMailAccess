@@ -492,28 +492,28 @@ class MailBox(MailBoxBaseCaching):
 
     def reindexMailCatalog(self):
         """ reindex the catalog """
-        cat = self._getCatalog()
+        #cat = self._getCatalog()
         zemantic_cat = self._getZemanticCatalog()
 
         mails = self.getMailMessages(list_folder=False,
             list_messages=True, recursive=True)
 
         for mail in mails:
-            cat.indexMessage(mail)
+            #cat.indexMessage(mail)
             zemantic_cat.indexMessage(mail)
 
     def indexMessage(self, msg):
         """ indexes message """
-        cat = self._getCatalog()
-        cat.indexMessage(msg)
+        #cat = self._getCatalog()
+        #cat.indexMessage(msg)
 
         zemantic_cat = self._getZemanticCatalog()
         zemantic_cat.indexMessage(msg)
 
     def unIndexMessage(self, msg):
         """ unindexes message """
-        cat = self._getCatalog()
-        cat.unIndexMessage(msg)
+        #cat = self._getCatalog()
+        #cat.unIndexMessage(msg)
 
         zemantic_cat = self._getZemanticCatalog()
         zemantic_cat.unIndexMessage(msg)
