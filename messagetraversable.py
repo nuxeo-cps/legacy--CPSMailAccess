@@ -19,9 +19,9 @@
 #
 # $Id$
 from zLOG import LOG, INFO, DEBUG
-
 from zope.interface import implements
 from Products.CPSMailAccess.mailmessage import MailMessage
+from Products.CPSMailAccess.mailpart import MailPart
 from Products.CPSMailAccess.interfaces import IMessageTraverser, IMailMessage
 from Products.Five.traversable import FiveTraversable
 from zope.component import getView, ComponentLookupError
@@ -38,27 +38,29 @@ class MessageTraversable(FiveTraversable):
     def __init__(self, subject):
         FiveTraversable.__init__(self, subject)
 
-    def adaptPart(self, part_name, raw_part):
+    def adaptPart(self, parent, part_name, raw_part):
         """ adapts part
         """
-        adapter = MailMessage(part_name)
+        adapter = MailPart(part_name, parent, raw_part)
         # XXX todo adapt cache level
-        adapter.cache_level = 2
-        adapter.loadMessage(raw_part.as_string())
+        #adapter.cache_level = 2
+        #adapter.loadMessage(raw_part.as_string())
         return adapter
 
     def fetchPart(self, message, part_num):
         """ creates a part load
         """
-        message.loadPart(part_num, volatile=True)
-        return message._v_volatile_parts[str(part_num)]
+        return message.loadPart(part_num, part_content='', volatile=True)
 
     def traverse(self, path='', request=None):
         """ traverses the message
+            XXXX traversed at this time by both
+            part and message,
+            might be splitted later in two classes
         """
         context = self._subject
         # let's scan parts
-        if IMailMessage.providedBy(context) and (path !=''):
+        if path !='':
             # first of all let's try to find a view out of the path name
             # next let's try to find the part in non persistent
             # section
@@ -67,11 +69,10 @@ class MessageTraversable(FiveTraversable):
             else:
                 cpath = path
 
-            if context._v_volatile_parts.has_key(cpath):
+            if IMailMessage.providedBy(context) and \
+                context._v_volatile_parts.has_key(cpath):
                 part = context._v_volatile_parts[cpath]
-            # next let's look in persistent parts
-            elif hasattr(context, cpath):
-                part = getattr(context, cpath)
+
             # todo : generate the part on the fly and loads it
             # in  context._v_volatile_parts
             else:
@@ -80,7 +81,8 @@ class MessageTraversable(FiveTraversable):
                 # let's try to find it
                 if context.isMultipart():
                     try:
-                        path_num = int(path)
+                        # beware that in user side, parts starts at 1
+                        path_num = int(path)-1
                     except ValueError:
                         path_num = -1
 
@@ -89,11 +91,11 @@ class MessageTraversable(FiveTraversable):
                         # part are starting at 1
                         if path_num <= part_count:
                             # it's a persistent one
-                            if path_num in context.persistent_parts:
-                              part = context.getPart(path_num-1)
+                            if path_num in context.getPersistentPartIds():
+                              part = context.getPart(path_num)
                               if part is not None:
                                   # python raw msg, let's adapt it
-                                  part = self.adaptPart(str(path_num), part)
+                                  part = self.adaptPart(context, str(path_num), part)
                               else:
                                   # we need to fetch it
                                   raise 'TODO fetch needed  + add in persistent'
@@ -101,14 +103,14 @@ class MessageTraversable(FiveTraversable):
                             else:
                                 # XXX TODO
                                 part = self.fetchPart(context, path_num)
-                                part = self.adaptPart(str(path_num), part)
+                                part = self.adaptPart(context, str(path_num), part)
                                 context._v_volatile_parts[str(path_num)] = part
                     else:
                         # let's try to find if it's a filename
                         index = 0
                         for element in context.getParts():
                             if element.get_filename() == path:
-                                part = self.adaptPart(str(index), element)
+                                part = self.adaptPart(context, str(index), element)
                             else:
                                 index +=1
             if part is not None:
