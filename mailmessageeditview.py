@@ -74,6 +74,7 @@ class MailMessageEdit(BrowserView):
 
         msg.setHeader('From', msg_from)
         msg_body = verifyBody(msg_body)
+
         # this needs to be done in an api inside mailpart
         if not msg.isMultipart():
             msg.setPart(0, msg_body)
@@ -263,10 +264,14 @@ class MailMessageEdit(BrowserView):
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
 
+        # ; and , for mail separators
+        content = content.replace(';', ',')
         mails = content.split(',')
+
         for mail in mails:
-            List = msg.getHeader(type)
-            if mail not in List:
+            mail = mail.strip()
+            list_ = msg.getHeader(type)
+            if mail not in list_:
                 msg.addHeader(type, mail)
 
         if self.request is not None:
