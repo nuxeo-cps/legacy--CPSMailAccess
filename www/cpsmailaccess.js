@@ -1,3 +1,29 @@
+/*
+(C) Copyright 2003 Nuxeo SARL <http://nuxeo.com>
+Author: Tarek Ziadé <tz@nuxeo.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 2 as published
+by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+02111-1307, USA.
+*/
+
+/* Javascript functions used for the webmail
+
+*/
+
+/*
+  changes the icon that is in front of subject header (+ or-)
+*/
 function switchMailHeadersState()
 {
   node = document.getElementById("mailMoreInfos");
@@ -15,6 +41,9 @@ function switchMailHeadersState()
   }
 }
 
+/*
+  changes the icon that is in front of a tree folder (+ or -)
+*/
 function switchFolderState(id)
 {
   node = document.getElementById(id);
@@ -32,20 +61,9 @@ function switchFolderState(id)
   }
 }
 
-function getLastToNode ()
-{
-  i = 0;
-  stri = String.valueOf(i);
-  node = document.getElementById('to'+String.valueOf(i));
-  next = node;
-  while (next)
-  {
-    node = next;
-    next = document.getElementById('to'+String.valueOf(++i));
-  }
-  return node
-}
-
+/*
+  delay
+*/
 function delay(ms)
 {
   then = new Date().getTime();
@@ -56,6 +74,9 @@ function delay(ms)
   }
 }
 
+/*
+  saves datas using XmlHttpRequest
+*/
 function saveMessageDatas()
 {
   msg_subject = document.getElementById('msg_subject');
@@ -140,6 +161,9 @@ function saveMessageDatas()
   }
 }
 
+/*
+  hidden, visible
+*/
 function toggleElementVisibility(id)
 {
   element = document.getElementById(id);
@@ -159,15 +183,22 @@ function toggleElementVisibility(id)
   }
 }
 
+/*
+  Will popup the recipient picker window
+*/
 function popupRecipientPicker()
  {
     var args;
     url = "selectRecipients.html";
-    popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=400, height=300');
+    popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=500, height=500');
     if(!popup.opener)
         popup.opener = window;
 }
 
+/*
+  Will popup a message if the text gets too big,given a max_size
+  and a message to pop
+*/
 function controlInputSize(ob, max_size, evt, warning_message)
 {
   if ((evt.keyCode == 8) || (evt.keyCode == 46) ||
@@ -181,6 +212,51 @@ function controlInputSize(ob, max_size, evt, warning_message)
   if (len>max_size)
   {
     alert(warning_message);
-    ob.value = ob.value.substring(0, max_size-1)
+    ob.value = ob.value.substring(0, max_size-1);
   }
+}
+
+/*
+  Truncate a span content, given a max size
+*/
+function truncateFields(max_size)
+{
+  elements = document.getElementsByTagName("span");
+  for (i=0; i<elements.length; i++)
+  {
+    element = elements[i];
+    if (element.className == "truncable")
+    {
+      if (element.innerHTML.length>max_size)
+      {
+        element.innerHTML = element.innerHTML.substring(0, max_size-3) + '...'
+      }
+    }
+  }
+}
+
+/*
+  Hand look whatever is the navigator
+*/
+function setCursor(obj)
+{
+  if (navigator.appName == "Microsoft Internet Explorer"
+            && navigator.appVersion.indexOf("5.") >= 0)
+  {
+    isIE = true;
+  }
+  // For some reason, appVersion returns 5 for Netscape 6.2 ...
+  else if (navigator.appName == "Netscape"
+          && navigator.appVersion.indexOf("5.") >= 0)
+  {
+    isIE = false;
+  }
+  else
+    isIE = false;
+
+  // Change the mouse cursor to hand or pointer
+  if (isIE)
+    obj.style.cursor = "hand";
+  else
+    obj.style.cursor = "pointer";
 }
