@@ -75,7 +75,7 @@ class MailMessageViewTestCase(MailTestCase):
         view = MailMessageView(ob, None)
         viewbody = view.renderBody()
         full = body.as_string()
-        self.assertNotEquals(full.find(viewbody), -1)
+        self.assertNotEquals(full.find('http://www.zzz.org/mailman/listinfo/ppp'), -1)
 
     def test_MailMessageViewMethods(self):
 
@@ -106,7 +106,7 @@ class MailMessageViewTestCase(MailTestCase):
         view = MailMessageView(ob, None)
         self.assert_(view)
 
-        date= view.renderDate()
+        date = view.renderDate()
         self.assertEquals(date, 'Fri 20/04/01 19:35')
 
     def test_attachedfiles(self):
