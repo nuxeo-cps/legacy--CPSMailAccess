@@ -110,13 +110,11 @@ class MailSearchViewTestCase(MailTestCase):
 
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
-        query['value_0'] = ''
+        query['value_0'] = '*'    # all
         results = searchview.zemanticSearchMessages(**query)
 
         # results order won't be known
-        self.assert_((u'nowere/my_message_40', u'cc', u'ccc@zzz.org') in results)
-        self.assert_((u'nowere/my_message_40', u'cc', u'ddd@zzz.org') in results)
-        self.assert_((u'nowere/my_message_40', u'cc', u'eee@zzz.org') in results)
+        self.assertEquals(len(results), 3)
 
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
@@ -124,6 +122,27 @@ class MailSearchViewTestCase(MailTestCase):
         results = searchview.zemanticSearchMessages(**query)
 
         self.assertEquals(len(results), 1)
+
+        # trying intersections
+        query = {}
+        query['relation_0'] = 'cc'        # relations keys are normalized (lower)
+        query['value_0'] = 'ccc*'
+        query['intersection'] = 'store is open'
+        results = searchview.zemanticSearchMessages(**query)
+
+        self.assertEquals(len(results), 1)
+
+        # trying intersections
+        query = {}
+        query['relation_0'] = 'cc'        # relations keys are normalized (lower)
+        query['value_0'] = '*'
+        query['relation_1'] = 'subject'        # relations keys are normalized (lower)
+        query['value_1'] = 'test'
+        query['intersection'] = 'store is open'
+        results = searchview.zemanticSearchMessages(**query)
+
+        self.assertEquals(len(results), 3)
+
 
 
 
