@@ -73,6 +73,7 @@ class MailMessage(MailPart):
     deleted = 0
     flagged = 0
     forwarded = 0
+    draft =0
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
@@ -91,6 +92,7 @@ class MailMessage(MailPart):
         self.deleted = msg.deleted
         self.flagged = msg.flagged
         self.forwarded = msg.forwarded
+        self.draft = msg.draft
         self.title = msg.title
         MailPart.copyFrom(self, msg)
 
@@ -278,7 +280,7 @@ class MailMessage(MailPart):
         """ parses given raw flags
         """
         flags = flags.lower()
-        for item in ('read', 'answered', 'deleted', 'flagged', 'forwarded'):
+        for item in ('read', 'answered', 'deleted', 'flagged', 'forwarded', 'draft'):
             if flags.find(item) > -1:
                 self.setFlag(item, 1)
             else:
