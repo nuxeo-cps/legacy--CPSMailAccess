@@ -49,17 +49,15 @@ from email import base64MIME
 
 class MailMessageEdit(BrowserView):
 
-    cc_on = 0
-    bcc_on = 0
-    attacher_on = 0
-
     def getFlag(self, name):
-        """ returns a flag
-        """
-        if hasattr(self,name):
-            return getattr(self, name)
+        """ returns a flag """
+        mailbox = self.context
+        msg = mailbox.getCurrentEditorMessage()
+        value = msg.getCachedValue(name)
+        if value is None:
+            return 0
         else:
-            return None
+            return value
 
     def initMessage(self):
         """ will init message editor
@@ -176,7 +174,7 @@ class MailMessageEdit(BrowserView):
         file.filename = cleanUploadedFileName(file.filename)
 
         msg.attachFile(file)
-
+        msg.setCachedValue('attacher_on', 0)
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
 
@@ -246,13 +244,13 @@ class MailMessageEdit(BrowserView):
                 self.addRecipient(msg_body, id)
 
         if form.has_key('cc_on'):
-            self.cc_on = int(form['cc_on'])
+            msg.setCachedValue('cc_on', int(form['cc_on']))
 
         if form.has_key('bcc_on'):
-            self.bcc_on = int(form['bcc_on'])
+            msg.setCachedValue('bcc_on', int(form['bcc_on']))
 
         if form.has_key('attacher_on'):
-            self.attacher_on = int(form['attacher_on'])
+            msg.setCachedValue('attacher_on', int(form['attacher_on']))
 
         return 'ok'
 
