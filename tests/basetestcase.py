@@ -32,16 +32,17 @@ from OFS.Folder import Folder
 
 from email.Errors import BoundaryError
 
-installProduct('FiveTest')
 installProduct('Five')
 
 class FakePortal(Folder):
-    def this(self):
-        return self
 
     def getPhysicalPath(self):
-        return ('http://nowhere',)
+        return ('', 'nowhere')
 
+
+class FakeResponse:
+    def redirect(self, url):
+         pass
 
 class FakeRequest:
 
@@ -52,6 +53,9 @@ class FakeRequest:
 
     def get(self, element1, element2):
         return ''
+
+    form = {}
+    response = FakeResponse()
 
 def openfile(filename, mode='r'):
     path = os.path.join(os.path.dirname(landmark), 'data', filename)
