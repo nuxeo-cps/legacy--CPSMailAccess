@@ -185,8 +185,6 @@ class IMailBox(IContainer):
         """ synchronizes the mailbox and its content
             and its content with the server by recursive calls to synchronizeFolder
         """
-        pass
-
 
 class IMailTool(IContainer):
     """ portal tool
@@ -200,7 +198,6 @@ class IMailTool(IContainer):
     def reloadPlugins():
         """ rescan avalailable connection plugins
         """
-
 
 class IConnection(Interface):
     """ important a mail folder is called an mailbox in IConnection
