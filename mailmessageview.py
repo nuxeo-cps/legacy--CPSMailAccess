@@ -29,6 +29,8 @@ from utils import decodeHeader, parseDateString, localizeDateString, \
     replyToBody, HTMLize, sameMail
 from Globals import InitializeClass
 from Products.Five import BrowserView
+
+from baseconnection import ConnectionError
 from mailrenderer import MailRenderer
 from basemailview import BaseMailMessageView
 from mailpart import MailPart
@@ -129,21 +131,29 @@ class MailMessageView(BaseMailMessageView):
 
             #### the user reads the messge, let's
             # sets the read message to 1
-            mail.setFlag('read', 1)
-            folder = mail.getMailFolder()
-            if folder is not None:
-                folder.onFlagChanged(mail, 'read', 1)
+            try:
+                mail.setFlag('read', 1)
+                folder = mail.getMailFolder()
+                if folder is not None:
+                    folder.onFlagChanged(mail, 'read', 1)
+            except ConnectionError:
+                pass
 
-            # do we have everything to show ?
-            # here loadParts will automatically
-            # create caches, fetchs things
-            part_count = mail.getPartCount()
-            if part_count > 0:
-                for i in range(part_count):
-                    mail.loadPart(i)
-                body = self._bodyRender(mail, 0)
-            else:
-                body = ''
+            try:
+                # do we have everything to show ?
+                # here loadParts will automatically
+                # create caches, fetchs things
+                part_count = mail.getPartCount()
+                if part_count > 0:
+                    for i in range(part_count):
+                        mail.loadPart(i)
+                    body = self._bodyRender(mail, 0)
+                else:
+                    body = ''
+            except ConnectionError:
+                #tobe externalized
+                return '<div class="message">Could not reach server.</div>'
+
         else:
             body = ''
         return body
@@ -305,6 +315,7 @@ class MailMessageView(BaseMailMessageView):
         ### XXX todo : add a view page to be able to save the file
         part = self.context
         infos = part.getFileInfos()
+        found = False
         if infos is not None:
             if infos['filename'] == filename:
                 filecontent = part.getDirectBody()
@@ -316,16 +327,20 @@ class MailMessageView(BaseMailMessageView):
                     cte ='7bit'
                 if cte == 'base64':
                     filecontent = base64MIME.decode(filecontent)
+                found = True
         else:
             raise MailPartError('%s has no file %s' %(self.id, filename))
 
-        if self.request is not None:
-           response = self.request.response
-           response.setHeader('Content-Type', content_type)
-           response.setHeader('Content-Disposition', 'inline; filename=%s' % filename)
-           response.setHeader('Content-Length', len(filecontent))
-           response.write(filecontent)
+        if not found:
+            return None
         else:
+            if self.request is not None:
+                response = self.request.response
+                response.setHeader('Content-Type', content_type)
+                response.setHeader('Content-Disposition', 'inline; filename=%s' % filename)
+                response.setHeader('Content-Length', len(filecontent))
+                response.write(filecontent)
+
             return filecontent
 
     def reload(self):
@@ -348,3 +363,13 @@ class MailMessageView(BaseMailMessageView):
         message = self.context
         box = message.getMailBox()
         return box.getIdentitites()[0]['email']
+
+    def getMessageListCols(self):
+        """ returns the list of cols """
+        message = self.context
+        mailbox = message.getMailBox()
+        list_cols = mailbox.getConnectionParams()['message_list_cols']
+        if isinstance(list_cols, str):
+            list_cols = [item.strip() for item in list_cols.split(',')]
+        return list_cols
+
