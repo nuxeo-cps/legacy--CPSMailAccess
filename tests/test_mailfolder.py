@@ -207,6 +207,7 @@ class MailFolderTestCase(ZopeTestCase):
     def test_renderMailList(self):
         # testing mail folder view instanciation
         ob = MailFolder()
+
         view = MailFolderView(ob, None)
         rendered_list = view.renderMailList()
 
@@ -306,6 +307,29 @@ class MailFolderTestCase(ZopeTestCase):
         title = view.createShortTitle(ob)
         self.assertEquals(title, 'message1')
 
+
+    def test_isEmpty(self):
+        ob = MailFolder()
+
+        self.assert_(ob.isEmpty())
+
+        for i in range(10):
+            ob._addFolder()
+
+        self.assert_(not ob.isEmpty())
+
+    def test_childFoldersCount(self):
+        ob = MailFolder()
+
+        self.assertEquals(ob.childFoldersCount(), 0)
+
+        for i in range(10):
+            ob._addFolder()
+
+        for i in range(10):
+            ob._addMessage('ok'+str(i), 'ok'+str(i))
+
+        self.assertEquals(ob.childFoldersCount(), 10)
 
 
 def test_suite():
