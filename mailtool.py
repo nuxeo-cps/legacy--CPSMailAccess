@@ -57,10 +57,11 @@ class MailTool(Folder): # UniqueObject
     id = 'portal_webmail'
     connection_list = getConnection()
     initialized = 0
-    mail_catalogs = MailCatalogDict()
+    mail_catalogs = None
 
     def __init__(self):
         Folder.__init__(self)
+        self._setObject('mail_catalogs', MailCatalogDict())
         self._initializeConnectionList()
 
     def getConnectionList(self):
