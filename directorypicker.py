@@ -26,9 +26,7 @@
 """
 
 from zope.interface import implements
-
 from Products.Five import BrowserView
-
 from interfaces import IDirectoryPicker
 from utils import getToolByName
 
@@ -60,6 +58,18 @@ class DirectoryPickerView(BrowserView):
 
     def getEntries(self):
         """ returns entries """
+        entries = self.context.getMailDirectoryEntries()
+        return entries
 
-        return self.context.getMailDirectoryEntries()
+    def searchUsers(self, email):
+        """ search adressbooks and renders results """
+        return self.context.searchDirectoryEntries(email)
 
+    def getEditorContainers(self):
+        """ gets the editor containers """
+        mbox = self.context
+        msg = mbox.getCurrentEditorMessage()
+        Tos = msg.getHeader('To')
+        Ccs = msg.getHeader('Cc')
+        Bccs = msg.getHeader('Bcc')
+        return {'To': Tos, 'Cc' : Ccs, 'Bcc' : Bccs}
