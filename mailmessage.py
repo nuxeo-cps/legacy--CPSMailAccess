@@ -25,7 +25,7 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
-from interfaces import IMailMessage, IMailMessageStore
+from interfaces import IMailMessage, IMailMessageStore, IMailMessageMapping
 from email import Message as Message
 from email import message_from_string
 from email.Charset import Charset
@@ -42,7 +42,7 @@ class MailMessage(Folder):
     """
     meta_type = "CPSMailAccess Message"
 
-    implements(IMailMessage, IMailMessageStore)
+    implements(IMailMessage, IMailMessageStore, IMailMessageMapping)
 
     msg_uid = FieldProperty(IMailMessage['msg_uid'])
     msg_key = FieldProperty(IMailMessage['msg_key'])
@@ -62,7 +62,6 @@ class MailMessage(Folder):
         >>> store <> None
         True
         """
-
         if self.store is None:
             self.store = message_from_string('')
 
@@ -193,6 +192,74 @@ class MailMessage(Folder):
         else:
             payload = store.get_payload()
             payload[part_index-1].del_param(param_name)
+
+    #
+    # MAPPING INTERFACE (partial)
+    #
+    def __len__(self):
+        """ see interface
+        """
+        store = self._getStore()
+        return store.__len__()
+
+    def __getitem__(self, name):
+        """ see interface
+        """
+        store = self._getStore()
+        return store.__getitem__(name)
+
+    def __setitem__(self, name, val):
+        """ see interface
+        """
+        # we want to override existing item if the
+        # given value differs
+        store = self._getStore()
+        if store.has_key(name):
+            if store[name] <> val:
+                store.__delitem__(name)
+        store.__setitem__(name, val)
+
+    def __delitem__(self, name):
+        """ see interface
+        """
+        store = self._getStore()
+        store.__delitem__(name)
+
+    def __contains__(self, name):
+        """ see interface
+        """
+        store = self._getStore()
+        return store.__contains__(name)
+
+    def has_key(self, name):
+        """ see interface
+        """
+        store = self._getStore()
+        return store.has_key(name)
+
+    def keys(self):
+        """ see interface
+        """
+        store = self._getStore()
+        return store.keys()
+
+    def values(self):
+        """ see interface
+        """
+        store = self._getStore()
+        return store.values()
+
+    def items(self):
+        """ see interface
+        """
+        store = self._getStore()
+        return store.items()
+
+    def get(self, name, failobj=None):
+        """ see interface
+        """
+        store = self._getStore()
+        return store.get(name, failobj)
 
 #
 # MailMessage Views
