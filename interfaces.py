@@ -21,8 +21,7 @@
 from zope.interface import Interface
 from zope.app.container.interfaces import IContained, IContainer
 from zope.app.container.constraints import ContainerTypesConstraint
-from zope.schema import Field, Text
-
+from zope.schema import Field, Text, List
 
 class IMailFolder(IContainer):
     """A container of mail messages and other mail folders.
@@ -38,6 +37,7 @@ class IMailFolder(IContainer):
         description=u'All mails are prefixed with this',
         default=u'',
         required=False)
+
 
     def getMailMessages(list_folder=True, list_messages= True, recursive=False):
         """Retrieves all contained messages and/or folders
@@ -112,7 +112,6 @@ class IMailMessage(IContainer):
         required=False)
 
 
-
 class IMailMessageStore(IContainer):
     """ Provides interface to a mail message store
 
@@ -182,32 +181,23 @@ class IMailMessageStore(IContainer):
             for single part messages, part_index is 0
         """
 
-class IMailMessageMapping(IContainer):
+class IMapping(IContainer):
 
     def __len__():
-        """Return the total number of headers, including duplicates."""
+        """Return the total number of items """
 
     def __getitem__(name):
-        """Get a header value.
-
-        Return None if the header is missing instead of raising an exception.
-
-        Note that if the header appeared multiple times, exactly which
-        occurrance gets returned is undefined.  Use getall() to get all
-        the values matching a header field name.
+        """Get an item value.
         """
 
     def __setitem__(name, val):
-        """Set the value of a header.
-
-        Note: this does not overwrite an existing header with the same field
-        name.  Use __delitem__() first to delete any existing headers.
+        """Set the value of an item
         """
 
     def __delitem__(name):
-        """Delete all occurrences of a header, if present.
+        """Delete all occurrences of an item, if present
 
-        Does not raise an exception if the header is missing.
+        Does not raise an exception if the item is missing.
         """
 
     def __contains__(name):
@@ -215,34 +205,22 @@ class IMailMessageMapping(IContainer):
         """
 
     def has_key(name):
-        """Return true if the message contains the header."""
+        """Return true if the object contains the item."""
 
     def keys(self):
-        """Return a list of all the message's header field names.
-
-        These will be sorted in the order they appeared in the original
-        message, or were added to the message, and may contain duplicates.
-        Any fields deleted and re-inserted are always appended to the header
-        list.
+        """Return a list of all items
         """
 
     def values():
-        """Return a list of all the message's header values.
-
-        These will be sorted in the order they appeared in the original
-        message, or were added to the message, and may contain duplicates.
-        Any fields deleted and re-inserted are always appended to the header
-        list.
+        """Return a list of all items values.
         """
 
     def items():
-        """Get all the message's header fields and values.
-
-        These will be sorted in the order they appeared in the original
-        message, or were added to the message, and may contain duplicates.
-        Any fields deleted and re-inserted are always appended to the header
-        list.
+        """Return a list of all items and values.
         """
+
+
+class IMailMessageMapping(IMapping):
 
     def get(name, failobj=None):
         """Get a header value.
@@ -251,13 +229,22 @@ class IMailMessageMapping(IContainer):
         is missing.
         """
 
-
 class IMailBox(IContainer):
     """ mailboxes gives a few api to synchronize
     """
+    connection_params = List(
+        title=u'Connection parameters',
+        description=u'Connection parameters properties',
+        readonly=False,
+        required=False)
+
     def synchronize():
         """ synchronizes the mailbox and its content
             and its content with the server by recursive calls to synchronizeFolder
+        """
+
+    def _getconnector():
+        """ used to get a server connection object
         """
 
 class IMailTool(IContainer):
