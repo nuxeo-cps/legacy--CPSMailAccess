@@ -201,10 +201,7 @@ class MailFolderView(BaseMailMessageView):
                     # it's a cut'n'paste
                     for id in ids:
                         folder, uid = self.getMessageUidAndFolder(id)
-                        try:
-                            folder.moveMessage(uid, mailfolder)
-                        except:
-                            raise str(folder) + '  '+ str(uid) + '  ' +str( id)
+                        folder.moveMessage(uid, mailfolder)
                 else:
                     # it's a copy
                     for id in ids:
