@@ -73,6 +73,7 @@ class MailPart(Folder):
         """ see interface
         """
         store = self._getStore()
+        payload = store._payload
         return store.as_string()
 
     def getFileInfos(self):
@@ -262,7 +263,7 @@ class MailPart(Folder):
         """Set a message header.
         """
         store = self._getStore()
-        if store.has_key(name):
+        while store.has_key(name):
             # Erase previous header
             del store[name]
         store[name] = value
@@ -273,16 +274,24 @@ class MailPart(Folder):
         store = self._getStore()
         store[name] = value
 
-    def removeHeader(self, name, value):
-        """ removes header
-        """
+    def removeHeader(self, name, values=None):
+        """ removes header """
+        store = self._getStore()
         headers = self.getHeader(name)
-        if value in headers:
-            headers.remove(value)
-            store = self._getStore()
-            del store[name]
-            for value in headers:
-                self.addHeader(name, value)
+        if values is None:
+            while store.has_key(name):
+                # Erase previous header
+                del store[name]
+        else:
+            for item in values:
+                if item in headers:
+                    headers.remove(item)
+            if headers != values:
+                while store.has_key(name):
+                    # Erase previous header
+                    del store[name]
+                for value in headers:
+                    self.addHeader(name, value)
 
     def loadMessage(self, raw_msg):
         """ See interfaces.IMailMessage
