@@ -145,7 +145,7 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_(view)
 
         body = view._bodyRender(ob, 0)
-        self.assertEquals(body, '\n<br><font size=2 face="sans-serif">sqdsqd d</font>\n<br><font size=2 face="sans-serif">sqdsqd</font>\n<br><font size=2 face="sans-serif">qsd</font>\n<br><font size=2 face="sans-serif">sd</font>\n<br><font size=2 face="sans-serif">qs</font>\n<br><font size=2 face="sans-serif">dsqdqsdsq</font>\n<br>\n<br><font size=2 face="sans-serif"><br>\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br>\n &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>\nMme XXX  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <br>\nDirection Informatique<br>\nxxxx - SIEGE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>\nTel : X<br>\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ </font>')
+        self.assertEquals(body, u'<br><font size="2" face="sans-serif">sqdsqd d</font><br><font size="2" face="sans-serif">sqdsqd</font><br><font size="2" face="sans-serif">qsd</font><br><font size="2" face="sans-serif">sd</font><br><font size="2" face="sans-serif">qs</font><br><font size="2" face="sans-serif">dsqdqsdsq</font><br><br><font size="2" face="sans-serif"><br>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br>                                  <br>Mme XXX          <br>Direction Informatique<br>xxxx - SIEGE                      <br>Tel : X<br>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ </font>')
         body = view.renderBody()
 
         self.assertNotEquals(body, '')
@@ -162,7 +162,7 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_(view)
 
         body = view.renderBody()
-        self.assertEquals(body, u' ezezf<br/> ezf<br/> <b>ezf</b><br/> ef<br/> <br/> <u>ez<br/> <br/> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> </u>ezf<br/> ')
+        self.assertEquals(body, u'         ezezf<br> ezf<br> <b>ezf</b><br> ef<br> <br> ez<br> <br> <span><span> :-[ </span></span><br> ezf<br>  ')
 
 
     def test_renderHeaderList(self):

@@ -39,7 +39,7 @@ class MailRendererTestCase(MailTestCase):
 
     def getAllMails(self):
         res = []
-        for i in range(35):
+        for i in range(37):
             ob = MailMessage()
             ob.cache_level = 2
             if i < 9:
@@ -96,7 +96,7 @@ class MailRendererTestCase(MailTestCase):
     def test_allRendering(self):
         # testing all mails with MIME engine
         ob = MailRenderer()
-        for i in range(35):
+        for i in range(37):
             mail = self.getMailInstance(i)
             # need soem acquisition here
             container = self._getMailBox()
@@ -123,19 +123,24 @@ class MailRendererTestCase(MailTestCase):
         res = ob.render('ייי','type=text/plain;charset=us/ascii', None)
         self.assertEquals(res, u'\xe9\xe9\xe9')
 
+    def test_multipartAlternativeSpecial(self):
+        # other kind of multipart received
+        ob = self.getMailInstance(37)
+        rd = MailRenderer()
+        ob.getPhysicalPath = self.fakePhysicalPath
+        body = rd.renderBody(ob, 0)
+        self.assert_(body.startswith('Noel א prix magiques !<table'))
+
     def test_multipartAlternativeReadLotus(self):
         # lotus note mail message
         # the body gets empty in the view
         # added this test
         ob = self.getMailInstance(35)
         rd = MailRenderer()
-
         ob.getPhysicalPath = self.fakePhysicalPath
-
         body = rd.renderBody(ob, 0)
-
-        self.assertNotEquals(body, '')
-
+        #self.assertEquals(body, '')
+        self.assert_(body.startswith(u'<br><font size="2" face="sans-serif">sqdsqd d</font>'))
 
 def test_suite():
     return unittest.TestSuite((

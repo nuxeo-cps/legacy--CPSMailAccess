@@ -44,7 +44,7 @@ class MailMessageTestCase(MailTestCase):
 
     def getAllMails(self):
         res = []
-        for i in range(35):
+        for i in range(37):
             ob = MailMessage()
             if i < 9:
                 data = self._msgobj('msg_0'+str(i+1)+'.txt')
@@ -60,7 +60,7 @@ class MailMessageTestCase(MailTestCase):
         # loading a lot of different mails
         ob = MailMessage()
         ob.cache_level = 2
-        for i in range(35):
+        for i in range(37):
             if i < 9:
                 data = self._msgobj('msg_0'+str(i+1)+'.txt')
             else:

@@ -43,7 +43,7 @@ class MailSearchViewTestCase(MailTestCase):
         box = self._getMailBox()
         cat = box._getCatalog()
 
-        for i in range(35):
+        for i in range(38):
             ob = self.getMailInstance(i)
             ob.getPhysicalPath = self.fakeGetPhysicalPath
             ob = ob.__of__(self.portal)

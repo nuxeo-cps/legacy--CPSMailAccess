@@ -151,7 +151,7 @@ class MailSearchTestCase(MailTestCase):
 
         cat = self._getCatalog()
 
-        for i in range(35):
+        for i in range(37):
             ob = self.getMailInstance(i)
             ob = ob.__of__(self.portal)
             ob.getPhysicalPath = self.fakeGetPhysicalPath
@@ -171,7 +171,7 @@ class MailSearchTestCase(MailTestCase):
 
         cat = self._getCatalog()
 
-        for i in range(35):
+        for i in range(37):
             ob = self.getMailInstance(i)
             ob = ob.__of__(self.portal)
             ob.getPhysicalPath = self.fakeGetPhysicalPath
@@ -242,7 +242,7 @@ class MailSearchTestCase(MailTestCase):
 
         cat = self._getCatalog()
 
-        for i in range(35):
+        for i in range(37):
             ob = self.getMailInstance(i)
             ob = ob.__of__(self.portal)
             ob.getPhysicalPath = self.fakeGetPhysicalPath
