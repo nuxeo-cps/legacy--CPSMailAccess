@@ -445,3 +445,12 @@ class IDirectoryPicker(Interface):
         """ returns a list of available directories """
 
 
+class IMailCatalog(Interface):
+
+    def indexMessage(self, message):
+        """ indexes a message """
+
+    def unIndexMessage(self, message):
+        """ unindexes a message """
+
+
