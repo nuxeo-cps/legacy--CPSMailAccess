@@ -131,15 +131,18 @@ class MailCatalogDict(Folder):
 
     def getCatalog(self, user_id):
         user_id = makeId(user_id)
-        if hasattr(self, user_id):
-            return getattr(self, user_id)
+        folder_id = '.' + user_id
+        if hasattr(self, folder_id):
+            return getattr(self, folder_id)
         return None
 
     def addCatalog(self, user_id):
         user_id = makeId(user_id)
-        if not hasattr(self, user_id):
-            catalog = MailCatalog(user_id, user_id, user_id)
-            self._setObject(user_id, catalog)
+        folder_id = '.' + user_id
+        if not hasattr(self, folder_id):
+            catalog = MailCatalog(folder_id, user_id, user_id)
+            self._setObject(folder_id, catalog)
+            catalog = gatattr(self, folder_id)
 
 """ classic Zope 2 interface for class registering
 """
