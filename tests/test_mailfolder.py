@@ -24,8 +24,10 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
-from Products.CPSMailAccess.mailfolder import MailFolder, MailFolderView
+from Products.CPSMailAccess.mailfolder import MailFolder, MailFolderView,\
+    MailContainerError
 from Products.CPSMailAccess.mailmessage import MailMessage
+from Products.CPSMailAccess.mailbox import MailBox
 from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
 
 installProduct('FiveTest')
@@ -238,6 +240,78 @@ class MailFolderTestCase(ZopeTestCase):
         self.assertEquals(elements[1].getId(), 'folder_2')
         self.assertEquals(elements[2].getId(), 'msg_1')
         self.assertEquals(elements[3].getId(), 'msg_2')
+
+    def test_TreeView(self):
+        # testing treeview renderer
+        ob = self.test_getMailMessagesCountRecursive()
+        view = MailFolderView(ob, None)
+
+        self.assertRaises(MailContainerError, view.renderTreeView)
+
+        ob = MailBox('box')
+        ob.getPhysicalPath = self.getPhysicalPath
+
+        for i in range(5):
+            sub_folder = ob._addFolder('folder_'+str(i))
+            if i == 0:
+                first_sub_folder = sub_folder
+
+            # hack for tests
+            sub_folder.getPhysicalPath = self.getPhysicalPath
+
+            for y in range(4):
+                sub_sub_folder = sub_folder._addFolder('folder_'+str(y))
+
+        view = MailFolderView(ob, None)
+
+        treeview = view.renderTreeView()
+
+        self.assertEquals(len(treeview), 5)
+        first = treeview[0]
+
+        self.assertEquals(first['object'], first_sub_folder)
+
+    def test_TreeViewCache(self):
+        ob = MailBox('box')
+        ob.getPhysicalPath = self.getPhysicalPath
+
+        for i in range(5):
+            sub_folder = ob._addFolder('folder_'+str(i))
+            if i == 0:
+                first_sub_folder = sub_folder
+
+            # hack for tests
+            sub_folder.getPhysicalPath = self.getPhysicalPath
+
+            for y in range(4):
+                sub_sub_folder = sub_folder._addFolder('folder_'+str(y))
+
+        view = MailFolderView(ob, None)
+
+        treeview = view.renderTreeView()
+
+        self.assertEquals(len(treeview), 5)
+        first = treeview[0]
+
+        self.assertEquals(first['object'], first_sub_folder)
+
+        self.assertNotEquals(ob.getTreeViewCache(), None)
+
+        treeviewagain = view.renderTreeView()
+        self.assertEquals(treeviewagain, treeview)
+
+        ob._addFolder('folder_XXXX')
+
+        self.assertEquals(ob.getTreeViewCache(), None)
+
+        treeviewagain = view.renderTreeView()
+        self.assertNotEquals(treeviewagain, treeview)
+
+
+
+
+
+
 
 def test_suite():
     return unittest.TestSuite((
