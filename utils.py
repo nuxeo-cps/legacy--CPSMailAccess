@@ -31,7 +31,7 @@ from html2text import HTML2Text
 from random import randrange
 from zLOG import LOG, INFO
 from encodings import exceptions as encoding_exceptions
-from CPSUtil import html
+from Products.CPSUtil import html
 
 _translation_table = string.maketrans(
     # XXX candidates: @°+=`|
