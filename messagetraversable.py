@@ -38,18 +38,17 @@ class MessageTraversable(FiveTraversable):
     def __init__(self, subject):
         FiveTraversable.__init__(self, subject)
 
-    def adaptPart(self, parent, part_name, raw_part):
-        """ adapts part
-        """
+    def adaptPart(self, parent, part_name, raw_part, cache_level):
+        """ adapts part """
         adapter = MailPart(part_name, parent, raw_part)
+        adapter.cache_level = cache_level
         # XXX todo adapt cache level
         #adapter.cache_level = 2
         #adapter.loadMessage(raw_part.as_string())
         return adapter
 
     def fetchPart(self, message, part_num):
-        """ creates a part load
-        """
+        """ creates a part load """
         return message.loadPart(part_num, part_content='', volatile=True)
 
     def traverse(self, path='', request=None):
@@ -59,6 +58,8 @@ class MessageTraversable(FiveTraversable):
         part and message,
         might be splitted later in two classes
         """
+        part = None
+
         context = self._subject
         # let's scan parts
         if path !='':
@@ -70,14 +71,12 @@ class MessageTraversable(FiveTraversable):
             else:
                 cpath = path
 
-            if IMailMessage.providedBy(context) and \
-                context.volatile_parts.has_key(cpath):
-                part = context.volatile_parts[cpath]
+            if IMailMessage.providedBy(context):
+                part = context.getVolatilePart(cpath)
 
             # todo : generate the part on the fly and loads it
             # in  context.volatile_parts
-            else:
-                part = None
+            if part is None:
                 # if the path is a number,
                 # let's try to find it
                 #if context.isMultipart():
@@ -93,20 +92,24 @@ class MessageTraversable(FiveTraversable):
                         # part are starting at 1
                         if path_num <= part_count:
                             # it's a persistent one
-                            if path_num in context.getPersistentPartIds():
+                            if (context.cache_level != 1 and path_num
+                                in context.getPersistentPartIds()):
                                 part = context.getPart(path_num)
                                 if part is not None:
                                     # python raw msg, let's adapt it
-                                    part = self.adaptPart(context, str(path_num), part)
+                                    part = self.adaptPart(context,
+                                                          str(path_num), part,
+                                                          context.cache_level)
                                 else:
                                     # TODO we need to fetch it and add it in persistent
                                     raise NotImplementedError
                             # on the fly please
                             else:
-                                # XXX TODO
-                                part = self.fetchPart(context, path_num)
-                                part = self.adaptPart(context, str(path_num), part)
-                                context.volatile_parts[str(path_num)] = part
+                                part = self.fetchPart(context, str(path_num))
+                                part = self.adaptPart(context,
+                                                      str(path_num), part,
+                                                      context.cache_level)
+
                 else:
                     # let's try to find if it's a filename
                     if context.isMultipart():
@@ -115,7 +118,9 @@ class MessageTraversable(FiveTraversable):
                         if parts is not None:
                             for element in parts:
                                 if element.get_filename() == cpath:
-                                    part = self.adaptPart(context, str(index), element)
+                                    part = self.adaptPart(context, str(index),
+                                                          element,
+                                                          context.cache_level)
                                 else:
                                     index +=1
                     else:
