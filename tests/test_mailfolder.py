@@ -18,19 +18,20 @@
 # $Id$
 
 import unittest
-from Testing import ZopeTestCase
+from zope.testing import doctest
+from Testing.ZopeTestCase import installProduct
+from Testing.ZopeTestCase import ZopeTestCase
 
-ZopeTestCase.installProduct('FiveTest')
-ZopeTestCase.installProduct('Five')
+installProduct('FiveTest')
+installProduct('Five')
 
 
-class BasicTestCase(ZopeTestCase.ZopeTestCase):
-
-    def test_nothing(self):
-        pass
+class MailFolderTestCase(ZopeTestCase):
+    pass
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(BasicTestCase))
-    return suite
+    return unittest.TestSuite((
+        unittest.makeSuite(MailFolderTestCase),
+        doctest.DocTestSuite('Products.CPSMailAccess.mailfolder'),
+        ))

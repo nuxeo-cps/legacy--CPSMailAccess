@@ -1,4 +1,4 @@
-# Copyright (C) 2004 Nuxeo SARL <http://nuxeo.com>
+# Copyright (c) 2004 Nuxeo SARL <http://nuxeo.com>
 # Author: Florent Guillaume <fg@nuxeo.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,26 +22,27 @@ from zope.app.container.interfaces import IContained, IContainer
 from zope.app.container.constraints import ContainerTypesConstraint
 from zope.schema import Field
 
-class ICPSMessage(Interface):
-    """ A Mail message container.
-    
-        ICPSMessage stores the content of a message
-        this content can be composed of headers,
-        ID, and optionnaly the body      
+
+class IMailFolder(IContainer):
+    """A container of mail messages and other mail folders.
     """
-    pass
-    
-class ICSPMailFolder(IContainer):
-    """ A Message container
-        it can contains also Mail Folders
-    """    
-    def getMessageList(recursive=False):
-        """ Retrieves all contained messages with recursive option            
+
+    def getMailMessages(recursive=False):
+        """Retrieves all contained messages.
+
+        Returns a sequence of IMailMessage.
         """
-    
-    
-class ICSPMailFolderContained(IContained):
-    """Objects that contain Message should implement this interface."""
-    __parent__ = Field(
-        constraint = ContainerTypesConstraint(ICSPMailFolder)) 
-          
+
+#class IMailFolderContained(IContained):
+#    """Objects contained in MailFolders should implement this interface.
+#    """
+#    __parent__ = Field(
+#        constraint=ContainerTypesConstraint(IMailFolder))
+
+
+class IMailMessage(IContainer):
+    """A mail message.
+
+    It stores the content of a message, this content can be composed of
+    headers, ID, and optionnaly the body.
+    """
