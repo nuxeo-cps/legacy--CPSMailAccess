@@ -276,6 +276,10 @@ class IConnection(Interface):
         """ validate deletions
         """
 
+    def deleteMailBox(mailbox):
+        """ deletes a mailbox
+        """
+
 class IConnectionList(Interface):
 
     def listConnectionTypes():
