@@ -168,6 +168,7 @@ class MailMessageView(BaseMailMessageView):
         body_value = self.renderBody()
         from_value = self.renderFromList()
         reply_content = replyToBody(from_value, body_value)
+        mailbox.clearEditorMessage()
         msg = mailbox.getCurrentEditorMessage()
         msg.setPart(0, reply_content)
 
@@ -240,8 +241,10 @@ class MailMessageView(BaseMailMessageView):
         msg.setFlag('deleted', 1)
 
         if self.request is not None:
+            psm = 'Message sent to Trash.'
             folder = msg_container.absolute_url()
-            self.request.response.redirect('%s/view' % folder)
+            self.request.response.\
+                redirect('%s/view?portal_status_message=%s' % (folder, psm))
 
     def attached_files(self):
         # todo :scans attached files
@@ -267,8 +270,10 @@ class MailMessageView(BaseMailMessageView):
                     %(prefix, str(part+1), str(infos['filename']))
                 infos['icon'] =  mimetype_to_icon_name(infos['mimetype'])
                 title = infos['filename']
-                if len(title) > 10:
-                    title = title[:7] +'...'
+                # TODO this should be done in jaavscript
+                infos['fulltitle'] = title
+                if len(title) > 12:
+                    title = title[:9] +'...'
                 infos['title'] = title
                 infos['delete_url'] = 'delete_attachement?filename=' + infos['filename']
                 list_files.append(infos)
@@ -312,3 +317,18 @@ class MailMessageView(BaseMailMessageView):
            response.write(filecontent)
         else:
             return filecontent
+
+    def reload(self):
+        """ reloads a message to mail editor
+        """
+        message = self.context
+        box = message.getMailBox()
+
+        box.setCurrentEditorMessage(message)
+
+        if self.request is not None:
+           response = self.request.response
+           url = box.absolute_url()
+           response.redirect('%s/editMessage.html' % url)
+
+
