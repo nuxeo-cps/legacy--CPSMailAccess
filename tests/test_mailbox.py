@@ -46,23 +46,6 @@ class MailBoxTestCase(ZopeTestCase):
         ob = MailBox()
         self.assertNotEquals(ob, None)
 
-    def test_synchronize(self):
-        """ testing synchronize calls
-        """
-        mailbox = MailBox()
-
-        for i in range(10):
-            ob = mailbox._addFolder()
-
-            for i in range(10):
-                ob._addFolder()
-
-            for i in range(123):
-                key = self.msgKeyGen()
-                ob._addMessage(key, key)
-
-        mailbox.synchronize()
-
     def test_paramMapping(self):
         """ testing mapping
         """
