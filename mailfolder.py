@@ -161,13 +161,13 @@ class MailFolder(Folder):
     def _addMessage(self, msg_uid='', digest=''):
         """See interfaces.IMailFolder
         """
-        uid = uniqueId(self, self.mail_prefix)
-        new_msg = MailMessage(uid, msg_uid, digest)
+        id = '.'+msg_uid
+        msg = MailMessage(id, msg_uid, digest)
 
-        self._setObject(new_msg.getId(), new_msg)
-        new_msg = self._getOb(new_msg.getId())
+        self._setObject(id, msg)
+        msg = self._getOb(id)
 
-        return new_msg
+        return msg
 
     def _addFolder(self, uid='', server_name=''):
         """see interfaces.IMailFolder
