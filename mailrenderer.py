@@ -67,9 +67,13 @@ class MailRenderer:
         """ renders a body according to part type """
         if content is None:
             return ''
-
         ptypes = self.extractPartTypes(part_type)
-        ptype = ptypes['type'].lower()
+
+        if ptypes.has_key('type'):
+            ptype = ptypes['type'].lower()
+        else:
+            ptype = 'text/plain'
+
         if ptypes.has_key('format'):
             pformat = ptypes['format'].lower()
         else:
