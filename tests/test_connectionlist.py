@@ -20,15 +20,61 @@
 import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
-from Testing.ZopeTestCase import ZopeTestCase
+from Testing.ZopeTestCase import ZopeTestCase, _print
 import os
+from Products.CPSMailAccess.baseconnection import ConnectionError
 from Products.CPSMailAccess.connectionlist import ConnectionList
 from Products.CPSMailAccess.connectionlist import registerConnections, qualifyModule
 from Products.CPSMailAccess.dummyconnection import DummyConnection
 from time import time,sleep
+from threading import Thread
 
 installProduct('FiveTest')
 installProduct('Five')
+
+
+class ListTester(Thread):
+    """ used to read connections
+    """
+    list_object = None
+
+    def __init__(self, list_object):
+        Thread.__init__(self)
+        self.list_object = list_object
+
+    def run(self):
+        i = 50
+        count= 0
+        while count <> 50:
+            ob = self.list_object
+            connections = ob.listConnectionTypes()
+            connection_params = {'uid' : 'user'+str(i), 'connection_type' : 'DUMMY'}
+            conn = ob.getConnection(connection_params)
+            if conn is not None:
+                count += 1
+            sleep(0.2)
+            if i > 0:
+                i -= 1
+            else:
+                i = 50
+
+
+class ListAdder(Thread):
+    """ used to add connections
+    """
+    list_object = None
+
+    def __init__(self, list_object):
+        Thread.__init__(self)
+        self.list_object = list_object
+
+    def run(self):
+        for i in range(50):
+            connection_params = {'uid' : 'user'+str(i), 'connection_type' : 'DUMMY'}
+            new_connection = DummyConnection(connection_params)
+            new_connection.login('admin','admin')
+            self.list_object.append(new_connection)
+
 
 
 class ConnectionListTestCase(ZopeTestCase):
@@ -91,6 +137,22 @@ class ConnectionListTestCase(ZopeTestCase):
         registerConnections(my_list)
         self.assertNotEquals(my_list.listConnectionTypes(), [])
 
+    def test_threadsafeness(self):
+        """ testing thread safeness
+        """
+        my_list = ConnectionList()
+        registerConnections(my_list)
+        self.assertNotEquals(my_list.listConnectionTypes(), [])
+
+        tester = ListTester(my_list)
+        adder = ListAdder(my_list)
+
+        tester.start()
+        adder.start()
+
+        while tester.isAlive() and adder.isAlive():
+            _print ('.')
+            sleep(0.1)
 
 def test_suite():
     return unittest.TestSuite((
