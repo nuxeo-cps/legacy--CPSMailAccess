@@ -8,6 +8,13 @@
       provides=".interfaces.IMessageTraverser"
       />
 
+  <adapter
+      for=".interfaces.IMailPart"
+      factory=".messagetraversable.MessageTraversable"
+      provides=".interfaces.IMessageTraverser"
+      />
+
+
   <five:traversable class="OFS.Folder.Folder" />
   <five:traversable class=".mailfolder.MailFolder" />
   <!--<five:traversable class=".mailmessage.MailMessage"/>-->
@@ -41,7 +48,7 @@
       />
 
   <interface
-      interface=".interfaces.IMailMessageStore"
+      interface=".interfaces.IMailPart"
       type="zope.app.content.interfaces.IContentType"
       />
 
@@ -55,13 +62,36 @@
         />
 
     <implements
-        interface=".interfaces.IMailMessageStore"
+        interface=".interfaces.IMailPart"
         />
+
+    <implements
+        interface=".interfaces.IMailMessage"
+        />
+
     <require
         permission="zope2.View"
         interface=".interfaces.IMailMessage"
         />
 
+  </content>
+
+  <content class=".mailpart.MailPart">
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        />
+
+    <implements
+        interface="zope.app.container.interfaces.IContentContainer"
+        />
+
+    <implements
+        interface=".interfaces.IMailPart"
+        />
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IMailPart"
+        />
   </content>
 
 
