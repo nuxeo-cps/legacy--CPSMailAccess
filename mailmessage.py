@@ -32,6 +32,7 @@ from interfaces import IMailMessage, IMailMessageStore
 
 from email import Message as Message
 from email import message_from_string
+from email.Charset import Charset
 
 class MailMessage(Folder):
     """A folderish mail 
@@ -53,8 +54,68 @@ class MailMessage(Folder):
         self.msg_uid = msg_uid
         self.msg_key = msg_key
     
+    def _getStore(self):        
+        """
+        >>> f = MailMessage()
+        >>> f.loadMessage('ok')
+        >>> store = f._getStore()
+        >>> store <> None
+        True
+        """
+        
+        if self.store is None:
+            raise AttributeError('Nothing stored')
+        
+        return self.store            
+    
+    
     def loadMessage(self, raw_msg):
+        """ See interfaces.IMailFolder      
+        """
         self.store = message_from_string(raw_msg)
+        
+    def getPartCount(self):
+        """ See interfaces.IMailFolder      
+        """
+        store = self._getStore()   
+        if self.isMultipart():
+            return len(store.get_payload())
+        else:
+            return 1
+    
+    def getPart(self, index):
+        """ See interfaces.IMailFolder      
+        """
+        store = self._getStore()   
+        return store.get_payload(index)
+    
+    def getCharset(self, part_index=0):
+        """ See interfaces.IMailFolder      
+        """
+        store = self._getStore()   
+        return store.get_charsets()[part_index]
+        
+    def setCharset(self, charset, part_index=0): 
+        """ See interfaces.IMailFolder      
+        """        
+        store = self._getStore()   
+        ob_charset = Charset(charset)
+        
+        if part_index <= 0:
+            store.set_charset(ob_charset)
+        else:
+            payload = store.get_payload()
+            payload[part_index-1].set_charset(ob_charset)    
+            
+    def isMultipart(self):            
+        """ See interfaces.IMailFolder           
+        >>> f = MailMessage()
+        >>> f.loadMessage('mmdclkdshkdjg')
+        >>> f.isMultipart()
+        False
+        """
+        store = self._getStore()
+        return store.is_multipart()    
         
 """ classic Zope 2 interface for class registering
 """        

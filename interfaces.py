@@ -104,6 +104,7 @@ class IMailMessage(IContainer):
         description=u'Hash key used to identify message',
         default=u'',
         required=False)
+       
         
         
 class IMailMessageStore(IContainer):
@@ -112,4 +113,20 @@ class IMailMessageStore(IContainer):
     """                
     def loadMessage(raw_msg):
         """ loads a message from a raw content (typically a string)
+        """
+        
+    def getPartCount():
+        """ returns the number of parts the message holds
+        """        
+        
+    def getCharset(part_index=0):        
+        """ returns the charset for the given part
+        """
+        
+    def setCharset(charset, part_index=0):        
+        """ sets the charset for the given part        
+        """        
+        
+    def isMultipart():         
+        """ tells if the mail is multipart
         """
