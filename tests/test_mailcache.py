@@ -45,7 +45,7 @@ class MailCacheTestCase(ZopeTestCase):
         ob = MailCache()
 
         message = MailMessage()
-        message.msg_key = 'uniqueid'
+        message.digest = 'uniqueid'
 
         ob.putMessage(message)
 
@@ -62,12 +62,12 @@ class MailCacheTestCase(ZopeTestCase):
         ob = MailCache()
 
         message = MailMessage()
-        message.msg_key = 'uniqueid'
+        message.digest = 'uniqueid'
 
         ob.putMessage(message)
 
         message = MailMessage()
-        message.msg_key = 'uniqueid2'
+        message.digest = 'uniqueid2'
 
         ob.putMessage(message)
         self.assertEquals(len(ob), 2)

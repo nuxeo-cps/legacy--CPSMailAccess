@@ -218,6 +218,7 @@ class IMAPConnection(BaseConnection):
             else :
                 element_list = self._generalize(imap_raw)
 
+        # XXX else raise something
         #except:
             results = element_list
 

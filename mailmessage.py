@@ -49,16 +49,16 @@ class MailMessage(Folder):
 
     meta_type = "CPSMailAccess Message"
     msg_uid = ''
-    msg_key = ''
+    digest = ''
     message_cache = ''
     message_cache_level = 0
     store = None
     sync_state = False
 
-    def __init__(self, id=None, msg_uid='', msg_key='', **kw):
+    def __init__(self, id=None, msg_uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
         self.msg_uid = msg_uid
-        self.msg_key = msg_key
+        self.digest = digest
 
     def setSyncState(self, state=False):
         """ sets state
@@ -389,7 +389,7 @@ manage_addMailMessageForm = PageTemplateFile(
     "www/zmi_addmailmessage", globals(),)
 
 def manage_addMailMessage(container, id=None, msg_uid='',
-        msg_key='', REQUEST=None, **kw):
+        digest='', REQUEST=None, **kw):
     """Add a calendar to a container (self).
     >>> from OFS.Folder import Folder
     >>> f = Folder()
@@ -399,7 +399,7 @@ def manage_addMailMessage(container, id=None, msg_uid='',
 
     """
     container = container.this()
-    ob = MailMessage(id, msg_uid, msg_key, **kw)
+    ob = MailMessage(id, msg_uid, digest, **kw)
     container._setObject(ob.getId(), ob)
     if REQUEST is not None:
         ob = container._getOb(ob.getId())

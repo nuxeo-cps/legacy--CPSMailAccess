@@ -28,7 +28,8 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
 from utils import uniqueId, makeId
-from Products.CPSMailAccess.interfaces import IMailBox, IMapping
+from zope.interface.common.mapping import IMapping
+from Products.CPSMailAccess.interfaces import IMailBox
 from Products.CPSMailAccess.mailfolder import MailFolder, manage_addMailFolder
 from Products.CPSMailAccess.baseconnection import ConnectionError, BAD_LOGIN, \
     NO_CONNECTOR
@@ -39,7 +40,8 @@ from zope.schema.fieldproperty import FieldProperty
 from Products.Five import BrowserView
 
 ### see for CMF dependency here
-from Products.CMFCore.utils import getToolByName
+#from Products.CMFCore.utils import getToolByName
+from utils import getToolByName
 
 import thread
 

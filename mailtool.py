@@ -22,7 +22,7 @@
 """
 from OFS.Folder import Folder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from Products.CMFCore.utils import UniqueObject
+#from Products.CMFCore.utils import UniqueObject
 from interfaces import IMailTool
 from Globals import InitializeClass
 from zope.interface import implements
@@ -40,7 +40,7 @@ def getConnection():
     finally:
         lock.release()
 
-class MailTool(Folder, UniqueObject):
+class MailTool(Folder): # UniqueObject
     """ the portal tool wich holds
         several parameters and connections
 

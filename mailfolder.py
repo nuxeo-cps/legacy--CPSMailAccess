@@ -158,11 +158,11 @@ class MailFolder(Folder):
         # typically resync
         self.server_name = server_name
 
-    def _addMessage(self, msg_uid='', msg_key=''):
+    def _addMessage(self, msg_uid='', digest=''):
         """See interfaces.IMailFolder
         """
         uid = uniqueId(self, self.mail_prefix)
-        new_msg = MailMessage(uid, msg_uid, msg_key)
+        new_msg = MailMessage(uid, msg_uid, digest)
 
         self._setObject(new_msg.getId(), new_msg)
         new_msg = self._getOb(new_msg.getId())
@@ -186,7 +186,7 @@ class MailFolder(Folder):
 
         return new_folder
 
-    def findMessage(self, msg_key, recursive=True):
+    def findMessage(self, digest, recursive=True):
         """ See interfaces.IMailFolder
         """
         # XXX see for caching here
@@ -194,7 +194,7 @@ class MailFolder(Folder):
             recursive=recursive)
 
         for message in message_list:
-            if message.msg_key == msg_key:
+            if message.digest == digest:
                 return message
 
         return None
@@ -232,14 +232,12 @@ class MailFolder(Folder):
             for folder in folders:
                 folder.setSyncState(state, True)
 
-    def _createKey(self, uid, header):
+    def _createKey(self, header):
         """ creates unique key
             for messages identification
         """
-        elements = ''
-        for key in header.keys():
-            elements += str(header[key])
-        return md5Hash(str(uid)+elements)
+        s = ''.join(header.values())
+        return md5Hash(s)
 
     def _synchronizeFolder(self, return_log=False):
         """ See interfaces.IMailFolder
@@ -273,19 +271,19 @@ class MailFolder(Folder):
                 msg_uid = str(message)
 
                 msg_headers = connector.fetch(self.server_name, message, '(RFC822.HEADER)')
-                msg_key = self._createKey(msg_uid, msg_headers)
+                digest = self._createKey(msg_headers)
 
                 # first of all, search message by key
-                #msg = self.findMessage(msg_key, recursive=False)
+                #msg = self.findMessage(digest, recursive=False)
 
                 # check if the message is in the orphan list
                 if msg is None:
-                    msg = mail_cache.retrieveMessage(msg_key, remove=True)
+                    msg = mail_cache.retrieveMessage(digest, remove=True)
 
                     # the message has to be created
                     if msg is None:
                         log.append('adding message %s in %s' % (msg_uid, self.server_name))
-                        msg = self._addMessage(msg_uid, msg_key)
+                        msg = self._addMessage(msg_uid, digest)
 
                         # THIS IS A HACK,next step is to create
                         # a message accordingly to the whole message string

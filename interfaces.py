@@ -1,4 +1,4 @@
-# Copyright (c) 2004 Nuxeo SARL <http://nuxeo.com>
+# Copyright (c) 2004-2005 Nuxeo SARL <http://nuxeo.com>
 # -*- encoding: iso-8859-15 -*-
 # Author: Florent Guillaume <fg@nuxeo.com>
 #         Tarek Ziadé <tz@nuxeo.com>
@@ -20,9 +20,12 @@
 # $Id$
 
 from zope.interface import Interface
+from zope.interface.common.mapping import IMapping
 from zope.app.container.interfaces import IContained, IContainer
 from zope.app.container.constraints import ContainerTypesConstraint
 from zope.schema import Field, Text, List
+
+
 
 class IMailFolder(IContainer):
     """A container of mail messages and other mail folders.
@@ -74,7 +77,7 @@ class IMailFolder(IContainer):
         """
 
 
-    def _addMessage(uid='', msg_key=''):
+    def _addMessage(uid='', digest=''):
         """ Mail Message factory for this
             MailFolder, adds an IMailMessage
             to it and returns it
@@ -86,8 +89,8 @@ class IMailFolder(IContainer):
             to it and returns it
         """
 
-    def findMessage(msg_key, recursive=True):
-        """ finds a message by its msg_key
+    def findMessage(digest, recursive=True):
+        """ finds a message by its digest
         """
 
     def childFoldersCount():
@@ -110,9 +113,9 @@ class IMailMessage(IContainer):
         default=u'',
         required=True)
 
-    msg_key = Field(
-        title=u'Message Key',
-        description=u'Hash key used to identify message',
+    digest = Field(
+        title=u'Message Digest',
+        description=u'Digest used to uniquely identify message',
         default=u'',
         required=False)
 
@@ -181,45 +184,6 @@ class IMailMessageStore(IContainer):
         """ deletes the given param
             for single part messages, part_index is 0
         """
-
-class IMapping(IContainer):
-
-    def __len__():
-        """Return the total number of items """
-
-    def __getitem__(name):
-        """Get an item value.
-        """
-
-    def __setitem__(name, val):
-        """Set the value of an item
-        """
-
-    def __delitem__(name):
-        """Delete all occurrences of an item, if present
-
-        Does not raise an exception if the item is missing.
-        """
-
-    def __contains__(name):
-        """ check if contains
-        """
-
-    def has_key(name):
-        """Return true if the object contains the item."""
-
-    def keys(self):
-        """Return a list of all items
-        """
-
-    def values():
-        """Return a list of all items values.
-        """
-
-    def items():
-        """Return a list of all items and values.
-        """
-
 
 class IMailMessageMapping(IMapping):
 

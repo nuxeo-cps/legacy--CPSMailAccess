@@ -35,13 +35,13 @@ class MailCache(UserList):
     def __init__(self, initlist=None):
         UserList.__init__(self, initlist)
 
-    def retrieveMessage(self, msg_key, remove=False):
+    def retrieveMessage(self, digest, remove=False):
         """ see interface
         """
         self.lock.acquire()
         try:
             for message in self:
-                if message.msg_key == msg_key:
+                if message.digest == digest:
                     if remove:
                         self.remove(message)
                     return message
@@ -55,19 +55,19 @@ class MailCache(UserList):
         self.lock.acquire()
         try:
             if IMailMessage.providedBy(message):
-                msg_key = message.msg_key
+                digest = message.digest
                 found = False
 
                 # we can't use retrieveMessage because of deadlock
                 for cached_message in self:
-                    if cached_message.msg_key == msg_key:
+                    if cached_message.digest == digest:
                         found = True
                         break
 
                 if not found:
                     self.append(message)
                 else:
-                    raise Exception('%s already in the list' % message.msg_key)
+                    raise Exception('%s already in the list' % message.digest)
             else:
                 raise Exception('%s (%s) object has to implement IMailMessage' % (str(message),
                     message.getId()))
@@ -85,6 +85,6 @@ class MailCache(UserList):
         """ see interface
         """
         if IMailMessage.providedBy(message):
-            msg = self.retrieveMessage(message.msg_key)
+            msg = self.retrieveMessage(message.digest)
             return msg is not None
         return False

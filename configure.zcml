@@ -154,6 +154,7 @@
       permission="zope2.View"
       />
 
+<!--
     <five:pagesFromDirectory
       module="Products.CPSDefault"
       directory="skins/cps_default"
@@ -207,5 +208,7 @@
       directory="skins/cps_styles"
       for=".interfaces.IMailBox"
       />
+
+-->
 
 </configure>
