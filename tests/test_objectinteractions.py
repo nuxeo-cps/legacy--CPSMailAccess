@@ -25,6 +25,7 @@ from CPSMailAccess.mailbox import manage_addMailBox
 from CPSMailAccess.mailtool import manage_addMailTool, MailTool
 from CPSMailAccess.mailfolder import MailFolder, MailContainerError
 from CPSMailAccess.utils import uniqueId
+from CPSMailAccess.mailbox import MailBox, MailBoxParametersView
 from Acquisition import Implicit
 from Testing.ZopeTestCase import ZopeTestCase
 
@@ -166,6 +167,16 @@ class ObjectInteractionTest(ZopeTestCase):
 
         self.assertEquals(len(folders), 3)
         self.assertEquals(hasattr(folders, 'Trash'), False)
+
+    def test_MailBoxParametersInterface(self):
+        """ testing MailBoxParametersView parameters interface
+        """
+        mailbox = self._getMailBox()
+        view = MailBoxParametersView(mailbox, None)
+        params = {'connection_type' : 'DUMMY',
+            'uid' : 'tarek', 'ok': '12', 'submit' : 'ok'}
+        view.setParameters(params)
+        self.assertEquals(mailbox['ok'], '12')
 
 def test_suite():
     return unittest.TestSuite((
