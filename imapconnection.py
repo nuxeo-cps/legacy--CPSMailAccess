@@ -23,7 +23,6 @@
 """
 import re
 from time import sleep, time
-
 from zLOG import LOG,INFO, DEBUG
 
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
@@ -35,6 +34,8 @@ from baseconnection import ConnectionError
 from baseconnection import ConnectionParamsError
 from baseconnection import CANNOT_SEARCH_MAILBOX, MAILBOX_INDEX_ERROR, \
     CANNOT_READ_MESSAGE, SOCKET_ERROR
+
+from zope.app.cache.ram import RAMCache
 
 class IMAPConnection(BaseConnection):
     """ IMAP4 v1 implementation for Connection
@@ -72,6 +73,7 @@ class IMAPConnection(BaseConnection):
 
         failures = 0
         connected = False
+
         while not connected and failures < 5:
             try:
                 if is_ssl:
@@ -79,7 +81,7 @@ class IMAPConnection(BaseConnection):
                 else:
                     self._connection = IMAP4(host, port)
                 connected = True
-            except IMAP4.abort:
+            except IMAP4.abort: # (IMAP4.error, IMAP4_SSL.error):
                 sleep(0.3)
                 failures += 1
 
@@ -526,8 +528,7 @@ class IMAPConnection(BaseConnection):
         return message_parts
 
     def _cleanpart(self, element):
-        """ cleans a word
-        """
+        """ cleans a word """
         if element[0] == '"' and element[-1]=='"':
             return element.strip('"')
         else:
@@ -539,8 +540,61 @@ class IMAPConnection(BaseConnection):
                 except ValueError:
                     return element.strip()
 
+    def getMessagePart(self, mailbox, message_number, part_number): #xxxxxxxxxxxxxxxxxxxxx
+        """ retrieves a message part """
+        return self.fetch(mailbox, message_number,
+                          '(BODY.PEEK[%s])' % part_number)
+
+    def getMessageStructure(self, mailbox, message_number):        #xxxxxxxxxxxxxxxxxxxxx
+        from time import asctime
+        print 'getMessageStructure %s %s %s' % (mailbox, message_number, asctime())
+        try:
+            return self.fetch(mailbox, message_number, '(BODY)')
+        finally:
+            print 'getMessageStructure end %s' % asctime()
+
+    def _extractInfos(self, infos, part):
+        if infos[0] not in ('alternative', 'related'):
+            if part != 1:
+                return []
+            return infos
+        else:
+            return infos[part]
+
+    def getPartInfos(self, mailbox, message_number, part_number):
+        structure = self.getMessageStructure(mailbox, message_number)
+        return self._extractInfos(structure, part_number)
+
+
+class CachedIMAPConnection(IMAPConnection):
+
+    def _addCache(self, key, data):
+        """ to be extern. in mailfolder """
+        if not hasattr(self, '_cache'):
+            self._cache = RAMCache()
+        self._cache.set(data, key)
+
+    def _getCache(self, key):
+        """ to be extern. in mailfolder """
+        if not hasattr(self, '_cache'):
+            self._cache = RAMCache()
+            return None
+        elements = self._cache.query(key)
+        return elements
+
+    def getMessageStructure(self, mailbox, message_number):
+
+        key = '%s.%s' %(mailbox, message_number)
+        value = self._getCache(key)
+        if value is None:
+            value = IMAPConnection.getMessageStructure(self, mailbox,
+                                                       message_number)
+            self._addCache(key, value)
+        return value
+
+
 connection_type = 'IMAP'
 
 def makeMailObject(connection_params):
-    newob =  IMAPConnection(connection_params)
+    newob =  CachedIMAPConnection(connection_params)
     return newob
