@@ -34,6 +34,7 @@ from Products.CPSMailAccess.mailmessage import MailMessage
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from Globals import InitializeClass
 from Acquisition import aq_parent, aq_inner
+from Products.Five import BrowserView
 
 from Products.CPSMailAccess.baseconnection import ConnectionError
 
@@ -335,6 +336,54 @@ class MailFolder(Folder):
             return current._getconnector()
         else:
             raise MailContainerError('%s is not contained in a mailbox' % self.getId())
+
+#
+# MailFolderView Views
+#
+class MailFolderView(BrowserView):
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+
+    def sortFolderContent(self, elements):
+        """ sorts the content
+            so folder gets on top
+        """
+        sorted_elements = []
+        for element in elements:
+            if IMailFolder.providedBy(element):
+                sorted_elements.append(('A', element))
+            else:
+                sorted_elements.append(('B', element))
+        sorted_elements.sort()
+        results = []
+        for element in sorted_elements:
+            results.append(element[1])
+        return results
+
+    def renderMailList(self):
+        """ renders mailfolder content
+        """
+        mailfolder = self.context
+
+        returned = '<div id="folder_content">'
+        elements = mailfolder.getMailMessages(list_folder=True,
+            list_messages=True, recursive=False)
+
+        elements = self.sortFolderContent(elements)
+
+        for element in elements:
+            returned += '<div id="folder_element">'
+            returned += '<a href="%s/view">' % element.absolute_url()
+            returned += element.title_or_id()
+            returned += '</a>'
+            returned += '</div>'
+
+        returned += '</div>'
+
+        return returned
+
+
 
 """ classic Zope 2 interface for class registering
 """
