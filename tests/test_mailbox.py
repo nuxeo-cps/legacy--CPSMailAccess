@@ -109,6 +109,11 @@ class MailBoxTestCase(MailTestCase):
         mailbox = self._getMailBox()
         self.assert_(mailbox.getIdentitites(), 'tz@nuxeo.com')
 
+    def test_draftcreate(self):
+        # tests that draft, trash, and sent gets created if they don't exist
+        mailbox = self._getMailBox()
+
+
 
 def test_suite():
     return unittest.TestSuite((

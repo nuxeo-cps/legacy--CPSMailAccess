@@ -43,7 +43,7 @@ class MailSearchViewTestCase(MailTestCase):
         wm = self.portal.portal_webmail
         wm.mail_catalogs.addCatalog('tziade')
 
-        cat = wm.mail_catalogs['tziade']
+        cat = wm.mail_catalogs['..tziade']
 
         for i in range(35):
             ob = self.getMailInstance(i)
@@ -68,7 +68,7 @@ class MailSearchViewTestCase(MailTestCase):
 
     def test_searchs(self):
 
-        cat = self.portal.portal_webmail.mail_catalogs['tziade']
+        cat = self.portal.portal_webmail.mail_catalogs['..tziade']
         query = {}
         query['searchable_text'] = u'Lovers'
         res = cat.search(query_request=query)

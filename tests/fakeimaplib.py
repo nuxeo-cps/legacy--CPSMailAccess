@@ -25,6 +25,7 @@ IMAPError = Exception
 
 class IMAP4:
     abort = IMAPError
+    state = 'NOAUTH'
 
     def __init__(self, host='', port=25):
         self.host = host
@@ -39,6 +40,7 @@ class IMAP4:
     def login(self, user, password):
         self.user= user
         self.password = password
+        self.state = 'AUTH'
         return ('OK', 'AUTH')
 
     def select(self, mailbox):

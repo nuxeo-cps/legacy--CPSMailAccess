@@ -47,6 +47,31 @@ class MailPartTestCase(MailTestCase):
         part = MailPart('part', ob, ob.getPart(0))
         self.assertEquals(part.getFileInfos(), None)
 
+    def test_setgetaddHeaders(self):
+        ob = self.getMailInstance(6)
+        ob.setHeader('Subject', 'one')
+        ob.setHeader('Subject', 'one')
+        headers = ob.getHeader('Subject')
+        self.assertEquals(headers, ['one'])
+
+        ob.addHeader('To', 'one')
+        ob.addHeader('To', 'two')
+        ob.addHeader('To', 'three')
+        headers = ob.getHeader('To')
+        self.assertEquals(headers, ['Dingus Lovers <cravindogs@cravindogs.com>',
+                                    'one', 'two', 'three'])
+
+        ob.removeHeader('To')
+        headers = ob.getHeader('To')
+        self.assertEquals(headers, [])
+
+        ob.addHeader('To', 'one')
+        ob.addHeader('To', 'two')
+        ob.addHeader('To', 'three')
+        ob.removeHeader('To', ['one'])
+        headers = ob.getHeader('To')
+        self.assertEquals(headers, ['two', 'three'])
+
 
 def test_suite():
     return unittest.TestSuite((
