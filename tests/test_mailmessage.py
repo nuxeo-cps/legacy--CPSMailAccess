@@ -144,6 +144,43 @@ class MailMessageTestCase(ZopeTestCase):
         ob = self.getMailInstance(2)
         self.assertEquals(ob.isMultipart(), False)
         
+    def test_getContentType(self):        
+        """ testing getContentType
+        """
+        ob = self.getMailInstance(6)
+
+        ct = ob.getContentType()
+        self.assertEquals(ct, 'multipart/mixed')
+        
+        ct = ob.getContentType(1)
+        self.assertEquals(ct, 'text/plain')
+        
+        ct = ob.getContentType(2)
+        self.assertEquals(ct, 'image/gif')
+
+        ob = self.getMailInstance(2)
+        
+        ct = ob.getContentType()
+        self.assertEquals(ct, 'text/plain')
+        
+        
+    def test_setContentType(self):        
+        """ testing setContentType
+        """
+        ob = self.getMailInstance(6)
+
+        ct = ob.getContentType()
+        self.assertEquals(ct, 'multipart/mixed')
+        ob.setContentType('text/plain')
+        ct = ob.getContentType()
+        self.assertEquals(ct, 'text/plain')
+        
+        ct = ob.getContentType(1)
+        self.assertEquals(ct, 'text/plain')
+        ob.setContentType('image/gif', 1)
+        ct = ob.getContentType(1)
+        self.assertEquals(ct, 'image/gif')        
+                
                                 
 def test_suite():
     return unittest.TestSuite((
