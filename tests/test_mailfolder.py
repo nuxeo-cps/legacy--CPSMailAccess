@@ -136,7 +136,7 @@ class MailFolderTestCase(ZopeTestCase):
         ob = MailFolder()
 
         for i in range(10):
-            folder = ob._addFolder()
+            folder = ob._addFolder('folder_'+str(i), 'folder_'+str(i))
             key = self.msgKeyGen()
             folder._addMessage(key,key)
             for y in range(2):
@@ -176,9 +176,39 @@ class MailFolderTestCase(ZopeTestCase):
         self.assertEquals(msg, None)
 
     def test_childFoldersCount(self):
+        """ testing child folder count
+        """
         ob = self.test_getMailMessagesCountRecursive()
         count = ob.childFoldersCount()
         self.assertEquals(count, 10)
+
+    def test_setSyncState(self):
+        """ testing setSyncState
+        """
+        ob = MailFolder()
+
+        for i in range(5):
+            sub_folder = ob._addFolder()
+            for y in range(4):
+                sub_sub_folder = sub_folder._addFolder()
+
+        ob.setSyncState(state=False, recursive=True)
+
+        folders = ob.getMailMessages(True, False, True)
+
+        self.assertEquals(len(folders), 25)
+
+        for folder in folders:
+            self.assertEquals(folder.sync_state, False)
+
+        ob.setSyncState(state=True, recursive=True)
+
+        folders = ob.getMailMessages(True, False, True)
+
+        for folder in folders:
+            self.assertEquals(folder.sync_state, True)
+
+
 
 def test_suite():
     return unittest.TestSuite((
