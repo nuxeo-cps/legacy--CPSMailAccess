@@ -23,12 +23,12 @@
           <input type="hidden" value="1" name="attach"/>
           <table>
             <tr>
-              <td>
+              <td width="100%">
                 <input class="attach_name" type="file" name="file"/>
               </td>
               <td>
                 <input class="attach_button" type="submit" name="submit"
-                    value=" "/>
+                    value="attach"/>
               </td>
             </tr>
           </table>
@@ -81,7 +81,7 @@
               <option value="BCc">BCc</option>
             </select>
           </td>
-          <td>
+          <td width="100%">
             <input class="message_edit_input" id="msg_to" name="msg_to" type="text"/>
           </td>
           <td>
