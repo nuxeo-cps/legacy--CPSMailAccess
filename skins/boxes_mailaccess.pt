@@ -2,14 +2,8 @@
 <!-- $Id$ -->
 <metal:block define-macro="node">
 
-<div style="margin-left:8px">
-  <tal:block tal:condition="element/selected">
-    <img src="folder_red.png"/>
-  </tal:block>
-  <tal:block tal:condition="not:element/selected">
-    <img src="folder_yellow.png"/>
-  </tal:block>
-
+<div style="margin-left:8px;margin-top: 2px;">
+  <img tal:attributes="src element/icon_name"/>
 
   <a tal:attributes="href element/url">
     <span tal:replace="element/short_title"/>
@@ -22,7 +16,8 @@
 </metal:block>
 
 <metal:block define-macro="basebox_default">
-  <div style="background-color: white;border:solid black 1px; padding :8px;">
+  <div style="background-color: white;border:solid black 1px;
+              padding :8px;margin-bottom:10px;">
   <tal:block tal:define="treeview here/treeview|nothing">
     <tal:block tal:repeat="element treeview">
       <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
