@@ -31,6 +31,7 @@ from html2text import HTML2Text
 from random import randrange
 from zLOG import LOG, INFO
 from encodings import exceptions as encoding_exceptions
+from CPSUtil import html
 
 _translation_table = string.maketrans(
     # XXX candidates: @°+=`|
@@ -219,10 +220,8 @@ def getFolder(mailbox, folder_name):
         current = getattr(current, element)
     return current
 
-
 def getCurrentDateStr():
-    """ gets current date
-    """
+    """ gets current date """
     date = datetime(1970, 1, 1)
     now = date.now()
     # english style
@@ -309,34 +308,21 @@ def cleanUploadedFileName(filename):
 
     return splitted[-1]
 
-def sanitizeHTML(html):
+def sanitizeHTML(content):
     """ satinize html """
-    re_script = r'(<\s*script.*?>)(.*?)(</script>)'
-    re_body = r'(<\s*body.*?>)(.*?)(</body>)'
-    work = html.replace('&lt;', '<')
+    work = content.replace('&lt;', '<')
     work = work.replace('&gt;', '>')
-    work = work.replace('<br>', '<br/>')
     # thunderbid's html has \n instead of \r\n
     work = fix_eols(work)
     work = work.replace('\r\n', '')    # nothing to care about in HTML
-
-    # first of all, extract body if necessary
-    body = re.findall(re_body, work)
-    if len(body) == 1:
-        if len(body[0]) == 3:
-            work = body[0][1]
-
-    # extract scripts
-    body = re.findall(re_script, work)
-    while len(body) != 0:
-        for script in body:
-            script = ''.join(script)
-            work = work.replace(script, '')
-        body = re.findall(re_script, work)
-    return work
+    return html.sanitize(work)
 
 def isValidEmail(mail):
     """ verifies a mail is a mail """
     re_script = r'.*@.*\..{2,4}'
-    return re.match(re_script, mail.strip()) is not None
+    res = re.match(re_script, mail.strip())
+    if res is None:
+        return False
+    res = res.group(0)
+    return res == mail.strip()
 
