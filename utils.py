@@ -19,7 +19,7 @@
 # $Id$
 """ a few utilities
 """
-import string, re    
+import string, re
 
 
 
@@ -29,7 +29,7 @@ _translation_table = string.maketrans(
     r"""________AAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy""")
 
 _ok_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_."
-    
+
 
 def makeId(s, lower=0):
     "Make id from string"
@@ -52,11 +52,17 @@ def makeId(s, lower=0):
     if lower:
         id = id.lower()
     return id
-    
-    
-def uniqueId(object, seed=''):    
+
+
+def uniqueId(container, seed='', use_primary=True):
+    """ returns a unique ID for a subobject
+    """
+    if use_primary:
+        primary_id = makeId(seed)
+        if not primary_id in container.objectIds():
+            return primary_id
     i = 0
-    if (object is not None) and (hasattr(object, 'objectIds')):    
-        while seed + str(i) in object.objectIds():
-            i +=1
-    return makeId(seed + str(i))     
+    while seed + str(i) in container.objectIds():
+        i +=1
+
+    return makeId(seed + str(i))
