@@ -44,7 +44,6 @@ class IMAPConnection(BaseConnection):
     _connection = None
     _selected_mailbox = None
 
-
     def __init__(self, connection_params= {}):
         """
         >>> f = IMAPConnection({'HOST': 'my.host', 'connection_type': 'IMAP'})
@@ -117,14 +116,14 @@ class IMAPConnection(BaseConnection):
         self._respawn()
         try:
             typ, dat = self._connection.login(user, password)
-            self._v_user = user
-            self._v_password = password
         except IMAP4.error:
             raise ConnectionError(LOGIN_FAILED + ' for user %s' % user)
 
         # _connection state is AUTH if login succeeded
         if typ == 'OK' :
             self.connected = True
+            self.user = user
+            self.password = password
             return True
         else:
             return False
@@ -137,6 +136,8 @@ class IMAPConnection(BaseConnection):
 
         if typ == 'BYE' :
             self.connected = False
+            self.user = None
+            self.password = None
 
     def list(self, directory='""', pattern='*'):
         """ see interface for doc
@@ -381,8 +382,7 @@ class IMAPConnection(BaseConnection):
         """
         self._respawn()
         self._connection.select(from_mailbox)
-        res = self._connection.uid('COPY', message_number, '"'+to_mailbox+'"')
-
+        res = self._connection.copy(message_number, '"'+to_mailbox+'"')
         try:
             if res[1][0] == 'Over quota':
                 raise ConnectionError('folder quota exceeded')
@@ -400,13 +400,14 @@ class IMAPConnection(BaseConnection):
         """ return flags of a message """
         self._respawn()
         self._connection.select(mailbox)
-        rep = self._connection.uid('FETCH',str(IMAPId),'(FLAGS)')
+        rep = self._connection.fetch(message_number,'(FLAGS)')
+
         val = rep[-1][0]
+        if val is None:
+            return ''
         flags=re.sub(r'(.+)(FLAGS \()(.+)(\).+)', r'\3', val)
         if string.find(flags, 'UID')!=(-1):
             flags=" "
-
-        raise flags
         return flags
 
     def setFlags(self, mailbox, message_number, flags):
@@ -414,15 +415,18 @@ class IMAPConnection(BaseConnection):
         self._respawn()
         self._connection.select(mailbox)
 
+        _flags = []
         for flag in flags.keys():
             if flags[flag] == 1:
-                name = flag.lower()
-                if name == 'forwarded':
-                    self.connection.uid('STORE',str(message_number),
-                        '+FLAGS','($Forwarded)')
+                name = flag
+                if name != 'forwarded':
+                    _flag = '\%s' % name
                 else:
-                    self._connection.uid('STORE',str(message_number),
-                        '+FLAGS','(\%s)' % name)
+                    _flag = '$forwarded'
+                _flags.append(_flag)
+
+        _flags = '(%s)' % ' '.join(_flags)
+        res = self._connection.store(message_number, 'FLAGS', _flags)
 
     def expunge(self):
         """ expunge
