@@ -126,10 +126,15 @@ class MailMessageEdit(BrowserView):
         if self.request is not None:
             if result:
                 # need to set the answered or forwarded flag
-                if msg.answerType == 'reply':
-                    mail.setFlag('answered', 1)
-                else:
-                    mail.setFlag('forwarded', 1)
+                origin = msg.origin_message
+                if origin is not None:
+                    folder = origin.getMailFolder()
+                    if msg.answerType == 'reply':
+                        origin.setFlag('answered', 1)
+                        folder.onFlagChanged(origin, 'answered', 1)
+                    else:
+                        origin.setFlag('forwarded', 1)
+                        folder.onFlagChanged(origin, 'forwarded', 1)
 
                 if came_from is not None and came_from !='':
                     goto = came_from
