@@ -88,12 +88,16 @@ class MailCatalog(ZCatalog):
                         if word not in searchable and word not in stop_list:
                             searchable.append(word)
 
+        # todo : index body even for message with cache_level = 1
         if self.index_body:
             if not msg.isMultipart():
                 part = msg.getPart()
                 if not isinstance(part, str):
                     part = part._payload
-                words = part.split(' ')
+                if part is not None:
+                    words = part.split(' ')
+                else:
+                    words = []
             else:
                 # for mutlipart message, nothing yet
                 # TODO
