@@ -24,27 +24,20 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
-from Products.CPSMailAccess.mailfolder import MailFolder, MailFolderView
+from Products.CPSMailAccess.mailfolder import MailFolder
 from Products.CPSMailAccess.mailexceptions import MailContainerError
 from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.mailbox import MailBox
 from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
+from basetestcase import MailTestCase
 
-installProduct('FiveTest')
-installProduct('Five')
+class MailFolderTestCase(MailTestCase):
 
-class MailFolderTestCase(ZopeTestCase):
-    msg_key = 0
-
-    def msgKeyGen(self):
-        result = 'msg_' + str(self.msg_key)
-        self.msg_key += 1
-        return result
-
-    def getPhysicalPath(self):
-        """ fake getPhysicalPath
-        """
-        return ('fake',)
+    def test_getMailBox(self):
+        mailbox = self._getMailBox()
+        mailbox._addFolder('folder')
+        folder = mailbox.folder
+        self.assertEquals(folder.getMailBox(), mailbox)
 
     def test_getServerName(self):
         # testing getServerName and setServerName
@@ -52,10 +45,8 @@ class MailFolderTestCase(ZopeTestCase):
         # when setServerName will call for content resync
         # for non-regression
         ob = MailFolder()
-
         ob.setServerName('INBOX')
         self.assertEquals(ob.getServerName(), 'INBOX')
-
         ob.setServerName('INBOX.Sent')
         self.assertEquals(ob.getServerName(), 'INBOX.Sent')
 
@@ -113,10 +104,8 @@ class MailFolderTestCase(ZopeTestCase):
     def test_getMailMessagesRecursive(self):
         # testing getMailMessages with all combos recursively
         ob = self.test_getMailMessagesCountRecursive()
-
         all_types = ob.getMailMessages(True, True, True)
         self.assertEquals(len(all_types), 263)
-
         messages_types = ob.getMailMessages(False, True, True)
 
         # see if transtyping is ok
@@ -124,13 +113,11 @@ class MailFolderTestCase(ZopeTestCase):
             self.assertEquals(IMailMessage.providedBy(element), True)
 
         folder_types = ob.getMailMessages(True, False,True)
-
         # see if transtyping is ok
         for element in folder_types:
             self.assertEquals(IMailFolder.providedBy(element), True)
 
         no_type = ob.getMailMessages(False, False, True)
-
         self.assertEquals(len(no_type), 0)
 
 
@@ -173,164 +160,104 @@ class MailFolderTestCase(ZopeTestCase):
         count = ob.childFoldersCount()
         self.assertEquals(count, 10)
 
+    def test_childFoldersCount(self):
+        # testing child folder count
+        ob = self.test_getMailMessagesCountRecursive()
+        childs = ob.getchildFolders()
+        self.assertEquals(len(childs), 10)
+
     def test_setSyncState(self):
         # testing setSyncState
         ob = MailFolder()
-
         for i in range(5):
             sub_folder = ob._addFolder()
             for y in range(4):
                 sub_sub_folder = sub_folder._addFolder()
-
         ob.setSyncState(state=False, recursive=True)
-
         folders = ob.getMailMessages(True, False, True)
-
         self.assertEquals(len(folders), 25)
-
         for folder in folders:
             self.assertEquals(folder.sync_state, False)
-
         ob.setSyncState(state=True, recursive=True)
-
         folders = ob.getMailMessages(True, False, True)
-
         for folder in folders:
             self.assertEquals(folder.sync_state, True)
 
-    def test_MailFolderViewInstance(self):
-        # testing mail folder view instanciation
-        ob = MailFolder()
-        view = MailFolderView(ob, None)
-        self.assertNotEquals(view, None)
-
-    def test_renderMailList(self):
-        # testing mail folder view instanciation
-        ob = MailFolder()
-
-        view = MailFolderView(ob, None)
-        rendered_list = view.renderMailList()
-
-        # empty folder
-        self.assertEquals(rendered_list, [])
-
-        # 5 sub folders and 2 messages
-        ob = self.test_getMailMessagesCountRecursive()
-
-        # adding a fake physical path
-        ob.getPhysicalPath = self.getPhysicalPath
-
-        view = MailFolderView(ob, None)
-        rendered_list = view.renderMailList()
-
-        self.assertEquals(rendered_list[len(rendered_list)-1]['url'], '.msg_232/view')
-
-    def test_TreeView(self):
-        # testing treeview renderer
-        ob = self.test_getMailMessagesCountRecursive()
-        view = MailFolderView(ob, None)
-
-        self.assertRaises(MailContainerError, view.renderTreeView)
-
-        ob = MailBox('box')
-        ob.getPhysicalPath = self.getPhysicalPath
-
-        for i in range(5):
-            sub_folder = ob._addFolder('folder_'+str(i))
-            if i == 0:
-                first_sub_folder = sub_folder
-
-            # hack for tests
-            sub_folder.getPhysicalPath = self.getPhysicalPath
-
-            for y in range(4):
-                sub_sub_folder = sub_folder._addFolder('folder_'+str(y))
-
-        view = MailFolderView(ob, None)
-
-        treeview = view.renderTreeView()
-
-        self.assertEquals(len(treeview), 5)
-        first = treeview[0]
-
-        self.assertEquals(first['object'], first_sub_folder)
-
-    def test_TreeViewCache(self):
-        ob = MailBox('box')
-        ob.getPhysicalPath = self.getPhysicalPath
-
-        for i in range(5):
-            sub_folder = ob._addFolder('folder_'+str(i))
-            if i == 0:
-                first_sub_folder = sub_folder
-
-            # hack for tests
-            sub_folder.getPhysicalPath = self.getPhysicalPath
-
-            for y in range(4):
-                sub_sub_folder = sub_folder._addFolder('folder_'+str(y))
-
-        view = MailFolderView(ob, None)
-
-        treeview = view.renderTreeView()
-
-        self.assertEquals(len(treeview), 5)
-        first = treeview[0]
-
-        self.assertEquals(first['object'], first_sub_folder)
-
-        self.assertNotEquals(ob.getTreeViewCache(), None)
-
-        treeviewagain = view.renderTreeView()
-        self.assertEquals(treeviewagain, treeview)
-
-        ob._addFolder('folder_XXXX')
-
-        self.assertEquals(ob.getTreeViewCache(), None)
-
-        treeviewagain = view.renderTreeView()
-        self.assertNotEquals(treeviewagain, treeview)
-
-
-    def test_createShortTitle(self):
-        # test createShortTitle
-        view = MailFolderView(None, None)
-
-        ob = MailFolder('ok', 'INBOX.Trash.ok')
-
-        title = view.createShortTitle(ob)
-        self.assertEquals(title, 'ok')
-
-        ob = MailMessage('.message1')
-        ob.title = '.message1'
-
-        title = view.createShortTitle(ob)
-        self.assertEquals(title, 'message1')
-
-
     def test_isEmpty(self):
         ob = MailFolder()
-
         self.assert_(ob.isEmpty())
-
         for i in range(10):
             ob._addFolder()
-
         self.assert_(not ob.isEmpty())
 
     def test_childFoldersCount(self):
         ob = MailFolder()
-
         self.assertEquals(ob.childFoldersCount(), 0)
-
         for i in range(10):
             ob._addFolder()
-
         for i in range(10):
             ob._addMessage('ok'+str(i), 'ok'+str(i))
-
         self.assertEquals(ob.childFoldersCount(), 10)
 
+    def oldtest_renaming(self):
+        mailbox = self._getMailBox()
+        Todos = mailbox._addFolder('Todos', 'Todos')
+        res = Todos.rename('Done')
+        self.assertEquals(Todos.server_name, 'Done')
+        self.assert_(hasattr(mailbox, 'Done'))
+        self.assert_(not hasattr(mailbox, 'Todos'))
+
+    def test_simpleFolderName(self):
+        mailbox = self._getMailBox()
+        ob = MailFolder('Todos')
+        mailbox._setObject('Todos', ob)
+        ob = mailbox.Todos
+        ob.server_name = 'INBOX.Todos'
+        self.assertEquals(ob.simpleFolderName(), 'Todos')
+
+    def oldtest_folder_deleting(self):
+        mailbox = self._getMailBox()
+        Trash = mailbox._addFolder('Trash')
+
+        mailbox.emptyTrash()
+
+        Todos = mailbox._addFolder('Todosez', 'Todosez')
+        # setting up the trash
+
+        res = Todos.delete()
+        self.assertEquals(Todos.server_name, 'INBOX.Trash.Todosez')
+        self.assert_(hasattr(mailbox.Trash, 'Todosez'))
+        self.assertEquals(mailbox.Trash.Todos.getMailFolder().id, 'Trash')
+
+    def test_message_moving(self):
+        mailbox = self._getMailBox()
+        msg1 = mailbox._addMessage('1', '1234567TCFGVYBH')
+        self.assertEquals(msg1.getMailFolder(), mailbox)
+        # setting up the trash
+        Trash = mailbox._addFolder('Trash')
+        msg1 = mailbox._moveMessage(msg1.uid, Trash)
+        self.assertNotEquals(getattr(Trash, '.1', None), None)
+        self.assertEquals(getattr(mailbox, '.1', None), None)
+
+        self.assertEquals(msg1.getMailFolder(), Trash)
+
+    def test_message_moving_with_IMAP(self):
+        mailbox = self._getMailBox()
+        msg1 = mailbox._addMessage('1', '1234567TCFGVYBH')
+        self.assertEquals(msg1.getMailFolder(), mailbox)
+        # setting up the trash
+        Trash = mailbox._addFolder('Trash')
+        mailbox.moveMessage(msg1.uid, Trash)
+        self.assertNotEquals(getattr(Trash, '.1', None), None)
+        self.assertEquals(getattr(mailbox, '.1', None), None)
+
+    def test_id_generator(self):
+        mailbox = self._getMailBox()
+        msg1 = mailbox._addMessage('1', '1234567TCFGVYBH')
+        msg2 = mailbox._addMessage('2', '1234567TCFGVZDdYBH')
+        msg3 = mailbox._addMessage('3', '1234567TCFDZGVYBH')
+        id = mailbox.getNextMessageUid()
+        self.assertEquals(id, '4')
 
 def test_suite():
     return unittest.TestSuite((
