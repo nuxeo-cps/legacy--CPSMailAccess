@@ -19,7 +19,7 @@
 # $Id$
 """ a few utilities
 """
-import string, re
+import string, re, md5
 
 
 
@@ -66,3 +66,10 @@ def uniqueId(container, seed='', use_primary=True):
         i +=1
 
     return makeId(seed + str(i))
+
+def md5Hash(string):
+    """ returns a md5 key
+    """
+    m = md5.new()
+    m.update(string)
+    return m.hexdigest()
