@@ -10,12 +10,12 @@
     </script>
   </metal:main>
   <metal:block metal:fill-slot="main"
-               tal:define="show_folder request/showfolders|python:0">
+               tal:define="show_folder request/showfolders|python:0;
+                           content_managment request/content_managment|nothing;">
     <div tal:condition="show_folder"
          tal:define="is_folder python:0">
       <metal:block use-macro="here/messagelist_macros/messagelist"/>
     </div>
-
     <div class="mailHeaders">
       <metal:block use-macro="here/messagelist_macros/messagetoolbar"/>
       <metal:block use-macro="here/messagelist_macros/messageheaders"/>
