@@ -226,7 +226,7 @@ class MailMessage(MailPart):
         """
         self.cache_level = cache_level
         MailPart.loadMessage(self, raw_msg)
-        self.title = self._getStore()['Subject']
+        self.title = decodeHeader(self._getStore()['Subject'])
 
     def detachFile(self, filename):
         """ detach a file
