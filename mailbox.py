@@ -21,8 +21,7 @@
 
 A MailBox is the root MailFolder for a given mail account
 """
-import sys
-import thread
+
 import re
 from email.Utils import parseaddr
 
