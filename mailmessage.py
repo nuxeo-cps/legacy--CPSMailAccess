@@ -31,6 +31,8 @@ from email import message_from_string
 from email.Charset import Charset
 from Globals import InitializeClass
 from Products.Five import BrowserView
+from mailrenderer import MailRenderer
+
 
 class MailMessage(Folder):
     """A folderish mail
@@ -82,11 +84,23 @@ class MailMessage(Folder):
         else:
             return 1
 
-    def getPart(self, index):
+    def getPart(self, index=None, decode= False):
         """ See interfaces.IMailMessage
         """
         store = self._getStore()
-        return store.get_payload(index)
+        if index == None:
+            try:
+                part = store.get_payload(None, decode)
+            except TypeError:
+                part = None
+        else:
+            try:
+                part = store.get_payload(index, decode)
+            except TypeError:
+                part = None
+
+        return part
+
 
     def getCharset(self, part_index=0):
         """ See interfaces.IMailMessage
@@ -266,8 +280,22 @@ class MailMessage(Folder):
 #
 class MailMessageView(BrowserView):
 
+    _RenderEngine = MailRenderer()
+
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+
+    def _getSubject(self):
+        if self.context is not None:
+            subject = self.context['Subject']
+            if subject is None:
+                subject = '?'
+        else:
+            subject = '?'
+
+        rendering = '<div id="mailSubject">' + subject + '</div>'
+
+        return rendering
 
     def _getFromList(self):
         if self.context is not None:
@@ -293,17 +321,50 @@ class MailMessageView(BrowserView):
 
         return rendering
 
+    def _bodyRender(self, mail, part_index):
+        return self._RenderEngine.renderBody(mail, part_index)
+
+    def _getBody(self):
+        if self.context is not None:
+            mail = self.context
+
+            if mail.isMultipart():
+                ### XXXXXX todo here : recursively parse multipart
+                ### messages
+                body = self._bodyRender(mail, 0)
+
+                # XXXXXXXXXXhere we need part parsing
+
+                #raise str(body)
+            else:
+                body = ''
+                if mail.getPartCount() > 0 :
+                    body = self._bodyRender(mail, 0)
+                else:
+                    body = ''
+
+        else:
+            body = ''
+
+        rendering = '<div id="mailBody">' + body + '</div>'
+
+        return rendering
+
+
     def render(self):
         """ renders the mail
         """
-        str_render = self._getFromList()
-
+        html = self._getSubject()
         #see if this is reliable
-        str_render = str_render + '\n'
-
-        str_render = str_render + self._getToList()
-
-        return str_render
+        html = html + '\n'
+        html = html + self._getFromList()
+        #see if this is reliable
+        html = html + '\n'
+        html = html + self._getToList()
+        #see if this is reliable
+        html = html + '\n'
+        html = html + self._getBody()
+        return html
 
 
 """ classic Zope 2 interface for class registering
