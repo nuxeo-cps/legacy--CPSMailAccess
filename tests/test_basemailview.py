@@ -23,9 +23,7 @@ from Testing.ZopeTestCase import ZopeTestCase
 import os
 from Products.CPSMailAccess.basemailview import BaseMailMessageView
 
-installProduct('FiveTest')
 installProduct('Five')
-
 
 class BaseMailViewCase(ZopeTestCase):
 
