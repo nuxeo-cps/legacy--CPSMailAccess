@@ -87,7 +87,7 @@ class MailMessageEdit(BrowserView):
         result = self.context.sendEditorsMessage()
 
         if self.request is not None:
-            if came_from is not None:
+            if came_from is not None and came_from !='':
                 goto = came_from
             else:
                 if hasattr(mailbox, 'INBOX'):
@@ -103,10 +103,9 @@ class MailMessageEdit(BrowserView):
     def getIdentitites(self):
         """ gives to the editor the list of current mùailbox idendities
         """
-        # XXXX todo
-        identity = {'email' : 'tarek@ziade.org', 'fullname' : 'Tarek Ziadé'}
-
-        return [identity]
+        mailbox = self.context
+        identities = mailbox.getIdentitites()
+        return identities
 
     def is_editor(self):
         """ tells if we are in editor view (hack)
