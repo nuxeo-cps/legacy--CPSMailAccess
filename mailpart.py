@@ -43,13 +43,12 @@ class MailPart(Folder):
     implements(IMailPart)
     msg = None
     _v_part = None
-    id = ''
-    cache_level = 1
 
     def __init__(self, id, message, part):
         self.id = id
         self.msg = message
         self._v_part = part
+        self.cache_level = 1
 
     def copyFrom(self, msg):
         """ make a copy
