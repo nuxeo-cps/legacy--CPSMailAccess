@@ -27,6 +27,7 @@ from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
 from Products.CPSInstaller.CPSInstaller import CPSInstaller
 from OFS.ObjectManager import BadRequestException
+from Products.CPSMailAccess.mailtool import manage_addMailTool
 
 SKINS = {'cpsmailaccess_default' : 'Products/CPSMailAccess/skins',
          'cpsmailaccess_icons'   : 'Products/CPSMailAccess/skins/icons',
@@ -42,12 +43,8 @@ class CPSMailAccessInstaller(CPSInstaller):
         """ creates an external method for a
             product install and launches it
         """
-
         objectName ="cpsmailaccess_"+ModuleName+"_installer"
-
         objectName = objectName.lower()
-
-
         # Install the product
         self.log(ModuleName+" INSTALL [ START ]")
         installer = ExternalMethod(objectName,
@@ -67,8 +64,8 @@ class CPSMailAccessInstaller(CPSInstaller):
     def installProducts(self):
         """ install third party products
         """
-        self.log("Installing Kupu...")
-        self.installProduct('kupu', 'Install')
+        self.log("Installing TextIndexNG2...")
+        #self.installProduct('TextIndexNG2', 'Install')
         self.log("... done")
 
     def install(self):
@@ -86,7 +83,9 @@ class CPSMailAccessInstaller(CPSInstaller):
     def setupPortalWebMail(self):
         """ sets up portal webmail
         """
-        pass
+        # lets add a portal_webmail tool
+        if not hasattr(self.portal, 'portal_webmail'):
+            manage_addMailTool(self.portal)
 
     def setupTypes(self):
         typestool = self.portal.portal_types
