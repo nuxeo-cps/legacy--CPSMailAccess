@@ -101,7 +101,7 @@ class MailMessage(Folder):
         store = self._getStore()   
         ob_charset = Charset(charset)
         
-        if part_index <= 0:
+        if not self.isMultipart():
             store.set_charset(ob_charset)
         else:
             payload = store.get_payload()
