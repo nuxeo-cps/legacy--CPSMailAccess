@@ -21,47 +21,48 @@
 
       <table border="0" width="100%">
         <tr>
-          <td>
+          <td width="50%">
             Message Subject :
           </td>
-          <td>
+          <td width="50%">
             <input type="hidden" name="relation_0" value="subject"/>
-            <input type="text" name="value_0" tal:attributes="value value_0"/>
+            <input class="fullwidth" type="text" name="value_0" tal:attributes="value value_0"/>
           </td>
         </tr>
         <tr>
-          <td>
+          <td width="50%">
             Message From :
           </td>
-          <td>
+          <td width="50%">
             <input type="hidden" name="relation_1" value="from"/>
-            <input type="text" name="value_1" tal:attributes="value value_1"/>
+            <input class="fullwidth" type="text" name="value_1" tal:attributes="value value_1"/>
           </td>
         </tr>
         <tr>
-          <td>
+          <td width="50%">
             Message Carbon Copy :
           </td>
-          <td>
+          <td width="50%">
             <input type="hidden" name="relation_2" value="cc"/>
-            <input type="text" name="value_2" tal:attributes="value value_2"/>
+            <input class="fullwidth" type="text" name="value_2" tal:attributes="value value_2"/>
           </td>
         </tr>
         <tr>
-          <td>
+          <td width="50%">
             Message Contains :
           </td>
-          <td>
+          <td width="50%">
             <input type="hidden" name="relation_3" value="body"/>
-            <input type="text" name="value_3" tal:attributes="value value_3"/>
+            <input class="fullwidth" type="text" name="value_3" tal:attributes="value value_3"/>
           </td>
         </tr>
         <tr>
-          <td>
+          <td width="50%">
             Intersection :
           </td>
-          <td>
-            <input type="checkbox" name="intersection" tal:attributes="checked intersection"/>
+          <td width="50%">
+            <input type="checkbox" name="intersection"
+                tal:attributes="checked intersection"/>
           </td>
         </tr>
       </table>
@@ -86,10 +87,12 @@
         <hr/>
         <tal:block tal:define="form request/form;
                                results python:here.zemanticSearchMessages(**form);
-                               num_results python:len(results)">
+                               num_results python:len(results[0]);
+                               time python:'%0.2f' % results[1];
+                               results python:results[0]">
             <tal:block tal:condition="python:num_results>0">
               <div>
-                Found <tal:block tal:replace="num_results"/> results :
+                Found <tal:block tal:replace="num_results"/> results in <tal:block tal:replace="time"/> seconds:
               </div>
               <div id="searchResults">
                 <metal:block metal:use-macro="here/messagelist_macros/search_messagelist"/>
