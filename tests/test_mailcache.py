@@ -28,8 +28,6 @@ from Products.CPSMailAccess.mailcache import MailCache
 from Products.CPSMailAccess.interfaces import IMailMessageCache, IMailMessage
 from Products.CPSMailAccess.mailmessage import MailMessage
 
-
-installProduct('FiveTest')
 installProduct('Five')
 
 class MailCacheTestCase(ZopeTestCase):

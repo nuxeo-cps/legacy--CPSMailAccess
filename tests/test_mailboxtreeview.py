@@ -26,7 +26,6 @@ from Products.CPSMailAccess.mailboxtreeview import MailBoxTreeView, \
     manage_addMailBoxTreeview
 from Products.CPSMailAccess.interfaces import IMailBox
 
-installProduct('FiveTest')
 installProduct('Five')
 
 class MailBoxViewTestCase(ZopeTestCase):

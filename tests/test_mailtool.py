@@ -23,7 +23,6 @@ from Testing.ZopeTestCase import ZopeTestCase
 from Products.CPSMailAccess.mailtool import MailTool
 from Products.CPSMailAccess.interfaces import IMailTool
 
-installProduct('FiveTest')
 installProduct('Five')
 
 class MailToolTestCase(ZopeTestCase):

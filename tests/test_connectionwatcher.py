@@ -27,9 +27,7 @@ from Products.CPSMailAccess.connectionlist import ConnectionList
 from Products.CPSMailAccess.dummyconnection import DummyConnection
 from time import time,sleep
 
-installProduct('FiveTest')
 installProduct('Five')
-
 
 class ConnectionWatcherTestCase(ZopeTestCase):
 
