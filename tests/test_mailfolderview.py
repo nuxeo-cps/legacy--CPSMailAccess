@@ -120,7 +120,7 @@ class MailFolderViewTestCase(MailTestCase):
 
         #self.assertRaises(MailContainerError, view.renderTreeView)
 
-        ob = MailBox('box')
+        ob = self._getMailBox()
         ob.getPhysicalPath = self.getPhysicalPath
 
         for i in range(5):
@@ -145,7 +145,7 @@ class MailFolderViewTestCase(MailTestCase):
         self.assertEquals(first['object'], first_sub_folder)
 
     def test_TreeViewCache(self):
-        ob = MailBox('box')
+        ob = self._getMailBox()
         ob.getPhysicalPath = self.getPhysicalPath
 
         for i in range(5):

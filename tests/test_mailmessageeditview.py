@@ -43,6 +43,7 @@ class MailMessageEditTestCase(MailTestCase):
 
     def test_attach_file(self):
         mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()        # clean previous tests
         msg = mailbox.getCurrentEditorMessage()
         msg.setPart(0, 'the body')
         self.assert_(not msg.isMultipart())
@@ -66,6 +67,7 @@ class MailMessageEditTestCase(MailTestCase):
 
     def test_detachFile(self):
         mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()        # clean previous tests
         ret = self.test_attach_file()
         msg = ret[0]
         view = ret[1]
@@ -77,6 +79,7 @@ class MailMessageEditTestCase(MailTestCase):
 
     def test_addRecipient(self):
         mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()        # clean previous tests
         msg = mailbox.getCurrentEditorMessage()
         view = MailMessageEdit(mailbox, None)
         view.addRecipient('tziade@nuxeo.com', 'To')
@@ -91,12 +94,14 @@ class MailMessageEditTestCase(MailTestCase):
 
     def test_getDestList(self):
         mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()         # empty previous message
         msg = mailbox.getCurrentEditorMessage()
         view = MailMessageEdit(mailbox, None)
         view.addRecipient('tziade@nuxeo.com', 'To')
         view.addRecipient('tz@nuxeo.com', 'Cc')
-        self.assertEquals(view.getDestList(), [{'type': 'To', 'value': u'tziade@nuxeo.com'},
-            {'type': 'Cc', 'value': u'tz@nuxeo.com'}])
+        self.assertEquals(view.getDestList('To'), [u'tziade@nuxeo.com'])
+        self.assertEquals(view.getDestList('Cc'), [u'tz@nuxeo.com'])
+
 
     def test_addMultipleRecipients(self):
         mailbox = self._getMailBox()
@@ -105,13 +110,44 @@ class MailMessageEditTestCase(MailTestCase):
         view.addRecipient('tziade@nuxeo.com, tarek@ziade.org;tz@nuxeo.com', 'To')
 
         self.assertEquals(view.getDestList(),
-                          [{'type': 'To', 'value': u'tziade@nuxeo.com'},
-                           {'type': 'To', 'value': u'tarek@ziade.org'},
-                           {'type': 'To', 'value': u'tz@nuxeo.com'}])
+                          [u'tziade@nuxeo.com', u'tarek@ziade.org',
+                           u'tz@nuxeo.com'])
+
+    def test_PleaseDoNotAttachSameFileTwice(self):
+
+        mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()        # clean previous tests
+        msg = mailbox.getCurrentEditorMessage()
+        msg.setPart(0, 'the body')
+        self.assert_(not msg.isMultipart())
+
+        view = MailMessageEdit(mailbox, None)
+
+        my_file = self._openfile('PyBanner048.gif')
+        storage = FakeFieldStorage()
+        storage.file = my_file
+        storage.filename = 'PyBanner048.gif'
+        uploaded = FileUpload(storage)
+        view.attachFile(uploaded)
+
+        my_file2 = self._openfile('PyBanner048.gif')
+        storage2 = FakeFieldStorage()
+        storage2.file = my_file2
+        storage2.filename = 'PyBanner048.gif'
+        uploaded2 = FileUpload(storage2)
+
+        view.attachFile(uploaded2)
+
+        self.assert_(msg.isMultipart())
+        self.assertEquals(msg.getPartCount(), 2)
+
+        view.sendMessage('from me', 'subject', 'body')
+
 
     def test_addingPartsThenSends(self):
 
         mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()        # clean previous tests
         msg = mailbox.getCurrentEditorMessage()
         msg.setPart(0, 'the body')
         self.assert_(not msg.isMultipart())
@@ -140,12 +176,10 @@ class MailMessageEditTestCase(MailTestCase):
         view.attachFile(uploaded3)
         view.detachFile('PyBanner048.gif')
 
+        self.assert_(msg.isMultipart())
+        self.assertEquals(msg.getPartCount(), 2)
+
         view.sendMessage('from me', 'subject', 'body')
-
-
-
-
-
 
 
 

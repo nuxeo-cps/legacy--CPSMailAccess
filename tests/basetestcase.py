@@ -43,13 +43,19 @@ class FakeDirectory:
 class FakeDirectories(Folder):
     members = FakeDirectory()
 
+
+class FakePortalUrl:
+    def getPortalPath(self):
+        return 'cps'
+
 class FakePortal(Folder):
 
     portal_directories = FakeDirectories()
+    portal_url = FakePortalUrl()
+    portal_webmail = MailTool()
 
     def getPhysicalPath(self):
         return ('', 'nowhere')
-
 
 class FakeResponse:
     def redirect(self, url):
@@ -84,8 +90,6 @@ class MailTestCase(ZopeTestCase):
 
     def __init__(self, methodName='runTest'):
         ZopeTestCase.__init__(self, methodName)
-        portal_webmail = MailTool()
-        self.portal.portal_webmail = portal_webmail
 
     def msgKeyGen(self):
         result = 'msg_' + str(self.msg_key)

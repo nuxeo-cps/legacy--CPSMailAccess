@@ -74,10 +74,11 @@ class MailSearchTestCase(MailTestCase):
         rid = brain.getRID()
         datas = cat.getIndexDataForRID(rid)
         self.assertEquals(datas['searchable_text'],
-            [(u'delivery', 1), (u'notification', 1),
-             (u'has', 1), (u'failed', 1),
-              (u'scr-admin@socal-raves.org', 1), ('internet', 1),
-             (u'mail', 1), (u'postmaster@ucla.edu', 1)])
+                          [(u'delivery', 1), (u'notification', 1), (u'has', 1),
+                           (u'failed', 1), (u'scr', 1), (u'admin', 1),
+                           (u'socal', 1), (u'raves', 1), (u'internet', 1),
+                           (u'mail', 1), (u'postmaster', 1), (u'ucla', 1),
+                           (u'edu', 1)])
 
     def test_unindexing(self):
         cat = self._getCatalog()
@@ -222,9 +223,24 @@ class MailSearchTestCase(MailTestCase):
             if word.find('@')==-1:
                 self.assert_(word in wrap_list)
 
+    def test_accentsSearches(self):
+
+        cat = self._getCatalog()
+
+        for i in range(35):
+            ob = self.getMailInstance(i)
+            ob = ob.__of__(self.portal)
+            ob.getPhysicalPath = self.fakeGetPhysicalPath
+            cat.indexMessage(ob)
+
+        query = {}
+        query['searchable_text'] = u'habilité'
+        res = cat.search(query_request=query)
+        self.assertEquals(len(res), 0)
 
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailSearchTestCase),
         doctest.DocTestSuite('Products.CPSMailAccess.mailsearch'),
         ))
+

@@ -73,6 +73,13 @@ class MailSearchViewTestCase(MailTestCase):
         for res in results:
             self.assert_(res['path'] in direct_search)
 
+    def test_weirdo_searchs(self):
+
+        searchview, cat, box = self._getView()    # also fills cat
+        results = searchview.searchMessages('é')
+
+
+
 
 
 def test_suite():
