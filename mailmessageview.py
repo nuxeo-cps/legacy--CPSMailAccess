@@ -34,7 +34,8 @@ from basemailview import BaseMailMessageView
 from mailpart import MailPart
 from mailfolderview import MailFolderView
 from email import message_from_string
-
+from email import base64MIME
+from mailexceptions import MailPartError
 
 class MailMessageView(BaseMailMessageView):
 
@@ -45,9 +46,10 @@ class MailMessageView(BaseMailMessageView):
     def renderDate(self):
         """ renders the mail date
         """
-        if self.context is not None:
+        context = self.context
+        if context is not None: # and IMailPart.providedBy(context):
             date = self.context.getHeader('Date')
-            if date is None or date == []:
+            if date == []:
                 date = '?'
             else:
                 date = decodeHeader(date[0])
@@ -59,9 +61,10 @@ class MailMessageView(BaseMailMessageView):
     def renderSmallDate(self):
         """ renders the mail date
         """
-        if self.context is not None:
+        context = self.context
+        if context is not None: # and IMailPart.providedBy(context):
             date = self.context.getHeader('Date')
-            if date is None or date == []:
+            if date == []:
                 date = '?'
             else:
                 date = decodeHeader(date[0])
@@ -73,45 +76,53 @@ class MailMessageView(BaseMailMessageView):
     def renderSubject(self):
         """ renders the mail subject
         """
-        if self.context is not None:
-            subject = self.context.getHeader('Subject')
-            if subject is None or subject == []:
-                subject = '?'
-            else:
-                subject = decodeHeader(subject[0])
-        else:
-            subject = '?'
-        return subject
+        return self.renderHeaderList('Subject')
 
     def renderFromList(self):
         """ renders the mail From
         """
-        if self.context is not None:
-            froms = self.context.getHeader('From')
-            if froms is None or froms==[]:
-                froms = '?'
-            else:
-                froms = decodeHeader(froms[0])
-        else:
-            froms = '?'
-        return froms
+        return self.renderHeaderList('From')
 
     def renderToList(self):
         """ renders the mail list
         """
-        if self.context is not None:
-            tos = self.context.getHeader('To')
-            if tos is None or tos == []:
-                tos = '?'
+        return self.renderHeaderList('To')
+
+    def renderCcList(self):
+        """ renders the mail list
+        """
+        return self.renderHeaderList('Cc')
+
+    def toCount(self):
+        return self.headerCount('To')
+
+    def ccCount(self):
+        return self.headerCount('Cc')
+
+    def fromCount(self):
+        return self.headerCount('From')
+
+    def headerCount(self, name):
+        """ tells the number of elements of a header
+        """
+        return len(self.context.getHeader(name))
+
+    def renderHeaderList(self, name):
+        """ renders the mail list
+        """
+        context = self.context
+        if context is not None:# and IMailPart.providedBy(context):
+            headers = self.context.getHeader(name)
+            if headers == []:
+                headers = '?'
             else:
                 decoded = []
-                for to in tos:
-                    decoded.append(decodeHeader(to))
+                for header in headers:
+                    decoded.append(decodeHeader(header))
                 return ' '.join(decoded)
         else:
-            tos = '?'
-        return tos
-
+            headers = '?'
+        return headers
 
     def _bodyRender(self, mail, part_index):
         return self._RenderEngine.renderBody(mail, part_index)
@@ -150,69 +161,71 @@ class MailMessageView(BaseMailMessageView):
         mailfolder_view = MailFolderView(mailfolder, self.request)
         return mailfolder_view.renderMailList()
 
-    def reply(self):
-        """ replying to a message
-            is writing a message with a given "to" "from"
-            and with a given body
+    def prepareReplyRecipient(self, reply_all=0, forward=0):
+        """ prepare msg recipient
         """
-        # getting mailbox
-        # Zope 2 code, need to put in in utils
         mailbox = self.context.getMailBox()
-
-        # let's compute the pre-filled body
-        # XXX todo : add "MrJohn Doe wrote....
-        # TODO : get the body and parseit here
         body_value = self.renderBody()
         from_value = self.renderFromList()
-
-        # see to ext.traductions
         reply_content = replyToBody(from_value, body_value)
-
         msg = mailbox.getCurrentEditorMessage()
         msg.setPart(0, reply_content)
-        froms = self.context.getHeader('From')
-        if froms is None or froms == []:
-            froms = ['']
-        msg.addHeader('To', froms[0])
+
+        recipients = []
+        if not forward:
+            froms = self.context.getHeader('From')
+            for element in froms:
+                if element not in recipients:
+                    recipients.append(element)
+
+        if reply_all and not forward:
+            ccs = self.context.getHeader('Cc')
+            for element in ccs:
+                if element not in recipients:
+                    recipients.append(element)
+
+        if not reply_all and forward:
+            # todo : append attached files
+            pass
+
+        for element in recipients:
+            msg.addHeader('To', element)
+
         subjects = self.context.getHeader('Subject')
-        if subjects is None or subjects == []:
-            subjects = ['']
-        msg.addHeader('Subject', 'Re: '+subjects[0])
+        if subjects == []:
+            subject = ''
+        else:
+            subject = subjects[0]
+
+        if not forward:
+            msg.addHeader('Subject', 'Re: ' + subject)
+        else:
+            msg.addHeader('Subject', 'Fwd: '+ subject)
 
         if self.request is not None:
             came_from = self.context.absolute_url()
             self.request.response.redirect('%s/editMessage.html?came_from=%s' \
                 % (mailbox.absolute_url(), came_from))
 
+    def reply(self):
+        """ replying to a message
+            is writing a message with a given "to" "from"
+            and with a given body
+        """
+        self.prepareReplyRecipient(reply_all=0)
+
     def reply_all(self):
         """ replying to a message
             is writing a message with a given "to" "from"
             and with a given body
         """
-        # getting mailbox
-        # Zope 2 code, need to put in in utils
-        mailbox = self.context.getMailBox()
-
-        # let's compute the pre-filled body
-        # XXX todo : add "MrJohn Doe wrote....
-        # TODO : get the body and parseit here
-        body_value = '>>> wrote'
-
-        if self.request is not None:
-            self.request.form['came_from'] = self.context.absolute_url()
-            self.request.response.redirect('%s/editMessage.html' % mailbox.absolute_url())
+        self.prepareReplyRecipient(reply_all=1)
 
     def forward(self):
         """ replying to a message is writing a message with a given "to" "from"
             and with a given body
         """
-        # getting mailbox
-        # Zope 2 code, need to put in in utils
-        mailbox = self.context.getMailBox()
-        # TODO create an attached file
-        if self.request is not None:
-            self.request.form['came_from'] = self.context.absolute_url()
-            self.request.response.redirect('%s/editMessage.html' % mailbox.absolute_url())
+        self.prepareReplyRecipient(forward=1)
 
     def delete(self):
         """ "deletes" the message (copy it to the thrash indeed)
@@ -239,16 +252,19 @@ class MailMessageView(BaseMailMessageView):
 
         # XX hack : need to do better
         if hasattr(message, 'editor_msg'):
-            prefix = 'editorMessage/'
+            prefix = 'editorMessage'
         else:
-            prefix = ''
+            prefix = message.absolute_url()
+
         for part in range(message.getPartCount()):
             # XX todo : avoid re-generate part on each visit : use caching
             part_ob = MailPart('part_'+str(part), message, message.getPart(part))
             infos = part_ob.getFileInfos()
             if infos is not None:
                 # let's append icon, url, and title
-                infos['url'] = prefix + str(part)+'/'+str(infos['filename'] +'/view')
+                # BEWARE THAT INDEX STARTS AT 1 ON USER SIDE FOR TRAVERSERS
+                infos['url'] = '%s/%s/view_file?filename=%s' \
+                    %(prefix, str(part+1), str(infos['filename']))
                 infos['icon'] =  mimetype_to_icon_name(infos['mimetype'])
                 title = infos['filename']
                 if len(title) > 10:
@@ -267,3 +283,32 @@ class MailMessageView(BaseMailMessageView):
                 clist_files.append([list_files[i]])
             i += 2
         return clist_files
+
+    def viewFile(self, filename):
+        """ returns a file
+        """
+        ### XXX todo : add a view page to be able to save the file
+        part = self.context
+        infos = part.getFileInfos()
+        if infos is not None:
+            if infos['filename'] == filename:
+                filecontent = part.getDirectBody()
+                cte = part.getHeader('content-transfer-encoding')
+                content_type = part.getHeader('Content-Type')
+                if cte != []:
+                    cte = cte[0]
+                else:
+                    cte ='7bit'
+                if cte == 'base64':
+                    filecontent = base64MIME.decode(filecontent)
+        else:
+            raise MailPartError('%s has no file %s' %(self.id, filename))
+
+        if self.request is not None:
+           response = self.request.response
+           response.setHeader('Content-Type', content_type)
+           response.setHeader('Content-Disposition', 'inline; filename=%s' % filename)
+           response.setHeader('Content-Length', len(filecontent))
+           response.write(filecontent)
+        else:
+            return filecontent
