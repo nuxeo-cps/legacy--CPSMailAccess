@@ -19,10 +19,10 @@ so be patient on mailbox first synchro
 
 features (must and in precise order)
 
++ save in cookies sort order not to loose it
++ save in cookies tree position
 + validate all Javascripts and CSS in IE
 + finish directory picker -- find something cool
-+ append attachments when forwarding
-+ add a front page in the maibox root
 + security
 + translations in french
 
