@@ -27,10 +27,14 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
 from utils import uniqueId, makeId
-from Products.CPSMailAccess.interfaces import IMailBox
+from Products.CPSMailAccess.interfaces import IMailBox, IMapping
 from Products.CPSMailAccess.mailfolder import MailFolder
 from interfaces import IMailFolder, IMailMessage
 from Globals import InitializeClass
+from zope.schema.fieldproperty import FieldProperty
+
+### see for CMF dependency here
+from Products.CMFCore.utils import getToolByName
 
 class MailBox(MailFolder):
     """ the main container
@@ -40,14 +44,20 @@ class MailBox(MailFolder):
     True
     >>> IMailBox.providedBy(f)
     True
+    >>> IMapping.providedBy(f)
+    True
     """
     meta_type = "CPSMailAccess Box"
+    portal_type = meta_type
 
-    implements(IMailBox)
+    implements(IMailBox, IMapping)
+
+    # see here for security
+    connection_params = FieldProperty(IMailBox['connection_params'])
 
     def __init__(self, uid=None, server_name='', **kw):
         MailFolder.__init__(self, uid, server_name, **kw)
-
+        self.connection_params = {}
 
     def synchronize(self):
         """ see interface
@@ -60,6 +70,75 @@ class MailBox(MailFolder):
 
         self._synchronizeFolder()
 
+    def _getconnector(self):
+        """get mail server connector
+        """
+        wm_tool = getToolByName(self, 'portal_webmail')
+        if wm_tool is None:
+            raise ValueError(MISSING_TOOL)
+
+        # safe scan in case of first call
+        if wm_tool.listConnectionTypes() == []:
+            wm_tool.reloadPlugins()
+
+        connection_params = self.connection_params
+
+        try:
+            connector = wm_tool.getConnection(connection_params)
+        except ConnectionError:
+            # TODO : we need to redirect here to a clean
+            # "login failed" screen
+            raise ValueError(BAD_LOGIN)
+
+        if connector is None:
+            raise ValueError(NO_CONNECTOR)
+
+        return connector
+
+    #
+    # MAPPING INTERFACE for connection params internal dict. (partial)
+    #
+    # this is used to catch property changes that might
+    # need to call some actions
+    def __len__(self):
+        """ see interface
+        """
+        return len(self.connection_params)
+
+    def __getitem__(self, name):
+        """ see interface
+        """
+        return self.connection_params[name]
+
+    def __setitem__(self, name, val):
+        """ see interface
+        """
+        self.connection_params[name] = val
+
+    def __delitem__(self, name):
+        """ see interface
+        """
+        del self.connection_params[name]
+
+    def has_key(self, name):
+        """ see interface
+        """
+        return self.connection_params.has_key(name)
+
+    def keys(self):
+        """ see interface
+        """
+        return self.connection_params.keys()
+
+    def values(self):
+        """ see interface
+        """
+        return self.connection_params.values()
+
+    def items(self):
+        """ see interface
+        """
+        return self.connection_params.items()
 
 """ classic Zope 2 interface for class registering
 """

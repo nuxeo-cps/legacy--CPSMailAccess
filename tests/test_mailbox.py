@@ -64,6 +64,16 @@ class MailBoxTestCase(ZopeTestCase):
 
         mailbox.synchronize()
 
+    def test_paramMapping(self):
+        """ testing mapping
+        """
+        mailbox = MailBox()
+
+        mailbox['uid'] = 'tarek'
+        mailbox['connection_type'] = 'IMAP'
+        self.assertEquals('IMAP', mailbox['connection_type'])
+        self.assertEquals('tarek', mailbox['uid'])
+
 
 def test_suite():
     return unittest.TestSuite((
