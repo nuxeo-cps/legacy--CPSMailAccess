@@ -2,71 +2,137 @@
   <metal:block fill-slot="css_slot">
     <style type="text/css" media="all"
       tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
+    <style type="text/css" media="all"
+      tal:content="string:@import
+           url(${context/portal_url}/++resource++calendar/calendar-win2k-1.css);"/>
   </metal:block>
+
   <metal:main fill-slot="javascript_head_slot">
     <script type="text/javascript"
       tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
       src="++resource++cpsmailaccess.js">
     </script>
+
+    <script type="text/javascript"
+      tal:attributes="src string:${context/portal_url}/++resource++calendar/calendar.js;"
+      src="++resource++calendar/calendar.js">
+    </script>
+
+    <!-- need to use user langage -->
+    <!-- Zope 2 dependant -->
+    <tal:block tal:define="lang here/Localizer/get_selected_language;
+                           file python:'++resource++calendarlang/calendar-'+lang+'.js';
+                           head string:${context/portal_url}/">
+      <script type="text/javascript"
+              tal:attributes="src python:head+file">
+      </script>
+    </tal:block>
+
+    <script type="text/javascript"
+      tal:attributes="src string:${context/portal_url}/++resource++calendar/calendar-setup.js;"
+      src="++resource++calendar/calendar-setup.js">
+    </script>
+
+
   </metal:main>
   <metal:block metal:fill-slot="main"
       tal:define="value_0 request/value_0|python:'';
                   value_1 request/value_1|python:'';
                   value_2 request/value_2|python:'';
                   value_3 request/value_3|python:'';
+                  value_4 request/value_4|python:'';
                   intersection request/intersection|python:'';
                   numblocs request/numblocs|python:1;
                   numblocs python:range(int(numblocs))">
-    <form action="zemanticSearchMessage.html">
 
-      <table border="0" width="100%">
+
+    <h2><img src="cspma_mail_find.png"/>&#160;Search messages</h2>
+    <form action="zemanticSearchMessage.html">
+      <div class="searchGroup">
+      <table border="0">
         <tr>
-          <td width="50%">
+          <td align="right">
+            <div class="dlabel">
             Message Subject :
+            </div>
           </td>
-          <td width="50%">
+          <td >
             <input type="hidden" name="relation_0" value="subject"/>
             <input class="fullwidth" type="text" name="value_0" tal:attributes="value value_0"/>
           </td>
         </tr>
         <tr>
-          <td width="50%">
+          <td align="right">
+            <div class="dlabel">
             Message From :
+            </div>
           </td>
-          <td width="50%">
+          <td>
             <input type="hidden" name="relation_1" value="from"/>
             <input class="fullwidth" type="text" name="value_1" tal:attributes="value value_1"/>
           </td>
         </tr>
         <tr>
-          <td width="50%">
+          <td align="right">
+            <div class="dlabel">
             Message Carbon Copy :
+            </div>
           </td>
-          <td width="50%">
+          <td >
             <input type="hidden" name="relation_2" value="cc"/>
             <input class="fullwidth" type="text" name="value_2" tal:attributes="value value_2"/>
           </td>
         </tr>
         <tr>
-          <td width="50%">
+          <td align="right">
+            <div class="dlabel">
             Message Contains :
+            </div>
           </td>
-          <td width="50%">
+          <td >
             <input type="hidden" name="relation_3" value="body"/>
             <input class="fullwidth" type="text" name="value_3" tal:attributes="value value_3"/>
           </td>
         </tr>
         <tr>
-          <td width="50%">
-            Intersection :
+          <td align="right">
+            <div class="dlabel">
+            Message Date :
+            </div>
           </td>
-          <td width="50%">
+          <td >
+            <input type="hidden" name="relation_4" value="date"/>
+            <input id="value_4" class="fullwidth" type="text" name="value_4"
+                   tal:attributes="value value_4"/>
+
+            <button id="trigger_value_4" style="width: 3em">...</button>
+
+
+            <script type="text/javascript">
+                Calendar.setup(
+                {
+                   inputField  : 'value_4',
+                   ifFormat    : 'dd/mm/y',
+                   button      : 'trigger_value_4',
+                   mondayFirst : true,
+                   range       : [1970, 2037]
+                });
+            </script>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <div class="dlabel">
+            Intersection :
+            </div>
+          </td>
+          <td >
             <input type="checkbox" name="intersection"
                 tal:attributes="checked intersection"/>
           </td>
         </tr>
       </table>
-
+      </div>
       <!--
       <div tal:repeat="bloc numblocs">
         <select tal:attributes="name python:'relation_'+str(bloc)">
@@ -79,8 +145,7 @@
         <input type="text" tal:attributes="name python:'value_'+str(bloc)"/>
       </div>
       -->
-
-      <input type="submit" name="search_submitted" value="search"/>
+      <input type="submit" class="standalone" name="search_submitted" value="search"/>
 
      </form>
     <tal:block tal:condition="request/search_submitted|python:0">
@@ -91,8 +156,9 @@
                                time python:'%0.2f' % results[1];
                                results python:results[0]">
             <tal:block tal:condition="python:num_results>0">
-              <div>
-                Found <tal:block tal:replace="num_results"/> results in <tal:block tal:replace="time"/> seconds:
+              <div class="dlabel">
+                Found <tal:block tal:replace="num_results"/> results in <tal:block
+                 tal:replace="time"/> seconds:
               </div>
               <div id="searchResults">
                 <metal:block metal:use-macro="here/messagelist_macros/search_messagelist"/>
@@ -102,7 +168,7 @@
               </script>
             </tal:block>
             <tal:block tal:condition="python:num_results==0">
-            No results where found.
+              <div class="dlabel">No results where found.</div>
             </tal:block>
         </tal:block>
     </tal:block>
