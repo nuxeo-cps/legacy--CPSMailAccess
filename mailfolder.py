@@ -111,7 +111,8 @@ class MailFolder(BTreeFolder2):
                 current = aq_inner(aq_parent(current))
 
             if current is None or not IMailBox.providedBy(current):
-                raise MailContainerError('object not contained in a mailbox')
+                return None
+                #raise MailContainerError('object not contained in a mailbox')
 
             self.mailbox = current
             return current
@@ -672,6 +673,24 @@ class MailFolder(BTreeFolder2):
         froms = message.getHeader('From')
         for from_ in froms:
             mailbox.addMailDirectoryEntry(from_)
+
+    def depth(self):
+        """ calculate the depth """
+        server_name = self.server_name
+        items = server_name.split('.')
+        return len(items)
+
+    def canCreateSubFolder(self):
+        """ tells if a sub folder can be created, given a max depth """
+        mailbox = self.getMailBox()
+        max_depth = mailbox.getConnectionParams()['max_folder_depth']
+
+        if max_depth == 0:
+            return True
+
+        current_depth = self.depth()
+        return current_depth + 1 <=  max_depth
+
 
 
 """ classic Zope 2 interface for class registering
