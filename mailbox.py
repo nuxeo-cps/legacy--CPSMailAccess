@@ -202,7 +202,7 @@ class MailBox(MailFolder):
         cache_size = len(self.mail_cache)
         if cache_size > 0:
             log.append('deleting %d messages' % cache_size)
-            self.mail_cache.emptyList()
+            self.mail_cache.clear()
 
         if return_log:
             return log
