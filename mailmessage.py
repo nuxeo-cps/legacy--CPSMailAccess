@@ -235,6 +235,7 @@ class MailMessage(MailPart):
             return False
 
         part_count = self.getPartCount()
+
         # we'll need to get back to a
         # simple string payload
         for part in range(part_count):
@@ -245,6 +246,8 @@ class MailMessage(MailPart):
                     # founded
                     part_num = part
                     return self.deletePart(part_num)
+
+        return False
 
     def attachFile(self, file):
         """ attach an file """
