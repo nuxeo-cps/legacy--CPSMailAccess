@@ -1,0 +1,15 @@
+<html metal:use-macro="here/main_template/macros/master"
+      tal:define="response request/RESPONSE">
+
+  <metal:block metal:fill-slot="header">
+      <meta http-equiv="refresh" content="1; URL=synchronize.html">
+  </metal:block>
+  <metal:block metal:fill-slot="main">
+
+    <div class="message">
+    Your mailbox is beeing synchronized. Please hold on.
+    </div>
+
+    <a href="synchronize.html">In nothing seems to be loading, click here</a>
+  </metal:block>
+</html>
