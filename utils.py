@@ -233,35 +233,20 @@ def replyToBody(from_value, body, line_header='>>> '):
         reply_content.append(line_header+line)
     return '<br/>'.join(reply_content)
 
-def verifyBody(msg):
+def verifyBody(body):
     """ verify direct body content, according to
         content-type
     """
-    content_type = msg.getHeader('content-type')
-    if content_type == []:
-        content_type = 'text/plain'
-    else:
-        content_type = content_type[0]
-
-    if content_type == 'text/plain':
-        # todo create a 'getBody' api instead
-        # that gets the first viewable body
-        body = msg.getPart(0)
-
-        # need to find a high level utility here
-        try:
-            body = fix_eols(body)
-            body = HTMLToText(body)
-            body = body.replace('&lt;', '<')
-            body = body.replace('&gt;', '>')
-            ### epoz :(
-            body = body.replace('<br>', '\r\n')
-            msg.setPart(0, body)
-        except TypeError:
-            pass
-    else:
-        raise NotImplementedError(content_type)
-
+    try:
+        body = fix_eols(body)
+        body = HTMLToText(body)
+        body = body.replace('&lt;', '<')
+        body = body.replace('&gt;', '>')
+        ### epoz :(
+        body = body.replace('<br>', '\r\n')
+    except TypeError:
+        pass
+    return body
 
 def HTMLize(content):
     """ transforms a text into a html bloc
