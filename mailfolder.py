@@ -52,7 +52,7 @@ class MailFolder(BTreeFolder2):
     meta_type = "CPSMailAccess Folder"
     server_name = ''
     sync_state = False
-    _v_mailbox = None
+    mailbox = None
     message_count = 0
     folder_count = 0
 
@@ -106,7 +106,7 @@ class MailFolder(BTreeFolder2):
     def getMailBox(self):
         """See interfaces.IMailFolder
         """
-        if self._v_mailbox is None:
+        if self.mailbox is None:
             current = self
             while current is not None and not IMailBox.providedBy(current):
                 current = aq_inner(aq_parent(current))
@@ -114,10 +114,10 @@ class MailFolder(BTreeFolder2):
             if current is None or not IMailBox.providedBy(current):
                 raise MailContainerError('object not contained in a mailbox')
 
-            self._v_mailbox = current
+            self.mailbox = current
             return current
         else:
-            return self._v_mailbox
+            return self.mailbox
 
     def getMailFolder(self):
         return self.aq_inner.aq_parent
@@ -504,24 +504,21 @@ class MailFolder(BTreeFolder2):
         return self.getMailMessagesCount(count_folder=True, count_messages=True, \
             recursive=False) == 0
 
-    def rename(self, new_name, fullname=0):
+    def rename(self, new_name, fullname=False):
         """ renames the box
         """
         self.clearMailBoxTreeViewCache()
         oldmailbox = self.server_name
 
-        if str(fullname)=='0':
-            if oldmailbox.find('.')>1:
-                prefix = oldmailbox.split('.')
-                del prefix[len(prefix)-1]
-                newmailbox = new_name.replace('.', '_')
-                newmailbox = '.'.join(prefix) + '.' + newmailbox
-            else:
-                newmailbox = new_name.replace('.', '_')
+        if not fullname:
+            # making sure the new name has no dot
+            new_name = new_name.replace('.', '_')
+
+            splitted = oldmailbox.split('.')
+            splitted[len(splitted)-1] = new_name
+            newmailbox = '.'.join(splitted)
         else:
             newmailbox = new_name
-
-        newmailbox = newmailbox.replace('CPS Portal', 'INBOX')
 
         if has_connection:
             connector = self._getconnector()
@@ -577,7 +574,7 @@ class MailFolder(BTreeFolder2):
             self.server_name = new_name
 
         self.title = self.id
-        self._v_mailbox = None
+        self.mailbox = None
         return self
 
     def delete(self):
@@ -595,7 +592,7 @@ class MailFolder(BTreeFolder2):
             composed = name + '_' +str(seed)
             seed += 1
         newmailbox = trash_folder_name + '.' + composed
-        self._v_mailbox = None
+        self.mailbox = None
         return self.rename(newmailbox, fullname=True)
 
     def simpleFolderName(self, server_name=''):
