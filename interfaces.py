@@ -113,7 +113,7 @@ class IMailMessage(IContainer):
         required=False)
 
 
-class IMailMessageStore(IContainer):
+class IMailMessageStore(Interface):
     """ Provides interface to a mail message store
 
     """
@@ -210,7 +210,7 @@ class IMailBox(IContainer):
             if resync is True, resyncs with the server
         """
 
-class IMailTool(IContainer):
+class IMailTool(Interface):
     """ portal tool
     """
     def listConnectionTypes():
