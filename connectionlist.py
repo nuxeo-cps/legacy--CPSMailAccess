@@ -98,18 +98,15 @@ class ConnectionList(UserList):
         try:
             uid = connection_params['uid']
             connection_type = connection_params['connection_type']
-
             for connection in self:
                 if (connection.uid == uid) and \
                     (connection.connection_type == connection_type):
                     result = connection
                     break
-
             if not result:
                 newob = self._getConnectionObject(connection_params)
                 result = newob
                 self.append(newob)
-
         finally:
             self.lock.release()
 
@@ -124,6 +121,8 @@ class ConnectionList(UserList):
                 if (connection.uid == uid) and \
                         (connection.connection_type == connection_type):
                     self.remove(connection)
+                    connection.logout()
+                    #connection.close()
                     del connection
 
         finally:
@@ -136,6 +135,8 @@ class ConnectionList(UserList):
         try:
             for connection in self:
                 self.remove(connection)
+                connection.logout()
+                #connection.close()
                 del connection
         finally:
             self.lock.release()
