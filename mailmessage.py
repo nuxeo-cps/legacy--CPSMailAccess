@@ -206,6 +206,7 @@ class MailMessage(Folder, MailPart):
         """
         self.cache_level = cache_level
         MailPart.loadMessage(self, raw_msg)
+        self.title = self._getStore()['Subject']
 
     def detachFile(self, filename):
         """ detach a file
@@ -268,8 +269,6 @@ class MailMessage(Folder, MailPart):
                 self.setFlag(item, 1)
             else:
                 self.setFlag(item, 0)
-
-
 """ classic Zope 2 interface for class registering
 """
 InitializeClass(MailMessage)
