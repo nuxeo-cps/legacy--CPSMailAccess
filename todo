@@ -24,6 +24,7 @@ features (must)
 + finish cache level 1
 + index body in cache level 1
 + append attachments when forwarding
++ add afront page in the maibox root
 
 cosmetics
 
