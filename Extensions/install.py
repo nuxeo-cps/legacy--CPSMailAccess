@@ -85,8 +85,9 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.setupTypes()
         self.setupBoxes()
         self.setupDefaultAddressBooks()
-#         self.setupMembersSchemasAndLayouts()
+        self.setupMembersSchemasAndLayouts()
         self.addWMAction()
+        self.setupTranslations()
         self.finalize()
         self.log("End of Install/Update : CPSMailAccess Product")
 
