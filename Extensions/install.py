@@ -237,8 +237,7 @@ class CPSMailAccessInstaller(CPSInstaller):
                     'default_expr': 'string:',
                     'read_ignore_storage': 1,
                     # sometimes crashes if there is no call to str()
-                    'read_process_expr': """python:(str(givenName) + " " \
-                        + str(sn)).strip() or id""",
+                    'read_process_expr': """python:(givenName + " " + sn).strip() or id""",
                     'read_process_dependent_fields': ('givenName', 'sn', 'id'),
                     'write_ignore_storage': 1,
                     },
