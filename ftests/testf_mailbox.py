@@ -27,7 +27,6 @@ class MailBoxTest(FunctionalTestCase):
     def afterSetUp(self):
         user = self.folder.acl_users.getUser(user_name)
         user.roles.append('Manager')
-        installProduct('CPSMailAccess')
 
     def testAddMailBox(self):
         """ testing mailbox adding
