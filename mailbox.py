@@ -479,14 +479,12 @@ class MailBox(MailBoxBaseCaching):
             cat.indexMessage(mail)
 
     def indexMessage(self, msg):
-        """ indexes message
-        """
+        """ indexes message """
         cat = self._getCatalog()
         cat.indexMessage(msg)
 
     def unIndexMessage(self, msg):
-        """ indexes message
-        """
+        """ unindexes message """
         cat = self._getCatalog()
         cat.unIndexMessage(msg)
 
@@ -510,8 +508,7 @@ class MailBox(MailBoxBaseCaching):
             connector.writeMessage(drafts.server_name, msg.getRawMessage())
 
     def getIdentitites(self):
-        """ returns identities
-        """
+        """ returns identities """
         # reads in the directory entry
         uid = self.wrapConnectionParams(self.getConnectionParams())['uid']
 
