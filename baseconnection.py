@@ -32,6 +32,7 @@ class ConnectionParamsError(Exception): pass
 
 LOGIN_FAILED = 'Login Failed.'
 CANNOT_SEARCH_MAILBOX = 'Could not search mailbox %s'
+MAILBOX_INDEX_ERROR = '[%s] Message Index error in box %s'
 BAD_LOGIN = 'Bad login'
 NO_CONNECTOR = 'Could find a connector'
 
