@@ -24,7 +24,7 @@ from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
 
-from Products.CPSMailAccess.mailmessage import MailMessage
+from Products.CPSMailAccess.mailmessage import MailMessage, MailMessageView
 from Products.CPSMailAccess.interfaces import IMailMessage
 
 from CPSMailAccess.tests import __file__ as landmark
@@ -248,6 +248,23 @@ class MailMessageTestCase(ZopeTestCase):
         ob.delParam('boundary')
         ct = ob.getParam('boundary')
         self.assertEquals(ct, None)
+
+    def test_MailMessageViewInstance(self):
+        """ testing view instanciation
+        """
+        ob = self.getMailInstance(6)
+        view = MailMessageView(ob, None)
+        self.assertNotEquals(view, None)
+
+    def test_MailMessageParts(self):
+        """ testing view instanciation
+        """
+        ob = self.getMailInstance(6)
+
+        view = MailMessageView(ob, None)
+
+        self.assertEquals(view._getHeader(), ob.getParams())
+
 
 def test_suite():
     return unittest.TestSuite((
