@@ -26,8 +26,8 @@ from exceptions import UnicodeDecodeError
 
 _translation_table = string.maketrans(
     # XXX candidates: @°+=`|
-    r""""'/\:; &ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜİàáâãäåçèéêëìíîïñòóôõöøùúûüıÿ""",
-    r"""________AAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy""")
+    '"' r"""'/\:; &ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜİàáâãäåçèéêëìíîïñòóôõöøùúûüıÿ""",
+    '_' r"""_______AAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy""")
 
 _ok_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_."
 
@@ -100,3 +100,16 @@ def decodeHeader(header):
     return checkOrdinalInRange(hu)
 
 
+_marker = object()
+from Acquisition import aq_get
+def getToolByName(obj, name, default=_marker):
+    try:
+        tool = aq_get(obj, name, default, 1)
+    except AttributeError:
+        if default is _marker:
+            raise
+        return default
+    else:
+        if tool is _marker:
+            raise AttributeError, name
+        return tool
