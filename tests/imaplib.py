@@ -22,7 +22,10 @@ IMAP4_PORT = 25
 
 IMAPError = Exception
 
+
 class IMAP4:
+    abort = IMAPError
+
     def __init__(self, host='', port=25):
         self.host = host
         self.port = port
