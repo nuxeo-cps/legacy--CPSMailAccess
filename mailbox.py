@@ -46,9 +46,10 @@ from mailcache import MailCache
 from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
 from Products.Five.traversable import FiveTraversable
+from mailsearch import MailCatalog
 
 
-has_connection = 0
+has_connection = 1
 
 lock = thread.allocate_lock()
 cache = MailCache()
@@ -90,7 +91,8 @@ class MailBox(MailFolder):
                          'trash_folder_name' : 'INBOX.Trash',
                          'draft_folder_name' : 'INBOX.Drafts',
                          'sent_folder_name' : 'INBOX.Sent',
-                         'cache_level' :  2}
+                         'cache_level' :  2,
+                         'max_folder_size' : 20}
 
     # one mail cache by mailbox
     mail_cache = getCache()
@@ -259,12 +261,9 @@ class MailBox(MailFolder):
 
         smtp_host = self.connection_params['smtp_host']
         smtp_port = self.connection_params['smtp_port']
-        user_id = self.connection_params['login']
-        password = self.connection_params['password']
 
-        maildeliverer.send(msg_from, msg_to, msg.getRawMessage(), smtp_host,
-                           smtp_port, user_id, passwor)
-        return True
+        return maildeliverer.send(msg_from, msg_to, msg.getRawMessage(), smtp_host,
+                           smtp_port, None, None)
 
     def sendEditorsMessage(self):
         """ sends the cached message """
@@ -275,7 +274,7 @@ class MailBox(MailFolder):
         msg_from = msg.getHeader('From')
         msg_to = msg.getHeader('To')
 
-        result = self._sendMailMessage(msg_from, msg_to, msg)
+        result, error = self._sendMailMessage(msg_from, msg_to, msg)
         if result:
             connector = self._getconnector()
             res = connector.writeMessage('INBOX.Sent', msg.getRawMessage())
@@ -290,6 +289,10 @@ class MailBox(MailFolder):
                 self._syncdirs()
                 self._synchronizeFolder(return_log=False)
             self.clearEditorMessage()
+            return True, ''
+        else:
+            return False, error
+
 
     def getTrashFolderName(self):
         """ returns the trash name """
@@ -432,17 +435,19 @@ class MailBox(MailFolder):
     def _getCatalog(self):
         """ returns the catalog
         """
-        mailtool = getToolByName(self, 'portal_webmail')
-
         if not self.connection_params.has_key('uid'):
             raise MailCatalogError('Need a uid to get the catalog')
+
         uid = self.connection_params['uid']
-        cats = mailtool.mail_catalogs
-        cat = cats.getCatalog(uid)
-        if cat is None:
-            cats.addCatalog(uid)
-            cat = cats.getCatalog(uid)
-        return cat
+
+        catalog_id = '.zcatalog'
+        if hasattr(self, catalog_id):
+            return getattr(self, catalog_id)
+        else:
+            cat = MailCatalog(catalog_id, uid, uid)
+            self._setObject(catalog_id, cat)
+
+        return getattr(self, catalog_id)
 
     def reindexMailCatalog(self):
         """ reindex the catalog
@@ -691,14 +696,16 @@ def manage_addMailBox(container, id=None, server_name ='',
     """Add a box to a container (self).
     >>> from OFS.Folder import Folder
     >>> f = Folder()
-    >>> manage_addMailBox(f, 'mails')
+    >>> ob = manage_addMailBox(f, 'mails')
     >>> f.mails.getId()
     'mails'
     """
     container = container.this()
     ob = MailBox(id, server_name, **kw)
     container._setObject(ob.getId(), ob)
+    ob = container._getOb(ob.getId())
     if REQUEST is not None:
-        ob = container._getOb(ob.getId())
         REQUEST.RESPONSE.redirect(ob.absolute_url()+'/manage_main')
+    else:
+        return ob
 
