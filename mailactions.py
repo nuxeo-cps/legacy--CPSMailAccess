@@ -84,6 +84,8 @@ class MailActionsView(BaseMailMessageView):
                 """
 
                 return [[save, init]]
+            else:
+                return []
 
         elif IMailFolder.providedBy(container):
             mailbox = container.getMailBox()
