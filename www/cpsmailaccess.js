@@ -68,16 +68,17 @@ function removeToSection() {
 
 function saveMessageDatas() {
   // for mozilla, need to find the same for ie
-  alert('a finir');
+  // we are saving just subject and body
   msg_subject = document.getElementById('msg_subject');
-  msg_from = document.getElementById('msg_from');
-  msg_tos = document.getElementById('msg_to');
 
-  url = "saveMessageForm?msg_subject=" + msg_subject.value + "&msg_from=" + msg_from
+  // find how to extract  [object HTMLTextAreaElement] content to save it
+  msg_body = document.getElementById('msg_body');
+
+  url = "saveMessageForm?msg_subject=" + msg_subject.value + "&msg_body=" + msg_body
+
   var xml = new XMLHttpRequest();
   xml.open("GET", url,true);
   xml.send(null);
-  alert(msg_tos);
 
 }
 
