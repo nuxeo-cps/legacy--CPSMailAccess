@@ -276,19 +276,19 @@ class MailMessageTestCase(ZopeTestCase):
         view = MailMessageView(ob, None)
 
         self.assertEquals(view.renderFromList(),
-            '<span>Barry <barry@digicool.com></span>')
+            'Barry <barry@digicool.com>')
 
         self.assertEquals(view.renderToList(),
-            '<span>Dingus Lovers <cravindogs@cravindogs.com></span>')
+            'Dingus Lovers <cravindogs@cravindogs.com>')
 
         ob = MailMessage()
         view = MailMessageView(ob, None)
 
         self.assertEquals(view.renderFromList(),
-            '<span>?</span>')
+            '?')
 
         self.assertEquals(view.renderToList(),
-            '<span>?</span>')
+            '?')
 
     def test_MailMessageparts(self):
         # testing view instanciation
