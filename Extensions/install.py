@@ -730,6 +730,15 @@ class CPSMailAccessInstaller(CPSInstaller):
         if not pmd.hasProperty('webmail_enabled'):
             pmd.manage_addProperty('webmail_enabled', '', 'boolean')
 
+        if not 'f__webmail_password' in fields:
+            memberschema.addField('webmail_password', 'CPS String Field',
+                                    acl_write_roles_str='Manager, Owner')
+
+        if not 'f__webmail_login' in fields:
+            memberschema.addField('webmail_login', 'CPS String Field',
+                                    acl_write_roles_str='Manager, Owner')
+
+
         ltool = portal.portal_layouts
         memberlayout = ltool.members
         widgets = memberlayout.objectIds()
@@ -737,11 +746,30 @@ class CPSMailAccessInstaller(CPSInstaller):
         if not 'w__webmail_enabled' in widgets:
             memberlayout.addWidget('webmail_enabled', 'Boolean Widget',
                                    fields='webmail_enabled',
-                                   label='label_iwebmail_enabled',
+                                   label='label_webmail_enabled',
                                    label_edit='label_webmail_enabled',
                                    is_i18n=1,
                                    )
             layout_def['rows'] += [[{'ncols': 1, 'widget_id': 'webmail_enabled'}]]
+
+        if not 'w__webmail_login' in widgets:
+            memberlayout.addWidget('webmail_login', 'String Widget',
+                                   fields='webmail_login',
+                                   label='label_webmail_login',
+                                   label_edit='label_webmail_login',
+                                   is_i18n=1,
+                                   )
+            layout_def['rows'] += [[{'ncols': 1, 'widget_id': 'webmail_login'}]]
+
+        if not 'w__webmail_password' in widgets:
+            memberlayout.addWidget('webmail_password', 'Password Widget',
+                                   fields='webmail_password',
+                                   hidden_layout_modes= ('view'),
+                                   label='label_webmail_password',
+                                   label_edit='label_webmail_password',
+                                   is_i18n=1,
+                                   )
+            layout_def['rows'] += [[{'ncols': 1, 'widget_id': 'webmail_password'}]]
 
         memberlayout.setLayoutDefinition(layout_def)
 
