@@ -31,6 +31,7 @@ from interfaces import IConnection
 from baseconnection import BaseConnection
 from baseconnection import LOGIN_FAILED
 from baseconnection import ConnectionError
+from baseconnection import ConnectionParamsError
 from baseconnection import CANNOT_SEARCH_MAILBOX
 
 
@@ -43,21 +44,22 @@ class IMAPConnection(BaseConnection):
     _selected_mailbox = None
 
 
-    def __init__(self, connection_params):
+    def __init__(self, connection_params= {}):
 
         BaseConnection.__init__(self, connection_params)
 
         # instanciate a imap4 object
         params = self.connection_params
-        host = self.connection_params.HOST
 
-        if hasattr(params, 'PORT'):
-            port = self.connection_params.PORT
+        host = params['HOST']
+
+        if params.has_key('PORT'):
+            port = params['PORT']
         else:
             port = IMAP4_PORT
 
-        if hasattr(params, 'SSL'):
-            is_ssl = self.connection_params.SSL == 1
+        if params.has_key('SSL'):
+            is_ssl =  params['SSL'] == 1
         else:
             is_ssl = 0
 
@@ -82,14 +84,10 @@ class IMAPConnection(BaseConnection):
 
     def _checkparams(self, params):
         """ this is used to check params
-
         """
-        # an imap lib connection
-        # needs at least a host name
-        if not hasattr(params, 'HOST'):
-            raise ConnectionError('need a HOST param')
+        BaseConnection._checkparams(self, params)
 
-        self.connection_params = params
+        # extra paramcheck will fit here
 
     def login(self, user, password):
         self._respawn()
