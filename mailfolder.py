@@ -252,7 +252,7 @@ class MailFolder(BTreeFolder2):
     def _moveMessage(self, uid, to_mailbox):
         """ moves the message to another mailbox
         """
-        self._cache.invalidate(self.server_name)
+        self._clearCache()
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
         if not hasattr(self, id):
@@ -271,7 +271,7 @@ class MailFolder(BTreeFolder2):
         #link it to the newmailbox
         to_mailbox._setObject(id, msg)
         to_mailbox.message_count += 1
-        to_mailbox._cache.invalidate(to_mailbox.server_name)
+        to_mailbox._clearCache()
         msg = getattr(to_mailbox, id)
         self._indexMessage(msg)
         return msg
@@ -287,7 +287,7 @@ class MailFolder(BTreeFolder2):
 
     def _deleteMessage(self, uid):
         """ see interfaces ImailFolder """
-        self._cache.invalidate(self.server_name)
+        self._clearCache()
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
         if hasattr(self, id):
@@ -307,11 +307,11 @@ class MailFolder(BTreeFolder2):
             kw = {flag: value}
             connector.setFlags(self.server_name, msg.uid, kw)
         # invalidate cache
-        self._cache.invalidate(self.server_name)
+        self._clearCache()
 
     def _addMessage(self, uid, digest, index=True):
         """ See interfaces.IMailFolder """
-        self._cache.invalidate(self.server_name)
+        self._clearCache()
         self.clearMailBoxTreeViewCache()
         self.message_count +=1
         id = self.getIdFromUid(uid)
@@ -393,6 +393,7 @@ class MailFolder(BTreeFolder2):
 
     def _synchronizeFolder(self, return_log=False, indexStack=[]):
         """ See interfaces.IMailFolder """
+        self._clearCache()
         sync_states = {}
         log = []
         mailbox = self.getMailBox()
@@ -549,7 +550,7 @@ class MailFolder(BTreeFolder2):
     def rename(self, new_name, fullname=False):
         """ renames the box
         """
-        self._cache.invalidate(self.server_name)
+        self._clearCache()
         self.clearMailBoxTreeViewCache()
         oldmailbox = self.server_name
 
@@ -625,7 +626,7 @@ class MailFolder(BTreeFolder2):
         """ sends the mailbox to the thrash
             by renaming it
         """
-        self._cache.invalidate(self.server_name)
+        self._clearCache()
         mailbox = self.getMailBox()
         trash_folder_name = mailbox.getTrashFolderName()
         trash = mailbox.getTrashFolder()
@@ -745,6 +746,11 @@ class MailFolder(BTreeFolder2):
         page_id = '%d.%d.%s.%d' % (page, nb_items, sort_with, sort_asc)
         elements = self._cache.query(page_id)
         return elements
+
+    def _clearCache(self):
+        """ clear the cache """
+        self._cache = RAMCache()
+
 
 
 
