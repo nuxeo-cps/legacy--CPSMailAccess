@@ -20,6 +20,7 @@
 from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
 from Products.CPSMailAccess.mailexceptions import MailContainerError
+from zLOG import LOG, INFO
 
 class BaseMailMessageView(BrowserView):
 
@@ -27,18 +28,18 @@ class BaseMailMessageView(BrowserView):
         """ returns icon name
         """
         if short_title == 'Trash':
-            return 'trashcan.png'
+            return 'cpsma_trashcan.png'
         elif short_title == 'INBOX':
             return 'cpsma_mailbox.png'
         elif short_title == 'Drafts':
-            return 'draft.png'
+            return 'cpsma_draft.png'
         elif short_title == 'Sent':
             return 'cpsma_mailsent.png'
         else:
             if not selected:
-                return 'folder.png'
+                return 'cpsma_folder.png'
             else:
-                return 'folder_selected.png'
+                return 'cpsma_folder_selected.png'
 
     def createShortTitle(self, object):
         """ creates a short title
@@ -59,10 +60,10 @@ class BaseMailMessageView(BrowserView):
         """
         ## XX add icon name
         for element in treeview:
-            if element['object'] == selected:
-                element['selected'] = True
-            else:
-                element['selected'] = False
+            short_title = element['short_title']
+            element['selected'] = element['object'] == selected
+            element['icon_name'] = self.getIconName(short_title,
+                element['selected'])
             self.setSelected(element['childs'], selected)
 
     def renderTreeView(self, flags=[]):
@@ -92,26 +93,84 @@ class BaseMailMessageView(BrowserView):
         childs = mailbox.getMailMessages(list_folder=True, \
             list_messages=False, recursive=False)
 
-        if len(childs) > 0:
-            childview = BaseMailMessageView(None, self.request)
+        level = 1
 
+        parent_length = 1
+        parent_index = 0
+
+        if len(childs) > 0:
+            ## should call interface instead here
+            childview = BaseMailMessageView(None, self.request)
+            index = 0
+            length = len(childs)
             for child in childs:
-                selected = child == firstfolder
                 childview.context = child
-                short_title = self.createShortTitle(child)
-                icon_name = self.getIconName(short_title, selected)
-                treeview.append({'object' :child,
-                                 'url' :child.absolute_url()+'/view',
-                                 'short_title' :short_title,
-                                 'selected' : selected,
-                                 'icon_name' : icon_name,
-                                 'childs' : childview._renderTreeView(firstfolder, flags)})
+                element = self.createTreeViewElement(child, firstfolder,
+                    index, length, level, parent_index, parent_length)
+                element['childs'] = childview._renderTreeView(firstfolder, level+1,
+                    parent_index, parent_length, flags)
+                treeview.append(element)
+                index += 1
 
         mailbox.setTreeViewCache(treeview)
 
         return treeview
 
-    def _renderTreeView(self, current, flags=[]):
+    def createTreeViewElement(self, element, selected_folder, index, length,
+            level, parent_index, parent_length):
+        """ creates a node for the tree
+        """
+        selected = element == selected_folder
+        short_title = self.createShortTitle(element)
+        icon_name = self.getIconName(short_title, selected)
+
+        if element.childFoldersCount()==0:
+            if index == 0 and length > 1:
+                front_icons = [{'icon':'cma_center_empty.png', 'clickable' : False}]
+            elif index == length - 1:
+                front_icons = [{'icon':'cma_bottom_corner.png', 'clickable' : False}]
+            else:
+                front_icons = [{'icon':'cma_center_empty.png', 'clickable' : False}]
+        else:
+            if index == 0 and length >1 :
+                front_icons = [{'icon':'cma_top_minus.png', 'clickable' : True}]
+            elif index == 0:
+                front_icons = [{'icon':'cma_minus.png', 'clickable' : True}]
+            elif index == length - 1:
+                front_icons = [{'icon':'cma_bottom_minus.png', 'clickable' : True}]
+            else:
+                front_icons = [{'icon':'cma_bottom_minus.png', 'clickable' : True}]
+
+        for i in range(level-1):
+            if self._hasParentNext(parent_index, parent_length):
+                front_icons.insert(0, {'icon':'cma_center_line.png', 'clickable' : False})
+            else:
+                front_icons.insert(0, {'icon':'cma_empty.png', 'clickable' : False})
+
+        short_title_id = short_title.replace(' ', '.')
+
+        return {'object' :element,
+                'level' : level,
+                'url' :element.absolute_url()+'/view',
+                'short_title' :short_title,
+                'javacall' : 'switchFolderState("'+short_title_id+'")',
+                'img_id' : 'img_' + short_title_id,
+                'selected' : selected,
+                'icon_name' : icon_name,
+                'count' : length,
+                'index' : index,
+                'short_title_id' : short_title_id,
+                'front_icons' : front_icons}
+
+    def _hasParentNext(self, parent_index, parent_length):
+        """ see if up level has some elements
+        """
+        return parent_index < parent_length -1
+
+
+
+    def _renderTreeView(self, current, level, parent_index, parent_length,
+            flags=[]):
         """ returns a tree view
             XXX need optimisation and cache use
         """
@@ -121,17 +180,15 @@ class BaseMailMessageView(BrowserView):
             list_messages=False, recursive=False)
 
         childview = BaseMailMessageView(None, self.request)
-
+        index = 0
+        length = len(childs)
         for child in childs:
             childview.context = child
-            short_title = self.createShortTitle(child)
-            selected = child == current
-            icon_name = self.getIconName(short_title, selected)
-            treeview.append({'object' :child,
-                             'url' :child.absolute_url()+'/view',
-                             'short_title' :short_title,
-                             'selected' : selected,
-                             'icon_name' : icon_name,
-                             'childs' : childview._renderTreeView(current, flags)})
+            element = self.createTreeViewElement(child, current,
+                index, length, level, parent_index, parent_length)
+            element['childs'] = childview._renderTreeView(current, level+1,
+                flags, length, index)
+            treeview.append(element)
+            index += 1
 
         return treeview
