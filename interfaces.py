@@ -110,7 +110,11 @@ class IMailMessage(IContainer):
 class IMailMessageStore(IContainer):
     """ Provides interface to a mail message store
         
-    """                
+    """  
+    def getMailBox():
+        """ returns mailbox holder
+        """              
+        
     def loadMessage(raw_msg):
         """ loads a message from a string raw content  
         """
@@ -168,6 +172,17 @@ class IMailMessageStore(IContainer):
             for single part messages, part_index is 0       
         """             
         
-        
+    def _synchronizeFolder():
+        """ synchronizes the Folder and its content with the server
+        """
+                
 class IMailBox(IContainer):
-    pass                        
+    """ mailboxes gives a few api to synchronize         
+    """
+    def synchronize():
+        """ synchronizes the mailbox and its content
+            and its content with the server by recursive calls to synchronizeFolder
+        """
+        pass
+
+    
