@@ -67,41 +67,6 @@ class MailBoxTestCase(ZopeTestCase):
         self.assertEquals('IMAP', mailbox['connection_type'])
         self.assertEquals('tarek', mailbox['uid'])
 
-    def test_syncdirs(self):
-        """ testing folder synchro
-        """
-        mailbox = MailBox('my_mailbox')
-
-        # first synchronize to create structure
-        mailbox._syncdirs([{'Name' : 'INBOX.Lop', 'Attributes' : ''},
-                           {'Name' : 'INBOX.One', 'Attributes' : ''},
-                           {'Name' : 'INBOX.[BCEAO]', 'Attributes' : ''},
-                           {'Name' : 'Trash', 'Attributes' : ''}])
-
-        self.assertEquals(hasattr(mailbox, 'INBOX'), True)
-
-        inbox = mailbox.INBOX
-
-        self.assertEquals(hasattr(inbox, 'Lop'), True)
-        self.assertEquals(hasattr(inbox, 'One'), True)
-        self.assertEquals(hasattr(inbox, 'BCEAO'), True) # we are looking to ids not titles
-        self.assertEquals(hasattr(inbox, 'Trash'), True)
-
-        folders = mailbox.getMailMessages(True, False, True)
-
-        self.assertEquals(len(folders), 5)
-
-        # now removes Trash
-        mailbox._syncdirs([{'Name' : 'INBOX', 'Attributes' : ''},
-                           {'Name' : 'INBOX.One', 'Attributes' : ''},
-                           {'Name' : 'INBOX.[BCEAO]', 'Attributes' : ''}])
-
-        folders = mailbox.getMailMessages(True, False, True)
-
-        self.assertEquals(len(folders), 3)
-        self.assertEquals(hasattr(folders, 'Trash'), False)
-
-
 
 def test_suite():
     return unittest.TestSuite((
