@@ -65,9 +65,8 @@ class MailBox(MailFolder):
 """
 InitializeClass(MailBox)
 
-manage_addMailBox = PageTemplateFile(
-    "www/zmi_addmailbox", globals(),
-    __name__ = 'manage_addMailBox')
+manage_addMailBoxForm = PageTemplateFile(
+    "www/zmi_addmailbox", globals())
 
 def manage_addMailBox(container, id=None, server_name ='',
         REQUEST=None, **kw):
