@@ -107,10 +107,34 @@
       />
 
   <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailMessageEdit"
+      template="www/mailMessageEdit.zpt"
+      name="editMessage.html"
+      permission="zope2.View"
+      />
+
+  <browser:page
       for=".interfaces.IMailFolder"
       class=".mailfolder.MailFolderView"
       template="www/mailFolderView.zpt"
       name="view.html"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessage.MailMessageView"
+      template="www/mailMessageViewAlone.zpt"
+      name="view_alone"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessage.MailMessageView"
+      template="www/mailMessageViewAlone.zpt"
+      name="view_alone.html"
       permission="zope2.View"
       />
 
@@ -179,6 +203,14 @@
       />
 
   <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessage.MailMessageView"
+      name="maillist"
+      attribute="renderMailList"
+      permission="zope2.View"
+      />
+
+  <browser:page
       for=".interfaces.IMailBox"
       class=".mailbox.MailBoxView"
       name="treeview"
@@ -199,6 +231,11 @@
   <browser:resource
     file="www/cpsmailaccess.css"
     name="cpsmailaccess.css"
+    />
+
+  <browser:resource
+    file="www/cpsmailaccess.js"
+    name="cpsmailaccess.js"
     />
 
 </configure>
