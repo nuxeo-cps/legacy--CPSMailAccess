@@ -34,13 +34,15 @@ class DummyConnection(BaseConnection):
         BaseConnection.__init__(self, connection_params)
 
     def login(self, user, password):
-
-        self.connected = True
+        self.state = 'AUTH'
         return True
 
     def logout(self):
-        self.connected = False
+        self.state = 'NOAUTH'
         return True
+
+    def getState(self):
+        return self.state
 
     def noop(self):
         pass
