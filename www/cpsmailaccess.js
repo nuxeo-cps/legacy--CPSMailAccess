@@ -55,10 +55,13 @@ function delay(ms)
   }
 }
 
-function saveMessageDatas(EditorHTML)
+function saveMessageDatas()
 {
   msg_subject = document.getElementById('msg_subject');
   msg_subject = msg_subject.value
+
+  msg_body = document.getElementById('msg_body');
+  msg_body = msg_body.value
 
   msg_to = document.getElementById('msg_to');
   msg_to = msg_to.value;
@@ -101,7 +104,6 @@ function saveMessageDatas(EditorHTML)
     attacher_on = "1";
   }
 
-  msg_body = EditorHTML;
   if(window.XMLHttpRequest) // Firefox
     xml = new XMLHttpRequest();
   else if(window.ActiveXObject) // Internet Explorer

@@ -224,15 +224,14 @@ def getToolByName(obj, name, default=_marker):
             raise AttributeError, name
         return tool
 
-def replyToBody(from_value, body, line_header='>>> '):
-    """ return a reply bloc
-    """
+def replyToBody(from_value, body, line_header='> '):
+    """ return a reply bloc """
     reply_content = [line_header+from_value + ' wrote']
-    body = fix_eols(body)
+    body = verifyBody(body)
     body_lines = body.split('\r\n')
     for line in body_lines:
         reply_content.append(line_header+line)
-    return '<br/>'.join(reply_content)
+    return '\r\n'.join(reply_content)
 
 def verifyBody(body):
     """ verify direct body content, according to
@@ -240,9 +239,9 @@ def verifyBody(body):
     """
     try:
         body = fix_eols(body)
-        body = HTMLToText(body)
         body = body.replace('&lt;', '<')
         body = body.replace('&gt;', '>')
+        body = body.replace('<br/>', '\r\n')
         ### epoz :(
         body = body.replace('<br>', '\r\n')
     except TypeError:
@@ -253,6 +252,8 @@ def HTMLize(content):
     """ transforms a text into a html bloc
     """
     content = fix_eols(content)
+    content = content.replace('<', '&lt;')
+    content = content.replace('>', '&gt;')
     content = content.replace('\r\n', '<br/>')
     return content
 

@@ -58,7 +58,7 @@ class MailActionsView(BrowserView):
                 save = {'icon' : base_url + '/cpsma_save.png',
                      'title' : 'save message',
                      'long_title' : 'save the message in Drafts',
-                     'onclick' : 'saveMessageDatas(GetHTML())',
+                     'onclick' : 'saveMessageDatas()',
                      'action' : 'saveMessage'}
 
                 """
@@ -66,7 +66,7 @@ class MailActionsView(BrowserView):
                      'title' : 'attach file',
                      'long_title' : 'add a file to the message',
                      'action' : 'editMessage.html?attach=1',
-                     'onclick' : 'saveMessageDatas(GetHTML())'}
+                     'onclick' : 'saveMessageDatas()'}
 
                 """
                 init = {'icon' : base_url + '/cpsma_initeditor.png',
@@ -80,7 +80,7 @@ class MailActionsView(BrowserView):
                                  'title' : 'send message',
                                  'long_title' : 'send the message',
                                  'action' : 'editMessage.html',
-                                 'onclick' : 'saveMessageDatas(GetHTML());alert("click below");'}
+                                 'onclick' : 'saveMessageDatas();alert("click below");'}
                 """
 
                 return [[save, init]]
