@@ -32,7 +32,7 @@ from email import Parser
 from types import StringType, ListType
 from utils import decodeHeader, HTMLize, HTMLToText, sanitizeHTML
 import mimetools
-from cStringIO import StringIO
+from StringIO import StringIO
 
 EMPTYSTRING = ''
 
@@ -79,35 +79,22 @@ class MailRenderer:
         else:
             pcharset = 'ISO-8859-15'
 
-        if ptype in ('text/plain', 'text', 'message/rfc822', 'text/html'):
+        content = self._stringToUnicode(content, pcharset)
 
+        if ptype in ('text/plain', 'text', 'message/rfc822', 'text/html'):
             if part_cte not in ('7bit', '8bit', '', None):
-                result = StringIO(u'')
-                mimetools.decode(content, result, part_cte)
+                output_str = StringIO()
+                input_str = StringIO(content)
+                mimetools.decode(input_str, output_str, part_cte)
+                result = output_str.getvalue()
             else:
                 result = content
-
             if ptype == 'text/html':
                 result = sanitizeHTML(result)
-
-            if not isinstance(result, unicode):
-                try:
-                    result = unicode(result, pcharset)
-                except UnicodeDecodeError:
-                    # wrong  charset ?
-                    result = unicode(result, 'ISO-8859-15')
-                except LookupError:
-                    # typically hapenning when wrong charset
-                    # or when the codec was not installed in python codec
-                    # forcing iso-8859-15
-                    result = unicode(result, 'ISO-8859-15')
             return result
 
         if ptype.startswith('multipart'):
-            if not isinstance(content, unicode):
-                return unicode(content, pcharset)
-            else:
-                return content
+            return content
 
         raise NotImplementedError('part_type %s charset %s type %s \n content %s' \
                 % (part_type, pcharset, ptype, content))
@@ -119,7 +106,7 @@ class MailRenderer:
             html = part_type.strip().startswith('text/html')
         else:
             html = False
-        part_cte =  mail['Content-transfert-encoding']
+        part_cte =  mail['Content-transfer-encoding']
         if mail.is_multipart():
             # have to choose an alternative here
             if part_type is not None and \
@@ -131,6 +118,8 @@ class MailRenderer:
                 if sub_part_type is not None and \
                    isinstance(sub_part_type, str):
                     html = sub_part_type.strip().startswith('text/html')
+                part_cte =  mail['Content-transfer-encoding']
+                part_type = mail['Content-type']
             it = Iterators.body_line_iterator(mail)
             lines = list(it)
             res = EMPTYSTRING.join(lines)
@@ -151,10 +140,11 @@ class MailRenderer:
 
 
     def renderBody(self, mail, part_index=0):
-        """ renders the mail given body part
-            used with a MailMessage *or* or MailPart
-            XXX still unclear if we want to split this in
-            two renderers : one for part, one for msg
+        """ Renders the mail given body part
+
+        Used with a MailMessage *or* or MailPart
+        XXX still unclear if we want to split this in
+        two renderers : one for part, one for msg
         """
         if mail is None:
             return ''
@@ -172,7 +162,20 @@ class MailRenderer:
             part = mail.getVolatilePart(part_index)
         if part is None:
             # this works for all level
-            part = mail.getPart(part_index, True)
+            if mail.isMultipart():
+                part_type = mail.getHeader('Content-type')
+                if len(part_type) > 0:
+                    part_type = part_type[0].lower()
+                else:
+                    part_type = None
+                if part_type is not None and \
+                   part_type.startswith('multipart/alternative'):
+                    part_count = mail.getPartCount()
+                    part = mail.getPart(part_count-1, True)
+                else:
+                    part = mail.getPart(part_index, True)
+            else:
+                part = mail.getPart(part_index, True)
 
         if part is None:
             # need to fetch server then
@@ -195,3 +198,19 @@ class MailRenderer:
             body = HTMLize(body)
 
         return body
+
+    def _stringToUnicode(self, string, charset='ISO-8859-15'):
+        """ safe string to unicode """
+        if not isinstance(string, unicode):
+            try:
+                result = unicode(string, charset)
+            except UnicodeDecodeError:
+                # wrong  charset ?
+                result = unicode(string, 'ISO-8859-15')
+            except LookupError:
+                # typically hapenning when wrong charset
+                # or when the codec was not installed in python codec
+                # forcing iso-8859-15
+                result = unicode(string, 'ISO-8859-15')
+            return result
+        return string
