@@ -60,6 +60,7 @@ class MailMessage(Folder):
     store = None
     sync_state = False
     cache_level = 1
+    _v_volatile_parts = {}
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
