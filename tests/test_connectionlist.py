@@ -48,7 +48,9 @@ class ListTester(Thread):
         while count <> 50:
             ob = self.list_object
             connections = ob.listConnectionTypes()
-            connection_params = {'uid' : 'user'+str(i), 'connection_type' : 'DUMMY'}
+            connection_params = {'uid' : 'user'+str(i),
+                                 'password' : '',
+                                 'connection_type' : 'DUMMY'}
             conn = ob.getConnection(connection_params)
             if conn is not None:
                 count += 1
