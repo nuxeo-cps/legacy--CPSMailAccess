@@ -21,6 +21,10 @@
 """
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.TextIndexNG2.TextIndexNG import TextIndexNG
+"""
+important TODO : use zope 3 catalog here, that is available on zope 3 cvs
+          http://svn.zope.org/Zope3/trunk/src/zope/app/catalog/
+"""
 from OFS.Folder import Folder
 from Globals import InitializeClass
 from zope.interface import implements
@@ -31,12 +35,14 @@ from UserDict import UserDict
 
 class MailCatalog(ZCatalog):
     user_id = ''
-    searchable_text = TextIndexNG('searchable_text')
+    indexed_headers = ['Subject', 'To', 'From']
+    stop_list = ['com', 'net', 'org', 'fr']
 
     def __init__(self, id, user_id='', title='', vocab_id=None, container=None):
         ZCatalog.__init__(self, id, title, vocab_id, container)
         self.user_id = user_id
-        self.searchable_text.indexed_fields = ['searchable_content']
+        self.addIndex('searchable_text', 'TextIndexNG')
+        self.Indexes['searchable_text'].indexed_fields = ['searchable_text']
 
     def indexMessage(self, message):
         """ index or reindex a mail content
@@ -49,17 +55,26 @@ class MailCatalog(ZCatalog):
             self.unWrapMessage(message)
 
     def wrapMessage(self, msg):
-        msg.searchable_content = 'coucou ok jojo'
+        """ wraps a message for indexation
+        """
+        searchable = []
+        # indexing part of headers at this time
+        indexed_headers = self.indexed_headers
+        stop_list = self.stop_list
+
+        for indexed_header in indexed_headers:
+            header_content = msg.getHeader(indexed_header)
+            if header_content is not None:
+                for element in header_content:
+                    element_words = element.split(' ')
+                    for word in element_words:
+                        if word not in searchable and word not in stop_list:
+                            searchable.append(word)
+
+        msg._v_searchable_text = ' '.join(searchable)
 
     def unWrapMessage(self, msg):
-        msg.searchable_content = None
-
-
-    def searchMessages(self, SearchText):
-        """ searches a text into the catalog brains
-            returns a list of msg urls
-        """
-        pass
+        msg._v_searchable_text = None
 
 InitializeClass(MailCatalog)
 
