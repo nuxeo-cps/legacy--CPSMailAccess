@@ -194,7 +194,6 @@ function saveMessageDatas()
     msg_to = escape(msg_to);
     msg_cc = escape(msg_cc);
     msg_bcc = escape(msg_bcc);
-
     var body = "attacher_on="+attacher_on+"&cc_on="+cc_on+"&bcc_on="+bcc_on+"&msg_subject="+msg_subject+"&msg_body="+msg_body+"&msg_to="+msg_to+"&msg_cc="+msg_cc+"&msg_bcc="+msg_bcc
     i = 0;
     while ((status == 503) && (i<10))
@@ -291,16 +290,9 @@ function truncateFields(max_size)
 */
 function setCursor(obj)
 {
-  if (navigator.appName == "Microsoft Internet Explorer"
-            && navigator.appVersion.indexOf("5.") >= 0)
+  if (navigator.appName == "Microsoft Internet Explorer")
   {
     isIE = true;
-  }
-  // For some reason, appVersion returns 5 for Netscape 6.2 ...
-  else if (navigator.appName == "Netscape"
-          && navigator.appVersion.indexOf("5.") >= 0)
-  {
-    isIE = false;
   }
   else
     isIE = false;
@@ -347,4 +339,13 @@ function readCookie(name)
 function eraseCookie(name)
 {
   createCookie(name,"",-1);
+}
+
+/*
+  used to enable onclick to go to an url
+*/
+
+function gotoUrl(dest)
+{
+  self.location.href= dest;
 }
