@@ -36,7 +36,7 @@ class MailSearchView(BrowserView):
         if searchable_text == '':
             return []
         box = self.context
-        user_id = box.connection_params['uid']
+        user_id = box.getConnectionParams()['uid']
         results = []
         cat = box._getCatalog()
         msg_viewer = MailMessageView(None, self.request)
