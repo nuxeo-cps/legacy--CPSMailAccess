@@ -20,9 +20,9 @@
   mailsearch holds all mail searches
 """
 import os
-
 from zLOG import LOG, INFO, DEBUG
 from OFS.Folder import Folder
+from OFS.SimpleItem import SimpleItem
 from ZODB.PersistentMapping import PersistentMapping
 from Globals import InitializeClass
 
@@ -34,6 +34,13 @@ from Products.TextIndexNG2.Stopwords import FileStopwords
 
 from configuration import __file__ as landmark
 from utils import makeId
+from interfaces import IMailCatalog
+
+from zemantic.triplestore import TripleStore
+from zemantic.interfaces import IRDFThreeTuples
+
+from rdflib.URIRef import URIRef
+from rdflib.Literal import Literal
 
 stop_words_filename = os.path.join(os.path.dirname(landmark), 'stopwords.txt')
 
@@ -43,12 +50,15 @@ class MailStopWords(FileStopwords):
 # one catalog per user
 # has one index wich is 'TextIndexNG2"
 class MailCatalog(ZCatalog):
-    user_id = ''
-    indexed_headers = ['Subject', 'To', 'From']
-    index_body = 1
+
+    implements(IMailCatalog)
 
     def __init__(self, id, user_id='', title='', vocab_id=None, container=None):
+
         ZCatalog.__init__(self, id, title, vocab_id, container)
+
+        self.indexed_headers = ['Subject', 'To', 'From']
+        self.index_body = 1
         self.user_id = user_id
         self.addIndex('searchable_text', 'TextIndexNG2')
         indexer = self.Indexes['searchable_text']
@@ -107,16 +117,60 @@ class MailCatalog(ZCatalog):
         msg.searchable_text = ' '.join(searchable)
 
     def unWrapMessage(self, msg):
-        """ suppress wrapper
-        """
+        """ suppress wrapper """
         msg.searchable_text = None
 
     def search(self, query_request, sort_index=None,
             reverse=0, limit=None, merge=1):
-        """ search
-        """
+        """ search """
         # todo filter to supress duplicates
         return ZCatalog.search(self, query_request, sort_index,
             reverse, limit, merge)
 
 InitializeClass(MailCatalog)
+
+class ZemanticMessageAdapter:
+
+    implements(IRDFThreeTuples)
+
+    def __init__(self, message):
+        self.context = message
+
+    def threeTuples(self):
+        """ give zemantic the sequence of relations """
+        message = self.context
+        ob_uri = URIRef(u'%s' % message.absolute_url())    # zope 2 dependant
+
+        triples = []
+
+        for header in message.getHeaders():
+            header_name = header
+            values = message.getHeader(header_name)
+            for value in values:
+                header_name = header_name.lower()
+                relation = URIRef(u'%s' % header_name)
+
+                if isinstance(value, str):
+                    value = value.decode('ISO8859-15')     # need to use mail encoding
+
+                value = Literal(value)
+                triple = (ob_uri, relation, value)
+                triples.append(triple)
+
+        # a triple for the direct body
+        body = Literal(message.getDirectBody())
+        triples.append((ob_uri, URIRef(u'body'), body))
+
+        return triples
+
+class ZemanticMailCatalog(TripleStore):
+
+    implements(IMailCatalog)
+
+    def indexMessage(self, message):
+        message = ZemanticMessageAdapter(message)
+        self.addTriples(message.threeTuples())
+
+    def unIndexMessage(self, message):
+        raise NotImplementedError
+
