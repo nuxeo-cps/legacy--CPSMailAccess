@@ -26,19 +26,18 @@ from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
-from interfaces import IMailMessage, IMailMessageStore,\
-     IMailFolder, IMailBox
+from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
 from utils import decodeHeader
-from email import Message as Message
-from email import message_from_string
-from email.Charset import Charset
-from email.Header import decode_header
 from Globals import InitializeClass
 from Products.Five import BrowserView
 from mailrenderer import MailRenderer
 from basemailview import BaseMailMessageView
+from mailpart import MailPart
+from email import message_from_string
 
-class MailMessage(Folder):
+## XX todo : need to add a setPart to add parts on the fly
+
+class MailMessage(Folder, MailPart):
     """A mail message.
 
     A mail message wraps an email.Message object.
@@ -51,19 +50,18 @@ class MailMessage(Folder):
     >>> f = MailMessage()
     >>> IMailMessage.providedBy(f)
     True
-
+    >>> IMailPart.providedBy(f)
+    True
     """
-    implements(IMailMessage, IMailMessageStore)
+    implements(IMailMessage, IMailPart)
     meta_type = "CPSMailAccess Message"
 
     uid = '' # server uid
     digest = ''
     store = None
     sync_state = False
-    cache_level = 1
+
     _v_volatile_parts = {}
-    persistent_parts = ()
-    parent_folder = None
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
@@ -89,181 +87,8 @@ class MailMessage(Folder):
             self.loadMessage('')
         return self.store
 
-    def loadMessage(self, raw_msg):
-        """ See interfaces.IMailMessage
-        """
-        ### XXX we'll do different load level here
-        if self.cache_level == 0:
-            # todo
-            self.store = Message.Message()
-        elif self.cache_level == 1:
-            # todo fill headers
-            self.store = Message.Message()
-            for key in raw_msg.keys():
-                self.store[key] = raw_msg[key]
-        else:
-            self.store = message_from_string(raw_msg)
-
-    def getPartCount(self):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-        if self.isMultipart():
-            return len(store.get_payload())
-        else:
-            return 1
-
-    def getPart(self, index=None, decode= False):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-        if index == None:
-            try:
-                part = store.get_payload(None, decode)
-            except TypeError:
-                part = None
-        else:
-            try:
-                part = store.get_payload(index, decode)
-            except TypeError:
-                part = None
-
-        return part
-
-    def getParts(self):
-        """ returns parts in a sequence (or a string if monopart)
-        """
-        store = self._getStore()
-        return store.get_payload()
-
-
-    def getCharset(self, part_index=0):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-        return store.get_charsets()[part_index]
-
-    def setCharset(self, charset, part_index=0):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-        ob_charset = Charset(charset)
-
-        if not self.isMultipart():
-            if part_index > 0:
-                raise IndexError('Index out of bounds')
-            store.set_charset(ob_charset)
-        else:
-            payload = store.get_payload()
-            payload[part_index-1].set_charset(ob_charset)
-
-    def isMultipart(self):
-        """ See interfaces.IMailMessage
-        >>> f = MailMessage()
-        >>> f.cache_level = 0
-        >>> f.loadMessage('mmdclkdshkdjg')
-        >>> f.isMultipart()
-        False
-        """
-        store = self._getStore()
-        return store.is_multipart()
-
-    def getContentType(self, part_index=0):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-
-        if not self.isMultipart() or part_index == 0:
-            if part_index > 0:
-                raise IndexError('Index out of bounds')
-            return store.get_content_type()
-        else:
-            payload = store.get_payload()
-            return payload[part_index-1].get_content_type()
-
-    def setContentType(self, content_type, part_index=0):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-        if not self.isMultipart() or part_index == 0:
-            if part_index > 0:
-                raise IndexError('Index out of bounds')
-            store.set_type(content_type)
-        else:
-            payload = store.get_payload()
-            payload[part_index-1].set_type(content_type)
-
-
-    def getParams(self, part_index=0):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-
-        if not self.isMultipart() or part_index == 0:
-            if part_index > 0:
-                raise IndexError('Index out of bounds')
-            return store.get_params()
-        else:
-            payload = store.get_payload()
-            return payload[part_index-1].get_params()
-
-    def getParam(self, param_name, part_index=0):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-
-        if not self.isMultipart() or part_index == 0:
-            if part_index > 0:
-                raise IndexError('Index out of bounds')
-            return store.get_param(param_name)
-        else:
-            payload = store.get_payload()
-            return payload[part_index-1].get_param(param_name)
-
-    def setParam(self, param_name, param_value, part_index=0):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-        if not self.isMultipart() or part_index == 0:
-            if part_index > 0:
-                raise IndexError('Index out of bounds')
-            store.set_param(param_name, param_value)
-        else:
-            payload = store.get_payload()
-            payload[part_index-1].set_param(param_name, param_value)
-
-    def delParam(self, param_name, part_index=0):
-        """ See interfaces.IMailMessage
-        """
-        store = self._getStore()
-        if not self.isMultipart() or part_index == 0:
-            if part_index > 0:
-                raise IndexError('Index out of bounds')
-            store.del_param(param_name)
-        else:
-            payload = store.get_payload()
-            payload[part_index-1].del_param(param_name)
-
-    def getHeader(self, name):
-        """Get a message header.
-        """
-        store = self._getStore()
-        return store[name]
-
-    def setHeader(self, name, value):
-        """Set a message header.
-        """
-        store = self._getStore()
-        if store.has_key(name):
-            # Erase previous header
-            del store[name]
-        store[name] = value
-
-    def getRawMessage(self):
-        """ see interface
-        """
-        store = self._getStore()
-        return store.as_string()
+    def _setStore(self, store):
+        self.store = store
 
     def getMailBox(self):
         """ gets mailbox
@@ -282,28 +107,44 @@ class MailMessage(Folder):
     def getMailFolder(self):
         """ gets parent folder
         """
-        return self.parent_folder
+        return self.aq_inner.aq_parent
 
-    def loadPart(self, part_num, volatile=True):
+    def loadPart(self, part_num, part_content='', volatile=True):
         """ loads a part in the volatile list
             or in the persistent one
+            if part_content is empty,fetching the server
         """
         # XXXX still unclear if this is the right place
         # to do so
-        mailfolder = self.getMailFolder()
-        connector = mailfolder._getconnector()
+        # this api has to be used for the primary load
+        # optimization = if the part is already here *never*
+        # reloads it, it has to be cleared if reload is needed somehow
+        part_num_str = str(part_num)
 
-        if connector is not None:
-            part_str = connector.partial(mailfolder.server_name, self.uid,
-                part_num, 0, 0)
+        if self._v_volatile_parts.has_key(part_num_str):
+            return self._v_volatile_parts[part_num_str]
 
-            part = message_from_string(part_str)
+        if part_num < self.getPartCount():
+            part = self.getPart(part_num)
+            if part is not None:
+                return part
 
-            if volatile:
-                self._v_volatile_parts[str(part_num)] = part
-            else:
-                ## todo : creates a real part
-                raise 'todo create a real part here'
+        if part_content != '':
+            part_str = part_content
+        else:
+            mailfolder = self.getMailFolder()
+            connector = mailfolder._getconnector()
+
+            if connector is not None:
+                part_str = connector.fetchPartial(mailfolder.server_name, self.uid,
+                    part_num, 0, 0)
+
+        part = message_from_string(part_str)
+        if volatile:
+            self._v_volatile_parts[str(part_num)] = part
+        else:
+            ## todo : creates a real part
+            raise 'todo create a real part here'
 
 
 
@@ -484,9 +325,6 @@ def manage_addMailMessage(container, id=None, uid='',
     container = container.this()
     ob = MailMessage(id, uid, digest, **kw)
     container._setObject(ob.getId(), ob)
-    ### ask florent if this is ok with
-    # zope 2 and zope 3 compatibilities
-    ob.parent_folder = container
     if IMailFolder.providedBy(container):
         container.message_count += 1
     if REQUEST is not None:
