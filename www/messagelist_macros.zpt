@@ -1,7 +1,7 @@
 <html>
   <body>
     <metal:block define-macro="search_messagelist">
-        <table with="100%">
+        <table id="tableMessageList" width="100%">
           <tr class="mailHeaders">
             <th width="320px"  class="mailToolBarElement mailToolBarInsideElement">
                   Subject
@@ -38,9 +38,7 @@
     <tal:block tal:define="messages view/renderMailList;">
        <div tal:attributes="class
               python:test(is_folder,'folder_msglist','message_msglist')">
-        <table with="100%"
-          id="folder_content"
-            >
+        <table width="100%" id="tableMessageList">
           <tr class="mailHeaders">
             <th width="320px"  class="mailToolBarElement mailToolBarInsideElement">
                   Subject
@@ -62,6 +60,8 @@
           <tr tal:attributes="class python:test(is_current, class_selected,
             class_notselected)">
             <td width="320px">
+              <input type="hidden" name="sorter" id="sorter"
+                   tal:attributes="value message/title"/>
               <input type="checkbox" tal:attributes="name python:'msg_'+message['uid']"
                   tal:condition="content_managment"/>
               <img src="cpsma_attach_mini.png" tal:condition="message/attachments"/>
@@ -72,11 +72,15 @@
               </a>
             </td>
             <td width="130px">
+             <input type="hidden" name="sorter" id="sorter"
+                   tal:attributes="value message/From|python:''"/>
             <a tal:attributes="href python:message['url']+'?showfolders=1'">
                 <span tal:replace="message/From|string:?"/>
             </a>
             </td>
             <td width="80px">
+             <input type="hidden" name="sorter" id="sorter"
+                   tal:attributes="value message/FullDate|python:0"/>
             <a tal:attributes="href python:message['url']+'?showfolders=1'">
                 <span tal:replace="message/Date|string:?"/>
             </a>
