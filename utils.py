@@ -125,7 +125,7 @@ def parseDateString(date_string):
     >>> parseDateString('hahahaha')
     datetime.datetime(1970, 1, 1, 0, 0)
     """
-    parser= DateTimeParser()
+    parser = DateTimeParser()
     try:
         result = parser.parse(date_string)
         result = datetime(result[0], result[1], result[2],
@@ -134,6 +134,7 @@ def parseDateString(date_string):
         result = datetime(1970,1,1)
 
     return result
+
 
 def localizeDateString(date_string, format=0):
     """ normalizes renders a localized date string
@@ -333,3 +334,9 @@ def sanitizeHTML(html):
             work = work.replace(script, '')
         body = re.findall(re_script, work)
     return work
+
+def isValidEmail(mail):
+    """ verifies a mail is a mail """
+    re_script = r'.*@.*\..{2,4}'
+    return re.match(re_script, mail.strip()) is not None
+
