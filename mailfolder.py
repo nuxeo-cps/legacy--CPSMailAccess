@@ -37,7 +37,7 @@ from Acquisition import aq_parent, aq_inner, aq_base
 from Products.Five import BrowserView
 from baseconnection import ConnectionError
 
-has_connection = 0
+has_connection = 1
 
 class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
@@ -64,7 +64,7 @@ class MailFolder(BTreeFolder2):
         """
         BTreeFolder2.__init__(self, uid)
         self.setServerName(server_name)
-        self.title = server_name
+        self.title = self.simpleFolderName()
 
     def getNextMessageUid(self):
         """ retrieves next id for messages
@@ -101,12 +101,19 @@ class MailFolder(BTreeFolder2):
         """
         return [self[k] for k in self.getKeysSlice(key1, key2)]
 
+    def hasKey(self, key):
+        return len(self.getKeysSlice(key, key)) == 1
+
     def getMailBox(self):
         """See interfaces.IMailFolder
         """
         current = self
         while current is not None and not IMailBox.providedBy(current):
             current = aq_inner(aq_parent(current))
+        """
+        if current is None or not IMailBox.providedBy(current):
+            raise MailContainerError('object not contained in a mailbox')
+        """
         return current
 
     def getMailFolder(self):
@@ -116,7 +123,7 @@ class MailFolder(BTreeFolder2):
         """ returns cache level
         """
         mailbox = self.getMailBox()
-        return mailbox.cache_level
+        return mailbox.connection_params['cache_level']
 
 
     def getMailMessages(self, list_folder=True, list_messages=True,
@@ -128,7 +135,6 @@ class MailFolder(BTreeFolder2):
         []
         """
         results = []
-
         if list_folder:
             # use btree slices
             r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
@@ -149,14 +155,12 @@ class MailFolder(BTreeFolder2):
             # use btree slices
             r = self.getValuesSlice('.', '.\xff')
             results.extend(list(r))
-
         return results
 
 
     def getMailMessagesCount(self, count_folder=True,
                              count_messages=True, recursive=False):
         """See interfaces.IMailFolder
-
         >>> f = MailFolder()
         >>> f.getMailMessagesCount()
         0
@@ -170,12 +174,10 @@ class MailFolder(BTreeFolder2):
         if recursive:
             if count_folder:
                 count += self.folder_count
-
             # use btree slices
             r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
             r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
             folders = list(r1) + list(r2)
-
             for folder in folders:
                 subcount = folder.getMailMessagesCount(count_folder,
                                                        count_messages,
@@ -289,23 +291,26 @@ class MailFolder(BTreeFolder2):
         msg = self._getOb(id)
         return msg
 
-    def _addFolder(self, uid='', server_name=''):
+    def _addFolder(self, uid='', server_name='', server=False):
         """see interfaces.IMailFolder
         """
         self.clearMailBoxTreeViewCache()
         self.folder_count +=1
-
         if uid == '':
             uid = uniqueId(self, 'folder_', use_primary=False)
         else:
             uid = makeId(uid)
-
         if server_name == '':
             server_name = uid
-
         new_folder = MailFolder(uid, server_name)
-        self._setObject(new_folder.getId(), new_folder)
-        new_folder = self._getOb(new_folder.getId())
+        new_id = new_folder.getId()
+        self._setObject(new_id, new_folder)
+        new_folder = self[new_id]
+
+        if server:
+            connector = self._getconnector()
+            # todo : look at the result
+            connector.create(new_folder.server_name)
 
         return new_folder
 
@@ -380,8 +385,12 @@ class MailFolder(BTreeFolder2):
                 continue
 
             # gets flags, size and headers
-            msg_headers = connector.fetch(self.server_name, uid,\
+            fetched = connector.fetch(self.server_name, uid,\
                 '(FLAGS RFC822.SIZE RFC822.HEADER)')
+
+            msg_flags = fetched[0]
+            msg_size = fetched[1]
+            msg_headers = fetched[2]
 
             digest = self._createKey(msg_headers)
             msg = mail_cache.get(digest, remove=True)
@@ -397,44 +406,41 @@ class MailFolder(BTreeFolder2):
                     # XXX 'OK' should be done by fetch into connection object
                     # we need here to give to the message the number of parts
                     # so it can create them with none
-                    msg_content = ('OK', msg_headers)
+                    #msg_content = ('OK', msg_headers)
                     ####TODO :
+                    raw_msg = msg_headers
                     # need to fetch number of part here
                     #and to use it to initiate create empty parts
-
                     body_structure = connector.fetch(self.server_name, uid, '(BODYSTRUCTURE)')
-
-
                 else:
                     # XXX Only simplest case where all message is cached
                     # we also get flags
-                    try:
-                        msg_content = connector.fetch(self.server_name, uid,
-                                                    '(FLAGS RFC822)')
+                    #try:
+                    msg_content = connector.fetch(self.server_name, uid,
+                                                '(FLAGS RFC822)')
+                    msg_flags = msg_content[0]
+                    msg_body = msg_content[1]
                     #except Timeout:
-                    except:
+                    #except:
                         # XXX will be moved to connection object
-                        msg_content = ('KO', '')
+                    #    msg_content = ''
 
                 # XXX should be done by fetch into connection object
-                if msg_content and msg_content[0] == 'OK':
-                    raw_msg = msg_content[1]
-                else:
-                    raw_msg = ''
+                #raise str(msg_content)
+
+                    if msg_content:
+                        raw_msg = msg_body
+                    else:
+                        raw_msg = ''
 
                 log.append('adding message %s in %s' % (uid, self.server_name))
-
                 msg = self._addMessage(uid, digest)
+                # todo: parse flags
                 msg.loadMessage(raw_msg, cache_level)
-
-                #setattr(msg, header, msg_headers[header])
-                if msg_headers.has_key('Subject'):
-                    msg.title = msg_headers['Subject']
             else:
                 # Message was in cache, adding it to self
                 log.append('moving message %s in %s' % (uid, self.server_name))
                 self._setObject(msg.getId(), msg)
-
             msg.setSyncState(state=True)
             LOG('sync', INFO, str(uid))
 
@@ -445,7 +451,7 @@ class MailFolder(BTreeFolder2):
             if not message.sync_state:
                 digest = message.digest
                 if not mail_cache.has_key(digest):
-                    log.append('adding %s message ni cache' % message.uid)
+                    log.append('adding %s message in cache' % message.uid)
                     mail_cache[digest] = message
                 self.manage_delObjects([message.getId()])
         if return_log:
@@ -474,19 +480,24 @@ class MailFolder(BTreeFolder2):
         return self.getMailMessagesCount(count_folder=True, count_messages=True, \
             recursive=False) == 0
 
-    def rename(self, new_name, fullname=False):
+    def rename(self, new_name, fullname=0):
         """ renames the box
         """
         self.clearMailBoxTreeViewCache()
         oldmailbox = self.server_name
 
-        if not fullname:
-            prefix = oldmailbox.split('.')
-            del prefix[len(prefix)-1]
-            newmailbox = new_name.replace('.', '_')
-            newmailbox = '.'.join(prefix) + '.' + newmailbox
+        if str(fullname)=='0':
+            if oldmailbox.find('.')>1:
+                prefix = oldmailbox.split('.')
+                del prefix[len(prefix)-1]
+                newmailbox = new_name.replace('.', '_')
+                newmailbox = '.'.join(prefix) + '.' + newmailbox
+            else:
+                newmailbox = new_name.replace('.', '_')
         else:
             newmailbox = new_name
+
+        newmailbox = newmailbox.replace('CPS Portal', 'INBOX')
 
         if has_connection:
             connector = self._getconnector()
@@ -509,19 +520,21 @@ class MailFolder(BTreeFolder2):
             gparent = gparent.getMailFolder()
 
         # let's find the new parent
-        path = newmailbox.split('.')
-        del path[len(path)-1]
+        if newmailbox.find('.')>-1:
+            path = newmailbox.split('.')
+            basename = path[len(path)-1]
+            del path[len(path)-1]
+        else:
+            path = []
+            basename = newmailbox
 
         current = self.getMailBox()
-
         for node in path:
             current = getattr(current, node)
 
-        #make the folder free
+        # make the folder free
         self = aq_base(self)
-
-        self.server_name = newmailbox
-        self.id = self.simpleFolderName()
+        self.id = makeId(basename)
 
         # let's append the folder to this new parent
         current._setObject(self.id, self)
@@ -531,24 +544,15 @@ class MailFolder(BTreeFolder2):
             parent.folder_count += 1
             parent = parent.getMailFolder()
 
-        self.title = self.id
-        #i like this
         self = getattr(current, self.id)
 
-        # recreating server name if needed
-        if not fullname:
-            parent = self.getMailFolder()
-            self.server_name = self.title
-
-            while parent is not None:
-                self.server_name = parent.title+'.'+self.title
-                if not hasattr(parent, 'getMailFolder'):
-                    parent = None
-                else:
-                    parent = parent.getMailFolder()
+        # recreating server name
+        if fullname==0:
+            self.server_name = newmailbox
         else:
             self.server_name = new_name
 
+        self.title = self.id
         return self
 
     def delete(self):
@@ -562,7 +566,7 @@ class MailFolder(BTreeFolder2):
         seed = 1
         name = self.simpleFolderName()
         composed = name
-        while hasattr(trash, composed):
+        while trash.hasKey(composed):
             composed = name + '_' +str(seed)
             seed += 1
         newmailbox = trash_folder_name + '.' + composed
@@ -579,8 +583,7 @@ class MailFolder(BTreeFolder2):
         """ copy a mailbox into another one
         """
         # TODO
-        # XXXXXXX
-        pass
+        raise NotImplementedError
 
     def moveMessage(self, uid, new_mailbox):
         """ moves the message on the server,
