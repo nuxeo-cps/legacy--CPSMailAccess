@@ -197,6 +197,19 @@ class IMailBox(IContainer):
             if resync is True, resyncs with the server
         """
 
+    def setTreeViewCache(treeview):
+        """ sets a non persistent value
+            used to keep a calculated treeview
+        """
+
+    def getTreeViewCache():
+        """ retrieves the cached treeview
+        """
+
+    def clearTreeViewCache():
+        """ empty the cache
+        """
+
 class IMailTool(Interface):
     """ portal tool
     """
