@@ -8,7 +8,7 @@
             <h4>
               <a href="addressBooks.html" class="selectable">
                 <img tal:attributes="src python:base_url+'/cpsma_addressbook.png'"/>
-                &#160;Address Book
+                &#160;<span i18n:translate="cpsma_address_book">Address Book</span>
               </a>
             </h4>
         </td>
@@ -16,7 +16,7 @@
             <h4>
               <a href="configure.html" class="selectable">
                 <img tal:attributes="src python:base_url+'/cpsma_configure.png'"/>
-                &#160;Configure Mailbox
+                &#160;<span i18n:translate="cpsma_configure_mailbox">Configure Mailbox</span>
               </a>
             </h4>
         </td>
@@ -26,7 +26,7 @@
             <h4>
               <a href="zemanticSearchMessage.html" class="selectable">
                 <img tal:attributes="src python:base_url+'/cspma_mail_find.png'"/>
-                &#160;Search Messages
+                &#160;<span i18n:translate="cpsma_search_message">Search Messages</span>
               </a>
             </h4>
         </td>
@@ -34,7 +34,7 @@
             <h4>
               <a href="editMessage.html" class="selectable">
                 <img tal:attributes="src python:base_url+'/cpsma_writemail.png'"/>
-                &#160;Write Message
+                &#160;<span i18n:translate="cpsma_write_message">Write Message</span>
               </a>
             </h4>
         </td>
@@ -44,7 +44,7 @@
             <h4>
               <a href="synchronize.html" class="selectable">
                 <img tal:attributes="src python:base_url+'/cpsma_getmails.png'"/>
-                &#160;Synchronize mailbox
+                &#160;<span i18n:translate="cpsma_synchronize_mailbox">Synchronize mailbox</span>
               </a>
             </h4>
         </td>

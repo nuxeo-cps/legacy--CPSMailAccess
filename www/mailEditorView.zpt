@@ -16,8 +16,8 @@
                            attacher_on python:here.getFlag('attacher_on')">
 
       <noscript>
-        <div class="message">
-        Javascript is disabled, please activate it for enhanced ergonomy.
+        <div class="message" i18n:translate="cpsma_js_disabled">
+          Javascript is disabled, please activate it for enhanced ergonomy.
         </div>
       </noscript>
       <div id="attacher"
@@ -112,7 +112,9 @@
             <div class="recipient_toggler">
                 <span class="link" onmouseover="setCursor(this);"
                       onclick="toggleElementVisibility('attacher')">
-                <img src="cma_small_attach.png"/>&#160;Attach file</span> |
+                <img src="cma_small_attach.png"/>&#160;
+                 <span i18n:translate="cpsma_attach_file">Attach file</span>
+                </span> |
                 <span class="link" onmouseover="setCursor(this);"
                     onclick="toggleElementVisibility('Cc')">Cc</span> |
                 <span class="link" onmouseover="setCursor(this);"

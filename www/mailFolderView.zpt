@@ -28,7 +28,7 @@
         title="close">
         <img src="cpsma_delete_file.png"/>
      </a>
-     <form action="rename.html" class="rename_form"
+     <form action="rename.html" method="post" class="rename_form"
           tal:define="max_size_reached_msg string:'max_size_reached';
                       js_snip python:'controlInputSize(this, %s, event, %s)' % (max_folder_size, max_size_reached_msg)">
        <input type="text" name="new_name" id="new_name"
@@ -43,7 +43,7 @@
         title="close">
         <img src="cpsma_delete_file.png"/>
      </a>
-     <form action="addFolder.html" class="rename_form"
+     <form action="addFolder.html" method="post" class="rename_form"
           tal:define="max_size_reached_msg string:max_size_reached;
                       js_snip python:'controlInputSize(this, %s, event, %s)' % (max_folder_size, max_size_reached_msg)">
        <input type="text" name="name" value=""
@@ -65,21 +65,25 @@
     <div id="maillist"
          tal:define="is_folder python:1">
       <tal:block tal:condition="show_content_toolbar">
-        <form action="manageContent.html">
+        <form action="manageContent.html" method="post">
           <a href="view"
             class="close_rename_form"
             title="close">
             <img src="cpsma_delete_file.png"/>
           </a>
           <div class="rename_form">
-            <div class="form_title">Make a selection and choose an action
+            <div class="form_title"><span i18n:translate="cpsma_make_selection">
+            Make a selection and choose an action</span>
               <tal:block tal:condition="clipboard">
                 <tal:block tal:define="count here/clipBoardCount">
                   <tal:block tal:condition="python:count &gt; 1">
-                    (<span tal:replace="count"/> messages in clipboard)
+                    (<span tal:replace="count"/>
+                     <span i18n:translate="cpsma_messages_in_clipboard">
+                      messages in clipboard</span>)
                   </tal:block>
                   <tal:block tal:condition="python:count == 1">
-                    (1 message in clipboard)
+                    (1 <span i18n:translate="cpsma_message_in_clipboard">
+                    message in clipboard</span>)
                   </tal:block>
                 </tal:block>
               </tal:block>

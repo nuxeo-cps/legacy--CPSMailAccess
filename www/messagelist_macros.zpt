@@ -38,20 +38,28 @@
     <tal:block tal:define="messages view/renderMailList;">
        <div tal:attributes="class
               python:test(is_folder,'folder_msglist','message_msglist')">
-        <table id="tableMessageList">
+        <table id="tableMessageList"
+               tal:define="cols here/getMessageListCols"
+               class="messageList">
           <tr class="mailHeaders">
-            <th class="mailToolBarElement mailToolBarInsideElement">
-                  Subject
+            <th tal:condition="content_managment">
+            &#160;
             </th>
-            <th class="mailToolBarElement mailToolBarInsideElement">
-              Sender
-            </th>
-            <th class="mailToolBarElement mailToolBarInsideElement">
-              Date
+            <th class="mailToolBarElement mailToolBarInsideElement"
+                tal:repeat="col cols">
+              <tal:block tal:condition="python:col not in ('Attachments', 'Icon')">
+                <span tal:replace="col"/>
+              </tal:block>
+              <tal:block tal:condition="python:col=='Attachments'">
+                A
+              </tal:block>
+              <tal:block tal:condition="python:col=='Icon'">
+                I
+              </tal:block>
             </th>
           </tr>
           <tal:block tal:repeat="message messages">
-          <metal:block tal:define="is_current
+          <tal:block tal:define="is_current
                 python:here.absolute_url()+'/view'==message['url'];
                 odd repeat/message/odd;
                 class_selected python:test(odd, 'selected_odd', 'selected_even');
@@ -60,49 +68,45 @@
                 gotoUrl python:message['url']+'?showfolders=1';
                 onmouseover python:'setCursor(this)'+chr(59);
                 onclickurl python:'gotoUrl('+chr(34)+gotoUrl+chr(34)+')';
+                base_url here/getBaseUrl;
                 divclass python:test(is_current, class_selected, class_not_selected)">
+
           <tr tal:attributes="class
               python:test(odd, 'line_selectable_odd', 'line_selectable_even');">
-            <td>
-              <input type="hidden" name="sorter" id="sorter"
-                     tal:attributes="value message/title"/>
-              <div tal:attributes="class divclass;
-                                   onclick onclickurl;
-                                   onmouseover onmouseover">
-                <input type="checkbox" tal:attributes="name python:'msg_'+message['uid']"
-                  tal:condition="content_managment"/>
-                <img src="cpsma_attach_mini.png" tal:condition="message/attachments"/>
-                <img tal:attributes="src message/icon"
-                    src="cpsma_message.png"/>
-                <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                  <span class="truncable" tal:content="message/title"/>
-                </a>
-              </div>
+
+            <td tal:condition="content_managment">
+
+              <input type="checkbox"
+                     tal:attributes="name python:'msg_'+message['uid']"/>
             </td>
-            <td>
+            <td tal:repeat="col cols">
               <input type="hidden" name="sorter" id="sorter"
-                     tal:attributes="value message/From|python:''"/>
-              <div tal:attributes="class divclass;
-                                   onclick onclickurl;
-                                   onmouseover onmouseover">
-                <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                  <span class="truncable" tal:content="message/From|string:?"/>
-                </a>
-             </div>
-            </td>
-            <td>
-              <input type="hidden" name="sorter" id="sorter"
-                    tal:attributes="value message/FullDate|python:0"/>
-              <div tal:attributes="class divclass;
-                                   onclick onclickurl;
-                                   onmouseover onmouseover">
-                <a tal:attributes="href python:message['url']+'?showfolders=1'">
-                  <span class="truncable" tal:content="message/Date|string:?"/>
-                </a>
+                     tal:attributes="value python:message[col+'_sort']"/>
+
+             <div tal:attributes="class divclass;
+                                  onclick onclickurl;
+                                  onmouseover onmouseover">
+
+              <a tal:attributes="href python:message['url']+'?showfolders=1'">
+
+                <tal:block tal:condition="python:col=='Attachments'">
+                  <img src="cpsma_attach_mini.png" tal:condition="python:message[col]==1"/>
+                </tal:block>
+                <tal:block tal:condition="python:col=='Size'">
+                  <span tal:replace="python:str(message[col][0])+' '+message[col][1]"/>
+                </tal:block>
+                <tal:block tal:condition="python:col=='Icon'">
+                  <img tal:attributes="src python:base_url+message[col]"
+                       src="cpsma_message.png"/>
+                </tal:block>
+                <tal:block tal:condition="python:col not in ('Attachments', 'Size', 'Icon')">
+                 <span class="truncable" tal:content="python:message[col]"/>
+                </tal:block>
+              </a>
               </div>
             </td>
           </tr>
-          </metal:block>
+          </tal:block>
           </tal:block>
         </table>
         </div>
@@ -115,24 +119,6 @@
             tal:attributes="href python:here.absolute_url()+'/viewAlone.html'" target="_blank">
             <img id="new_page" src="launch.png"/>
           </a>
-          <!--
-          <a style="float: right; margin-right: 4px"
-            tal:attributes="href python:here.absolute_url()+'/delete'">
-            <img id="new_page" src="cpsma_mini_mail_delete.png"/>
-          </a>
-          <a style="float: right; margin-right: 4px"
-            tal:attributes="href python:here.absolute_url()+'/forward'">
-            <img id="new_page" src="cpsma_mini_mail_forward.png"/>
-          </a>
-          <a style="float: right; margin-right: 4px"
-            tal:attributes="href python:here.absolute_url()+'/reply_all'">
-            <img id="new_page" src="cpsma_mini_mail_replyall.png"/>
-          </a>
-          <a style="float: right; margin-right: 4px"
-            tal:attributes="href python:here.absolute_url()+'/reply'">
-            <img id="new_page" src="cpsma_mini_mailreply.png"/>
-          </a>
-          -->
         <tal:block tal:condition="not:request/showfolders|python:0">
             <a tal:attributes="href python:here.absolute_url()+'/view?showfolders=1'">
               <img id="midPageButton" src="cpsma_down.png" style="margin-right: 4px"/>
@@ -154,7 +140,7 @@
 
           <div id="mailSubject">
             <b>
-              <tal:block i18n:translate="">Subject :</tal:block>
+              <tal:block i18n:translate="cpsma_subject">Subject :</tal:block>
               <tal:block tal:replace="structure view/renderSubject" />
             </b>
           </div>
@@ -163,13 +149,13 @@
         <div id="mailMoreInfos">
           <div id="mailDate">
             <b>
-              <tal:block i18n:translate="">Date :</tal:block>
+              <tal:block i18n:translate="cpsma_date">Date :</tal:block>
               <tal:block tal:replace="view/renderDate" />
             </b>
           </div>
           <div id="mailFrom" tal:condition="python:view.fromCount()>0">
             <b>
-              <tal:block i18n:translate="">From :</tal:block>
+              <tal:block i18n:translate="cpsma_from">From :</tal:block>
               <a tal:attributes="href python:'view#'">
                 <tal:block tal:replace="view/renderFromList" />
               </a>
@@ -177,7 +163,7 @@
           </div>
           <div id="mailTo" tal:condition="python:view.toCount()>0">
             <b>
-              <tal:block i18n:translate="">To :</tal:block>
+              <tal:block i18n:translate="cpsma_to">To :</tal:block>
               <a tal:attributes="href python:'view#'">
                 <tal:block tal:replace="view/renderToList" />
               </a>
@@ -185,7 +171,7 @@
           </div>
           <div id="mailCc" tal:condition="python:view.ccCount()>0">
             <b>
-              <tal:block i18n:translate="">Cc :</tal:block>
+              <tal:block i18n:translate="cpsma_cc">Cc :</tal:block>
               <a tal:attributes="href python:'view#'">
                 <tal:block tal:replace="view/renderCcList" />
               </a>

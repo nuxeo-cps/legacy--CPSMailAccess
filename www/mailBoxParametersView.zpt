@@ -20,10 +20,11 @@
     </div>
 
     <h2>
-      <img src="cpsma_configure.png"/>&#160;Mailbox configuration
+      <img src="cpsma_configure.png"/>&#160;
+       <span i18n:translate="">cpsma_mailbox_configuration</span>
     </h2>
 
-    <h4>MailBox parameters</h4>
+    <h4><span i18n:translate="">cpsma_mailbox_parameters</span></h4>
 
     <form name="parameters" action="editParameters.html" method="post">
       <div class="manageGroup">
@@ -51,7 +52,7 @@
    <br/>
 
 
-    <h4>MailBox Managment tasks</h4>
+    <h4><span i18n:translate="">cpsma_mailbox_managment_tasks</span></h4>
     <div class="manageGroup">
     <form action="reindexMailCatalog.html">
       <input type="submit" name="reindex"

@@ -19,7 +19,7 @@
             <img id="imgMailMoreInfos" src="cpsma_lessinfos.png"
                onclick="switchMailHeadersState();"/>
             <b>
-              <tal:block i18n:translate="">Subject :</tal:block>
+              <tal:block i18n:translate="cpsma_subject">Subject :</tal:block>
               <tal:block tal:replace="structure view/renderSubject" />
             </b>
           </div>
@@ -28,7 +28,7 @@
         <div id="mailMoreInfos">
           <div id="mailTo">
             <b>
-              <tal:block i18n:translate="">To :</tal:block>
+              <tal:block i18n:translate="cpsma_to">To :</tal:block>
               <a tal:attributes="href python:'sendmail?to:'+view.renderToList()">
                 <tal:block tal:replace="view/renderToList" />
               </a>
@@ -36,7 +36,7 @@
           </div>
           <div id="mailFrom">
             <b>
-              <tal:block i18n:translate="">From :</tal:block>
+              <tal:block i18n:translate="cpsma_from">From :</tal:block>
               <a tal:attributes="href python:'sendmail?to:'+view.renderFromList()">
                 <tal:block tal:replace="view/renderFromList" />
               </a>

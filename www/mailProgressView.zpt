@@ -6,10 +6,12 @@
   </metal:block>
   <metal:block metal:fill-slot="main">
 
-    <div class="message">
+    <div class="message" i18n:translate="cpsma_mailbox_beeing_synchronized">
     Your mailbox is beeing synchronized. Please hold on.
     </div>
 
-    <a href="synchronize.html">In nothing seems to be loading, click here</a>
+    <a href="synchronize.html" i18n:translate="cpsma_mailbox_force_synchronize">
+     If nothing seems to be loading, click here
+    </a>
   </metal:block>
 </html>

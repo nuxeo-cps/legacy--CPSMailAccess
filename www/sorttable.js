@@ -502,20 +502,6 @@ function compare(a, b)
 }
 
 //*****************************************************************************
-// Function to set the cursor
-//*****************************************************************************
-function setCursor(obj)
-{
-        // Show hint text at the browser status bar
-        window.status = "Sort by " + obj.firstChild.innerHTML;
-        // Change the mouse cursor to hand or pointer
-        if (isIE)
-                obj.firstChild.style.cursor = "hand";
-        else
-                obj.firstChild.style.cursor = "pointer";
-}
-
-//*****************************************************************************
 // Function to set the title color
 //*****************************************************************************
 function setColor(obj,mode)

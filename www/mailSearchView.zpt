@@ -22,7 +22,9 @@
                                num_results python:len(results)">
             <tal:block tal:condition="python:num_results>0">
               <div>
-                Found <tal:block tal:replace="num_results"/> results :
+                <span i18n:translate="cpsma_found">Found</span>
+                <tal:block tal:replace="num_results"/>
+                <span i18n:translate="cpsma_results">results</span> :
               </div>
               <div id="searchResults">
                 <metal:block metal:use-macro="here/messagelist_macros/search_messagelist"/>
@@ -32,7 +34,7 @@
               </script>
             </tal:block>
             <tal:block tal:condition="python:num_results==0">
-            No results where found.
+              <span i18n:translate="cpsma_no_results">No results where found.</span>
             </tal:block>
         </tal:block>
     </tal:block>

@@ -20,7 +20,9 @@
     <div style="width :100%">
       <div style="clear:both"/>
         <div class="privateBook">
-          <h2><img src="cpsma_users.png"/>&#160;Personal address book</h2>
+          <h2><img src="cpsma_users.png"/>&#160;
+              <span i18n:translate="cpsma_personal_address_book">
+              Personal address book</span></h2>
           <div tal:repeat="private privates" style="margin-top:8px;">
             <tal:block tal:define="email python:private[1]['email'];
                                     fullname python:private[1]['fullname'];
@@ -47,14 +49,16 @@
         </div>
         <div class="publicBook">
 
-        <h2><img src="cpsma_users.png"/>&#160;Global address book</h2>
+        <h2><img src="cpsma_users.png"/>&#160;<span i18n:translate="cpsma_global_address_book">
+        Global address book</span></h2>
         <div tal:repeat="public publics" style="margin-top:8px;">
             <tal:block tal:define="email python:public[1]['email'];
                                     fullname python:public[1]['fullname'];
                                     id python:public[1]['id'];
                                     msg_to python:'%s <%s>' % (fullname, email)">
                 <a tal:attributes="href python:'writeTo.html?msg_to='+msg_to">
-                <img src="cpsma_draft.png" title="send a message" alt="send a message"/>
+                <img src="cpsma_draft.png" i18n:translate="title"
+                    title="cpsma_send_a_message" alt="cpsma_send_a_message"/>
                 </a>
                 &#160;
                 <a tal:attributes="href
