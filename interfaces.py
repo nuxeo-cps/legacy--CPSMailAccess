@@ -112,19 +112,21 @@ class IMailMessageStore(IContainer):
         
     """                
     def loadMessage(raw_msg):
-        """ loads a message from a raw content (typically a string)
+        """ loads a message from a string raw content  
         """
         
     def getPartCount():
         """ returns the number of parts the message holds
-        """        
+        """         
         
     def getCharset(part_index=0):        
         """ returns the charset for the given part
+            for single part messages, part_index is 0
         """
         
     def setCharset(charset, part_index=0):        
-        """ sets the charset for the given part        
+        """ sets the charset for the given part 
+            for single part messages, part_index is 0       
         """        
         
     def isMultipart():         
