@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- encoding: iso-8859-15 -*-
-# Copyright (C) 2005xeo SARL <http://nuxeo.com>
+# Copyright (C) 2005 Nuxeo SARL <http://nuxeo.com>
 # Author: Tarek Ziadé <tz@nuxeo.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -81,13 +81,13 @@ class MailMessageEditTestCase(MailTestCase):
         view = MailMessageEdit(mailbox, None)
         view.addRecipient('tziade@nuxeo.com', 'To')
         Tos = msg.getHeader('To')
-        self.assertEquals(Tos, 'tziade@nuxeo.com')
+        self.assertEquals(Tos, ['tziade@nuxeo.com'])
         view.addRecipient('tz@nuxeo.com', 'To')
         Tos = msg.getHeader('To')
-        self.assertEquals(Tos, 'tziade@nuxeo.com tz@nuxeo.com')
+        self.assertEquals(Tos, ['tziade@nuxeo.com', 'tz@nuxeo.com'])
         view.removeRecipient('tziade@nuxeo.com', 'To')
         Tos = msg.getHeader('To')
-        self.assertEquals(Tos, 'tz@nuxeo.com')
+        self.assertEquals(Tos, ['tz@nuxeo.com'])
 
     def test_getDestList(self):
         mailbox = self._getMailBox()
