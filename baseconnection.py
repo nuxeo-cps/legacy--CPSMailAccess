@@ -16,6 +16,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
+# need to contralize timeoutsocket
+
+# XXX need to make timeoutsocket comaptible with ssl sockets
+#import timeoutsocket
+#
+
 from UserList import UserList
 from zope.interface import implements
 from time import time,sleep
@@ -41,6 +47,7 @@ class BaseConnection:
     uid = ''
     connection_type = ''
     connection_params = {}
+    connection_timeout = 10
 
     def __init__(self, connection_params = {}):
 
@@ -51,6 +58,8 @@ class BaseConnection:
             self.uid = connection_params['uid']
         if connection_params.has_key('connection_type'):
             self.connection_type = connection_params['connection_type']
+
+        #timeoutsocket.setDefaultSocketTimeout(self.connection_timeout)
 
     def _respawn(self):
         self.idle_time = 0
