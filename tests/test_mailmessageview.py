@@ -130,6 +130,23 @@ class MailMessageViewTestCase(MailTestCase):
         self.assertEquals(file['mimetype'], 'image/gif')
         self.assertEquals(file['filename'], 'dingusfish.gif')
 
+    def test_multipartAlternativeRead(self):
+        # lotus note mail message
+        # the body gets empty in the view
+        # added this test
+        ob = self.getMailInstance(35)
+
+        ob.getPhysicalPath = self.fakePhysicalPath
+
+        # need to set up context and request object here
+        view = MailMessageView(ob, None)
+        self.assert_(view)
+
+        body = view._bodyRender(ob, 0)
+        self.assertNotEquals(body, '')
+        body = view.renderBody()
+        self.assertNotEquals(body, '')
+
 
 
 def test_suite():

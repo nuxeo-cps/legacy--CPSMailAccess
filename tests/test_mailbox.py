@@ -104,6 +104,12 @@ class MailBoxTestCase(MailTestCase):
 
         self.assertEquals(message.digest, msg.digest)
 
+    def test_getIdentitites(self):
+        # tests indentity
+        mailbox = self._getMailBox()
+        self.assert_(mailbox.getIdentitites(), 'tz@nuxeo.com')
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),

@@ -309,6 +309,16 @@ class MailMessageTestCase(MailTestCase):
         ob.attachFile(uploaded)
         self.assert_(ob.hasAttachment())
 
+    def test_multipartAlternativeRead(self):
+        ob = self.getMailInstance(35)
+        # lotus note mail message
+        # let's try to read the body
+        mailpart = ob.getPart(0)
+        subpart_1 = mailpart._payload[0]
+        self.assert_(subpart_1._payload.startswith('sqdsqd'))
+
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageTestCase),

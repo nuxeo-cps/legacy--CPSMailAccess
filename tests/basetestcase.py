@@ -35,7 +35,17 @@ from email.Errors import BoundaryError
 installProduct('Five')
 installProduct('TextIndexNG2')
 
+class FakeDirectory:
+    def searchEntries(self, return_fields=None, **kw):
+        return [('tziade', {'email': 'tz@nuxeo.com',
+            'givenName': 'Tarek', 'sn' : 'Ziadé'})]
+
+class FakeDirectories(Folder):
+    members = FakeDirectory()
+
 class FakePortal(Folder):
+
+    portal_directories = FakeDirectories()
 
     def getPhysicalPath(self):
         return ('', 'nowhere')
@@ -104,6 +114,7 @@ class MailTestCase(ZopeTestCase):
         mailbox.connection_params['smtp_host'] = 'localhost'
         mailbox.connection_params['smtp_port'] = 25
         mailbox.connection_params['cache_level'] = 2
+        mailbox.connection_params['email_adress'] = 'tz@nuxeo.com'
         return mailbox
 
     def _msgobj(self, filename):

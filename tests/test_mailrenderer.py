@@ -33,6 +33,10 @@ from basetestcase import MailTestCase
 
 class MailRendererTestCase(MailTestCase):
 
+    def fakePhysicalPath(self):
+        #
+        return ('', 'http://ok/path')
+
     def getAllMails(self):
         res = []
         for i in range(35):
@@ -118,6 +122,19 @@ class MailRendererTestCase(MailTestCase):
         # wrong chartset given,(it happens folks, it happens)
         res = ob.render('ייי','type=text/plain;charset=us/ascii',None)
         self.assertEquals(res, u'\xe9\xe9\xe9')
+
+    def test_multipartAlternativeReadLotus(self):
+        # lotus note mail message
+        # the body gets empty in the view
+        # added this test
+        ob = self.getMailInstance(35)
+        rd = MailRenderer()
+
+        ob.getPhysicalPath = self.fakePhysicalPath
+
+        body = rd.renderBody(ob, 0)
+
+        self.assertNotEquals(body, '')
 
 
 def test_suite():
