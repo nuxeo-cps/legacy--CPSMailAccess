@@ -70,6 +70,8 @@ class MailBox(MailFolder):
     portal_type = meta_type
     _v_treeview_cache = None
     _v_current_editor_message = None
+    _v_clipboard = []
+    _v_clipboard_action =''
 
     implements(IMailBox)
 
@@ -384,7 +386,36 @@ class MailBox(MailFolder):
         trash.manage_delObjects(ids)
         trash.message_count = 0
         trash.folder_count = 0
+        connector = self._getconnector()
+        connector.select(trash.server_name)
+        self.validateChanges()
         self.clearMailBoxTreeViewCache()
+
+    #
+    # message clipboard apis
+    #
+    def fillClipboard(self, action, msg_ids):
+        """ adds msgs to clipboard
+        """
+        self._v_clipboard = msg_ids
+        self._v_clipboard_action = action
+
+    def getClipboard(self):
+        """ get the clipboard content
+        """
+        return self._v_clipboard_action, self._v_clipboard
+
+    def clearClipboard(self):
+        """ clears clipboard
+        """
+        self._v_clipboard = []
+        self._v_clipboard_action = ''
+
+    def validateChanges(self):
+        """ call expunger
+        """
+        connector = self._getconnector()
+        connector.expunge()
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
@@ -502,7 +533,11 @@ class MailBoxView(MailFolderView):
         mailbox.synchronize(True)
         if self.request is not None:
             psm = 'synchronized'
-            self.request.response.redirect(mailbox.absolute_url()+ \
+            if hasattr(mailbox, 'INBOX'):
+                container = mailbox.INBOX
+            else:
+                container = mailbox
+            self.request.response.redirect(container.absolute_url()+ \
                 '/view?portal_status_message=%s' % psm)
 
 
@@ -526,6 +561,14 @@ class MailBoxTraversable(FiveTraversable):
             return msg
         # let the regular traverser do the job
         return FiveTraversable.traverse(self, path, '')
+
+
+class MailSearchView(BrowserView):
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+
+
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
