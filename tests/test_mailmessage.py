@@ -32,6 +32,8 @@ from CPSMailAccess.tests import __file__ as landmark
 installProduct('FiveTest')
 installProduct('Five')
 
+""" XXX need to transfer most tests in test_mailpart.py
+"""
 
 def openfile(filename, mode='r'):
     path = os.path.join(os.path.dirname(landmark), 'data', filename)
@@ -322,12 +324,34 @@ class MailMessageTestCase(ZopeTestCase):
 
         # need to set up context and request object here
         view = MailMessageView(ob, None)
+        self.assert_(view)
         """
         view.reply()
         view.reply_all()
         view.forward()
         view.delete()
         """
+
+    def test_partialMessages(self):
+        ob = self.getMailInstance(6)
+        count = ob.getPartCount()
+        self.assertEquals(count, 2)
+
+        self.assertEquals(ob.getPersistentPartIds(), [0, 1])
+
+        # supress a part
+        ob.setPart(1, None)
+        self.assertEquals(ob.getPart(1), None)
+
+        # testing if it's the persistent list
+        self.assertEquals(ob.getPersistentPartIds(), [0])
+
+        # try to reload it as a volatile part
+        ob.loadPart(1, 'dfghj', volatile=True)
+
+        self.assertEquals(ob.getPart(1), None)
+
+
 
 
 def test_suite():
