@@ -29,7 +29,7 @@ from Acquisition import aq_get
 from email.Utils import fix_eols
 from html2text import HTML2Text
 from random import randrange
-
+from zLOG import LOG, INFO
 _translation_table = string.maketrans(
     # XXX candidates: @°+=`|
     '"' r"""'/\:; &ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜİàáâãäåçèéêëìíîïñòóôõöøùúûüıÿ""",
@@ -249,8 +249,7 @@ def verifyBody(body):
     return body
 
 def HTMLize(content):
-    """ transforms a text into a html bloc
-    """
+    """ transforms a text into a html bloc """
     content = fix_eols(content)
     content = content.replace('<', '&lt;')
     content = content.replace('>', '&gt;')
@@ -266,13 +265,13 @@ class HTMLMail(HTML2Text):
         HTML2Text.generate(self)
         return self.result
 
-def HTMLToText(html):
+def HTMLToText(content):
     #todo : make a thread safe queue and use one
     # instance of html engine
     html_engine = HTMLMail()
     #html_engine.clear()
-    html_engine.add_text(html)
-    return html_engine.generate()
+    html_engine.feed(content)
+    return '\r\n'.join([line[0] for num, line in html_engine.lines])
 
 def cleanUploadedFileName(filename):
     """ cleans filename from its path
@@ -293,3 +292,28 @@ def cleanUploadedFileName(filename):
 
     return splitted[-1]
 
+def sanitizeHTML(html):
+    """ satinize html """
+    re_script = r'(<\s*script.*?>)(.*?)(</script>)'
+    re_body = r'(<\s*body.*?>)(.*?)(</body>)'
+    work = html.replace('&lt;', '<')
+    work = work.replace('&gt;', '>')
+    work = work.replace('<br>', '<br/>')
+    # thunderbid's html has \n instead of \r\n
+    work = fix_eols(work)
+    work = work.replace('\r\n', '')    # nothing to care about in HTML
+
+    # first of all, extract body if necessary
+    body = re.findall(re_body, work)
+    if len(body) == 1:
+        if len(body[0]) == 3:
+            work = body[0][1]
+
+    # extract scripts
+    body = re.findall(re_script, work)
+    while len(body) != 0:
+        for script in body:
+            script = ''.join(script)
+            work = work.replace(script, '')
+        body = re.findall(re_script, work)
+    return work
