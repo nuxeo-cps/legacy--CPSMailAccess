@@ -28,8 +28,8 @@ class MailToolTest(FunctionalTestCase):
         user = self.folder.acl_users.getUser(user_name)
         user.roles.append('Manager')
 
-    def testAddMailBox(self):
-        """ testing mailbox adding
+    def testAddMailTool(self):
+        """ testing mailtool adding
         """
         response = self.publish( '/%s/manage_addProduct/CPSMailAccess/' \
            'manage_addMailTool' % folder_name,
@@ -37,6 +37,7 @@ class MailToolTest(FunctionalTestCase):
             extra={'submit_edit': 'Add'})
 
         self.assertEqual(response.getStatus(), 302)
+
         self.assertEqual(response.getHeader('location'),
                          'http://nohost/%s/portal_webmail/manage_main' % folder_name)
 
