@@ -30,18 +30,24 @@ from basetestcase import MailTestCase
 
 class MailSearchViewTestCase(MailTestCase):
 
+    count = 0
+    def fakeGetPhysicalPath(self):
+        self.count +=1
+        return ('', 'nowere/my_message_' + str(self.count))
+
     def _getView(self):
         """ for test purpose,
             we create one catalog for the user "bob"
             with a few mails indexed
         """
         wm = self.portal.portal_webmail
-        wm.mail_catalogs.addCatalog('bob')
+        wm.mail_catalogs.addCatalog('tziade')
 
-        cat = wm.mail_catalogs['bob']
+        cat = wm.mail_catalogs['tziade']
 
         for i in range(35):
             ob = self.getMailInstance(i)
+            ob.getPhysicalPath = self.fakeGetPhysicalPath
             ob = ob.__of__(self.portal)
             cat.indexMessage(ob)
 
@@ -56,15 +62,24 @@ class MailSearchViewTestCase(MailTestCase):
 
     def test_getting_the_right_catalog(self):
         searchview = self._getView()
-        cat = searchview._getCatalog('bob')
+        cat = searchview._getCatalog('tziade')
         self.assertNotEquals(cat, None)
-        self.assertEquals(cat.user_id, 'bob')
+        self.assertEquals(cat.user_id, 'tziade')
 
     def test_searchs(self):
-        searchview = self._getView()
 
-        results = searchview.search('bob', 'like')
-        self.assertEquals(results, '')
+        cat = self.portal.portal_webmail.mail_catalogs['tziade']
+        query = {}
+        query['searchable_text'] = u'Lovers'
+        res = cat.search(query_request=query)
+        direct_search = []
+        for brain in res:
+            direct_search.append(brain.getPath())
+
+        searchview = self._getView()
+        results = searchview.searchMessages('Dingus Lovers')
+        for res in results:
+            self.assert_(res['path'] in direct_search)
 
 
 

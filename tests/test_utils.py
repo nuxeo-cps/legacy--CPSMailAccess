@@ -20,9 +20,10 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import ZopeTestCase
 from datetime import datetime
-from CPSMailAccess.utils import isToday
+from CPSMailAccess.utils import isToday, replyToBody, verifyBody
+from basetestcase import MailTestCase
 
-class UtilsTestCase(ZopeTestCase):
+class UtilsTestCase(MailTestCase):
 
     def test_isToday(self):
         today = datetime(2000, 1, 1)
@@ -30,6 +31,18 @@ class UtilsTestCase(ZopeTestCase):
         today_str = today.strftime("%d/%y/%m")
 
         #self.assert_(isToday(today_str))
+
+    def test_replyToBody(self):
+        body = 'voici\r\nun petit message'
+        from_ = 'me'
+        result = replyToBody(from_, body)
+        self.assertEquals(result, '>>> me wrote<br/>>>> voici<br/>>>> un petit message')
+        result = replyToBody(from_, body, 'Yo> ')
+        self.assertEquals(result, 'Yo> me wrote<br/>Yo> voici<br/>Yo> un petit message')
+
+    def test_verifyBody(self):
+        msg = self.getMailInstance(2)
+        verifyBody(msg)
 
 
 def test_suite():

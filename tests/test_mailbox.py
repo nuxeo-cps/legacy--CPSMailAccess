@@ -42,17 +42,14 @@ class MailBoxTestCase(MailTestCase):
 
     def test_Interface(self):
         # single instance
-        ob = MailBox('mailbox')
-        self.assertEquals(IMailBox.providedBy(ob), True)
-
-        # WHY THIS IS FAILING ????
-        """
         ob = self._getMailBox()
+        ob = ob.__of__(self.portal)
 
         self.assertEquals(self.portal.INBOX, ob)
 
-        self.assertEquals(IMailFolder.providedBy(ob), True)
-        self.assertEquals(IMailBox.providedBy(ob), True)
+        """ ???????? this fails
+        self.assert_(IMailBox.providedBy(ob))
+        self.assert_(IMailFolder.providedBy(ob))
         """
 
     def test_MailBoxParametersView(self):

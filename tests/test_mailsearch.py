@@ -63,9 +63,11 @@ class MailSearchTestCase(MailTestCase):
 
         # verify catalog content
         query ={}
-        query['searchable_text'] = u'failed'
+        query['searchable_text'] = u'notification'
         brains = cat.search(query_request=query)
+
         self.assertEquals(len(brains), 1)
+
         brain = brains[0]
         rid = brain.getRID()
         datas = cat.getIndexDataForRID(rid)
