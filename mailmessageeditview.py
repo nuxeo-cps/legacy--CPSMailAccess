@@ -42,6 +42,7 @@ from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
 from mailcache import MailCache
 from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
+from email import base64MIME
 
 class MailMessageEdit(BrowserView):
 
@@ -219,23 +220,24 @@ class MailMessageEdit(BrowserView):
                         'type' : part})
         return res
 
-    def saveMessageForm(self, msg_from=None, msg_to=None, msg_subject=None,
-            msg_body=None):
+    def saveMessageForm(self):
         """ saves the form into the message
         """
+        if self.request is None:
+            return
+        form = self.request.form
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
-        if msg_from is not None:
-            msg.setHeader('From', msg_from)
-        if msg_to is not None:
-            if type(msg_to) is str:
-                msg.setHeader('To', msg_to)
-            else:
-                msg.setHeader('To', ' '.join(msg_to))
-        if msg_subject is not None:
-            msg.setHeader('Subject', msg_subject)
-        if msg_body is not None:
+
+        if form.has_key('msg_body'):
+            msg_body = form['msg_body']
             msg.setPart(0, msg_body)
+
+        if form.has_key('msg_subject'):
+            msg_subject = form['msg_subject']
+            msg.setHeader('Subject', msg_subject)
+
+        return 'ok'
 
     def removeRecipient(self, value, type):
         """ removes a recipient
