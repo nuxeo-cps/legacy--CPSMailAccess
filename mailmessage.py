@@ -42,9 +42,6 @@ from email.MIMEText import MIMEText
 from email import base64MIME
 from email import Encoders
 
-
-## XX todo : need to add a setPart to add parts on the fly
-
 class MailMessage(MailPart):
     """A mail message.
 
@@ -80,8 +77,7 @@ class MailMessage(MailPart):
         self.digest = digest
 
     def copyFrom(self, msg):
-        """ make a copy (all but uid)
-        """
+        """ make a copy (all but uid) """
         self.digest = msg.digest
         self.store = msg.store
         self.sync_state = msg.sync_state
@@ -130,9 +126,10 @@ class MailMessage(MailPart):
         self.store = store
 
     def getMailBox(self):
-        """ gets mailbox
-            XXXX might be kicked out in utils so
-            there's no dependencies with MailBox
+        """ Gets mailbox
+
+        XXXX might be kicked out in utils so
+        there's no dependencies with MailBox
         """
         parent_folder = self.getMailFolder()
         if parent_folder is None:
@@ -250,8 +247,26 @@ class MailMessage(MailPart):
                     return self.deletePart(part_num)
 
     def attachFile(self, file):
-        """ attach an element
-        """
+        """ attach an file """
+        file.seek(0)
+        try:
+            part_file = Message.Message()
+            part_file['Content-Disposition'] = 'attachment; filename= %s'\
+                       % file.filename
+            part_file['Content-Transfer-Encoding'] = 'base64'
+            data = file.read()
+            mime_type = mimeGuess(data)
+            data = base64MIME.encode(data)
+            part_file.set_payload(data)
+            part_file['Content-Type'] = '%s; name=%s' % (mime_type,
+                                                         file.filename)
+        finally:
+            file.close()
+
+        self.attachPart(part_file)
+
+    def attachPart(self, part):
+        """ attach an part """
         store = self._getStore()
 
         if not self.isMultipart():
@@ -259,31 +274,17 @@ class MailMessage(MailPart):
             main_heads = ('date', 'to', 'from', 'cc', 'bcc')
             for header in self.getHeaders().keys():
                 head = self.getHeader(header)
-                for part in head:
+                for element in head:
                     if header.lower() not in main_heads:
-                        new_message.add_header(header, part)
+                        new_message.add_header(header, element)
             new_message._payload = store._payload
             store._payload = [new_message]
             store['Content-Type'] = 'multipart/mixed; boundary="BOUNDARY"'
 
-        file.seek(0)
-        try:
-            part_file = Message.Message()
-            part_file['Content-Disposition'] = 'attachment; filename= %s' % file.filename
-            part_file['Content-Transfer-Encoding'] = 'base64'
-            data = file.read()
-            mime_type = mimeGuess(data)
-            data = base64MIME.encode(data)
-            part_file.set_payload(data)
-            part_file['Content-Type'] = '%s; name=%s' % (mime_type, file.filename)
-        finally:
-            file.close()
-
-        store.attach(part_file)
+        store.attach(part)
 
     def hasAttachment(self):
-        """ tells if the message has an attachment
-        """
+        """ tells if the message has an attachment """
         for part in range(self.getPartCount()):
             part_ob = MailPart('part_'+str(part), self, self.getPart(part))
             infos = part_ob.getFileInfos()
@@ -295,7 +296,8 @@ class MailMessage(MailPart):
         """ parses given raw flags
         """
         flags = flags.lower()
-        for item in ('read', 'answered', 'deleted', 'flagged', 'forwarded', 'draft'):
+        for item in ('read', 'answered', 'deleted', 'flagged',
+                     'forwarded', 'draft'):
             if flags.find(item) > -1:
                 self.setFlag(item, 1)
             else:
