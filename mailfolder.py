@@ -416,7 +416,7 @@ class MailFolder(BTreeFolder2):
             fetched = connector.fetch(self.server_name, uid,\
                 '(FLAGS RFC822.SIZE RFC822.HEADER)')
 
-            msg_flags = fetched[0]
+            # msg_flags = fetched[0]
             # msg_size = fetched[1]
             msg_headers = fetched[2]
 
