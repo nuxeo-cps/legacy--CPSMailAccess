@@ -201,12 +201,8 @@ class MailBox(MailBoxBaseCaching):
             returned = logtext
 
         # now indexing XXX detach in thread
-        max_ = len(indexStack)
-        i = 1
         for item in indexStack:
-            # print 'indexing %s (%s/%s)' % (item.uid, str(i), str(max_))
             self.indexMessage(item)
-            i+=1
 
         return returned
 
@@ -282,7 +278,6 @@ class MailBox(MailBoxBaseCaching):
         # this is done after to be able
         # to retrieve orphan message thus accelerate the work
         folders = self.getMailMessages(list_folder=True, list_messages=False, recursive=True)
-
         for folder in folders:
             # let's synchronize messages now
             if return_log:
@@ -317,8 +312,8 @@ class MailBox(MailBoxBaseCaching):
         # wraps connection params with uid
         # and make translations
         connection_params = self.wrapConnectionParams(connection_params)
-
         connector = wm_tool.getConnection(connection_params)
+
         if connector is None:
             raise ValueError(NO_CONNECTOR)
 
@@ -493,8 +488,6 @@ class MailBox(MailBoxBaseCaching):
         if not self.getConnectionParams().has_key('uid'):
             raise Exception('Need a uid to get the catalog')
 
-        uid = self.getConnectionParams()['uid']
-
         catalog_id = '.zemanticcatalog'
         if hasattr(self, catalog_id):
             return getattr(self, catalog_id)
@@ -592,52 +585,45 @@ class MailBox(MailBoxBaseCaching):
     def getDirectoryList(self):
         """ see interface """
         portal_directories = getToolByName(self, 'portal_directories')
+        # acquisition pb not resolved yet
+        #return self._getDirectoryPicker().listVisibleDirectories()
         return portal_directories.listVisibleDirectories()
-        """ acquisition pb not resolved yet
-        return self._getDirectoryPicker().listVisibleDirectories()
-        """
 
     def _searchEntries(self, directory_name, return_fields=None, **kw):
         """ search for entries """
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
+        # acquisition pb not resolved yet
+        #return self._getDirectoryPicker().searchEntries(directory_name,
+        #    return_fields, **kw)
         return dir_.searchEntries(return_fields, **kw)
 
-        """ acquisition pb not resolved yet
-        return self._getDirectoryPicker().searchEntries(directory_name,
-            return_fields, **kw)
-        """
     def _createEntry(self, directory_name, entry):
         """ search for entries """
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
+        # acquisition pb not resolved yet
+        #return self._getDirectoryPicker().createEntry(directory_name,
+        #    entry)
         return dir_.createEntry(entry)
 
-        """ acquisition pb not resolved yet
-        return self._getDirectoryPicker().createEntry(directory_name,
-            entry)
-        """
     def _editEntry(self, directory_name, entry):
         """ edit entry"""
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
+        # acquisition pb not resolved yet
+        #return self._getDirectoryPicker().createEntry(directory_name,
+        #    entry)
         return dir_.editEntry(entry)
-
-        """ acquisition pb not resolved yet
-        return self._getDirectoryPicker().createEntry(directory_name,
-            entry)
-        """
 
     def _hasEntry(self, directory_name, id):
         """ search for entries """
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
+        # acquisition pb not resolved yet
+        #return self._getDirectoryPicker().createEntry(directory_name,
+        #    entry)
         return dir_.hasEntry(id)
-
-        """ acquisition pb not resolved yet
-        return self._getDirectoryPicker().createEntry(directory_name,
-            entry)
-        """
 
     def _sortDirectorySearchResult(self, entries, field, max_entries=10):
         sorting = []
@@ -860,6 +846,9 @@ class MailBoxParametersView(BrowserView):
 
             if isinstance(value, int):
                 rendered_param['ptype'] = 'int'
+            if isinstance(value, list):
+                rendered_param['ptype'] = 'list'
+                value = ','.join(value)
             else:
                 rendered_param['ptype'] = 'string'
 
@@ -919,9 +908,13 @@ class MailBoxView(MailFolderView):
     def synchronize(self):
         """ synchronizes mailbox """
         mailbox = self.context
-        mailbox.synchronize(True)
-        if self.request is not None:
+        try:
+            mailbox.synchronize(True)
             psm = 'synchronized'
+        except ConnectionError:
+            psm = 'failed to synchronize. (server seems to be down)'
+
+        if self.request is not None:
             if hasattr(mailbox, 'INBOX'):
                 container = mailbox.INBOX
             else:

@@ -93,18 +93,18 @@ class MailMessageEdit(BrowserView):
 
         Tos = msg.getHeader('To')
         if Tos == []:
+            psm = 'Recipient is required'
             if self.request is not None:
                 # todo : need to be externalized in i18n
-                psm = 'Recipient is required'
                 self.request.response.redirect('editMessage.html?portal_status_message=%s'\
                     % (psm))
-            return
+            return False, psm
 
         error = self._verifyRecipients(msg)
         if error is not None:
+            psm = error
             if self.request is not None:
                 # todo : need to be externalized in i18n
-                psm = error
                 self.request.response.redirect('editMessage.html?portal_status_message=%s'\
                     % (psm))
             return False, psm
@@ -135,6 +135,9 @@ class MailMessageEdit(BrowserView):
                         origin.setFlag('forwarded', 1)
                         folder.onFlagChanged(origin, 'forwarded', 1)
 
+                # clear the editor
+                self.initializeEditor()
+
                 if came_from is not None and came_from !='':
                     goto = came_from
                 else:
@@ -152,8 +155,7 @@ class MailMessageEdit(BrowserView):
                 psm = error
                 self.request.response.redirect('%s?portal_status_message=%s'\
                     % (goto, psm))
-        else:
-            return result, error
+        return result, error
 
 
     def getIdentitites(self):
@@ -306,7 +308,7 @@ class MailMessageEdit(BrowserView):
         if form.has_key('attacher_on'):
             msg.setCachedValue('attacher_on', int(form['attacher_on']))
 
-        return 'ok'
+        return
 
     def removeRecipient(self, value, type):
         """ removes a recipient

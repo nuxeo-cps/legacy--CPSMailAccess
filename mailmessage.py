@@ -72,6 +72,7 @@ class MailMessage(MailPart):
     flagged = 0
     forwarded = 0
     draft = 0
+    size = 0
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
@@ -211,8 +212,10 @@ class MailMessage(MailPart):
                     part['Charset'] = charset
                     part._payload = directbody
                 else:
+                    part = None
                     raise NotImplementedError
             else:
+                part = None
                 raise NotImplementedError
 
         if volatile:
@@ -232,10 +235,7 @@ class MailMessage(MailPart):
         self.title = decodeHeader(self._getStore()['Subject'])
 
     def detachFile(self, filename):
-        """ detach a file
-        """
-        store = self._getStore()
-
+        """ detach a file """
         if not self.isMultipart():
             # it cant' be
             return False

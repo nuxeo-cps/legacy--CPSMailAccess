@@ -28,6 +28,7 @@ from mailexceptions import MailContainerError
 class BaseMailMessageView(BrowserView):
 
     def getBaseUrl(self):
+        """ retrieves baseurl """
         portal_url = getToolByName(self.context, 'portal_url')
         return portal_url.getPortalPath()     # check if ok behind apache
 
@@ -236,6 +237,8 @@ class BaseMailMessageView(BrowserView):
         elif IMailMessage.providedBy(current_place) or \
              IMailFolder.providedBy(current_place):
             mailbox = current_place.getMailBox()
+        else:
+            mailbox = None
 
         if mailbox is not None:
             lotus_style = mailbox.getConnectionParams()['treeview_style'] \
