@@ -79,6 +79,9 @@ class MailRenderer:
     def render(self, content, part_type, part_cte):
         """ renders a body according to part type
         """
+        if content is None:
+            return ''
+
         ptypes = self.extractPartTypes(part_type)
         ptype = ptypes['type']
         if ptypes.has_key('format'):
@@ -88,7 +91,7 @@ class MailRenderer:
         if ptypes.has_key('charset'):
             pcharset = ptypes['charset']
         else:
-            pcharset = 'ISO8859-15'
+            pcharset = 'ISO-8859-15'
 
         if ptype in ('text/plain', 'text', 'message/rfc822'):
 
@@ -97,10 +100,7 @@ class MailRenderer:
                 mimetools.decode(content, result, part_cte)
             else:
                 result = content
-            try:
-                return unicode(result, pcharset)
-            except:
-                pass
+            return unicode(result, pcharset)
 
         if ptype.startswith('multipart'):
             return u''
@@ -133,7 +133,11 @@ class MailRenderer:
             else:
                 res = payload
 
-        return self.render(res, part_type, part_cte)
+        if res is None:
+            # body is empty
+            return ''
+        else:
+            return self.render(res, part_type, part_cte)
 
 
     def renderBody(self, mail, part_index=0):
