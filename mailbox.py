@@ -29,7 +29,8 @@ from zope.app import zapi
 from zope.interface import implements
 from utils import uniqueId, makeId
 from Products.CPSMailAccess.interfaces import IMailBox
-from Products.CPSMailAccess.mailfolder import MailFolder, manage_addMailFolder
+from Products.CPSMailAccess.mailfolder import MailFolder, MailFolderView, \
+    manage_addMailFolder
 from Products.CPSMailAccess.baseconnection import ConnectionError, BAD_LOGIN, \
     NO_CONNECTOR
 from Products.CPSMailAccess.mailcache import MailCache
@@ -66,6 +67,7 @@ class MailBox(MailFolder):
     ### XXX see if "properties" are ok in zope3/five context
     meta_type = "CPSMailAccess Box"
     portal_type = meta_type
+    _v_treeview_cache = None
 
     implements(IMailBox)
 
@@ -225,6 +227,21 @@ class MailBox(MailFolder):
 
         return connector
 
+    def setTreeViewCache(self, treeview):
+        """ see interface
+        """
+        self._v_treeview_cache = treeview
+
+    def getTreeViewCache(self):
+        """ see interface
+        """
+        return self._v_treeview_cache
+
+    def clearTreeViewCache(self):
+        """ see interface
+        """
+        if self._v_treeview_cache is not None:
+            self._v_treeview_cache = None
 
 
 # Classic Zope 2 interface for class registering
@@ -314,6 +331,21 @@ class MailBoxParametersView(BrowserView):
         rendered_param['type'] = 'text'
         return [rendered_param]
 
+#
+# MailBoxView Views
+#
+class MailBoxView(MailFolderView):
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+
+    def renderMailList(self, flags=[]):
+        """ returns mails that contains given flags
+        """
+        if flags == []:
+            return MailFolderView.renderMailList(self)
+        else:
+            return ''
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
