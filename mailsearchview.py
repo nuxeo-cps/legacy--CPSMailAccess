@@ -17,6 +17,7 @@
 # 02111-1307, USA.
 #
 # $Id$
+import os
 
 from Products.Five import BrowserView
 from utils import getToolByName
@@ -93,10 +94,18 @@ class MailSearchView(BrowserView):
         list_.sort()
         return list_
 
+    def _intersection(self, x, y):
+        # in our case, intersection is made on subject
+        result = []
+        for e in x:
+            for item in y:
+                if e.triple()[0]  == item.triple()[0]:
+                    result.append(e)
+        return result
+
     def zemanticSearchMessages(self, **kw):
         """ zemantic query """
         mailbox = self.context
-
         i = 0
         found = True
         queries = []
@@ -104,42 +113,82 @@ class MailSearchView(BrowserView):
         while found:
             rrelation = 'relation_%d' %  i
             rvalue = 'value_%d' %  i
-
             if kw.has_key(rrelation) and kw.has_key(rvalue):
+                i +=1        # increment here because of continue
+                value = kw[rvalue]
+
+                if value.strip() == '':    # we skip empty value
+                    continue
                 relation = kw[rrelation]
+
                 # XXX encoding in iso8859-15 (today's CPS)
                 if not isinstance(relation, unicode):
                     relation = relation.strip().decode('ISO-8859-15')
-
                 relation = relation.lower()
 
-                value = kw[rvalue]
-                if value.strip() == '':
+                if value.strip() == '*':    # stands for all entries
                     query = Query(Any, u'<%s>' % relation, Any)
                 else:
                     if not isinstance(relation, unicode):
                         value = value.strip().decode('ISO-8859-15')
                     query = Query(Any, u'<%s>' % relation, u'"%s"' % value)
-
                 queries.append(query)
-                i +=1
             else:
                 found = False
 
         cat = mailbox._getZemanticCatalog()
 
-        # joining queries with an or statement
-        union = UnionChain()
+        intersection = kw.has_key('intersection')
 
-        for query in queries:
-            union.add(query)
-
-        results = cat.query(union)
-        results = list(results)
-
-        if results == [None]:
-            return []
+        if not intersection:
+            # joining queries with an or statement
+            union = UnionChain()
+            for query in queries:
+                union.add(query)
+            raw_results = cat.query(union)
+            raw_results = list(raw_results)
         else:
-            return [result.triple() for result in list(results)]
-            #return results
+            # doing queries one by one
+            # and intersect them one by one
+            # if the interesection gets empty we can stop
+            i = 0
 
+            for query in queries:
+                query_results = cat.query(query)
+                query_results = list(query_results)
+
+                if query_results == [None]:
+                    query_results = []
+
+                if i > 0:
+                    raw_results = self._intersection(query_results, raw_results)
+                else:
+                    raw_results = query_results
+
+                i += 1
+                if raw_results == []:
+                    break
+
+        if raw_results == [None]:
+            raw_results = []
+        else:
+            raw_results = [raw_result.triple()[0] \
+                           for raw_result in raw_results]
+
+        results = []
+        msg_viewer = MailMessageView(None, self.request)
+        for result in raw_results:
+            current = {}
+            current['path'] = result
+            object = self.traverseToObject(current['path'])
+            current['object'] = object
+
+            # see if this can be done more quickly
+            msg_viewer.context = object
+            current['From'] = msg_viewer.renderFromList()
+            current['Subject'] = msg_viewer.renderSubject()
+            current['Date'] = msg_viewer.renderDate()
+
+            results.append(current)
+
+        return results
