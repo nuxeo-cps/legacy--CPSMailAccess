@@ -47,6 +47,7 @@ class IMAPConnection(BaseConnection):
     implements(IConnection)
     _connection = None
     _selected_mailbox = None
+    timeout = 10.0
 
     def __init__(self, connection_params= {}):
         """
@@ -87,6 +88,8 @@ class IMAPConnection(BaseConnection):
 
         if not connected:
             raise ConnectionError(SOCKET_ERROR)
+        else:
+            self._connection.socket().settimeout(self.timeout)
     #
     # Internal methods
     #
