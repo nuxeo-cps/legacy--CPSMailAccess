@@ -19,7 +19,9 @@
 # $Id$
 from Products.CPSMailAccess.interfaces import IMailBox, IMailMessage, IMailFolder
 from Products.Five import BrowserView
+
 from utils import getToolByName
+from basemailview import BaseMailMessageView
 
 """ XXXX using a view to retrieve actions
     to avoid the use of portal_actions
@@ -28,7 +30,7 @@ from utils import getToolByName
     *** this has to be refactored
     using the proper action provider mechanism  under five/zope3
 """
-class MailActionsView(BrowserView):
+class MailActionsView(BaseMailMessageView):
 
     def is_editor(self):
         """ tells if we are in editor view (hack)
@@ -46,9 +48,7 @@ class MailActionsView(BrowserView):
         """
         container = self.context
         actions = []
-        portal_url = getToolByName(container, 'portal_url')
-        # todo check if ok behind apache
-        base_url = portal_url.getPortalPath()
+        base_url = self.getBaseUrl()
 
         if IMailBox.providedBy(container):
             root = container.absolute_url()
