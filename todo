@@ -1,39 +1,43 @@
-ajouté dernièrement:
+foreword
 
-+ envois des messages (sauf le body)
-+ le cycle : création d'un message -> envoi smtp -> ajout dans INBOX/Send resync
+performance info :
 
-a) fonctionnel du plus important au moins
+cache levels are :
+   1. full cache
+   2. cached headers
+   3. no cache
 
-+ finaliser le mode traversable avec creation à la volée
-+ en parallele du traversable, finaliser la gestion du caching
-+ ajouter renommage, suppression de folder coté imap et dans l'interface
-+ suppression de message
-+ les reply, replyall, forward doivent pré-remplir le message
-+ mettre un composant richedit pour le message
-+ intégrer les préférences persos
-+ brancher les annuaires
-+ mettre en place les traductions et mettre en place le bind i18n Zope3 <-> Zope2
-+ mettre en place la sécu
-+ tester sur des très grosses BAL
+at this time cache level 2 is not finished
+and the webmail runs on level 1
 
-b) features qui feront le "plus"
+level 1 is very slow when the mailbox is created (everithing gets loaded)
+ but very fast after.
 
-+ glisser-déposer de messages dans les folders
+so be patient on mailbox first synchro
 
-c) esthétisme
+-> level 2 will be much,much faster at box generation
 
-+ faire des divs des glissières en javascript et conserver les tailles et les tris dans mailbox
-+ réussir à se positionner dans le scroll
-+ ajouter une vue détaché pour la création du message
+features (must)
 
-d) après
++ validate all Javascripts and CSS in IE
++ finish directory picker
++ finish cache level 1
++ index body in cache level 1
++ append attachments when forwarding
 
-+ la vue gmail !!
-+ passer les formulaires en schemas zope 3
-+ régler le pb du japonais japanese.iso-2022-jp
-+ ajouter les actions de boite
-+ refactorer les objets trop liés à Zope
-+ newsgroups (gestion des acls)
+cosmetics
+
++ fix scroll positions when a mailis selected
++ review CSS naming conventions
++ review all html code style
+
+later
+
++ spell checker
++ scan mail body to generate contacts
++ dates index in catalog
+
+
+
 
 
