@@ -246,6 +246,14 @@
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailbox.MailBoxView"
+      name="syncProgress.html"
+      template="www/mailProgressView.zpt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxView"
       template="www/mailBoxView.zpt"
       name="view"
       permission="zope2.View"
