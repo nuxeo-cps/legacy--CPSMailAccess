@@ -24,7 +24,7 @@ A MailFolder contains mail messages and other mail folders.
 """
 from zLOG import LOG, DEBUG, INFO
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from BTreeFolder2.BTreeFolder2 import BTreeFolder2
+from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
 from Acquisition import aq_parent
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
@@ -53,6 +53,7 @@ class MailFolder(BTreeFolder2):
     meta_type = "CPSMailAccess Folder"
     server_name = ''
     sync_state = False
+    mailbox = None
 
     def __init__(self, uid=None, server_name='""', **kw):
         """
@@ -63,6 +64,15 @@ class MailFolder(BTreeFolder2):
         BTreeFolder2.__init__(self, uid)
         self.setServerName(server_name)
         self.title = server_name
+
+    def clearMailBoxTreeViewCache(self):
+        """ clears mailbox cache in case of change
+        """
+        if self.mailbox is None:
+            self.mailbox = self.getMailBox()
+        if self.mailbox is not None:
+            self.mailbox.clearTreeViewCache()
+
 
     def getKeysSlice(self, key1, key2):
         """Get a slice of BTreeFolder2 keys.
@@ -185,6 +195,7 @@ class MailFolder(BTreeFolder2):
     def _addMessage(self, uid, digest):
         """See interfaces.IMailFolder
         """
+        self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
         msg = MailMessage(id, uid, digest)
         self._setObject(id, msg)
@@ -194,6 +205,7 @@ class MailFolder(BTreeFolder2):
     def _addFolder(self, uid='', server_name=''):
         """see interfaces.IMailFolder
         """
+        self.clearMailBoxTreeViewCache()
         if uid == '':
             uid = uniqueId(self, 'folder_', use_primary=False)
         else:
@@ -334,7 +346,7 @@ class MailFolder(BTreeFolder2):
         if current is not None:
             return current._getconnector()
         else:
-            raise MailContainerError('%s is not contained in a mailbox' % self.getId())
+            raise MailContainerError('object is not contained in a mailbox')
 
 #
 # MailFolderView Views
@@ -362,6 +374,74 @@ class MailFolderView(BrowserView):
             results.append(element[1])
         return results
 
+    def createShortTitle(self, object):
+        """ creates a short title
+        """
+        title = object.title
+        titles = title.split('.')
+        return titles[len(titles)-1]
+
+    def renderTreeView(self, flags=[]):
+        """ returns a tree view
+            XXX need optimisation and cache use
+        """
+        mailbox = self.context.getMailBox()
+
+        if mailbox is None:
+            raise MailContainerError('object is not contained in a mailbox')
+
+        # let's check if the treeview has been already calculated
+        treeview = mailbox.getTreeViewCache()
+
+        if treeview is not None:
+            return treeview
+        else:
+            treeview = []
+
+        childs = mailbox.getMailMessages(list_folder=True, \
+            list_messages=False, recursive=False)
+
+        if len(childs) > 0:
+            childview = MailFolderView(None, self.request)
+
+            for child in childs:
+                selected = child == self.context
+                childview.context = child
+                short_title = self.createShortTitle(child)
+                treeview.append({'object' :child,
+                                 'url' :child.absolute_url()+'/view',
+                                 'short_title' :short_title,
+                                 'selected' : selected,
+                                 'childs' : childview._renderTreeView(self.context, flags)})
+
+        mailbox.setTreeViewCache(treeview)
+
+        return treeview
+
+    def _renderTreeView(self, current, flags=[]):
+        """ returns a tree view
+            XXX need optimisation and cache use
+        """
+        treeview = []
+        current_place = self.context
+        childs = current_place.getMailMessages(list_folder=True, \
+            list_messages=False, recursive=False)
+
+        childview = MailFolderView(None, self.request)
+
+        for child in childs:
+            childview.context = child
+            short_title = self.createShortTitle(child)
+            selected = child == current
+
+            treeview.append({'object' :child,
+                             'url' :child.absolute_url()+'/view',
+                             'short_title' :short_title,
+                             'selected' : selected,
+                             'childs' : childview._renderTreeView(current, flags)})
+
+        return treeview
+
     def renderMailList(self):
         """ renders mailfolder content
             XXX need to externalize html here
@@ -378,7 +458,7 @@ class MailFolderView(BrowserView):
 
             returned += '<div id="folder_element">'
             returned += '<a href="%s/view">' % element.absolute_url()
-            ob_title = element.title_or_id()
+            ob_title = self.createShortTitle(element)
 
             if ob_title is None:
                 mail_title = '?'
