@@ -27,6 +27,7 @@ from objectinteractiontestcase import ObjectInteractionInstaller, \
 
 from CPSMailAccess.mailbox import manage_addMailBox
 from CPSMailAccess.mailtool import manage_addMailTool
+from CPSMailAccess.mailfolder import MailFolder, MailContainerError
 from CPSDefault.tests import CPSDefaultTestCase
 
 installProduct('CPSMailAccess')
@@ -41,22 +42,50 @@ class ObjectInteractionTest(CPSDefaultTestCase.CPSDefaultTestCase):
         if not hasattr(self.portal, 'portal_webmail'):
             manage_addMailTool(self.portal)
 
-    def test_getconnector(self):
+    def _getMailBox(self):
         """ testing connector getter
         """
         container = self.portal
         manage_addMailBox(container, 'INBOX')
-
         mailbox = self.portal.INBOX
-
-        mailbox['UID'] = 'tziade'
+        mailbox['uid'] = 'tziade'
         mailbox['connection_type'] = 'IMAP'
         mailbox['password'] = 'secret'
         mailbox['HOST'] = 'localhost'
+        return mailbox
 
+
+    def test_getconnectors(self):
+        """ testing connector getter thru portal_webmail
+        """
+        wm = self.portal.portal_webmail
+        ct = wm.listConnectionTypes()
+        self.assertNotEqual(ct, [])
+
+
+    def test_getconnector(self):
+        """ testing connector getter thru local mailbox
+        """
+        mailbox = self._getMailBox()
         connector = mailbox._getconnector()
-
         self.assertNotEquals(connector, None)
+
+    def test_synchro(self):
+        """ testing synchro
+        """
+        mailbox = self._getMailBox()
+        mailbox.synchronize()
+
+    def test_containtment(self):
+        """ testing containtment
+        """
+        mailbox = self._getMailBox()
+
+        folder = mailbox._addFolder()
+        self.assertNotEquals(folder._getconnector(), None)
+
+        folder = MailFolder()
+        self.failUnlessRaises(MailContainerError, folder._getconnector)
 
 def test_suite():
     return unittest.TestSuite((
