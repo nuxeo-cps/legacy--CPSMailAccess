@@ -26,7 +26,7 @@ from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
 from utils import decodeHeader, parseDateString, localizeDateString, \
-    truncateString, mimetype_to_icon_name, getFolder, replyToBody
+    truncateString, sanitizeHTML, mimetype_to_icon_name, getFolder, replyToBody, HTMLize
 from Globals import InitializeClass
 from Products.Five import BrowserView
 from mailrenderer import MailRenderer
@@ -108,20 +108,20 @@ class MailMessageView(BaseMailMessageView):
         return len(self.context.getHeader(name))
 
     def renderHeaderList(self, name):
-        """ renders the mail list
-        """
+        """ renders the mail list """
         context = self.context
         if context is not None:# and IMailPart.providedBy(context):
             headers = self.context.getHeader(name)
             if headers == []:
-                headers = '?'
+                headers = u'?'
             else:
                 decoded = []
                 for header in headers:
-                    decoded.append(decodeHeader(header))
+                    header = decodeHeader(header)
+                    decoded.append(header)
                 return ' '.join(decoded)
         else:
-            headers = '?'
+            headers = u'?'
         return headers
 
     def _bodyRender(self, mail, part_index):
@@ -143,7 +143,6 @@ class MailMessageView(BaseMailMessageView):
             if part_count > 0:
                 for i in range(part_count):
                     mail.loadPart(i)
-
                 body = self._bodyRender(mail, 0)
             else:
                 body = ''
@@ -171,7 +170,6 @@ class MailMessageView(BaseMailMessageView):
         mailbox.clearEditorMessage()
         msg = mailbox.getCurrentEditorMessage()
         msg.setPart(0, reply_content)
-
         recipients = []
         if not forward:
             froms = self.context.getHeader('From')
@@ -266,7 +264,7 @@ class MailMessageView(BaseMailMessageView):
             if infos is not None:
                 # let's append icon, url, and title
                 # BEWARE THAT INDEX STARTS AT 1 ON USER SIDE FOR TRAVERSERS
-                infos['url'] = '%s/%s/view_file?filename=%s' \
+                infos['url'] = '%s/%s/viewFile.html?filename=%s' \
                     %(prefix, str(part+1), str(infos['filename']))
                 infos['icon'] =  mimetype_to_icon_name(infos['mimetype'])
                 title = infos['filename']
@@ -275,7 +273,7 @@ class MailMessageView(BaseMailMessageView):
                 if len(title) > 12:
                     title = title[:9] +'...'
                 infos['title'] = title
-                infos['delete_url'] = 'delete_attachement?filename=' + infos['filename']
+                infos['delete_url'] = 'deleteAttachement.html?filename=' + infos['filename']
                 list_files.append(infos)
         if list_files == []:
             return []
@@ -319,8 +317,7 @@ class MailMessageView(BaseMailMessageView):
             return filecontent
 
     def reload(self):
-        """ reloads a message to mail editor
-        """
+        """ reloads a message to mail editor """
         message = self.context
         box = message.getMailBox()
 
