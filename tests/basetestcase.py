@@ -33,7 +33,7 @@ from OFS.Folder import Folder
 from email.Errors import BoundaryError
 
 installProduct('Five')
-installProduct('TextIndexNG2')
+#installProduct('TextIndexNG2')
 
 class FakeDirectory:
     def searchEntries(self, return_fields=None, **kw):

@@ -22,13 +22,14 @@ from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
 import os, sys
 from CPSMailAccess.mailsearch \
-    import MailCatalog, MailCatalogDict
+    import MailCatalog
 
-
+from Testing.ZopeTestCase import installProduct
 from basetestcase import MailTestCase
 from Testing.ZopeTestCase import installProduct
 
 
+installProduct('TextIndexNG2')
 
 class MailSearchTestCase(MailTestCase):
 
@@ -48,14 +49,12 @@ class MailSearchTestCase(MailTestCase):
     def test_instance(self):
         cat = self._getCatalog()
         self.assertNotEquals(cat, None)
-        dict = MailCatalogDict()
-        self.assertNotEquals(dict, None)
 
     def test_indexPresence(self):
         cat = self._getCatalog()
         indexes = cat.getIndexObjects()
         index = indexes[0]
-        self.assert_(index.meta_type == 'TextIndexNG')
+        self.assert_(index.meta_type == 'TextIndexNG2')
 
     def test_indexing(self):
         cat = self._getCatalog()
@@ -75,9 +74,10 @@ class MailSearchTestCase(MailTestCase):
         rid = brain.getRID()
         datas = cat.getIndexDataForRID(rid)
         self.assertEquals(datas['searchable_text'],
-            [u'delivery', u'notification', u'has', u'failed',
-             u'scr', u'admin', u'socal', u'raves', u'org',
-             u'internet', u'mail', u'postmaster', u'ucla', u'edu'])
+            [(u'delivery', 1), (u'notification', 1),
+             (u'has', 1), (u'failed', 1),
+              (u'scr-admin@socal-raves.org', 1), ('internet', 1),
+             (u'mail', 1), (u'postmaster@ucla.edu', 1)])
 
     def test_unindexing(self):
         cat = self._getCatalog()

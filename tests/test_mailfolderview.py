@@ -211,6 +211,29 @@ class MailFolderViewTestCase(MailTestCase):
         self.assertEquals(ob.title, 'bolo')
         self.assertEquals(ob.id, 'bolo')
 
+    def test_renamemaxsize(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX.ok')
+        self.assertNotEqual(ob.getMailBox(), None)
+        view = MailFolderView(ob, None)
+        view = view.__of__(ob)
+        view.rename('boloyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', False)
+        self.assertEquals(ob.title, 'boloyyyyyyyyyyyyyyyy')
+        self.assertEquals(ob.id, 'boloyyyyyyyyyyyyyyyy')
+
+    def test_rename2times(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX.ok')
+        self.assertNotEqual(ob.getMailBox(), None)
+        view = MailFolderView(ob, None)
+        view = view.__of__(ob)
+        view.rename('boloyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', False)
+        self.assertEquals(ob.title, 'boloyyyyyyyyyyyyyyyy')
+        self.assertEquals(ob.id, 'boloyyyyyyyyyyyyyyyy')
+        view.rename('bolod', False)
+        self.assertEquals(ob.title, 'bolod')
+        self.assertEquals(ob.id, 'bolod')
+
     def test_manageContent(self):
         # test content manipulations
         box = self._getMailBox()

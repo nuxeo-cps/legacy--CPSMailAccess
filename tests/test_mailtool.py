@@ -38,9 +38,14 @@ class MailToolTestCase(ZopeTestCase):
         ct = ob.listConnectionTypes()
         self.assertNotEquals(ct , [])
 
-    def test_catalogpresence(self):
+    def test_boxcreation(self):
         ob = MailTool()
-        self.assert_(ob , 'mail_catalogs')
+        ob.addMailBox('tarek')
+        ob.addMailBox('bill')
+        self.assert_(hasattr(ob, 'box_tarek'))
+        self.assert_(hasattr(ob, 'box_bill'))
+        ob.deleteMailBox('bill')
+        self.assert_(not hasattr(ob, 'box_bill'))
 
 def test_suite():
     return unittest.TestSuite((
