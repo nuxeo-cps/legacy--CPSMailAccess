@@ -38,7 +38,7 @@
                     python:base_url+'/cpsdirectory_entry_view?dirname=.addressbook&id='+id;
                     title email;
                     alt email">
-                <span tal:replace="fullname"/>
+                <span class="truncable" tal:content="msg_to"/>
                 </a>
             </tal:block>
           </div>
@@ -67,19 +67,23 @@
                     python:base_url+'/cpsdirectory_entry_view?dirname=.addressbook&id='+id;
                     title email;
                     alt email">
-                <span tal:replace="fullname"/>
+                <span class="truncable" tal:content="msg_to"/>
                 </a>
             </tal:block>
           </div>
           <div style="margin-top:15px">
             <a tal:attributes="href
                 python:base_url+'/cpsdirectory_entry_search_form?dirname=addressbook'">
-            All entries
+            <span i18n:translate="">cpsma_all_entries</span>
             </a>
           </div>
         </div>
       <div style="clear:both"/>
     </div>
+    <script langage="javascript">
+        truncateFields(32);
+    </script>
+
     </tal:block>
 
   </metal:block>
