@@ -152,12 +152,18 @@ class MailActionsView(BrowserView):
                    'title' : 'get messages',
                    'long_title' : 'get all messages',
                    'action' : root + '/synchronize'}
+
+        search = {'icon' : 'cspma_mail_find.png',
+                   'title' : 'search messages',
+                   'long_title' : 'searchin messages',
+                   'action' : root + '/searchMessage.html'}
+
         write   = {'icon' : 'cpsma_writemail.png',
                    'title' : 'write message',
                    'long_title' : 'write a message',
                    'action' : root + '/editMessage.html'}
 
-        actions = [configure, synchro, write] + actions
+        actions = [configure, synchro, search, write] + actions
         # renders actions 2 by 2
         c_actions = []
         i = 0
