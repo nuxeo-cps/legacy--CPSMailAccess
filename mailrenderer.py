@@ -87,7 +87,12 @@ class MailRenderer:
                 mimetools.decode(content, result, part_cte)
             else:
                 result = content
-            return unicode(result, pcharset)
+            try:
+                return unicode(result, pcharset)
+            except UnicodeDecodeError:
+                # typically hapenning when wrong charset
+                # forcing iso-8859-15
+                return unicode(result, 'ISO-8859-15')
 
         if ptype.startswith('multipart'):
             return u''
