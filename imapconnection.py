@@ -21,6 +21,7 @@
     IMAPConnection : IMAP 4 rev 1 implementation for BaseConnection
 
 """
+import re
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
 from zope.interface import implements
 from interfaces import IConnection
@@ -49,17 +50,13 @@ class IMAPConnection(BaseConnection):
         'IMAP'
         """
         BaseConnection.__init__(self, connection_params)
-
         # instanciate a imap4 object
         params = self.connection_params
-
         host = params['HOST']
-
         if params.has_key('SSL'):
             is_ssl =  params['SSL'] == 1
         else:
             is_ssl = 0
-
         if params.has_key('PORT'):
             port = params['PORT']
         else:
@@ -67,8 +64,6 @@ class IMAPConnection(BaseConnection):
                 port = IMAP4_SSL_PORT
             else:
                 port = IMAP4_PORT
-
-
         if is_ssl:
             self._connection = IMAP4_SSL(host, port)
         else:
@@ -100,7 +95,6 @@ class IMAPConnection(BaseConnection):
         """ this is used to check params
         """
         BaseConnection._checkparams(self, params)
-
         # extra paramcheck will fit here
 
     def login(self, user, password):
@@ -226,26 +220,37 @@ class IMAPConnection(BaseConnection):
 
         if imap_result[0] == 'OK':
             imap_raw = imap_result[1]
-            # raw imap results looks like this : 1 (UID 1)
-            # we want to get the number after (UID
-            #for raw_content in imap_raw:
-            #try:
-            if imap_raw is list:
-                for element in imap_raw:
-                    # this is the cool part : we are going
-                    # to generalize imap datas
-                    element_list = self._generalize(element)
-            elif imap_raw is tuple:
-                for element in imap_raw:
-                    # this is the cool part : we are going
-                    # to generalize imap datas
-                    element_list = self._generalize(element)
-            else :
-                element_list = self._generalize(imap_raw)
 
-        # XXX else raise something
-        #except:
-            results = element_list
+            part_queried = message_parts.split(' ')
+            len_query = len(part_queried)
+
+            part_queried[0] = part_queried[0].replace('(', '')
+            part_queried[len_query-1] = part_queried[len_query-1].replace('(', '')
+
+            results = []
+            for query in part_queried:
+                raw_result = re.sub(r'(.+)('+query+' \()(.+)(\).+)', r'\3', val)
+                # raw imap results looks like this : 1 (UID 1)
+                # we want to get the number after (UID
+                #for raw_content in imap_raw:
+                #try:
+                if raw_result is list:
+                    for element in raw_result:
+                        # this is the cool part : we are going
+                        # to generalize imap datas
+                        element_list = self._generalize(element)
+                elif imap_raw is tuple:
+                    for element in raw_result:
+                        # this is the cool part : we are going
+                        # to generalize imap datas
+                        element_list = self._generalize(element)
+                else :
+                    element_list = self._generalize(raw_result)
+
+                results.append(element_list)
+
+        if len(results) == 1:
+            return results[0]
 
         return results
 
@@ -343,6 +348,29 @@ class IMAPConnection(BaseConnection):
             return res.replace(']', '')
         except IndexError:
             return ''
+
+    def rename(self, oldmailbox, newmailbox):
+        """ renames a mailbox
+        """
+        self._respawn()
+        res = self._connection.rename(oldmailbox, newmailbox)
+        #### need to scan result here
+        return res[0] == 'OK'
+
+    def copy(self, from_mailbox, to_mailbox, message_number):
+        """ copy a message from a folder to another
+        """
+        self._respawn()
+        self._connection.select(from_mailbox)
+        res = self._connection.uid('COPY', message_number, '"'+to_mailbox+'"')
+
+        try:
+            if res[1][0] == 'Over quota':
+                raise ConnectionError('folder quota exceeded')
+        except IndexError:
+            pass
+
+        return res[0] == 'OK'
 
 connection_type = 'IMAP'
 
