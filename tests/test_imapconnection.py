@@ -119,6 +119,50 @@ class IMAPConnectionTestCase(MailTestCase):
 
         self.assertEquals(res, {'Received': '(qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000', 'Delivered-To': 'webmaster@openconference.org', 'From': 'webmaster@openconference.org', 'Return-Path': '<webmaster@zopeur.org>', 'Content-Transfer-Encoding': '8bit', 'To': 'webmaster@openconference.org', 'Mime-Version': '1.0', 'Date': 'Sat, 01 Jan 2005 02:31:52 +0100', 'Message-ID': '<20050101013152.24339.qmail@ns2641.ovh.net>', 'Content-Type': 'text/plain; format=flowed; charset="iso-8859-1"', 'Subject': 'webmaster@openconference.org'})
 
+    def test_bodyExtraction(self):
+        box = self._getMailBox()
+        ob = self.makeConnection()
+
+        res = ob.extractResult('BODY', ['2 (BODY ((("text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18)("text" "html" ("charset" "us-ascii") NIL NIL "8bit" 0 0) "alternative")("image" "jpeg" ("name" "wlogo.jpg") NIL NIL "base64" 7226) "mixed"))'])
+
+        self.assertEquals(res, ['mixed', ['alternative', ['text', 'plain', None, None, '8bit', 738, 18,
+             ['charset', 'us-ascii']], ['text', 'html', None, None, '8bit', 0, 0, ['charset', 'us-ascii']]],
+            ['image', 'jpeg', None, None, 'base64', 7226, ['name', 'wlogo.jpg']]])
+
+    def test_bodyPEEK(self):
+        box = self._getMailBox()
+        ob = self.makeConnection()
+
+        res = ob.extractResult('BODY.PEEK[1]', [('1 (BODY[1] {550}', " \r\n.../...\r\n\r\n> CPS, es-tu l\xe0... :)\r\n\r\nIl \xe9tait l\xe0 o\xf9 on ne l'attendait pas forc\xe9ment...\r\n;o)\r\n\r\nJo\xebl Kermabon\r\nNeptune Internet Services\r\n\r\nLe Jeudi 17 F\xe9vrier 2005 16:07, Damien Wyart avait \xe9crit :\r\n> * Joel Kermabon <J.Kermabon@neptune.fr> [170205 15:56]:\r\n> > Une conscience externe s'est manifest\xe9e avec efficacit\xe9...\r\n>\r\n> CPS, es-tu l\xe0... :)\r\n\r\n_______________________________________________\r\ncps-users-fr \r\nAdresse de la liste : cps-users-fr@lists.nuxeo.com\r\nGestion de l'abonnement : <http://lists.nuxeo.com/mailman/listinfo/cps-users-fr>\r\n"), ')'])
+
+        self.assertEquals(res," \r\n.../...\r\n\r\n> CPS, es-tu l\xe0... :)\r\n\r\nIl \xe9tait l\xe0 o\xf9 on ne l'attendait pas forc\xe9ment...\r\n;o)\r\n\r\nJo\xebl Kermabon\r\nNeptune Internet Services\r\n\r\nLe Jeudi 17 F\xe9vrier 2005 16:07, Damien Wyart avait \xe9crit :\r\n> * Joel Kermabon <J.Kermabon@neptune.fr> [170205 15:56]:\r\n> > Une conscience externe s'est manifest\xe9e avec efficacit\xe9...\r\n>\r\n> CPS, es-tu l\xe0... :)\r\n\r\n_______________________________________________\r\ncps-users-fr \r\nAdresse de la liste : cps-users-fr@lists.nuxeo.com\r\nGestion de l'abonnement : <http://lists.nuxeo.com/mailman/listinfo/cps-users-fr>\r\n"    )
+
+
+    def test_parseIMAPMessage(self):
+
+        box = self._getMailBox()
+        ob = self.makeConnection()
+
+        res = ob._parseIMAPMessage('"ok" ("sub1" "us-ascii")  ("sub2" "us-ascii")')
+        self.assertEquals(res, ['ok', ['sub1', 'us-ascii'], ['sub2', 'us-ascii']])
+
+        res = ob._parseIMAPMessage('"text" "plain" "8bit" 738 18')
+        self.assertEquals(res, ['text', 'plain', '8bit', 738, 18])
+
+        res = ob._parseIMAPMessage('"text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18')
+        self.assertEquals(res, ['text', 'plain', None, None, '8bit', 738, 18, ['charset', 'us-ascii']])
+
+        res = ob._parseIMAPMessage('("text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18)')
+        self.assertEquals(res, [['text', 'plain', None, None, '8bit', 738, 18, ['charset', 'us-ascii']]])
+
+        res = ob._parseIMAPMessage('((("text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18)("text" "html" ("charset" "us-ascii") NIL NIL "8bit" 0 0) "alternative")("image" "jpeg" ("name" "wlogo.jpg") NIL NIL "base64" 7226) "mixed")')
+
+        self.assertEquals(res, [['mixed', ['alternative', ['text', 'plain', None, None, '8bit', 738, 18, ['charset', 'us-ascii']], ['text', 'html', None, None, '8bit', 0, 0, ['charset', 'us-ascii']]], ['image', 'jpeg', None, None, 'base64', 7226, ['name', 'wlogo.jpg']]]])
+
+
+        res = ob._parseIMAPMessage('(BODY ((("text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18)("text" "html" ("charset" "us-ascii") NIL NIL "8bit" 0 0) "alternative")("image" "jpeg" ("name" "wlogo.jpg") NIL NIL "base64" 7226) "mixed"))')
+
+        self.assertEquals(res, [['body', ['mixed', ['alternative', ['text', 'plain', None, None, '8bit', 738, 18, ['charset', 'us-ascii']], ['text', 'html', None, None, '8bit', 0, 0, ['charset', 'us-ascii']]], ['image', 'jpeg', None, None, 'base64', 7226, ['name', 'wlogo.jpg']]]]])
 
 
     def test_infoExtraction(self):

@@ -193,6 +193,36 @@ class MailSearchTestCase(MailTestCase):
             if word.find('@')==-1:
                 self.assert_(word in wrap_list)
 
+    def test_wrapBuggyMessage(self):
+        cat = self._getCatalog()
+        msg = self.getMailInstance(15)
+
+        # empty body
+        msg.setPart(0, '')
+
+        cat.wrapMessage(msg)
+        wrap = msg.searchable_text
+        wrap_list = wrap.split(' ')
+
+        # subject
+        subject = msg.getHeader('Subject')[0]
+        words = subject.split(' ')
+        for word in words:
+            self.assert_(word in wrap_list)
+
+        # from
+        froms = msg.getHeader('From')
+        for word in froms:
+            if word.find('@')==-1:
+                self.assert_(word in wrap_list)
+
+        # tos
+        tos = msg.getHeader('To')
+        for word in tos:
+            if word.find('@')==-1:
+                self.assert_(word in wrap_list)
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailSearchTestCase),

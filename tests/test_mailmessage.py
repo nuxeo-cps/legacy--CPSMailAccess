@@ -265,7 +265,7 @@ class MailMessageTestCase(MailTestCase):
         ob2 = MailMessage('uid2', 'uid2')
         ob2.copyFrom(ob)
         self.assertNotEquals(ob.uid, ob2.uid)
-        self.assertEquals(ob._v_volatile_parts, ob2._v_volatile_parts)
+        self.assertEquals(ob.volatile_parts, ob2.volatile_parts)
         self.assertEquals(ob.read, ob2.read)
 
     def test_attachfile(self):

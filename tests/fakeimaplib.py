@@ -60,6 +60,8 @@ class IMAP4:
 
             if message_part == '(BODYSTRUCTURE)':
                 return ('OK',['1 (BODYSTRUCTURE ("text" "plain" ("format" "flowed" "charset" "iso-8859-1") NIL NIL "8bit" 41 4 NIL NIL NIL))'])
+            if message_part == '(BODY)':
+                return ('OK',['2 (BODY ((("text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18)("text" "html" ("charset" "us-ascii") NIL NIL "8bit" 0 0) "alternative")("image" "jpeg" ("name" "wlogo.jpg") NIL NIL "base64" 7226) "mixed"))'])
             if message_part == '(FLAGS)':
                 return ('OK',[('1 (FLAGS (\\Seen)'), ')'])
         result = ('OK', '(UID 123)')
