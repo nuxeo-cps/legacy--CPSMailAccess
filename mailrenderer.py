@@ -30,8 +30,22 @@ from zope.interface import implements
 from mimetools import decode
 from email import Parser
 from types import StringType, ListType
+from utils import decodeHeader
+from html2text import HTML2Text
+import mimetools
+from cStringIO import StringIO
 
 EMPTYSTRING = ''
+
+class HTMLMail(HTML2Text):
+
+    def clear(self):
+        self.lines = []
+
+    def generate(self):
+        HTML2Text.generate(self)
+        return self.result
+
 
 class MailRenderer:
     """A tool to render MIME parts
@@ -42,9 +56,70 @@ class MailRenderer:
     """
     implements(IMailRenderer)
 
+    html_engine = HTMLMail()
+
+    def extractPartTypes(self, part_type):
+        if part_type is None:
+            return {'type' : 'text/plain'}
+        ptypes = {}
+        types = part_type.split(';')
+        for ptype in types:
+            if ptype.find('=') > -1:
+                parts = ptype.split('=')
+                name = parts[0].strip()
+                value = parts[1].strip()
+                value = value.strip('"')
+                ptypes[name] = value
+            else:
+                ptypes['type'] = ptype.strip()
+
+        return ptypes
+
+
+    def render(self, content, part_type, part_cte):
+        """ renders a body according to part type
+        """
+        ptypes = self.extractPartTypes(part_type)
+        ptype = ptypes['type']
+        if ptypes.has_key('format'):
+            pformat = ptypes['format']
+        else:
+            pformat = ''
+        if ptypes.has_key('charset'):
+            pcharset = ptypes['charset']
+        else:
+            pcharset = 'ISO8859-15'
+
+        if ptype in ('text/plain', 'text', 'message/rfc822'):
+
+            if part_cte not in ('7bit', '8bit', '', None):
+                result = StringIO(u'')
+                mimetools.decode(content, result, part_cte)
+            else:
+                result = content
+            try:
+                return unicode(result, pcharset)
+            except:
+                pass
+
+        if ptype.startswith('multipart'):
+            return u''
+
+        raise NotImplementedError('part_type %s charset %s type %s \n content %s' \
+                % (part_type, pcharset, ptype, content))
+
+    def HTMLToText(self, html):
+        """ needs to get kicked to utils
+        """
+        self.html_engine.clear()
+        self.html_engine.add_text(html)
+        return self.html_engine.generate()
+
     def _extractBodies(self, mail):
         """ extracts the body
         """
+        part_type = mail['Content-type']
+        part_cte =  mail['Content-transfert-encoding']
         if mail.is_multipart():
             it = Iterators.body_line_iterator(mail)
             lines = list(it)
@@ -57,7 +132,9 @@ class MailRenderer:
                 res = payload
             else:
                 res = payload
-        return res
+
+        return self.render(res, part_type, part_cte)
+
 
     def renderBody(self, mail, part_index=0):
         """ renders the mail given body part
