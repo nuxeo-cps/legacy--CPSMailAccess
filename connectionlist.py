@@ -47,10 +47,6 @@ class ConnectionList(UserList):
         self.connection_guard = ConnectionWatcher(self)
         self.connection_guard.start()
 
-    def getCurrentId(self):
-        #### to be done
-        return 'tarek'
-
     def listConnectionTypes(self):
         types = []
         self.lock.acquire()
@@ -82,6 +78,9 @@ class ConnectionList(UserList):
         if self.connection_generators.has_key(connection_type):
             meth = self.connection_generators[connection_type]
             new_connection = meth(connection_params)
+            # XXXX auto-login
+            new_connection.login(connection_params['uid'],
+                connection_params['password'])
             return new_connection
         else:
             raise ValueError("no connector for %s" % connection_type)
@@ -92,15 +91,14 @@ class ConnectionList(UserList):
         result = None
         self.lock.acquire()
         try:
-            for connection in self:
-                uid = self.getCurrentId()
-                connection_type = connection_params['connection_type']
+            uid = connection_params['uid']
+            connection_type = connection_params['connection_type']
 
+            for connection in self:
                 if (connection.uid == uid) and \
                     (connection.connection_type == connection_type):
                     result = connection
                     break
-
 
             if not result:
                 newob = self._getConnectionObject(connection_params)
@@ -137,8 +135,9 @@ def registerConnections(connection_list):
             current = u.CPSMailAccess
             u = current
             for item in dir(u):
-                if qualifyModule(unit):
+                if qualifyModule(item+'.py'):
                     ul = getattr(u, item)
+
                     if hasattr(ul, 'makeMailObject') and \
                         hasattr(ul, 'connection_type') :
                         connection_list.registerConnectionType(ul.connection_type,
