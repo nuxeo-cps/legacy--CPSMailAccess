@@ -60,7 +60,7 @@ class IMAPConnection(BaseConnection):
         else:
             is_ssl = 0
         if params.has_key('PORT'):
-            port = params['PORT']
+            port = int(params['PORT'])
         else:
             if is_ssl:
                 port = IMAP4_SSL_PORT
@@ -121,7 +121,6 @@ class IMAPConnection(BaseConnection):
 
         # _connection state is AUTH if login succeeded
         if typ == 'OK' :
-            self.connected = True
             self.user = user
             self.password = password
             return True
@@ -135,9 +134,12 @@ class IMAPConnection(BaseConnection):
         typ, dat = self._connection.logout()
 
         if typ == 'BYE' :
-            self.connected = False
             self.user = None
             self.password = None
+
+    def getState(self):
+        self._respawn()
+        return self._connection.state
 
     def list(self, directory='""', pattern='*'):
         """ see interface for doc
