@@ -19,7 +19,8 @@
 # $Id$
 from zLOG import LOG, INFO, DEBUG
 from basemailview import BaseMailMessageView
-from utils import decodeHeader, localizeDateString, isToday, getFolder
+from utils import decodeHeader, localizeDateString, parseDateString, \
+    isToday, getFolder
 from interfaces import IMailMessage
 
 class MailFolderView(BaseMailMessageView):
@@ -125,6 +126,7 @@ class MailFolderView(BaseMailMessageView):
                 part['Date'] = localizeDateString(date, 1)
             else:
                 part['Date'] = localizeDateString(date, 3)
+            part['FullDate'] = parseDateString(date)
             returned.append(part)
         return returned
 
