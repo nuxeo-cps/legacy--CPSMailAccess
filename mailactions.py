@@ -57,8 +57,8 @@ class MailActionsView(BaseMailMessageView):
             # are we in the editor ?
             if self.is_editor():
                 save = {'icon' : base_url + '/cpsma_save.png',
-                     'title' : 'save message',
-                     'long_title' : 'save the message in Drafts',
+                     'title' : 'cpsma_save_message',
+                     'long_title' : 'cpsma_save_message',
                      'onclick' : 'saveMessageDatas()',
                      'action' : 'saveMessage.html'}
 
@@ -71,8 +71,8 @@ class MailActionsView(BaseMailMessageView):
 
                 """
                 init = {'icon' : base_url + '/cpsma_initeditor.png',
-                     'title' : 'init editor',
-                     'long_title' : 'initialize editor',
+                     'title' : 'cpsma_init_editor',
+                     'long_title' : 'cpsma_init_editor',
                      'action' : 'initializeEditor.html',
                      'onclick' : ''}
 
@@ -93,39 +93,41 @@ class MailActionsView(BaseMailMessageView):
 
             if container == mailbox.getTrashFolder():
                 empty_trash = {'icon' : base_url + '/cpsma_emptytrash.png',
-                               'title' : 'empty trash',
-                               'long_title' : 'empty the trashcan',
+                               'title' : 'cpsma_empty_trash',
+                               'long_title' : 'cpsma_empty_trash',
                                'onclick' : "return window.confirm('Are you sure?')",
                                'action' : root + '/emptyTrash.html'}
                 actions.append(empty_trash)
 
             elif container == mailbox.getDraftFolder():
                 pass
-            elif container == mailbox.getSentFolder():
-                pass
+            #elif container == mailbox.getSentFolder():
+            #    pass
             else:
                 if container.canCreateSubFolder():
 
                     add_folder = {'icon' : base_url + '/cpsma_addfolder.png',
-                                'title' : 'add subfolder',
-                                'long_title' : 'add a subfolder',
+                                'title' : 'cpsma_add_subfolder',
+                                'long_title' : 'cpsma_add_subfolder',
                                 'action' : 'view?add_folder=1'}
                     actions.append(add_folder)
 
-                if container.server_name != 'INBOX':
+                sent_server_name = mailbox.getSentFolder().server_name
+
+                if container.server_name not in ('INBOX', sent_server_name):
                     move_folder = {'icon' : root + '/cpsma_movefolder.png',
-                                   'title' : 'move folder',
-                                   'long_title' : 'move the folder',
+                                   'title' : 'cpsma_move_folder',
+                                   'long_title' : 'cpsma_move_folder',
                                    'action' : 'view?move_folder=1'}
                     rename = {'icon' : base_url + '/cpsma_rename.png',
-                                'title' : 'rename folder',
-                                'long_title' : 'rename current folder',
+                                'title' : 'cpsma_rename_folder',
+                                'long_title' : 'cpsma_rename_folder',
                                 'action' : 'view?edit_name=1'}
 
                     if candelete:
                         delete = {'icon' : base_url + '/cpsma_delete.png',
-                                    'title' : 'delete folder',
-                                    'long_title' : 'delete current folder',
+                                    'title' : 'cpsma_delete_folder',
+                                    'long_title' : 'cpsma_delete_folder',
                                     'onclick' : "return window.confirm('Are you sure?')",
                                     'action' : 'delete.html'}
                         list_ = [delete, rename, move_folder]
@@ -135,8 +137,8 @@ class MailActionsView(BaseMailMessageView):
                     actions.extend(list_)
 
             manage = {'icon' : root + '/cpsma_manage_content.png',
-                      'title' : 'manage content',
-                      'long_title' : 'manage current folder',
+                      'title' : 'cpsma_manage_content',
+                      'long_title' : 'cpsma_manage_content',
                       'action' : 'view?manage_content=1'}
             actions.append(manage)
 
@@ -157,34 +159,34 @@ class MailActionsView(BaseMailMessageView):
 
             if not special_folder:
                 reply = {'icon' : base_url + '/cpsma_reply.png',
-                        'title' : 'reply',
-                        'long_title' : 'reply to message',
+                        'title' : 'cpsma_reply',
+                        'long_title' : 'cpsma_reply',
                         'action' : 'reply.html'}
 
                 reply_all = {'icon' : base_url + '/cpsma_replyall.png',
-                        'title' : 'reply all',
-                        'long_title' : 'reply to message (all)',
+                        'title' : 'cpsma_reply_all',
+                        'long_title' : 'cpsma_reply_all',
                         'action' : 'replyAll.html'}
 
                 forward = {'icon' : base_url + '/cpsma_forward.png',
-                        'title' : 'forward',
-                        'long_title' : 'forward the message',
+                        'title' : 'cpsma_forward',
+                        'long_title' : 'cpsma_forward',
                         'action' : 'forward.html'}
 
                 actions.extend([reply, reply_all, forward])
 
                 if container.draft:
                     draft = {'icon' : base_url + '/cpsma_reload.png',
-                        'title' : 'load message',
-                        'long_title' : 'load the message into the editor',
+                        'title' : 'cpsma_load_message',
+                        'long_title' : 'cpsma_load_message',
                         'action' : 'reload.html'}
                     actions.extend([draft])
 
 
             if current_folder.id != trash_name:
                 delete = {'icon' : base_url + '/cpsma_delete.png',
-                        'title' : 'delete message',
-                        'long_title' : 'delete the message',
+                        'title' : 'cpsma_delete_message',
+                        'long_title' : 'cpsma_delete_message',
                         'onclick' : "return window.confirm('Are you sure?')",
                         'action' : 'delete.html'}
 
@@ -194,27 +196,27 @@ class MailActionsView(BaseMailMessageView):
             return []
 
         configure = {'icon' : base_url + '/cpsma_configure.png',
-                     'title' : 'configure',
-                     'long_title' : 'configure the webmail',
+                     'title' : 'cpsma_configure',
+                     'long_title' : 'cpsma_configure',
                      'action' : root + '/configure.html'}
         synchro = {'icon' : base_url + '/cpsma_getmails.png',
-                   'title' : 'get messages',
-                   'long_title' : 'get all messages',
+                   'title' : 'cpsma_getmessages',
+                   'long_title' : 'cpsma_getmessages',
                    'action' : root + '/syncProgress.html'}
 
         search = {'icon' : base_url + '/cspma_mail_find.png',
-                   'title' : 'search messages',
-                   'long_title' : 'searchin messages',
+                   'title' : 'cpsma_search_messages',
+                   'long_title' : 'cpsma_search_messages',
                    'action' : root + '/zemanticSearchMessage.html'}
 
         write   = {'icon' : base_url + '/cpsma_writemail.png',
-                   'title' : 'write message',
-                   'long_title' : 'write a message',
+                   'title' : 'cpsma_write_message',
+                   'long_title' : 'cpsma_write_message',
                    'action' : root + '/editMessage.html'}
 
         adressbook   = {'icon' : base_url + '/cpsma_addressbook.png',
-                        'title' : 'address books',
-                        'long_title' : 'address books',
+                        'title' : 'cpsma_address_books',
+                        'long_title' : 'cpsma_address_books',
                         'action' : root + '/addressBooks.html'}
 
 
