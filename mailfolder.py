@@ -294,7 +294,11 @@ class MailFolder(BTreeFolder2):
 
     def onFlagChanged(self, msg, flag, value):
         """ event triggered when a message flag changes """
-        print 'hey'
+        if has_connection:
+            connector = self._getconnector()
+            flag = flag.capitalize()
+            kw = {flag: value}
+            connector.setFlags(self.server_name, msg.uid, kw)
 
     def _addMessage(self, uid, digest, index=True):
         """ See interfaces.IMailFolder """
@@ -302,8 +306,6 @@ class MailFolder(BTreeFolder2):
         self.message_count +=1
         id = self.getIdFromUid(uid)
         msg = MailMessage(id, uid, digest)
-        # set flag change event
-        msg.onflagchanged = self.onFlagChanged
         self._setObject(id, msg)
         msg.parent_folder = self
         msg = self._getOb(id)
