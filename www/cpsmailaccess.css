@@ -318,5 +318,37 @@ a.selectable:hover {
 }
 
 input.fullwidth {
-  width: 100%;
+  width: 300px;
+}
+
+div.dlabel {
+  font-weight: bold;
+}
+
+div.searchGroup {
+  border: 1px solid #848284;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+div.privateBook {
+  border: 1px solid #848284;
+  padding: 8px;
+  float:left;
+  width :45%;
+}
+
+div.publicBook {
+  border: 1px solid #848284;
+  padding: 8px;
+  float:right;
+  width :45%
+}
+
+
+div.manageGroup {
+  border: 1px solid #848284;
+  padding: 10px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
