@@ -613,7 +613,6 @@ class MailBox(MailBoxBaseCaching):
             if len(extracted) > 1:
                 entry['sn'] = extracted[1]
         entry['id'] = makeId(email)
-        LOG('_createMailDirectoryEntry', INFO, str(mail)+ '-->' +str(entry))
         return entry
 
     def addMailDirectoryEntry(self, mail, private=True):
