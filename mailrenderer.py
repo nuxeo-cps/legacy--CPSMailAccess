@@ -30,22 +30,11 @@ from zope.interface import implements
 from mimetools import decode
 from email import Parser
 from types import StringType, ListType
-from utils import decodeHeader
-from html2text import HTML2Text
+from utils import decodeHeader, HTMLize, HTMLToText
 import mimetools
 from cStringIO import StringIO
 
 EMPTYSTRING = ''
-
-class HTMLMail(HTML2Text):
-
-    def clear(self):
-        self.lines = []
-
-    def generate(self):
-        HTML2Text.generate(self)
-        return self.result
-
 
 class MailRenderer:
     """A tool to render MIME parts
@@ -55,14 +44,6 @@ class MailRenderer:
     True
     """
     implements(IMailRenderer)
-
-    html_engine = HTMLMail()
-
-    def HTMLize(self, content):
-        """ transforms a text into a html bloc
-        """
-        content = content.replace('\n', '<br/>')
-        return content
 
     def extractPartTypes(self, part_type):
         if part_type is None:
@@ -113,13 +94,6 @@ class MailRenderer:
 
         raise NotImplementedError('part_type %s charset %s type %s \n content %s' \
                 % (part_type, pcharset, ptype, content))
-
-    def HTMLToText(self, html):
-        """ needs to get kicked to utils
-        """
-        self.html_engine.clear()
-        self.html_engine.add_text(html)
-        return self.html_engine.generate()
 
     def _extractBodies(self, mail):
         """ extracts the body
@@ -184,4 +158,4 @@ class MailRenderer:
 
         body = self._extractBodies(part)
 
-        return self.HTMLize(body)
+        return HTMLize(body)
