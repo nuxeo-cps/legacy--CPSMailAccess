@@ -314,7 +314,7 @@ class HTMLMailSanitizer(HTMLSanitizer):
                     'font', 'style', 'img')
 
     tolerant_tags = ('br', 'p')
-    attributes_to_keep = ('size', 'face', 'class', 'src', 'href')
+    attributes_to_keep = ('size', 'face', 'class', 'src', 'href', 'type', 'border')
     attributes_to_remove = ('accesskey', 'onclick')
 
 def sanitizeHTML(content):
