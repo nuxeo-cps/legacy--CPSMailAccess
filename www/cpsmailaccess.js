@@ -82,6 +82,49 @@ function saveMessageDatas(EditorHTML)
 {
   msg_subject = document.getElementById('msg_subject');
   msg_subject = msg_subject.value
+
+  msg_to = document.getElementById('msg_to');
+  msg_to = msg_to.value;
+
+  msg_cc = document.getElementById('msg_cc');
+  msg_cc = msg_cc.value;
+
+  msg_bcc = document.getElementById('msg_bcc');
+  msg_bcc = msg_bcc.value;
+
+  Cc = document.getElementById('Cc');
+  if (Cc.style.visibility == 'hidden')
+  {
+    cc_on = "0";
+  }
+  else
+  {
+    cc_on = "1";
+  }
+
+  BCc = document.getElementById('BCc');
+  alert(BCc.style.visibility);
+
+  if (BCc.style.visibility == 'hidden')
+  {
+    bcc_on =  "0";
+  }
+  else
+  {
+    bcc_on = "1";
+  }
+
+  Attach = document.getElementById('attacher');
+
+  if (Attach.style.visibility == 'hidden')
+  {
+    attacher_on =  "0";
+  }
+  else
+  {
+    attacher_on = "1";
+  }
+
   msg_body = EditorHTML;
   if(window.XMLHttpRequest) // Firefox
     xml = new XMLHttpRequest();
@@ -97,7 +140,12 @@ function saveMessageDatas(EditorHTML)
     status = 503;
     msg_body = escape(msg_body);
     msg_subject = escape(msg_subject);
-    var body = "msg_subject="+msg_subject+"&msg_body="+msg_body;
+    msg_to = escape(msg_to);
+    msg_cc = escape(msg_cc);
+    msg_bcc = escape(msg_bcc);
+
+    var body = "attacher_on="+attacher_on+"&cc_on="+cc_on+"&bcc_on="+bcc_on+"&msg_subject="+msg_subject+"&msg_body="+msg_body+"&msg_to="+msg_to+"&msg_cc="+msg_cc+"&msg_bcc="+msg_bcc
+
     i = 0;
     while ((status == 503) && (i<10))
     {
@@ -111,8 +159,25 @@ function saveMessageDatas(EditorHTML)
         delay(200);
       }
     }
-    alert(xml.status);
   }
 }
 
+function toggleElementVisibility(id)
+{
+  element = document.getElementById(id);
 
+  if (element)
+  {
+    if (element.className == "hidden_part")
+    {
+      element.className = "not_hidden_part";
+      element.style.visibility = "visible"
+    }
+    else
+    {
+      element.className = "hidden_part";
+      element.style.visibility = "hidden"
+    }
+  }
+
+}
