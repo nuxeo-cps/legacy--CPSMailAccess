@@ -61,4 +61,3 @@ def initialize(context):
                       extra_constructors = contentConstructors,
                       fti = fti,
                       ).initialize(context)
-
