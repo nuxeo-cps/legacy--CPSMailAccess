@@ -33,6 +33,7 @@ from Products.Five import BrowserView
 from smtpmailer import SmtpQueuedMailer
 from mailbox import manage_addMailBox
 from utils import makeId
+from Products.Five import BrowserView
 
 lock = thread.allocate_lock()
 connector = ConnectionList()
@@ -120,10 +121,35 @@ class MailTool(Folder): # UniqueObject
         if hasattr(self, mailbox_name):
             self.manage_delObjects([mailbox_name])
 
+    def hasMailBox(self, user_id):
+        """ creates a mailbox for a given user """
+
+        mailbox_name = makeId('box_%s' % user_id)
+        return hasattr(self, mailbox_name)
+
 
 """ classic Zope 2 interface for class registering
 """
 InitializeClass(MailTool)
+
+
+class MailToolView(BrowserView):
+
+    def webmailRedirect(self, user_id):
+        """ redirects the user to his or her webmail """
+
+        if self.request is None:
+            return
+        mailtool = self.context
+        mailbox_name = makeId('box_%s' % user_id)
+        if hasattr(mailtool, mailbox_name):
+            box = getattr(mailtool, mailbox_name)
+            self.request.response.redirect(box.absolute_url()+'/view')
+        else:
+            box = mailtool.addMailBox(user_id)
+            url = '%s/configure.html?first_time=1' % box.absolute_url()
+            self.request.response.redirect(url)
+
 
 manage_addMailToolForm = PageTemplateFile(
     "www/zmi_addmailtool", globals())
