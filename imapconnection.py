@@ -21,10 +21,7 @@
     IMAPConnection : IMAP 4 rev 1 implementation for BaseConnection
 
 """
-#from zLOG import LOG, INFO, ERROR, DEBUG
-from imaplib import IMAP4_SSL
-from imaplib import IMAP4
-from imaplib import IMAP4_PORT
+from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
 
 from zope.interface import implements
 from interfaces import IConnection
@@ -33,7 +30,6 @@ from baseconnection import LOGIN_FAILED
 from baseconnection import ConnectionError
 from baseconnection import ConnectionParamsError
 from baseconnection import CANNOT_SEARCH_MAILBOX
-
 
 class IMAPConnection(BaseConnection):
     """ IMAP4 v1 implementation for Connection
@@ -60,15 +56,19 @@ class IMAPConnection(BaseConnection):
 
         host = params['HOST']
 
-        if params.has_key('PORT'):
-            port = params['PORT']
-        else:
-            port = IMAP4_PORT
-
         if params.has_key('SSL'):
             is_ssl =  params['SSL'] == 1
         else:
             is_ssl = 0
+
+        if params.has_key('PORT'):
+            port = params['PORT']
+        else:
+            if is_ssl:
+                port = IMAP4_SSL_PORT
+            else:
+                port = IMAP4_PORT
+
 
         if is_ssl:
             self._connection = IMAP4_SSL(host, port)
@@ -137,6 +137,9 @@ class IMAPConnection(BaseConnection):
         imap_list = self._connection.list(directory, pattern)
         if imap_list[0] == 'OK':
             for element in imap_list[1]:
+
+                if element is None:
+                    continue
                 folder = {}
                 folder_attributes = []
                 parts = element.split(' "." ')
@@ -308,7 +311,7 @@ def makeMailObject(connection_params):
     newob =  IMAPConnection(connection_params)
     uid = connection_params['uid']
     password = connection_params['password']
-    newob.login(uid, password)
+    #newob.login(uid, password)
     #print str('created '+str(newob))
     return newob
 
