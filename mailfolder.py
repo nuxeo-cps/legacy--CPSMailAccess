@@ -29,14 +29,14 @@ from Acquisition import aq_parent
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
-from utils import uniqueId, makeId, md5Hash
+from utils import uniqueId, makeId, md5Hash, decodeHeader
 from Products.CPSMailAccess.mailmessage import MailMessage
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from Globals import InitializeClass
 from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
-
 from Products.CPSMailAccess.baseconnection import ConnectionError
+
 
 class MailContainerError(Exception) :
     pass
@@ -50,17 +50,10 @@ class MailFolder(Folder):
     >>> IMailFolder.providedBy(f)
     True
     """
-    ### XXX see if "properties" are ok in zope3/five context
-    _properties = Folder._properties + \
-        ({'id': 'server_name', 'type': 'string', 'mode': 'w',
-         'label': 'Server name'},)
-
-    meta_type = "CPSMailAccess Folder"
-
     implements(IMailFolder)
-    server_name = FieldProperty(IMailFolder['server_name'])
-    mail_prefix = FieldProperty(IMailFolder['mail_prefix'])
-
+    meta_type = "CPSMailAccess Folder"
+    server_name = ''
+    mail_prefix = ''
     sync_state = False
 
     def __init__(self, uid=None, server_name='""', **kw):
@@ -79,7 +72,7 @@ class MailFolder(Folder):
         """
         current = self
         while current is not None and not IMailBox.providedBy(current):
-            current = aq_parent(current)
+            current = aq_inner(aq_parent(current))
         return current
 
     def getMailMessages(self, list_folder=True, list_messages=True, recursive=False):
@@ -295,9 +288,21 @@ class MailFolder(Folder):
                         msg = self._addMessage(msg_uid, msg_key)
 
                         # THIS IS A HACK,next step is to create
-                        # a message accordingly to the whol message string
+                        # a message accordingly to the whole message string
+                        # and to the cache parameter (with or without body)
+                        msg_content = connector.fetch(self.server_name, message, '(RFC822)')
+
+                        raw_msg = ''
+
+                        if len(msg_content) > 0:
+                            msg_bloc = msg_content[0]
+                            if msg_bloc == 'OK':
+                                raw_msg  =  msg_content[1]
+
+                        msg.loadMessage(raw_msg)
+
                         for header in msg_headers.keys():
-                            msg.setParam(header, msg_headers[header])
+                            setattr(msg, header, msg_headers[header])
                             if msg_headers.has_key('Subject'):
                                 msg.title = msg_headers['Subject']
                     else:
@@ -350,11 +355,13 @@ class MailFolderView(BrowserView):
             so folder gets on top
         """
         sorted_elements = []
+        i = 0
         for element in elements:
             if IMailFolder.providedBy(element):
-                sorted_elements.append(('A', element))
+                sorted_elements.append(('A'+str(i), element))
             else:
-                sorted_elements.append(('B', element))
+                sorted_elements.append(('B'+str(i), element))
+            i+=1
         sorted_elements.sort()
         results = []
         for element in sorted_elements:
@@ -373,17 +380,24 @@ class MailFolderView(BrowserView):
         elements = self.sortFolderContent(elements)
 
         for element in elements:
+
             returned += '<div id="folder_element">'
             returned += '<a href="%s/view">' % element.absolute_url()
-            returned += element.title_or_id()
+            ob_title = element.title_or_id()
+
+            if ob_title is None:
+                mail_title = '?'
+            else:
+                if IMailMessage.providedBy(element):
+                    translated_title = decodeHeader(ob_title)
+                    mail_title = translated_title
+                else:
+                    mail_title = ob_title
+            returned += str(mail_title)
             returned += '</a>'
             returned += '</div>'
-
         returned += '</div>'
-
         return returned
-
-
 
 """ classic Zope 2 interface for class registering
 """
