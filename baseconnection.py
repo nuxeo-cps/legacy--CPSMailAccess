@@ -112,3 +112,8 @@ class BaseConnection:
             raise ConnectionParamsError('Host name is missing')
 
         self.connection_params = params
+
+    def writeMessage(self, mailbox, raw_message):
+        """ writes a message
+        """
+        raise NotImplementedError
