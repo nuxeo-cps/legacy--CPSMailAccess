@@ -16,15 +16,13 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-"""
-    fake imap provided for testings
+""" fakeimap provided for testings
 """
 IMAP4_PORT = 25
 
 IMAPError = Exception
 
 class IMAP4:
-
     def __init__(self, host='', port=25):
         self.host = host
         self.port = port
@@ -41,5 +39,4 @@ class IMAP4:
         return 'OK', 'AUTH'
 
 class IMAP4_SSL(IMAP4):
-
     pass
