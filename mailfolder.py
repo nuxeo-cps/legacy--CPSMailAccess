@@ -37,7 +37,6 @@ from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
 from Products.CPSMailAccess.baseconnection import ConnectionError
 
-
 class MailContainerError(Exception) :
     pass
 
@@ -370,6 +369,7 @@ class MailFolderView(BrowserView):
 
     def renderMailList(self):
         """ renders mailfolder content
+            XXX need to externalize html here
         """
         mailfolder = self.context
 
