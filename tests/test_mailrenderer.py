@@ -30,6 +30,8 @@ from Products.CPSMailAccess.interfaces import IMailRenderer
 
 from CPSMailAccess.tests import __file__ as landmark
 
+from email.Errors import BoundaryError
+
 installProduct('FiveTest')
 installProduct('Five')
 
@@ -116,16 +118,19 @@ class MailRendererTestCase(ZopeTestCase):
         """
         ob = MailRenderer()
         for i in range(35):
-            mail = self.getMailInstance(i)
+            if i == 24:
+                self.assertRaises(BoundaryError, self.getMailInstance, i)
+            else:
+                mail = self.getMailInstance(i)
 
-            # for multiparts, just get first part
-            #raise str(mail)
-            part = mail.getPart()
+                # for multiparts, just get first part
+                #raise str(mail)
+                part = mail.getPart()
 
-            rendered = ob.renderBody(mail)
+                rendered = ob.renderBody(mail)
 
-            # see here for deeper checks on rendered body
-            self.assertNotEqual(rendered, None)
+                # see here for deeper checks on rendered body
+                self.assertNotEqual(rendered, None)
 
 def test_suite():
     return unittest.TestSuite((
