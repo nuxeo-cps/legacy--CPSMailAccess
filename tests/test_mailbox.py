@@ -206,6 +206,14 @@ class MailBoxTestCase(MailTestCase):
         res = Todos.delete()
         self.assert_(mailbox.elementIsInTrash(Todos))
 
+    def test_generateZemanticCat(self):
+        mailbox = self._getMailBox()
+        mb = mailbox._getZemanticCatalog()
+        self.assert_(mb is not None)
+
+
+
+
 
 
 def test_suite():

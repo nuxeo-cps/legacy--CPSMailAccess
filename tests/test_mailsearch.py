@@ -22,7 +22,7 @@ from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
 import os, sys
 from Products.CPSMailAccess.mailsearch \
-    import MailCatalog
+    import MailCatalog, ZemanticMailCatalog, ZemanticMessageAdapter
 
 from Testing.ZopeTestCase import installProduct
 from basetestcase import MailTestCase
@@ -239,7 +239,6 @@ class MailSearchTestCase(MailTestCase):
                 self.assert_(word in wrap_list)
 
     def test_accentsSearches(self):
-
         cat = self._getCatalog()
 
         for i in range(37):
@@ -252,6 +251,31 @@ class MailSearchTestCase(MailTestCase):
         query['searchable_text'] = u'habilité'
         res = cat.search(query_request=query)
         self.assertEquals(len(res), 0)
+
+    def test_ZemanticInstanciation(self):
+        ob = ZemanticMailCatalog()
+
+        from rdflib.URIRef import URIRef
+
+        ob.add((URIRef(u'Tarek'), URIRef(u'likes'), URIRef(u'Pizza')))
+        from zemantic.public import *
+
+        res = ob.query(Query(Any, u'<likes>', Any))
+        res = list(res)
+        self.assertEquals(len(res), 1)
+
+        result = res[0]
+        self.assertEquals(result.triple(), (u'Tarek', u'likes', u'Pizza'))
+
+    def test_ZemanticMessageAdapter(self):
+
+        for i in range(37):
+            message = self.getMailInstance(i)
+            message = message.__of__(self.portal)
+            message.getPhysicalPath = self.fakeGetPhysicalPath
+
+            adapted_message = ZemanticMessageAdapter(message)
+            tuple_ = adapted_message.threeTuples()
 
 def test_suite():
     return unittest.TestSuite((

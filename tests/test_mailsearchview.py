@@ -28,6 +28,8 @@ from Products.CPSMailAccess.mailbox import MailBox
 
 from basetestcase import MailTestCase
 
+installProduct('TextIndexNG2')
+
 class MailSearchViewTestCase(MailTestCase):
 
     count = 0
@@ -42,23 +44,25 @@ class MailSearchViewTestCase(MailTestCase):
         """
         box = self._getMailBox()
         cat = box._getCatalog()
+        zcat = box._getZemanticCatalog()
 
         for i in range(38):
             ob = self.getMailInstance(i)
             ob.getPhysicalPath = self.fakeGetPhysicalPath
             ob = ob.__of__(self.portal)
             cat.indexMessage(ob)
+            zcat.indexMessage(ob)
 
         searchview = MailSearchView(box, self.request)
         searchview = searchview.__of__(box)
-        return searchview, cat, box
+        return searchview, cat, zcat, box
 
     def test_instanciation(self):
         searchview = self._getView()
         self.assertNotEquals(searchview, None)
 
     def test_searchs(self):
-        searchview, cat, box = self._getView()    # also fills cat
+        searchview, cat, zcat, box = self._getView()    # also fills cat
         self.assertEquals(box._getCatalog(), cat)
         query = {}
         query['searchable_text'] = u'Lovers'
@@ -74,11 +78,52 @@ class MailSearchViewTestCase(MailTestCase):
             self.assert_(res['path'] in direct_search)
 
     def test_weirdo_searchs(self):
-
-        searchview, cat, box = self._getView()    # also fills cat
+        searchview, cat, zcat, box = self._getView()    # also fills cat
         results = searchview.searchMessages('é')
 
+    def test_zemanticPredicateList(self):
+        searchview, cat, zcat, box = self._getView()    # also fills cat
+        list_ = searchview.zemanticPredicateList()
+        self.assertEquals(list_, [u'body', u'cc', u'content-description',
+                                  u'content-disposition',
+                                  u'content-transfer-encoding',
+                                  u'content-type', u'date', u'delivered-to',
+                                  u'errors-to', u'from', u'list-archive',
+                                  u'list-help', u'list-id', u'list-post',
+                                  u'list-subscribe', u'list-unsubscribe',
+                                  u'message-id', u'mime-version',
+                                  u'precedence', u'received', u'reply-to',
+                                  u'return-path', u'sender', u'status',
+                                  u'subject', u'to', u'user-agent', u'x-aid',
+                                  u'x-attribution', u'x-beenthere', u'x-caid',
+                                  u'x-copyrighted-material', u'x-cuid',
+                                  u'x-foobar-spoink-defrobnit', u'x-loop',
+                                  u'x-mailer', u'x-mailman-version',
+                                  u'x-mimetrack', u'x-oblique-strategy',
+                                  u'x-organization', u'x-priority',
+                                  u'x-spam-status', u'x-trid', u'x-uidl',
+                                  u'x-url'])
 
+    def test_zemantic_searchs(self):
+        searchview, cat, zcat, box = self._getView()    # also fills cat
+        self.assertEquals(box._getCatalog(), cat)
+
+        query = {}
+        query['relation_0'] = 'cc'        # relations keys are normalized (lower)
+        query['value_0'] = ''
+        results = searchview.zemanticSearchMessages(**query)
+
+        # results order won't be known
+        self.assert_((u'nowere/my_message_40', u'cc', u'ccc@zzz.org') in results)
+        self.assert_((u'nowere/my_message_40', u'cc', u'ddd@zzz.org') in results)
+        self.assert_((u'nowere/my_message_40', u'cc', u'eee@zzz.org') in results)
+
+        query = {}
+        query['relation_0'] = 'cc'        # relations keys are normalized (lower)
+        query['value_0'] = 'ccc*'
+        results = searchview.zemanticSearchMessages(**query)
+
+        self.assertEquals(len(results), 1)
 
 
 
