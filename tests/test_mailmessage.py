@@ -71,6 +71,7 @@ class MailMessageTestCase(ZopeTestCase):
 
     def getMailInstance(self,number):
         ob = MailMessage()
+        ob.cache_level = 2
 
         if number < 9:
             data = self._msgobj('msg_0'+str(number+1)+'.txt')
@@ -83,6 +84,7 @@ class MailMessageTestCase(ZopeTestCase):
     def test_base(self):
         # loading a lot of different mails
         ob = MailMessage()
+        ob.cache_level = 2
         for i in range(35):
             if i < 9:
                 data = self._msgobj('msg_0'+str(i+1)+'.txt')
@@ -244,6 +246,7 @@ class MailMessageTestCase(ZopeTestCase):
 
     def test_setHeaders(self):
         ob = MailMessage()
+        ob.cache_level = 2
 
         s = 'Tarek <tz@nuxeo.com>'
         ob.setHeader('From', s)
@@ -282,6 +285,7 @@ class MailMessageTestCase(ZopeTestCase):
             'Dingus Lovers <cravindogs@cravindogs.com>')
 
         ob = MailMessage()
+        ob.cache_level = 2
         view = MailMessageView(ob, None)
 
         self.assertEquals(view.renderFromList(),
