@@ -20,20 +20,20 @@
   mailtool contains singleton tool used to
   hold connections and to hold
 """
+import thread
+
 from OFS.Folder import Folder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-#from Products.CMFCore.utils import UniqueObject
-from interfaces import IMailTool
 from Globals import InitializeClass
-from zope.interface import implements
-from Products.CPSMailAccess.connectionlist import registerConnections,\
-     ConnectionList
-import thread
 from Products.Five import BrowserView
+
+from zope.interface import implements
+
+from interfaces import IMailTool
+from connectionlist import registerConnections, ConnectionList
 from smtpmailer import SmtpQueuedMailer
 from mailbox import manage_addMailBox
 from utils import makeId
-from Products.Five import BrowserView
 
 lock = thread.allocate_lock()
 connector = ConnectionList()
