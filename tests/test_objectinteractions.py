@@ -22,15 +22,29 @@ import unittest
 from Testing.ZopeTestCase import user_name, folder_name
 from Testing.ZopeTestCase import installProduct
 from CPSMailAccess.mailbox import manage_addMailBox
-from CPSMailAccess.mailtool import manage_addMailTool
+from CPSMailAccess.mailtool import manage_addMailTool, MailTool
 from CPSMailAccess.mailfolder import MailFolder, MailContainerError
 from CPSMailAccess.utils import uniqueId
-from CPSDefault.tests import CPSDefaultTestCase
+from Acquisition import Implicit
+from Testing.ZopeTestCase import ZopeTestCase
 
-installProduct('CPSMailAccess')
+class FakePortal(Implicit):
+    def this(self):
+        return self
 
-class ObjectInteractionTest(CPSDefaultTestCase.CPSDefaultTestCase):
+    def _setObject(self, id, ob):
+        setattr(self, id, ob)
+
+fakePortal = FakePortal()
+portal_webmail = MailTool()
+fakePortal.portal_webmail = portal_webmail
+
+class ObjectInteractionTest(ZopeTestCase):
     msg_key = 0
+
+    def __init__(self, methodName='runTest'):
+        ZopeTestCase.__init__(self, methodName)
+        self.portal = fakePortal
 
     def msgKeyGen(self):
         result = 'msg_' + str(self.msg_key)
@@ -48,7 +62,7 @@ class ObjectInteractionTest(CPSDefaultTestCase.CPSDefaultTestCase):
     def _getMailBox(self):
         """ testing connector getter
         """
-        container = self.portal
+        container = fakePortal
         manage_addMailBox(container, 'INBOX')
         mailbox = self.portal.INBOX
         mailbox['uid'] = 'tziade'
@@ -119,7 +133,39 @@ class ObjectInteractionTest(CPSDefaultTestCase.CPSDefaultTestCase):
         id = uniqueId(mailbox, 'folder_', use_primary=False)
         self.assertEquals(hasattr(mailbox, id), False)
 
+    def test_syncdirs(self):
+        """ testing folder synchro
+        """
+        mailbox = self._getMailBox()
 
+        # first synchronize to create structure
+        mailbox._syncdirs([{'Name' : 'INBOX.Lop', 'Attributes' : ''},
+                           {'Name' : 'INBOX.One', 'Attributes' : ''},
+                           {'Name' : 'INBOX.[BCEAO]', 'Attributes' : ''},
+                           {'Name' : 'Trash', 'Attributes' : ''}])
+
+        self.assertEquals(hasattr(mailbox, 'INBOX'), True)
+
+        inbox = mailbox.INBOX
+
+        self.assertEquals(hasattr(inbox, 'Lop'), True)
+        self.assertEquals(hasattr(inbox, 'One'), True)
+        self.assertEquals(hasattr(inbox, 'BCEAO'), True) # we are looking to ids not titles
+        self.assertEquals(hasattr(inbox, 'Trash'), True)
+
+        folders = mailbox.getMailMessages(True, False, True)
+
+        self.assertEquals(len(folders), 5)
+
+        # now removes Trash
+        mailbox._syncdirs([{'Name' : 'INBOX', 'Attributes' : ''},
+                           {'Name' : 'INBOX.One', 'Attributes' : ''},
+                           {'Name' : 'INBOX.[BCEAO]', 'Attributes' : ''}])
+
+        folders = mailbox.getMailMessages(True, False, True)
+
+        self.assertEquals(len(folders), 3)
+        self.assertEquals(hasattr(folders, 'Trash'), False)
 
 def test_suite():
     return unittest.TestSuite((
