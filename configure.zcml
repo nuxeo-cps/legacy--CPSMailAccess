@@ -204,6 +204,14 @@
 
   <browser:page
       for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxParametersView"
+      name="reindexMailCatalog"
+      attribute="reindexMailCatalog"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
       class=".mailbox.MailBoxView"
       name="emptyTrash"
       attribute="emptyTrash"
@@ -473,6 +481,13 @@
       name="editMessage.html"
       permission="zope2.View"
       />
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailsearchview.MailSearchView"
+      name="searchMessages"
+      attribute="searchMessages"
+      permission="zope2.View"
+      />
 
   <browser:page
       for=".interfaces.IMailBox"
@@ -481,6 +496,7 @@
       name="searchMessage.html"
       permission="zope2.View"
       />
+
 
   <include file="cpsdefault.zcml" />
 
