@@ -20,7 +20,7 @@
         <a tal:attributes="href element/url">
           <span tal:replace="element/short_title"/>
         </a><tal:block tal:condition="unreads">&#160;(<span tal:replace="unreads"/>)</tal:block>
-        <div tal:attributes="id element/short_title_id">
+        <div style="display: block" tal:attributes="id element/short_title_id">
           <tal:block tal:repeat="element element/childs">
             <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
           </tal:block>
@@ -43,6 +43,9 @@
             <tal:block tal:repeat="element treeview">
               <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
             </tal:block>
+            <script langage="javascript">
+              controlStates();
+            </script>
           </div>
         </div>
       </div>
