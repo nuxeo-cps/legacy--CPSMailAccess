@@ -30,7 +30,7 @@ from zope.interface import implements
 from mimetools import decode
 from email import Parser
 from types import StringType, ListType
-from utils import decodeHeader, HTMLize, HTMLToText
+from utils import decodeHeader, HTMLize, HTMLToText, sanitizeHTML
 import mimetools
 from cStringIO import StringIO
 
@@ -64,8 +64,7 @@ class MailRenderer:
 
 
     def render(self, content, part_type, part_cte):
-        """ renders a body according to part type
-        """
+        """ renders a body according to part type """
         if content is None:
             return ''
 
@@ -87,26 +86,34 @@ class MailRenderer:
                 mimetools.decode(content, result, part_cte)
             else:
                 result = content
-            try:
-                return unicode(result, pcharset)
-            except UnicodeDecodeError:
-                # typically hapenning when wrong charset
-                # forcing iso-8859-15
-                return unicode(result, 'ISO-8859-15')
+            if ptype == 'text/html':
+                result = sanitizeHTML(result)
 
+            if not isinstance(result, unicode):
+                try:
+                    result = unicode(result, pcharset)
+                except UnicodeDecodeError:
+                    # typically hapenning when wrong charset
+                    # forcing iso-8859-15
+                    result = unicode(result, 'ISO-8859-15')
+            return result
 
         if ptype.startswith('multipart'):
-            return unicode(content, pcharset)
+            if not isinstance(content, unicode):
+                return unicode(content, pcharset)
+            else:
+                return content
 
         raise NotImplementedError('part_type %s charset %s type %s \n content %s' \
                 % (part_type, pcharset, ptype, content))
 
     def _extractBodies(self, mail):
-        """ extracts the body
-        """
-        html = False
-
+        """ extracts the body """
         part_type = mail['Content-type']
+        if part_type is not None and isinstance(part_type, str):
+            html = part_type.strip().startswith('text/html')
+        else:
+            html = False
         part_cte =  mail['Content-transfert-encoding']
         if mail.is_multipart():
             # have to choose an alternative here
@@ -115,7 +122,6 @@ class MailRenderer:
                 # always choose the last one (html rendering)
                 last = len(mail._payload) - 1
                 mail = mail._payload[last]
-                html = True
 
             it = Iterators.body_line_iterator(mail)
             lines = list(it)
@@ -174,7 +180,8 @@ class MailRenderer:
                 #need to load the whole branch
                 raise NotImplementedError
 
-        html, body = self._extractBodies(part)
+        else:
+            html, body = self._extractBodies(part)
 
         if not html:
             body = HTMLize(body)
