@@ -37,7 +37,7 @@ from Acquisition import aq_parent, aq_inner, aq_base
 from Products.Five import BrowserView
 from baseconnection import ConnectionError
 
-has_connection = 1
+has_connection = 0
 
 class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
@@ -52,7 +52,7 @@ class MailFolder(BTreeFolder2):
     meta_type = "CPSMailAccess Folder"
     server_name = ''
     sync_state = False
-    mailbox = None
+    _v_mailbox = None
     message_count = 0
     folder_count = 0
 
@@ -82,10 +82,9 @@ class MailFolder(BTreeFolder2):
     def clearMailBoxTreeViewCache(self):
         """ clears mailbox cache in case of change
         """
-        if self.mailbox is None:
-            self.mailbox = self.getMailBox()
-        if self.mailbox is not None:
-            self.mailbox.clearTreeViewCache()
+        mailbox = self.getMailBox()
+        if mailbox is not None:
+            mailbox.clearTreeViewCache()
 
     def getKeysSlice(self, key1, key2):
         """Get a slice of BTreeFolder2 keys.
@@ -107,14 +106,18 @@ class MailFolder(BTreeFolder2):
     def getMailBox(self):
         """See interfaces.IMailFolder
         """
-        current = self
-        while current is not None and not IMailBox.providedBy(current):
-            current = aq_inner(aq_parent(current))
-        """
-        if current is None or not IMailBox.providedBy(current):
-            raise MailContainerError('object not contained in a mailbox')
-        """
-        return current
+        if self._v_mailbox is None:
+            current = self
+            while current is not None and not IMailBox.providedBy(current):
+                current = aq_inner(aq_parent(current))
+
+            if current is None or not IMailBox.providedBy(current):
+                raise MailContainerError('object not contained in a mailbox')
+
+            self._v_mailbox = current
+            return current
+        else:
+            return self._v_mailbox
 
     def getMailFolder(self):
         return self.aq_inner.aq_parent
@@ -124,7 +127,6 @@ class MailFolder(BTreeFolder2):
         """
         mailbox = self.getMailBox()
         return mailbox.connection_params['cache_level']
-
 
     def getMailMessages(self, list_folder=True, list_messages=True,
                         recursive=False):
@@ -157,8 +159,7 @@ class MailFolder(BTreeFolder2):
                 subresults = folder.getMailMessages(list_folder,
                                                     list_messages,
                                                     recursive)
-                if list_folder:
-                    results.extend(subresults)
+                results.extend(subresults)
 
         return results
 
@@ -266,6 +267,7 @@ class MailFolder(BTreeFolder2):
         to_mailbox._setObject(id, msg)
         to_mailbox.message_count += 1
         msg = getattr(to_mailbox, id)
+        self._indexMessage(msg)
         return msg
 
     def _copyMessage(self, uid, to_mailbox):
@@ -284,6 +286,7 @@ class MailFolder(BTreeFolder2):
         id = self.getIdFromUid(uid)
         if hasattr(self, id):
             msg = self[id]
+            self._unIndexMessage(msg)
             self.manage_delObjects([id])
             self.message_count -=1
             #msg = msg.__of__(None)
@@ -298,12 +301,23 @@ class MailFolder(BTreeFolder2):
         id = self.getIdFromUid(uid)
         msg = MailMessage(id, uid, digest)
         self._setObject(id, msg)
-
-        ### ask florent if this is ok with
-        # zope 2 and zope 3 compatibilities
         msg.parent_folder = self
         msg = self._getOb(id)
+        # index message
+        self._indexMessage(msg)
         return msg
+
+    def _indexMessage(self, msg):
+        """ indexes message
+        """
+        mailbox = self.getMailBox()
+        mailbox.indexMessage(msg)
+
+    def _unIndexMessage(self, msg):
+        """ indexes message
+        """
+        mailbox = self.getMailBox()
+        mailbox.unIndexMessage(msg)
 
     def _addFolder(self, uid='', server_name='', server=False):
         """see interfaces.IMailFolder
@@ -567,6 +581,7 @@ class MailFolder(BTreeFolder2):
             self.server_name = new_name
 
         self.title = self.id
+        self._v_mailbox = None
         return self
 
     def delete(self):
@@ -584,6 +599,7 @@ class MailFolder(BTreeFolder2):
             composed = name + '_' +str(seed)
             seed += 1
         newmailbox = trash_folder_name + '.' + composed
+        self._v_mailbox = None
         return self.rename(newmailbox, fullname=True)
 
     def simpleFolderName(self):
