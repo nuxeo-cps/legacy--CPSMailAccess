@@ -146,6 +146,21 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".directorypicker.DirectoryPickerView"
+      name="searchUsers.html"
+      attribute="searchUsers"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".directorypicker.DirectoryPickerView"
+      name="getEditorContainers"
+      attribute="getEditorContainers"
+      permission="zope2.View"
+      />
 
   <browser:page
       for=".interfaces.IMailBox"
@@ -416,6 +431,14 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="attachedFiles.html"
       attribute="attached_files"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
+      name="is_editor"
+      attribute="is_editor"
       permission="zope2.View"
       />
 
