@@ -1,0 +1,142 @@
+<html>
+  <body>
+    <metal:block define-macro="messagelist">
+    <tal:block tal:define="messages view/renderMailList;">
+        <table with="100%">
+          <tr class="mailHeaders">
+            <td width="320px"  class="mailToolBarElement mailToolBarInsideElement">
+              <div class="mailToolBarElement">
+                <div class="mailToolBarInsideElement">
+                  Subject
+                </div>
+              </div>
+            </td>
+            <td width="130px" class="mailToolBarElement mailToolBarInsideElement">
+              Sender
+            </td>
+            <td width="80px" class="mailToolBarElement mailToolBarInsideElement">
+              <div class="mailToolBarElement">
+                <div class="mailToolBarInsideElement">
+                  Date
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <div id="folder_content" tal:attributes="class
+            python:test(is_folder,'folder_msglist','message_msglist')">
+            <div tal:repeat="message messages">
+              <metal:block tal:define="is_current
+                      python:here.absolute_url()+'/view'==message['url'];
+                      odd repeat/message/odd;
+                      class_selected python:test(odd, 'line_selected_odd', 'line_selected_even');
+                      class_notselected
+                          python:test(odd, 'line_selectable_odd', 'line_selectable_even');">
+
+              <table with="100%">
+                <tr tal:attributes="class python:test(is_current, class_selected,
+                    class_notselected)">
+                  <td width="320px">
+
+                    <img tal:attributes="src message/icon"
+                         src="cpsma_message.png"/>
+                    <a tal:attributes="href python:message['url']+'?showfolders=1'">
+                      <span tal:replace="message/title"/>
+                    </a>
+                  </td>
+                  <td width="130px">
+                    <a tal:attributes="href python:message['url']+'?showfolders=1'">
+                      <span tal:replace="message/From|string:?"/>
+                    </a>
+                  </td>
+                  <td width="80px">
+                    <a tal:attributes="href python:message['url']+'?showfolders=1'">
+                      <span tal:replace="message/Date|string:?"/>
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              </metal:block>
+            </div>
+        </div>
+    </tal:block>
+    </metal:block>
+
+    <metal:block define-macro="messagetoolbar">
+      <div class="mailToolBar">
+          <a style="float: right; margin-right: 4px"
+            tal:attributes="href python:here.absolute_url()+'/view_alone'" target="_blank">
+            <img id="new_page" src="launch.png"/>
+          </a>
+          <!--
+          <a style="float: right; margin-right: 4px"
+            tal:attributes="href python:here.absolute_url()+'/delete'">
+            <img id="new_page" src="cpsma_mini_mail_delete.png"/>
+          </a>
+          <a style="float: right; margin-right: 4px"
+            tal:attributes="href python:here.absolute_url()+'/forward'">
+            <img id="new_page" src="cpsma_mini_mail_forward.png"/>
+          </a>
+          <a style="float: right; margin-right: 4px"
+            tal:attributes="href python:here.absolute_url()+'/reply_all'">
+            <img id="new_page" src="cpsma_mini_mail_replyall.png"/>
+          </a>
+          <a style="float: right; margin-right: 4px"
+            tal:attributes="href python:here.absolute_url()+'/reply'">
+            <img id="new_page" src="cpsma_mini_mailreply.png"/>
+          </a>
+          -->
+        <tal:block tal:condition="not:request/showfolders|python:0">
+            <a tal:attributes="href python:here.absolute_url()+'/view?showfolders=1'">
+              <img id="midPageButton" src="cpsma_down.png" style="margin-right: 4px"/>
+            </a>
+        </tal:block>
+        <tal:block tal:condition="request/showfolders|python:0">
+            <a tal:attributes="href python:here.absolute_url()+'/view'">
+            <img id="fullPageButton" src="cpsma_up.png" style="margin-right: 4px"/>
+            </a>
+        </tal:block>
+
+        </div>
+    </metal:block>
+
+    <metal:block define-macro="messageheaders">
+    <img id="imgMailMoreInfos" src="cpsma_lessinfos.png"
+               onclick="switchMailHeadersState();"/>
+          <div id="mailLessInfos">
+
+          <div id="mailSubject">
+            <b>
+              <tal:block i18n:translate="">Subject :</tal:block>
+              <tal:block tal:replace="structure view/renderSubject" />
+            </b>
+          </div>
+        </div>
+        <div id="mailBreak"/>
+        <div id="mailMoreInfos">
+          <div id="mailDate">
+            <b>
+              <tal:block i18n:translate="">Date :</tal:block>
+              <tal:block tal:replace="view/renderDate" />
+            </b>
+          </div>
+          <div id="mailFrom">
+            <b>
+              <tal:block i18n:translate="">From :</tal:block>
+              <a tal:attributes="href python:'sendmail?to:'+view.renderFromList()">
+                <tal:block tal:replace="view/renderFromList" />
+              </a>
+            </b>
+          </div>
+          <div id="mailTo">
+            <b>
+              <tal:block i18n:translate="">To :</tal:block>
+              <a tal:attributes="href python:'sendmail?to:'+view.renderToList()">
+                <tal:block tal:replace="view/renderToList" />
+              </a>
+            </b>
+          </div>
+        </div>
+      </metal:block>
+  </body>
+</html>
