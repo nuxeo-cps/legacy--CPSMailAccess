@@ -297,7 +297,9 @@ class MailMessageView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
 
-    def _getSubject(self):
+    def renderSubject(self):
+        """ renders the mail subject
+        """
         if self.context is not None:
             subject = self.context['Subject']
             if subject is None:
@@ -305,11 +307,13 @@ class MailMessageView(BrowserView):
         else:
             subject = '?'
 
-        rendering = '<div id="mailSubject">' + subject + '</div>'
+        rendering = '<span>' + subject + '</span>'
 
         return rendering
 
-    def _getFromList(self):
+    def renderFromList(self):
+        """ renders the mail From
+        """
         if self.context is not None:
             froms = self.context['From']
             if froms is None:
@@ -317,11 +321,13 @@ class MailMessageView(BrowserView):
         else:
             froms = '?'
 
-        rendering = '<div id="mailFrom">' + froms + '</div>'
+        rendering = '<span>' + froms + '</span>'
 
         return rendering
 
-    def _getToList(self):
+    def renderToList(self):
+        """ renders the mail list
+        """
         if self.context is not None:
             tos = self.context['To']
             if tos is None:
@@ -329,14 +335,16 @@ class MailMessageView(BrowserView):
         else:
             tos = '?'
 
-        rendering = '<div id="mailTo">' + tos + '</div>'
+        rendering = '<span>'  + tos + '</span>'
 
         return rendering
 
     def _bodyRender(self, mail, part_index):
         return self._RenderEngine.renderBody(mail, part_index)
 
-    def _getBody(self):
+    def renderBody(self):
+        """ renders the mail body
+        """
         if self.context is not None:
             mail = self.context
 
@@ -358,24 +366,24 @@ class MailMessageView(BrowserView):
         else:
             body = ''
 
-        rendering = '<div id="mailBody">' + body + '</div>'
+        rendering = '<span>' + body + '</span>'
 
         return rendering
 
 
     def render(self):
-        """ renders the mail
+        """ renders the whole mail
         """
-        html = self._getSubject()
+        html = self.renderSubject()
         #see if this is reliable
         html = html + '\n'
-        html = html + self._getFromList()
+        html = html + self.renderFromList()
         #see if this is reliable
         html = html + '\n'
-        html = html + self._getToList()
+        html = html + self.renderToList()
         #see if this is reliable
         html = html + '\n'
-        html = html + self._getBody()
+        html = html + self.renderBody()
         return html
 
 
