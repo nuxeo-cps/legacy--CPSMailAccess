@@ -11,4 +11,4 @@ if request.has_key('URL'):
                 URL.endswith('searchMessage.html')):
             return 'highlightSearchTerm();setFocus();'
 
-return 'prepareTableSorting();setFocus();'
+return 'setFocus();'
