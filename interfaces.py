@@ -177,6 +177,19 @@ class IMailMessageStore(Interface):
 class IMailBox(IContainer):
     """ mailboxes gives a few api to synchronize
     """
+
+    """ indicates the cache level used by
+        the mailbox
+        0 : no cache
+        1 : headers cached
+        2 : full cache (slow)
+    """
+    cache_level = Field(
+        title=u'Cache level',
+        description=u'Indicates the cache level for this mailbox',
+        default=u'',
+        required=True)
+
     connection_params = List(
         title=u'Connection parameters',
         description=u'Connection parameters properties',
