@@ -232,15 +232,18 @@ class MailMessageView(BaseMailMessageView):
             return []
         list_files = []
 
-        #LOG('att', INFO, str(message.getRawMessage()))
-
+        # XX hack : need to do better
+        if hasattr(message, 'editor_msg'):
+            prefix = 'editorMessage/'
+        else:
+            prefix = ''
         for part in range(message.getPartCount()):
             # XX todo : avoid re-generate part on each visit : use caching
             part_ob = MailPart('part_'+str(part), message, message.getPart(part))
             infos = part_ob.getFileInfos()
             if infos is not None:
                 # let's append icon, url, and title
-                infos['url'] = str(part)+'/'+str(infos['filename'])
+                infos['url'] = prefix + str(part)+'/'+str(infos['filename'] +'/view')
                 infos['icon'] =  mimetype_to_icon_name(infos['mimetype'])
                 title = infos['filename']
                 if len(title) > 10:
