@@ -11,51 +11,65 @@
     <script type="text/javascript" src="epoz_script_main.js">
     </script>
   </head>
-  <body>
+  <body tal:define="base_url here/getBaseUrl">
     <h2>
       add users
     </h2>
 
-    <tal:block define="publics python:here.getEntries()[1];
-                       privates python:here.getEntries()[0];">
+ <tal:block define="publics python:here.getEntries()[0];
+                       privates python:here.getEntries()[1];">
     <div style="width :100%">
       <div style="clear:both"/>
+        <div style="float:left;width :49%;padding:4px;">
+          <h4><img src="cpsma_users.png"/>&#160;Personal address book</h4>
+          <div tal:repeat="private privates" style="margin-top:8px;">
+            <tal:block tal:define="email python:private[1]['email'];
+                                    fullname python:private[1]['fullname'];
+                                    id python:private[1]['id'];
+                                    msg_to python:'%s <%s>' % (fullname, email)">
+                <a tal:attributes="href python:'writeTo.html?msg_to='+msg_to">
+                <img src="cpsma_draft.png" title="send a message" alt="send a message"/>
+                </a>
+                &#160;
+                <a tal:attributes="href
+                    python:base_url+'/cpsdirectory_entry_view?dirname=.addressbook&id='+id;
+                    title email;
+                    alt email">
+                <span tal:replace="fullname"/>
+                </a>
+            </tal:block>
+          </div>
+          <div style="margin-top:8px">
+
+            search
+
+          </div>
+        </div>
         <div style="float:left;width :49%">
-        <h3><img src="cpsma_users.png"/>&#160;Personal address book</h3>
-        <div tal:repeat="private privates">
-            <div tal:replace="python:private[1]['fullname']"/>
-        </div>
 
-        <h3><img src="cpsma_users.png"/>&#160;Global address book</h3>
-        <div tal:repeat="public publics">
-            <div tal:replace="python:public[1]['fullname']"/>
-        </div>
-        </div>
-        <div style="float:left; width : 49%">
-        <div>
-            <div class="recipient_header">To:</div>
-            <div  class="recipient">
-            <textarea name="msg_to" id="msg_to" class="recipients"></textarea>
-            </div>
-        </div>
-        <div>
-            <div class="recipient_header">Cc:</div>
-            <div  class="recipient">
-            <textarea name="msg_to" id="msg_cc" class="recipients"></textarea>
-            </div>
-        </div>
-        <div>
-            <div class="recipient_header">Bcc:</div>
-            <div  class="recipient">
-            <textarea name="msg_to" id="msg_bcc" class="recipients"></textarea>
-            </div>
-        </div>
-
+        <h4><img src="cpsma_users.png"/>&#160;Global address book</h4>
+        <div tal:repeat="public publics" style="margin-top:8px;">
+            <tal:block tal:define="email python:public[1]['email'];
+                                    fullname python:public[1]['fullname'];
+                                    id python:public[1]['id'];
+                                    msg_to python:'%s <%s>' % (fullname, email)">
+                <a tal:attributes="href python:'writeTo.html?msg_to='+msg_to">
+                <img src="cpsma_draft.png" title="send a message" alt="send a message"/>
+                </a>
+                &#160;
+                <a tal:attributes="href
+                    python:base_url+'/cpsdirectory_entry_view?dirname=.addressbook&id='+id;
+                    title email;
+                    alt email">
+                <span tal:replace="fullname"/>
+                </a>
+            </tal:block>
+          </div>
+          <div style="margin-top:8px">
+            search
+          </div>
         </div>
       <div style="clear:both"/>
-     <input type="submit" value="validate"/>
-
-
     </div>
     </tal:block>
 
