@@ -21,13 +21,19 @@
  ConnectionList is a thread-safe list of all active connections
  inactive connections are killed
 """
+from zLOG import LOG, INFO, DEBUG
+
+import time
+import os, sys
+import thread
 
 from UserList import UserList
+
 from zope.interface import implements
-import os, sys
+
 from Products.CPSMailAccess.interfaces import IConnectionList
 from Products.CPSMailAccess.connectionwatcher import ConnectionWatcher
-import thread
+
 
 class ConnectionList(UserList):
     """ this is a list with a thread
@@ -109,7 +115,6 @@ class ConnectionList(UserList):
                 self.append(newob)
         finally:
             self.lock.release()
-
         return result
 
     def killConnection(self, uid, connection_type):
