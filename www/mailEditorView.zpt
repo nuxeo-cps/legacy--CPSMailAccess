@@ -9,39 +9,95 @@
       src="++resource++cpsmailaccess.js">
     </script>
   </metal:main>
-  <metal:block metal:fill-slot="main">
-    <form action="sendMessage"
-          tal:define="came_from request/came_from|nothing">
+  <metal:block metal:fill-slot="main"
+               tal:define="attaching request/attach|nothing">
+      <div  tal:condition="attaching">
+        <a href="editMessage.html"
+           class="close_attach_form"
+           title="close">
+          <img src="cpsma_delete_file.png"/>
+        </a>
+        <form class="attach_form"
+              action="attach_file"
+              method="post" enctype="multipart/form-data">
+          <input type="hidden" value="1" name="attach"/>
+          <table>
+            <tr>
+              <td>
+                <input class="attach_name" type="file" name="file"/>
+              </td>
+              <td>
+                <input class="attach_button" type="submit" name="submit"
+                    value=" "/>
+              </td>
+            </tr>
+          </table>
+        </form>
+       </div>
+
+      <form action="sendMessage"
+          tal:define="dummy here/initMessage;
+                      came_from request/came_from|nothing;
+                      body_value request/body_value|nothing;
+                      from_indentities here/getIdentitites;"
+          >
+
       <input type="hidden" tal:attributes="value came_from" name="came_from"/>
-      <div> <!-- here we'll get person's different ids -->
-        <span>From:</span>
-        <select name="msg_from">
-          <option value="tarek@ziade.org">Tarek &lt;tarek@ziade.org&gt;</option>
-          <option value="tz@nuxeo.com" selected="selected">Tarek Boulot &lt;tz@nuxeo.com&gt;</option>
-        </select>
-      </div>
-      <div id="Tos">
-        <div id="to1">
-          <select name="sent_type_1">
-            <option value="To" selected="selected">To</option>
-            <option value="Cc">Cc</option>
-            <option value="BCc">BCc</option>
-          </select>
-          <input name="msg_to" type="text" value=""/>
-          <span onclick="addToSection();">More</span>
-        </div>
-      </div>
-      <div id="Subject">
-        <span>Subject:</span>
-        <input type="text" name="msg_subject" value="" />
-      </div>
+
+      <table width="100%" class="editor_header">
+        <tr>
+          <td class="tr_title">
+           From
+          </td>
+          <td>
+            <select style="width: 100%" name="msg_from">
+              <tal:block tal:repeat="from_indenty from_indentities">
+                <option tal:attributes="value from_indenty/email">
+                  <span tal:replace="from_indenty/fullname"/> &lt;<span
+                    tal:replace="from_indenty/email"/>&gt;
+                </option>
+              </tal:block>
+            </select>
+          </td>
+        </tr>
+        <tr>
+            <!-- later
+                <img title="more" onclick="addToSection();"
+                    style="float:right;" src="cma_more_lines.png"/>
+
+                <img title="less"
+                    onclick="removeToSection();"
+                    style="float:right;" src="cma_less_lines.png"/>
+            -->
+          <td>
+            <select name="sent_type_1" style="width: 100%" class="tr_title">
+              <option value="To" selected="selected">To</option>
+              <option value="Cc">Cc</option>
+              <option value="BCc">BCc</option>
+            </select>
+          </td>
+          <td>
+            <input class="message_edit_input" name="msg_to" type="text" value=""/>
+          </td>
+        </tr>
+        <tr>
+          <td class="tr_title">Subject:
+          </td>
+          <td>
+            <input class="message_edit_input" type="text" name="msg_subject" value="" />
+          </td>
+        </tr>
+      </table>
+
       <div id="Body">
-        <textarea name="msg_body">mailbody</textarea>
+       <tal:block replace="structure python:here.Epoz(
+            name='msg_body', data=body_value, lang='en',
+            style='width:100%; height:300px; border:1px solid #A0A0A0; border-style:solid;')" />
+
       </div>
       <div id="toolbar">
         <input type="submit" value="send"/>
       </div>
-      <input type="hidden" name="msg_attachments" value="" />
     </form>
   </metal:block>
 </html>
