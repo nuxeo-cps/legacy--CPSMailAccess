@@ -72,6 +72,7 @@ class MailMessage(MailPart):
     flagged = 0
     forwarded = 0
     draft = 0
+    onflagchanged = None
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
@@ -94,16 +95,17 @@ class MailMessage(MailPart):
         MailPart.copyFrom(self, msg)
 
     def setFlag(self, flag, value):
-        """ sets a flag
-        """
+        """ sets a flag """
         if hasattr(self, flag):
-            setattr(self,flag,value)
+            if getattr(self, flag) != value:
+                setattr(self, flag, value)
+                # call the event trigger
+                if self.onflagchanged is not None:
+                    self.onflagchanged(self, flag, value)
 
     def getFlag(self, flag):
-        """ gets a flag
-        """
+        """ gets a flag """
         return getattr(self, flag, None)
-
 
     def setSyncState(self, state=False):
         """ sets state
