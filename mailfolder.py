@@ -37,7 +37,7 @@ from Acquisition import aq_parent, aq_inner, aq_base
 from Products.Five import BrowserView
 from baseconnection import ConnectionError
 
-has_connection = 0
+has_connection = 1
 
 class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
