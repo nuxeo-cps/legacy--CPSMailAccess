@@ -2,30 +2,26 @@
   <body>
     <metal:block define-macro="messagelist">
     <tal:block tal:define="messages view/renderMailList;">
-        <table with="100%">
+       <div tal:attributes="class
+              python:test(is_folder,'folder_msglist','message_msglist')">
+
+        <table with="100%"
+          id="folder_content"
+            >
           <tr class="mailHeaders">
-            <td width="320px"  class="mailToolBarElement mailToolBarInsideElement">
-              <div class="mailToolBarElement">
-                <div class="mailToolBarInsideElement">
+            <th width="320px"  class="mailToolBarElement mailToolBarInsideElement">
                   Subject
-                </div>
-              </div>
-            </td>
-            <td width="130px" class="mailToolBarElement mailToolBarInsideElement">
+            </th>
+            <th width="130px" class="mailToolBarElement mailToolBarInsideElement">
               Sender
-            </td>
-            <td width="80px" class="mailToolBarElement mailToolBarInsideElement">
-              <div class="mailToolBarElement">
-                <div class="mailToolBarInsideElement">
-                  Date
-                </div>
-              </div>
-            </td>
+            </th>
+            <th width="80px" class="mailToolBarElement mailToolBarInsideElement">
+              Date
+            </th>
           </tr>
-        </table>
-        <div id="folder_content" tal:attributes="class
-            python:test(is_folder,'folder_msglist','message_msglist')">
-            <div tal:repeat="message messages">
+
+
+            <tal:block tal:repeat="message messages">
               <metal:block tal:define="is_current
                       python:here.absolute_url()+'/view'==message['url'];
                       odd repeat/message/odd;
@@ -33,7 +29,7 @@
                       class_notselected
                           python:test(odd, 'line_selectable_odd', 'line_selectable_even');">
 
-              <table with="100%">
+
                 <tr tal:attributes="class python:test(is_current, class_selected,
                     class_notselected)">
                   <td width="320px">
@@ -55,9 +51,11 @@
                     </a>
                   </td>
                 </tr>
-              </table>
+
               </metal:block>
-            </div>
+            </tal:block>
+
+        </table>
         </div>
     </tal:block>
     </metal:block>
