@@ -19,30 +19,43 @@
 """
   mailsearch holds all mail searches
 """
+from zLOG import LOG, INFO, DEBUG
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.TextIndexNG2.TextIndexNG import TextIndexNG
 """
 important TODO : use zope 3 catalog here, that is available on zope 3 cvs
           http://svn.zope.org/Zope3/trunk/src/zope/app/catalog/
+          TODO 2 : make an optinal body parsing
 """
 from OFS.Folder import Folder
+from ZODB.PersistentMapping import PersistentMapping
+
 from Globals import InitializeClass
 from zope.interface import implements
-from UserDict import UserDict
+from utils import makeId
 
 # one catalog per user
 # has one index wich is 'TextIndexNG2"
-
 class MailCatalog(ZCatalog):
     user_id = ''
     indexed_headers = ['Subject', 'To', 'From']
     stop_list = ['com', 'net', 'org', 'fr']
+    _v_cached_search = PersistentMapping()
 
     def __init__(self, id, user_id='', title='', vocab_id=None, container=None):
         ZCatalog.__init__(self, id, title, vocab_id, container)
         self.user_id = user_id
         self.addIndex('searchable_text', 'TextIndexNG')
         self.Indexes['searchable_text'].indexed_fields = ['searchable_text']
+        self.addColumn('id')
+        self.addColumn('uid')
+        self.addColumn('digest')
+
+    def unIndexMessage(self, message):
+        """ uncatalog an object
+        """
+        url = message.absolute_url()
+        self.uncatalog_object(url)
 
     def indexMessage(self, message):
         """ index or reindex a mail content
@@ -74,24 +87,51 @@ class MailCatalog(ZCatalog):
         msg.searchable_text = ' '.join(searchable)
 
     def unWrapMessage(self, msg):
+        """ suppress wrapper
+        """
         msg.searchable_text = None
+
+    def _makeKey(self, query_request, sort_index, reverse, limit, merge):
+        """ create search key
+        """
+        search_key = str(query_request) + '___' + str(sort_index) + \
+             '___' + str(reverse) + '___' + str(limit) + \
+             '___' + str(merge)
+        return search_key
+
+    def search(self, query_request, sort_index=None,
+        reverse=0, limit=None, merge=1):
+        """ speeding up things by caching searches
+        """
+        key = self._makeKey(query_request, sort_index, reverse, limit, merge)
+
+        if self._v_cached_search.has_key(key):
+            return self._v_cached_search[key]
+        else:
+            results = ZCatalog.search(self, query_request, sort_index,
+                reverse, limit, merge)
+
+            self._v_cached_search[key] = results
+            return results
 
 InitializeClass(MailCatalog)
 
 # catalog dictonnary
-class MailCatalogDict(UserDict):
-
-    def __init__(self, initlist=None):
-        UserDict.__init__(self, initlist)
+class MailCatalogDict(Folder):
+    def __init__(self):
+        Folder.__init__(self)
 
     def getCatalog(self, user_id):
-        if self.has_key(user_id):
-            return self[user_id]
+        user_id = makeId(user_id)
+        if hasattr(self, user_id):
+            return getattr(self, user_id)
         return None
 
     def addCatalog(self, user_id):
-        if self.getCatalog(user_id) is None:
-            self[user_id] = MailCatalog(user_id, user_id, user_id)
+        user_id = makeId(user_id)
+        if not hasattr(self, user_id):
+            catalog = MailCatalog(user_id, user_id, user_id)
+            self._setObject(user_id, catalog)
 
 """ classic Zope 2 interface for class registering
 """
