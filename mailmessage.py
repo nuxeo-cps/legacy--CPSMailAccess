@@ -301,9 +301,18 @@ class MailMessage(MailPart):
                 return True
         return False
 
+    def setFlags(self, flags):
+        flags = [flag.lower() for flag in flags]
+
+        for flag in ('read', 'answered', 'deleted', 'flagged',
+                     'forwarded', 'draft'):
+            if flag in flags:
+                self.setFlag(flag, 1)
+            else:
+                self.setFlag(flag, 0)
+
     def _parseFlags(self, flags):
-        """ parses given raw flags
-        """
+        """ parses given raw flags """
         flags = flags.lower()
         for item in ('read', 'answered', 'deleted', 'flagged',
                      'forwarded', 'draft'):
