@@ -157,3 +157,12 @@ function toggleElementVisibility(id)
   }
 
 }
+
+function popupRecipientPicker()
+ {
+    var args;
+    url = "selectRecipients"
+    popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=400, height=300');
+    if(!popup.opener)
+        popup.opener = window;
+}
