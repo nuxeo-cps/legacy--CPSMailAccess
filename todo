@@ -11,3 +11,4 @@
 + finaliser le mode traversable avec creation à la volée
 + integrer les preferences persos
 + brancher les annuaires
++ utiliser les schemas dans les vues du types "propriété de la mailbox"
