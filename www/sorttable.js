@@ -72,7 +72,7 @@ var titleSpanCellArray = new Array();   // Title elelments from row-spanned
 var colSpanArray = new Array();         // Rows col-spanned
 var colTitleFilled = new Array();       // Indicates whether title is filled
 var sortIndex;                          // Selected index for sort
-var descending = true;                 // Descending order
+var descending = true;                  // Descending order
 var nRow, actualNRow, maxNCol;          // Various table stats
 var origColor;                          // Holds original default color
 var isIE;                               // True if IE
@@ -90,6 +90,7 @@ var defaultColor = "black";             // Default color for sort off-focus
 var recDelimiter = '|';                 // Char used as a record separator
 var titleFace = 'b';                    // Specifies the HTML tag for titles
 var updownColor = 'gray';               // Specified the color for up/downs
+var initcall = false;                   // tells when sorting is called from prepareTableSorting
 
 //*****************************************************************************
 // Main function. This is to be associated with onLoad event in <BODY>.
@@ -103,12 +104,23 @@ function prepareTableSorting()
 {
   // Check whether it's viewed by IE 5.0 or greater
   if (! checkBrowser()) return;
-
   table = document.getElementById("tableMessageList");
   if (table)
   {
-    initTable(table);
-    // sortTable(2, table);  not automatically sorting
+    sort_index = readCookie("tableMessageList_sort_index");
+    if (sort_index)
+    {
+      sort_index = sort_index.valueOf();
+      initcall = true;
+      sortTable(sort_index, table);
+      initcall = false;
+    }
+    else
+    {
+      // default sorting
+      descending = true;
+      sortTable(2, table);
+    }
   }
 }
 
@@ -126,13 +138,13 @@ function initTable(obj)
     // Initializing global table object variable
     if (obj.tagName == "TABLE")
     {
-            // Assumes that the obj is THE OBJECT
-            table = obj;
+      // Assumes that the obj is THE OBJECT
+      table = obj;
     }
     else
     {
-            // Assumes that the obj is the id of the object
-            table = document.getElementById(obj);
+      // Assumes that the obj is the id of the object
+      table = document.getElementById(obj);
     }
 
     // Check whether it's an object
@@ -283,6 +295,7 @@ function initTable(obj)
                 onecell = new Array(2);
                 onecell[0] = innerMostNode.value;
                 onecell[1] = table.rows[i].cells[j].innerHTML;
+
                 rowArray[actualNRow][j] = onecell;
             }
             // Inconsistent col lengh for data rows
@@ -353,81 +366,93 @@ function initTable(obj)
 //*****************************************************************************
 function sortTable(index, obj)
 {
-        // Re-inializing the table object
-        initTable(obj);
+    // Re-inializing the table object
+    initTable(obj);
 
-        // Local variables
-        var nChildNodes;
-        var innerMostNode;
-        var rowContent;
-        var rowCount;
-        var cell, cellText;
-        var newTitle;
+    if (initcall)
+    {
+      // getting back descending to reapply it
+      sort_descending = readCookie("tableMessageList_sort_order");
+      if (sort_descending)
+      {
+        if (sort_descending == "0")
+          descending = false;
+        else
+          descending = true;
+      }
+    }
 
-        // Can't sort past the max allowed column size
-        if (index < 0 || index >= maxNCol) return;
+    // Local variables
+    var nChildNodes;
+    var innerMostNode;
+    var rowContent;
+    var rowCount;
+    var cell, cellText;
+    var newTitle;
 
-        // Assignment of sort index
-        sortIndex = index;
+    // Can't sort past the max allowed column size
+    if (index < 0 || index >= maxNCol) return;
 
-
-        // Doing the sort using JavaScript generic function for an Array
-
-        rowArray.sort(compare);
-
-        // Re-drawing the title row
-        for (var j=0; j<maxNCol; j++)
-        {
-
-          cellText = titleRowArray[j];
-        if (cellText)
-        {
+    // Assignment of sort index
+    sortIndex = index;
 
 
+    // Doing the sort using JavaScript generic function for an Array
+    rowArray.sort(compare);
+
+    // Re-drawing the title row
+    for (var j=0; j<maxNCol; j++)
+    {
+
+      cellText = titleRowArray[j];
+      if (cellText)
+      {
         cellText = '<' + titleFace +'>' +
-                cellText + '</' + titleFace + '></a>';
-
-        newTitle = '<a ' +
-                linkEventString +
-                j + ',' + '"' + table.id + '"' + ');\'>' +
-                cellText +
-                '</a>';
+        cellText + '</' + titleFace + '></a>';
+        newTitle = '<a ' + linkEventString +
+                   j + ',' + '"' + table.id + '"' + ');\'>' +
+                   cellText + '</a>';
         if (j == sortIndex)
         {
-                newTitle += '&nbsp;<font color=' + updownColor + '>';
-                if (descending)
-                        newTitle += desChr;
-                else
-                        newTitle += ascChr;
-                newTitle += '</font>';
+          newTitle += '&nbsp;<font color=' + updownColor + '>';
+          if (descending)
+            newTitle += desChr;
+          else
+            newTitle += ascChr;
+          newTitle += '</font>';
         }
         titleRowCellArray[j].innerHTML = newTitle;
-        }
+      }
+    }
 
-        }
+    // Re-drawing the table
+    rowCount = 0;
+    for (var i=1; i<nRow; i++)
+    {
+      currentLine = rowArray[i-1];
+      for (var j=0; j<maxNCol; j++)
+      {
+        table.rows[i].cells[j].innerHTML = currentLine[j][1];
+        // "currentLine[j][1]);
+      }
+      rowCount++;
+    }
 
+    // save the sorting
+    createCookie("tableMessageList_sort_index", index);
 
-        // Re-drawing the table
-        rowCount = 0;
-        for (var i=1; i<nRow; i++)
-        {
+    // Switching btw descending/ascending sort
+    if (descending)
+    {
+      createCookie("tableMessageList_sort_order", "1");
+      descending = false;
+    }
+    else
+    {
+      createCookie("tableMessageList_sort_order", "0");
+      descending = true;
+    }
 
-                        currentLine = rowArray[i-1];
-
-                        for (var j=0; j<maxNCol; j++)
-                        {
-                          table.rows[i].cells[j].innerHTML = currentLine[j][1];
-                         // alert(currentLine[j][1]);
-                         }
-                        rowCount++;
-
-        }
-
-        // Switching btw descending/ascending sort
-        if (descending)
-                descending = false;
-        else
-                descending = true;
 }
 
 //*****************************************************************************
@@ -438,22 +463,17 @@ function compare(a, b)
     ca = a[sortIndex][0];
     cb = b[sortIndex][0];
 
-
-
     if (ca == cb)
     {
 
         return 0;
     }
-    sorter = new Array();
+
+    var sorter = new Array();
     sorter[0] = ca
     sorter[1] = cb;
 
-    //alert(sorter);
-
     sorter = sorter.sort();
-
-    //alert(sorter);
 
     if (sorter[0] == ca)
     {
@@ -520,8 +540,8 @@ function setColor(obj,mode)
 //*****************************************************************************
 function checkBrowser()
 {
-        if (navigator.appName == "Microsoft Internet Explorer"
-                && navigator.appVersion.indexOf("5.") >= 0)
+//&& navigator.appVersion.indexOf("5.") >= 0
+        if (navigator.appName == "Microsoft Internet Explorer")
         {
                 isIE = true;
                 return true;
