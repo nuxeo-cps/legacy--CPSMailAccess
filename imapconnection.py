@@ -305,14 +305,11 @@ class IMAPConnection(BaseConnection):
 connection_type = 'IMAP'
 
 def makeMailObject(connection_params):
-    try:
-        newob =  IMAPConnection(connection_params)
-    except IMAP4.abort:
-        # we probablyhave a socket error here
-        raise ConnectionError("socket error")
-    else:
-        newob.login(uid, password)
-        print str('created '+str(newob))
-        return newob
+    newob =  IMAPConnection(connection_params)
+    uid = connection_params['UID']
+    password = connection_params['password']
+    newob.login(uid, password)
+    #print str('created '+str(newob))
+    return newob
 
 
