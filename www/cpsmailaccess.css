@@ -29,6 +29,8 @@ td.mailToolBarInsideElement {
 
 #mailBody {
   background-color: white;
+  margin-top: 10px;
+  padding:8px;
 }
 
 #imgMailMoreInfos {
@@ -157,8 +159,20 @@ form.rename_form {
   border: dotted black 1px;
 }
 
-
 a.close_rename_form {
   padding: 4px;
   float: right;
+}
+
+div.rename_form {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: dotted black 1px;
+}
+
+div.form_title {
+  border-bottom: 1px solid black;
+  margin-bottom: 8px;
+  padding-bottom: 2px;
+  font-weight: bold;
 }
