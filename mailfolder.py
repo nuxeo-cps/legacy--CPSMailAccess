@@ -143,12 +143,12 @@ class MailFolder(Folder):
         return count
 
     def getServerName(self):
-        """"See interfaces.IMailFolder
+        """See interfaces.IMailFolder
         """
         return self.server_name
 
     def setServerName(self, server_name):
-        """"See interfaces.IMailFolder
+        """See interfaces.IMailFolder
         >>> f = MailFolder()
         >>> f.setServerName('INBOX.trash')
         >>> f.getServerName()
@@ -170,7 +170,7 @@ class MailFolder(Folder):
         return new_msg
 
     def _addFolder(self, uid='', server_name=''):
-        """"See interfaces.IMailFolder
+        """see interfaces.IMailFolder
         """
         if uid == '':
             uid = uniqueId(self, 'folder_', use_primary=False)
