@@ -246,3 +246,21 @@ class MailMessageEdit(BrowserView):
                 came_from = None
             self.sendMessage(kw['msg_from'], kw['msg_subject'], kw['msg_body'], came_from)
 
+    def saveMessage(self):
+        """ saves the message in Drafts
+        """
+        mailbox = self.context
+        mailbox.saveEditorMessage()
+
+        if self.request is not None:
+            psm = 'Message has been saved in Drafts'
+            self.request.response.redirect('editMessage.html?portal_status_message=%s' % psm)
+
+    def initializeEditor(self):
+        """ cleans the editor
+        """
+        mailbox = self.context
+        mailbox.clearEditorMessage()
+
+        if self.request is not None:
+            self.request.response.redirect('editMessage.html')
