@@ -92,7 +92,8 @@ class MailFolderView(BaseMailMessageView):
 
     def renderMailList(self):
         """ renders mailfolder content
-            XXX need to externalize html here
+
+        XXX need to externalize html here
         """
         mailfolder = self.context
         returned = []
@@ -132,8 +133,12 @@ class MailFolderView(BaseMailMessageView):
             else:
                 part['Date'] = localizeDateString(date, 3)
             part['FullDate'] = parseDateString(date)
-            returned.append(part)
-        return returned
+            returned.append((part['FullDate'], part))
+
+        # now sorting upon date
+        returned.sort()
+        returned.reverse()        # most recent on top
+        return [element[1] for element in returned]
 
     def getMsgIconName(self, message):
         """ icon representing the mail depends on flags
