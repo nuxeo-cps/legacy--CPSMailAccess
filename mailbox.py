@@ -47,6 +47,7 @@ from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
 from Products.Five.traversable import FiveTraversable
 from mailsearch import MailCatalog
+from directorypicker import DirectoryPicker
 
 
 has_connection = 1
@@ -55,8 +56,10 @@ class MailBoxBaseCaching(MailFolder):
     """ a mailfolder that implements
         mail box caches
     """
-
     _cache = RAMCache()
+
+    def __init__(self, uid, server_name, **kw):
+        MailFolder.__init__(self, uid, server_name, **kw)
 
     def addMailToCache(self, msg, key):
         key = {'digest' : key}
@@ -148,27 +151,29 @@ class MailBox(MailBoxBaseCaching):
 
     implements(IMailBox)
 
-    # see here for security
-    connection_params = {'uid' : '',
-                         'connection_type' : '',
-                         'HOST' : '',
-                         'password' :'',
-                         'login' : '',
-                         'smtp_host' : 'localhost',
-                         'smtp_port' : 25,
-                         'trash_folder_name' : 'INBOX.Trash',
-                         'draft_folder_name' : 'INBOX.Drafts',
-                         'sent_folder_name' : 'INBOX.Sent',
-                         'cache_level' :  2,
-                         'max_folder_size' : 20}
+    _directory_picker = None
+    _connection_params = {}
 
     def __init__(self, uid=None, server_name='', **kw):
         MailBoxBaseCaching.__init__(self, uid, server_name, **kw)
 
+    def getConnectionParams(self):
+        if self._connection_params == {}:
+            portal_webmail = getToolByName(self, 'portal_webmail')
+            self._connection_params = portal_webmail.default_connection_params
+        return self._connection_params
+
+    def _getDirectoryPicker(self):
+        if self._directory_picker is None:
+            # the one and  only one link to portal_directories
+            portal_directories = getToolByName(self, 'portal_directories')
+            self._directory_picker = DirectoryPicker(portal_directories)
+        return self._directory_picker
+
     def setParameters(self, connection_params=None, resync=True):
         """ sets the parameters
         """
-        self.connection_params = connection_params
+        self._connection_params = connection_params
 
         if resync is True:
             self._getconnector()
@@ -290,7 +295,12 @@ class MailBox(MailBoxBaseCaching):
         if wm_tool.listConnectionTypes() == []:
             wm_tool.reloadPlugins()
 
-        connection_params = self.connection_params
+        connection_params = self.getConnectionParams()
+
+        # wraps connection params with uid
+        # and make translations
+        connection_params = self.wrapConnectionParams(connection_params)
+
         connector = wm_tool.getConnection(connection_params)
         if connector is None:
             raise ValueError(NO_CONNECTOR)
@@ -303,8 +313,8 @@ class MailBox(MailBoxBaseCaching):
         portal_webmail = getToolByName(self, 'portal_webmail')
         maildeliverer = portal_webmail.maildeliverer
 
-        smtp_host = self.connection_params['smtp_host']
-        smtp_port = self.connection_params['smtp_port']
+        smtp_host = self.getConnectionParams()['smtp_host']
+        smtp_port = self.getConnectionParams()['smtp_port']
 
         return maildeliverer.send(msg_from, msg_to, msg.getRawMessage(), smtp_host,
                            smtp_port, None, None)
@@ -341,7 +351,7 @@ class MailBox(MailBoxBaseCaching):
     def getTrashFolderName(self):
         """ returns the trash name """
 
-        return self.connection_params['trash_folder_name']
+        return self.getConnectionParams()['trash_folder_name']
 
     def getTrashFolder(self):
         """ returns the trash name
@@ -359,7 +369,7 @@ class MailBox(MailBoxBaseCaching):
     def getDraftFolderName(self):
         """ returns the draft name """
 
-        return self.connection_params['draft_folder_name']
+        return self.getConnectionParams()['draft_folder_name']
 
     def getDraftFolder(self):
         """ returns the draft folder, creates it in case
@@ -379,7 +389,7 @@ class MailBox(MailBoxBaseCaching):
     def getSentFolderName(self):
         """ returns the trash name
         """
-        return self.connection_params['sent_folder_name']
+        return self.getConnectionParams()['sent_folder_name']
 
     def getSentFolder(self):
         """ returns the trash name
@@ -434,10 +444,10 @@ class MailBox(MailBoxBaseCaching):
     def _getCatalog(self):
         """ returns the catalog
         """
-        if not self.connection_params.has_key('uid'):
+        if not self.getConnectionParams().has_key('uid'):
             raise MailCatalogError('Need a uid to get the catalog')
 
-        uid = self.connection_params['uid']
+        uid = self.getConnectionParams()['uid']
 
         catalog_id = '.zcatalog'
         if hasattr(self, catalog_id):
@@ -492,7 +502,7 @@ class MailBox(MailBoxBaseCaching):
         """ returns identities
         """
         # reads in the directory entry
-        uid = self.connection_params['uid']
+        uid = self.getConnectionParams()['uid']
 
         results = self.readDirectoryValue(dirname='members',
             id=uid, fields=['email','givenName', 'sn'])
@@ -517,15 +527,68 @@ class MailBox(MailBoxBaseCaching):
     def readDirectoryValue(self, dirname, id, fields):
         """ see interface
         """
-        directories = getToolByName(self, 'portal_directories')
-        # will raise in case the dir does not exists
-        directory = directories[dirname]
         kw = {'id' : id}
-        results = directory.searchEntries(return_fields=fields, **kw)
+        results = self._searchEntries(dirname, return_fields=fields, **kw)
         if len(results) == 1:
             return results[0][1]
         else:
             return None
+
+    def getDirectoryList(self):
+        """ see interface """
+
+        return self._getDirectoryPicker().listVisibleDirectories()
+
+    def _searchEntries(self, directory_name, return_fields=None, **kw):
+        """ search for entries """
+
+        return self._getDirectoryPicker().searchEntries(directory_name,
+            return_fields, **kw)
+
+
+    def getMailDirectoryEntries(self):
+        """ retrieves all entries """
+
+        adressbook = self._searchEntries('.addressbook')
+        private_adressbook = self._searchEntries('.addressbook')
+        return adressbook + private_adressbook
+
+    def wrapConnectionParams(self, params):
+        """ wraps connection params """
+        if not params.has_key('uid'):
+            uid = self.id.replace('box_', '')
+            params['uid'] = uid
+
+        # now for each parameter, if it has to be
+        # picked in a director, let's do it here
+        params_values = map(self._directoryToParam, params.values())
+        results = zip(params.keys(), params_values)
+        render = {}
+        for key, value in results:
+            render[key] = value
+        return render
+
+    def _directoryToParam(self, value):
+        """ check if a given parameter has to be taken from a directory """
+
+        id = self.id.replace('box_', '')
+        if isinstance(value, str) and value.startswith('${'):
+            name = value[2:-1]
+            elements = name.split('.')
+            directory = elements[0]
+            field = elements[1]
+            kw = {'id' : id}
+            entries = self._searchEntries(directory, [field], **kw)
+            if len(entries) > 1:
+                raise Exception('Directory returned more than one entry %s')
+            if len(entries) == 0:
+                raise Exception('No entry found in %s for %s' % (directory, id))
+            fields = entries[0][1]
+            if not fields.has_key(field):
+                raise Exception("No field '%s' found in %s" % (field, directory))
+            return fields[field]
+        return value
+
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
@@ -543,7 +606,7 @@ class MailBoxParametersView(BrowserView):
         """ returns a list of parameters
         """
         ob = self.context
-        return ob.connection_params
+        return ob.getConnectionParams()
 
     def renderParameters(self):
         """ renders parameters
@@ -558,7 +621,7 @@ class MailBoxParametersView(BrowserView):
     def addParameter(self, name):
         """ sets given parameters
         """
-        self.context.connection_params[name] = ''
+        self._getParameters()[name] = ''
         if self.request is not None:
             self.request.response.redirect('configure.html')
 
@@ -595,7 +658,7 @@ class MailBoxParametersView(BrowserView):
             rendered_param = {}
             rendered_param['name'] = param
             rendered_param['value'] = params[param]
-            if param == 'password':
+            if param == 'password' and not params[param].startswith('${'):
                 rendered_param['type'] = 'password'
             else:
                 rendered_param['type'] = 'text'
@@ -665,6 +728,9 @@ class MailBoxView(MailFolderView):
                 container = mailbox
             self.request.response.redirect(container.absolute_url()+ \
                 '/view?portal_status_message=%s' % psm)
+
+
+
 
 class MailBoxTraversable(FiveTraversable):
     """ use to vizualize the mail parts in the mail editor
