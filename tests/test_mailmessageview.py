@@ -40,6 +40,11 @@ def openfile(filename, mode='r'):
 
 class MailMessageViewTestCase(MailTestCase):
 
+
+    def fakePhysicalPath(self):
+        #
+        return ('', 'http://ok/path')
+
     def test_MailMessageViewInstance(self):
         # testing view instanciation
         ob = self.getMailInstance(6)
@@ -111,6 +116,9 @@ class MailMessageViewTestCase(MailTestCase):
 
     def test_attachedfiles(self):
         ob = self.getMailInstance(6)
+
+        ob.getPhysicalPath = self.fakePhysicalPath
+
         # need to set up context and request object here
         view = MailMessageView(ob, None)
         self.assert_(view)

@@ -108,6 +108,16 @@ class MailRendererTestCase(MailTestCase):
         res = ob.render(None,'charset=iso88-59-15',None)
         self.assertEquals(res, '')
 
+    def test_unicode(self):
+
+        ob = MailRenderer()
+
+        res = ob.render('ייי','charset=iso8859-15;type=text/plain',None)
+        self.assertEquals(res, u'\xe9\xe9\xe9')
+
+        # wrong chartset given,(it happens folks, it happens)
+        res = ob.render('ייי','type=text/plain;charset=us/ascii',None)
+        self.assertEquals(res, u'\xe9\xe9\xe9')
 
 
 def test_suite():

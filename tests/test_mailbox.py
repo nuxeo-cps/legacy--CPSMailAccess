@@ -90,6 +90,20 @@ class MailBoxTestCase(MailTestCase):
         self.assertEquals(action,'')
         self.assertEquals(ids, [])
 
+    def test_saveEditorMessage(self):
+        # tests that the editor message gets copied into drafts
+        mailbox = self._getMailBox()
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
+        drafts = inbox._addFolder('Drafts', 'INBOX.Drafts')
+        msg = mailbox.getCurrentEditorMessage()
+        mailbox.saveEditorMessage()
+
+        messages = drafts.objectItems()
+        self.assertEquals(len(messages), 1)
+        message = messages[0][1]
+
+        self.assertEquals(message.digest, msg.digest)
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),

@@ -37,6 +37,9 @@ class MailSearchTestCase(MailTestCase):
         self.count +=1
         return ('', 'nowere/my_message_' + str(self.count))
 
+    def sameGetPhysicalPath(self):
+        return ('', 'nowere/i_am_not_moving')
+
     def _getCatalog(self):
         cat = MailCatalog('cat', 'joe')
         cat = cat.__of__(self.portal)
@@ -76,6 +79,25 @@ class MailSearchTestCase(MailTestCase):
              u'scr', u'admin', u'socal', u'raves', u'org',
              u'internet', u'mail', u'postmaster', u'ucla', u'edu'])
 
+    def test_unindexing(self):
+        cat = self._getCatalog()
+        ob = self.getMailInstance(15)
+        ob = ob.__of__(self.portal)
+        ob.getPhysicalPath = self.sameGetPhysicalPath
+
+        cat.indexMessage(ob)
+
+        # verify catalog content
+        query ={}
+        query['searchable_text'] = u'notification'
+        brains = cat.search(query_request=query)
+        self.assertEquals(len(brains), 1)
+
+        cat.unIndexMessage(ob)
+        brains = cat.search(query_request=query)
+        self.assertEquals(len(brains), 0)
+
+
     def test_search(self):
         cat = self._getCatalog()
 
@@ -87,6 +109,47 @@ class MailSearchTestCase(MailTestCase):
         query['searchable_text'] = u'dzoduihgzi'
         res = cat.search(query_request=query)
         self.assertEquals(len(res), 0)
+
+        query['searchable_text'] = u'delivery'
+        res = cat.search(query_request=query)
+        self.assertEquals(len(res), 1)
+
+    def test_brain_render(self):
+        cat = self._getCatalog()
+        cat = cat.__of__(self.portal)
+        ob = self.getMailInstance(15)
+        ob = ob.__of__(self.portal)
+
+        cat.indexMessage(ob)
+
+        # verify if it's done
+        query = {}
+        query['searchable_text'] = u'delivery'
+        res = cat.search(query_request=query)
+        self.assertEquals(len(res), 1)
+        brain = res[0]
+        path = brain.getPath()
+        self.assertEquals(ob.absolute_url(), path)
+
+    def test_cache(self):
+        cat = self._getCatalog()
+
+        ob = self.getMailInstance(15)
+
+        cat.indexMessage(ob)
+        # verify if it's done
+        query ={}
+        query['searchable_text'] = u'dzoduihgzi'
+        res = cat.search(query_request=query)
+        self.assertEquals(len(res), 0)
+
+        query['searchable_text'] = u'delivery'
+        res = cat.search(query_request=query)
+        self.assertEquals(len(res), 1)
+
+        key = cat._makeKey(query, None, 0, None, 1)
+
+        self.assertEquals(cat._v_cached_search[key], res)
 
         query['searchable_text'] = u'delivery'
         res = cat.search(query_request=query)
