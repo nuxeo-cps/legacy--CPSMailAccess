@@ -18,6 +18,13 @@
                          Ccs containers/Cc|python:[];
                          BCcs containers/BCc|python:[]">
     <span style="font-size: 12">
+      <input style="float:right"
+               class="standalone" type="button" onclick="closeDirectoryPicker()" value="Fermer"/>
+      <h4>
+        <img src="cpsma_users.png"/>&#160;Recipients
+
+      </h4>
+
     <div class="recipientSection">
       <h3>To</h3>
       <tal:block tal:repeat="To Tos">
@@ -40,25 +47,29 @@
   </div>
   <div style="clear: both"/>
   <div class="adders">
-    <h4>
-      <img src="cpsma_users.png"/>&#160;add users
-    </h4>
-    <div tal:define="public python:here.getEntries()[0];
-                   private python:here.getEntries()[1]">
+    <span style="font-size: 12">
+        <h4>
+        <img src="cpsma_users.png"/>&#160;add users
+        </h4>
+        <div tal:define="public python:here.getEntries()[0];
+                    private python:here.getEntries()[1]">
 
-        <span style="font-size: 12">
+
         <tal:block tal:repeat="result private">
           <tal:block tal:define="user python:result[1]">
             <div>
               <span tal:replace="user/fullname"/>&#160;&lt;<span tal:replace="user/email"/>&gt;
-              <a tal:attributes="href string:#">
+              <a tal:attributes="href python:'addRecipient?content=%s&type=To&redirect=%s'
+                                              % (user['email'], 'selectRecipients.html')">
               To
               </a>&#160;
-              <a tal:attributes="href string:#">
+              <a tal:attributes="href python:'addRecipient?content=%s&type=Cc&redirect=%s'
+                                              % (user['email'], 'selectRecipients.html')">
               Cc
               </a>&#160;
-              <a tal:attributes="href string:#">
-               Bcc
+              <a tal:attributes="href python:'addRecipient?content=%s&type=BCc&redirect=%s'
+                                              % (user['email'], 'selectRecipients.html')">
+               BCc
               </a>
             </div>
           </tal:block>
@@ -69,12 +80,24 @@
           <tal:block tal:define="user python:result[1]">
             <div>
               <span tal:replace="user/fullname"/>&#160;&lt;<span tal:replace="user/email"/>&gt;
-              To Cc Bcc
+              <a tal:attributes="href python:'addRecipient?content=%s&type=To&redirect=%s'
+                                              % (user['email'], 'selectRecipients.html')">
+              To
+              </a>&#160;
+              <a tal:attributes="href python:'addRecipient?content=%s&type=Cc&redirect=%s'
+                                              % (user['email'], 'selectRecipients.html')">
+              Cc
+              </a>&#160;
+              <a tal:attributes="href python:'addRecipient?content=%s&type=BCc&redirect=%s'
+                                              % (user['email'], 'selectRecipients.html')">
+               BCc
+              </a>
             </div>
           </tal:block>
         </tal:block>
-        </span>
-    </div>
+
+        </div>
+      </span>
     <br/>
     <span style="font-size: 12">
     <form action="selectRecipients.html" m3ethod="post"
@@ -90,16 +113,26 @@
             <hr/>
             <tal:block tal:repeat="result results">
             <tal:block tal:define="user python:result[1]">
-              <div>
-                <span tal:replace="user/fullname"/>&#160;&lt;<span tal:replace="user/email"/>&gt;
-              </div>
+             <div>
+              <span tal:replace="user/fullname"/>&#160;&lt;<span tal:replace="user/email"/>&gt;
+              <a tal:attributes="href python:'addRecipient?content=%s&type=To&redirect=%s'
+                                              % (user['email'], 'selectRecipients.html')">
+              To
+              </a>&#160;
+              <a tal:attributes="href python:'addRecipient?content=%s&type=Cc&redirect=%s'
+                                              % (user['email'], 'selectRecipients.html')">
+              Cc
+              </a>&#160;
+              <a tal:attributes="href python:'addRecipient?content=%s&type=BCc&redirect=%s'
+                                              % (user['email'], 'selectRecipients.html')">
+               BCc
+              </a>
+            </div>
             </tal:block>
             </tal:block>
         </tal:block>
-
     </tal:block>
     </span>
   </div>
-
   </body>
 </html>
