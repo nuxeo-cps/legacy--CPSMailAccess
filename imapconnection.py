@@ -324,7 +324,7 @@ class IMAPConnection(BaseConnection):
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
         except IndexError:
             raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number, mailbox))
-        except AttributeError:
+        except (AttributeError, IMAP4.error):
             raise ConnectionError(CANNOT_READ_MESSAGE % (message_number, mailbox))
 
         if imap_result[0] == 'OK':
