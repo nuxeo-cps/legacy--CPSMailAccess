@@ -37,7 +37,8 @@ function getLastToNode () {
   stri = String.valueOf(i);
   node = document.getElementById('to'+String.valueOf(i));
   next = node;
-  while (next) {
+  while (next)
+  {
     node = next;
     next = document.getElementById('to'+String.valueOf(++i));
   }
@@ -47,7 +48,8 @@ function getLastToNode () {
 function addToSection() {
   // need to set up a max
   ToNode = document.getElementById('Tos');
-  if (ToNode) {
+  if (ToNode)
+  {
     new_section = document.createElement("div");
     new_section.appendChild(document.createTextNode("will add more to sections"));
     last_node = getLastToNode();
@@ -58,28 +60,59 @@ function addToSection() {
 
 function removeToSection() {
   ToNode = document.getElementById('Tos');
-  if (ToNode) {
+  if (ToNode)
+  {
     new_section = document.createElement("div");
     last_node = getLastToNode();
-
     ToNode.removeChild(new_section);
   }
 }
 
-function saveMessageDatas() {
-  // for mozilla, need to find the same for ie
-  // we are saving just subject and body
+function delay(ms)
+{
+  then = new Date().getTime();
+  now = then;
+  while((now-then)<gap)
+  {
+    now = new Date().getTime();
+  }
+}
+
+function saveMessageDatas(EditorHTML)
+{
   msg_subject = document.getElementById('msg_subject');
-
-  // find how to extract  [object HTMLTextAreaElement] content to save it
-  msg_body = document.getElementById('msg_body');
-  msg_body = msg_body.value
-
-  url = "saveMessageForm?msg_subject=" + msg_subject.value + "&msg_body=" + msg_body
-  var xml = new XMLHttpRequest();
-  xml.open("GET", url,true);
-  xml.send(null);
-
+  msg_subject = msg_subject.value
+  msg_body = EditorHTML;
+  if(window.XMLHttpRequest) // Firefox
+    xml = new XMLHttpRequest();
+  else if(window.ActiveXObject) // Internet Explorer
+    xml = new ActiveXObject("Microsoft.XMLHTTP");
+  else
+  {
+    // XMLHttpRequest not supported
+  }
+  if (xml)
+  {
+    url = "saveMessageForm"
+    xml.onload = null;
+    status = 503;
+    msg_body = escape(msg_body)
+    msg_subject = escape(msg_subject)
+    var body = "msg_subject="+msg_subject+"&msg_body="+msg_body
+    i = 0;
+    while ((status == 503) && (i<10))
+    {
+      xml.open("POST", url, false);
+      xml.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xml.send(body);
+      status = xml.status
+      if (status == 503)
+      {
+        i++;
+        delay(200);
+      }
+    }
+  }
 }
 
 
