@@ -506,9 +506,14 @@ class MailBox(MailBoxBaseCaching):
         mails = self.getMailMessages(list_folder=False,
             list_messages=True, recursive=True)
 
+        len_ = len(mails)
+        i = 0
+        zemantic_cat.clear()
         for mail in mails:
             #cat.indexMessage(mail)
+            LOG('indexing', INFO, '%d/%d' % (i, len_))
             zemantic_cat.indexMessage(mail)
+            i += 1
 
     def indexMessage(self, msg):
         """ indexes message """
@@ -846,7 +851,7 @@ class MailBoxParametersView(BrowserView):
 
             if isinstance(value, int):
                 rendered_param['ptype'] = 'int'
-            if isinstance(value, list):
+            elif isinstance(value, list):
                 rendered_param['ptype'] = 'list'
                 value = ','.join(value)
             else:
