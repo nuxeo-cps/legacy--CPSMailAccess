@@ -127,9 +127,9 @@
                     Bcc
                     </span>
                     </span>
-                    <!--|-->
-                <!--<span class="link" onmouseover="setCursor(this);"
-                    onclick="popupRecipientPicker()">Directories</span>-->
+                    |
+                <span class="link" onmouseover="setCursor(this);"
+                    onclick="popupRecipientPicker()">Directories</span>
             </div>
         </td>
 
