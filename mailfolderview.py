@@ -33,7 +33,9 @@ class MailFolderView(BaseMailMessageView):
         """
         mailfolder = self.context
         mailbox = mailfolder.getMailBox()
-        max_folder_size = mailbox.connection_params['max_folder_size']
+        max_folder_size = int(mailbox.connection_params['max_folder_size'])
+        if len(new_name) > max_folder_size:
+            new_name = new_name[:max_folder_size]
 
         if mailfolder.title == new_name:
             if self.request is not None:
