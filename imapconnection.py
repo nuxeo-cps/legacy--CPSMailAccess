@@ -224,8 +224,7 @@ class IMAPConnection(BaseConnection):
         return results
 
     def _generalize(self, element):
-        """
-            this definitely needs to be externalized
+        """ this definitely needs to be externalized
             in an external file
             as a "generalization grammar"
             based on regular expression
@@ -262,7 +261,8 @@ class IMAPConnection(BaseConnection):
                 returned[raw_name] = raw_data
                 i += 1
         else:
-            returned[element] = element
+            raise Exception('generalize fails on %s' % str(element) )
+
         return returned
 
     def search(self, mailbox, charset, *criteria):
