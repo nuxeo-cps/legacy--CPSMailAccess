@@ -349,7 +349,6 @@ div.publicBook {
   width :45%
 }
 
-
 div.manageGroup {
   border: 1px solid #848284;
   padding: 10px;
@@ -363,4 +362,22 @@ table.messageList {
 
 div.batcher {
   margin-top: 10px;
+}
+
+div.recipientSection {
+  float: left;
+  width: 33%;
+}
+
+div.currentRecipients {
+}
+
+div.adders {
+  padding-top: 8px;
+}
+
+div.onBlock {
+  width: 100%;
+  float: left;
+  margin-top: 8px;
 }
