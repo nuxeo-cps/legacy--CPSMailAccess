@@ -286,9 +286,10 @@ class magicTest:
 def _guessMime(data):
     for test in magicNumbers:
         m = test.compare(data)
-        if m: return m
+        if m:
+            return m
     # no matching, magic number.
-    return
+    return 'unknown'
 
 def mimeGuess(data):
     return _guessMime(data)
