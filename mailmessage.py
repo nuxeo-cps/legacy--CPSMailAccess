@@ -45,7 +45,7 @@ from email import Encoders
 
 ## XX todo : need to add a setPart to add parts on the fly
 
-class MailMessage(Folder, MailPart):
+class MailMessage(MailPart):
     """A mail message.
 
     A mail message wraps an email.Message object.
