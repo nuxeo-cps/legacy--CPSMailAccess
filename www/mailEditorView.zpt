@@ -115,7 +115,7 @@
                 <img src="cma_small_attach.png"/>&#160;Attach file</span> |
                 <span class="link" onclick="toggleElementVisibility('Cc')">Cc</span> |
                 <span class="link" onclick="toggleElementVisibility('BCc')">Bcc</span> |
-                Directories
+                <span class="link" onclick="popupRecipientPicker()">Directories</span>
             </div>
         </td>
 
