@@ -23,6 +23,12 @@ from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
 import os, sys
 from Products.CPSMailAccess.connectionlist import ConnectionList
+import fakeimaplib
+if sys.modules.has_key('imaplib'):
+    del sys.modules['imaplib']
+
+sys.modules['imaplib'] = fakeimaplib
+
 from Products.CPSMailAccess.imapconnection import IMAPConnection
 from time import time,sleep
 
