@@ -218,8 +218,8 @@ class MailMessage(MailPart):
 
     def loadMessage(self, raw_msg, cache_level=2):
         """ XXXX next we will
-            implement here partial message load
-            with part with None
+        implement here partial message load
+        with part with None
         """
         self.cache_level = cache_level
         MailPart.loadMessage(self, raw_msg)
