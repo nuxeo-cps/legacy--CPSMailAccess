@@ -102,7 +102,7 @@ class BaseConnection:
     def fetch(self, mailbox, message_number, message_parts):
         raise NotImplementedError
 
-    def partial(self, mailbox, message_number, message_part, start, length):
+    def fetchPartial(self, mailbox, message_number, message_part, start, length):
         raise NotImplementedError
 
     def noop(self):
