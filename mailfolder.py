@@ -96,6 +96,13 @@ class MailFolder(BTreeFolder2):
             current = aq_inner(aq_parent(current))
         return current
 
+    def getCacheLevel(self):
+        """ returns cache level
+        """
+        mailbox = self.getMailBox()
+        return mailbox.cache_level
+
+
     def getMailMessages(self, list_folder=True, list_messages=True,
                         recursive=False):
         """See interfaces.IMailFolder
@@ -264,14 +271,16 @@ class MailFolder(BTreeFolder2):
         """
         log = []
         mailbox = self.getMailBox()
+        cache_level = self.getCacheLevel()
         mail_cache = mailbox.mail_cache
         connector = self._getconnector()
-        zodb_messages = self.getMailMessages(False, True, False)
+        zodb_messages = self.getMailMessages(list_folder=False,
+            list_messages=True, recursive=False)
         # now syncing server_folder and current one
         for message in zodb_messages:
             message.setSyncState(state=False)
 
-        try:
+        try:_synchronizeFolder
             uids = connector.search(self.server_name, None,'ALL')
         except ConnectionError:
             # XXX should be a more specific exception (no such dir)
@@ -280,43 +289,60 @@ class MailFolder(BTreeFolder2):
             uids = []
 
         for uid in uids:
-
             msg = self.findMessageByUid(uid)
-            if msg is None:
+
+            if msg is not None:
+                msg.setSyncState(state=True)
                 continue
 
             msg_headers = connector.fetch(self.server_name, uid,
-                                          '(RFC822.HEADER)')
-            digest = self._createKey(msg_headers)
+                                         '(RFC822.HEADER)')
 
+            digest = self._createKey(msg_headers)
             msg = mail_cache.get(digest, remove=True)
 
             if msg is None:
                 # Message is not in cache
+                if cache_level == 0:
+                    # nothing is uploaded
+                    # XXX todo
+                    pass
+                elif cache_level == 1:
+                    # we already have headers
+                    # XXX 'OK' should be done by fetch into connection object
+                    msg_content = ('OK', msg_headers)
+                else:
+                    # XXX Only simplest case where all message is cached
+                    try:
+                        msg_content = connector.fetch(self.server_name, uid,
+                                                    '(RFC822)')
+                    #except Timeout:
+                    except:
+                        # XXX will be moved to connection object
+                        msg_content = ('KO', '')
 
-                # XXX Only simplest case where all message is cached
-                msg_content = connector.fetch(self.server_name, uid,
-                                              '(RFC822)')
-                # XXX should be done by fetch
+                # XXX should be done by fetch into connection object
                 if msg_content and msg_content[0] == 'OK':
                     raw_msg = msg_content[1]
                 else:
                     raw_msg = ''
 
                 log.append('adding message %s in %s' % (uid, self.server_name))
+
                 msg = self._addMessage(uid, digest)
+                msg.cache_level = cache_level
                 msg.loadMessage(raw_msg)
 
                 #setattr(msg, header, msg_headers[header])
                 if msg_headers.has_key('Subject'):
                     msg.title = msg_headers['Subject']
-
             else:
                 # Message was in cache, adding it to self
                 log.append('moving message %s in %s' % (uid, self.server_name))
                 self._setObject(msg.getId(), msg)
 
             msg.setSyncState(state=True)
+            LOG('sync', INFO, str(uid))
 
         # now clear messages in zodb that appears to be
         # deleted from the directory
