@@ -249,6 +249,21 @@ class MailMessage(Folder):
             del store[name]
         store[name] = value
 
+    def getRawMessage(self):
+        """ see interface
+        """
+        store = self._getStore()
+        return store.as_string()
+
+    def getMailBox(self):
+        """ gets mailbox
+        """
+        parent_folder = self.aq_inner.aq_parent
+        if parent_folder is None:
+            return None
+        else:
+            return parent_folder.getMailBox()
+
 #
 # MailMessage Views
 #
@@ -363,6 +378,48 @@ class MailMessageView(BaseMailMessageView):
 
             returned.append(part)
         return returned
+
+    def reply(self):
+        """ replying to a message
+            is writing a message with a given "to" "from"
+            and with a given body
+        """
+        # getting mailbox
+        # Zope 2 code, need to put in in utils
+        mailbox = self.context.getMailBox()
+
+        if self.request is not None:
+            self.request.form['came_from'] = self.context.absolute_url()
+            self.request.response.redirect('%s/editMessage.html' % mailbox.absolute_url())
+
+    def reply_all(self):
+        """ replying to a message
+            is writing a message with a given "to" "from"
+            and with a given body
+        """
+        # getting mailbox
+        # Zope 2 code, need to put in in utils
+        mailbox = self.context.getMailBox()
+
+        if self.request is not None:
+            self.request.form['came_from'] = self.context.absolute_url()
+            self.request.response.redirect('%s/editMessage.html' % mailbox.absolute_url())
+
+    def forward(self):
+        """ replying to a message
+            is writing a message with a given "to" "from"
+            and with a given body
+        """
+        # getting mailbox
+        # Zope 2 code, need to put in in utils
+        mailbox = self.context.getMailBox()
+
+        if self.request is not None:
+            self.request.form['came_from'] = self.context.absolute_url()
+            self.request.response.redirect('%s/editMessage.html' % mailbox.absolute_url())
+
+    def delete(self):
+        pass
 
 """ classic Zope 2 interface for class registering
 """
