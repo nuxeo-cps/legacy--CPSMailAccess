@@ -24,14 +24,14 @@ A MailFolder contains mail messages and other mail folders.
 """
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
-
+from Acquisition import aq_parent
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
 
 from utils import uniqueId, makeId
 from Products.CPSMailAccess.mailmessage import MailMessage
-from interfaces import IMailFolder, IMailMessage
+from interfaces import IMailFolder, IMailMessage, IMailBox
 
 class MailFolder(Folder):
     """A container of mail messages and other mail folders.
@@ -59,6 +59,16 @@ class MailFolder(Folder):
         self.mail_prefix = 'msg_'
         self.setServerName(server_name)
         
+    def getMailBox(self):
+        """See interfaces.IMailFolder
+        """
+        current = self
+        while (not current == None) and (not IMailBox.providedBy(current)):
+            current = aq_parent(current)
+               
+        return current    
+            
+    
     def getMailMessages(self, list_folder=True, list_messages=True, recursive=False):
         """See interfaces.IMailFolder
         
@@ -186,7 +196,12 @@ class MailFolder(Folder):
         return self.getMailMessagesCount(True, False, False)
           
         
-                           
+    def _synchronizeFolder(self):
+        """ See interfaces.IMailFolder      
+        """
+        pass
+                            
+      
 """ classic Zope 2 interface for class registering
 """        
 manage_addMailFolder = PageTemplateFile(
