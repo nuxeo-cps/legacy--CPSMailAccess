@@ -198,4 +198,4 @@ class MailSearchView(BrowserView):
             results.append(current)
 
         dtime = time.time() - start
-        return (results, dtime)
+        return (results, dtime, len(cat))
