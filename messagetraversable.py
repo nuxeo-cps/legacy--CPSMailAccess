@@ -54,9 +54,10 @@ class MessageTraversable(FiveTraversable):
 
     def traverse(self, path='', request=None):
         """ traverses the message
-            XXXX traversed at this time by both
-            part and message,
-            might be splitted later in two classes
+
+        XXXX traversed at this time by both
+        part and message,
+        might be splitted later in two classes
         """
         context = self._subject
         # let's scan parts
