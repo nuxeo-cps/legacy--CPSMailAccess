@@ -195,7 +195,7 @@ manage_addMailFolder = PageTemplateFile(
     
 def manage_addMailFolder(container, id=None, server_name ='', 
         REQUEST=None, **kw):
-    """Add a calendar to a container (self).
+    """Add a box to a container (self).
     >>> from OFS.Folder import Folder
     >>> f = Folder()
     >>> manage_addMailFolder(f, 'inbox')

@@ -168,3 +168,6 @@ class IMailMessageStore(IContainer):
             for single part messages, part_index is 0       
         """             
         
+        
+class IMailBox(IContainer):
+    pass                        

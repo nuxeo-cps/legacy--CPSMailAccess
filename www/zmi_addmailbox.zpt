@@ -1,13 +1,13 @@
 <h1 tal:replace="structure here/manage_page_header">Header</h1>
 
-<h2 tal:define="form_title string:Add Mail Folder"
+<h2 tal:define="form_title string:Add Mail Box"
     tal:replace="structure here/manage_form_title">Form Title</h2>
 
 <p class="form-help">
-Add Mail Folder
+Add Mail Box
 </p>
 
-<form action="manage_addMailFolder" method="post">
+<form action="manage_addMailBox" method="post">
 <table cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td align="left" valign="top">
