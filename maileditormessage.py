@@ -35,3 +35,7 @@ class MailEditorMessage(MailMessage):
         name = {'key': name}
         return self._cache.query('editor', name)
 
+    def loadFromMessage(self, msg):
+        """ useful to adapt an existing message """
+        self.copyFrom(msg)
+
