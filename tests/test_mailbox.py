@@ -138,11 +138,20 @@ class MailBoxTestCase(MailTestCase):
         self.assertNotEquals(cached, msg)
 
     def test_mailcache(self):
-        pass
+        mailbox = self._getMailBox()
+        mailbox.clearMailCache()
+        msg = mailbox._addMessage('ok', 'ok')
+        mailbox.addMailToCache(msg, 'zeMail')
 
-        """XXXX need to test msg caching
-           XXXX with retrieval and invalidations
-        """
+        mailbox.addMailToCache(msg, 'zeMail')
+
+        cache = mailbox.getMailFromCache('zeMail', False)
+        self.assertEquals(cache, msg)
+
+        cache = mailbox.getMailFromCache('zeMail')
+        self.assertEquals(cache, msg)
+        self.assertEquals(mailbox.getMailFromCache('zeMail'), None)
+
 
     def test_createMailDirectoryEntry(self):
         mailbox = self._getMailBox()
