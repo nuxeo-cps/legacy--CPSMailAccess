@@ -24,7 +24,8 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
-from Products.CPSMailAccess.mailfolder import MailFolder
+from Products.CPSMailAccess.mailfolder import MailFolder, MailFolderView
+from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
 
 installProduct('FiveTest')
@@ -37,6 +38,11 @@ class MailFolderTestCase(ZopeTestCase):
         result = 'msg_' + str(self.msg_key)
         self.msg_key += 1
         return result
+
+    def getPhysicalPath(self):
+        """ fake getPhysicalPath
+        """
+        return ('fake',)
 
     def test_getServerName(self):
         """ testing getServerName and setServerName
@@ -208,7 +214,51 @@ class MailFolderTestCase(ZopeTestCase):
         for folder in folders:
             self.assertEquals(folder.sync_state, True)
 
+    def test_MailFolderViewInstance(self):
+        """ testing mail folder view instanciation
+        """
+        ob = MailFolder()
+        view = MailFolderView(ob, None)
+        self.assertNotEquals(view, None)
 
+    def test_renderMailList(self):
+        """ testing mail folder view instanciation
+        """
+        ob = MailFolder()
+        view = MailFolderView(ob, None)
+        rendered_list = view.renderMailList()
+
+        # empty folder
+        self.assertEquals(rendered_list, '<div id="folder_content"></div>')
+
+        # 5 sub folders and 2 messages
+        ob = self.test_getMailMessagesCountRecursive()
+
+        # adding a fake physical path
+        ob.getPhysicalPath = self.getPhysicalPath
+
+        view = MailFolderView(ob, None)
+        rendered_list = view.renderMailList()
+
+        self.assertNotEquals(rendered_list.index('folder_0'), -1)
+
+    def test_sortFolderContent(self):
+        """ testing mail folder view instanciation
+        """
+        elements = []
+        elements.append(MailFolder('folder_1'))
+        elements.append(MailMessage('msg_1'))
+        elements.append(MailFolder('folder_2'))
+        elements.append(MailMessage('msg_2'))
+
+        ob = MailFolder()
+        view = MailFolderView(ob, None)
+
+        elements = view.sortFolderContent(elements)
+        self.assertEquals(elements[0].getId(), 'folder_1')
+        self.assertEquals(elements[1].getId(), 'folder_2')
+        self.assertEquals(elements[2].getId(), 'msg_1')
+        self.assertEquals(elements[3].getId(), 'msg_2')
 
 def test_suite():
     return unittest.TestSuite((
