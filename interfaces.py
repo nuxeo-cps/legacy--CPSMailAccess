@@ -129,6 +129,10 @@ class IMailMessageStore(IContainer):
         """ returns the number of parts the message holds
         """
 
+    def getPart(self, index=0):
+        """ returns the given index part
+        """
+
     def getCharset(part_index=0):
         """ returns the charset for the given part
             for single part messages, part_index is 0
@@ -352,4 +356,11 @@ class IConnectionWatcher(Interface):
         """
     def stop():
         """ stops the guard
+        """
+
+class IMailRenderer(Interface):
+
+    def renderBody(mail, part_index):
+        """ renders a human readable body
+            from given part
         """
