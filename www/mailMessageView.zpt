@@ -77,21 +77,44 @@
 
     <div class="mailHeaders">
         <div class="mailToolBar">
-          <a style="float: right"
+
+          <a style="float: right; margin-right: 4px"
             tal:attributes="href python:here.absolute_url()+'/view_alone'" target="_blank">
             <img id="new_page" src="launch.png"/>
           </a>
 
+
+
+          <a style="float: right; margin-right: 4px"
+            tal:attributes="href python:here.absolute_url()+'/delete'">
+            <img id="new_page" src="cpsma_mini_mail_delete.png"/>
+          </a>
+
+          <a style="float: right; margin-right: 4px"
+            tal:attributes="href python:here.absolute_url()+'/forward'">
+            <img id="new_page" src="cpsma_mini_mail_forward.png"/>
+          </a>
+          <a style="float: right; margin-right: 4px"
+            tal:attributes="href python:here.absolute_url()+'/reply_all'">
+            <img id="new_page" src="cpsma_mini_mail_replyall.png"/>
+          </a>
+
+          <a style="float: right; margin-right: 4px"
+            tal:attributes="href python:here.absolute_url()+'/reply'">
+            <img id="new_page" src="cpsma_mini_mailreply.png"/>
+          </a>
+
         <tal:block tal:condition="not:request/showfolders|python:0">
             <a tal:attributes="href python:here.absolute_url()+'/view?showfolders=1'">
-              <img id="midPageButton" src="cpsma_down.png"/>
+              <img id="midPageButton" src="cpsma_down.png" style="margin-right: 4px"/>
             </a>
         </tal:block>
         <tal:block tal:condition="request/showfolders|python:0">
             <a tal:attributes="href python:here.absolute_url()+'/view'">
-            <img id="fullPageButton" src="cpsma_up.png"/>
+            <img id="fullPageButton" src="cpsma_up.png" style="margin-right: 4px"/>
             </a>
         </tal:block>
+
         </div>
           <div id="mailLessInfos">
           <div id="mailSubject">
