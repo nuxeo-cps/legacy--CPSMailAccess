@@ -132,3 +132,14 @@ class IMailMessageStore(IContainer):
     def isMultipart():         
         """ tells if the mail is multipart
         """
+        
+    def getContentType(part_index=0):
+        """ retrieves the content type
+            for single part messages, part_index is 0       
+        """      
+        
+    def setContentType(content_type, part_index=0):
+        """ sets the content type
+            for single part messages, part_index is 0       
+        """      
+               
