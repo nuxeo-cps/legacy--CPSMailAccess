@@ -1,6 +1,101 @@
-<configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:five="http://namespaces.zope.org/five">
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <five:traversable class="OFS.Folder.Folder" />
+  <five:traversable class=".mailfolder.MailFolder" />
+  <five:traversable class=".mailmessage.MailMessage" />
+  <five:traversable class=".mailbox.MailBox" />
+  <five:traversable class=".connectionlist.ConnectionList" />
+  <five:traversable class=".connectionwatcher.ConnectionWatcher" />
+  <five:traversable class=".baseconnection.BaseConnection" />
+
+  <interface
+      interface=".interfaces.IMailFolder"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <content class=".mailfolder.MailFolder">
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        />
+
+    <implements
+        interface="zope.app.container.interfaces.IContentContainer"
+        />
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IMailFolder"
+        />
+  </content>
+
+  <interface
+      interface=".interfaces.IMailMessage"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <interface
+      interface=".interfaces.IMailMessageStore"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <content class=".mailmessage.MailMessage">
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        />
+
+    <implements
+        interface="zope.app.container.interfaces.IContentContainer"
+        />
+
+    <implements
+        interface=".interfaces.IMailMessageStore"
+        />
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IMailMessage"
+        />
+
+  </content>
+
+
+
+  <interface
+      interface=".interfaces.IMailBox"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <content class=".mailbox.MailBox">
+    <implements
+        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
+        />
+    <implements
+        interface="zope.app.container.interfaces.IContentContainer"
+        />
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IMailBox"
+        />
+  </content>
+
+  <interface
+      interface=".interfaces.IMailTool"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <interface
+      interface=".interfaces.IConnection"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <interface
+      interface=".interfaces.IConnectionList"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <interface
+      interface=".interfaces.IConnectionWatcher"
+      type="zope.app.content.interfaces.IContentType"
+      />
 
 </configure>
