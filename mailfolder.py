@@ -204,7 +204,7 @@ class MailFolder(BTreeFolder2):
         msg_list = []
 
         # opti : 'read' is the most common call
-        if len(flags) == 1 and flags[0] == 'read':
+        if len(flags) == 1 and flags[0] == 'Read':
             for msg in msgs:
                 if msg.read:
                     msg_list.append(msg)
@@ -212,11 +212,11 @@ class MailFolder(BTreeFolder2):
 
 
         for msg in msgs:
-            cond1 = 'read' in flags and msg.read
-            cond2 = 'answered' in flags and msg.answered
-            cond3 = 'deleted' in flags and msg.deleted
-            cond4 = 'flagged' in flags and msg.flagged
-            cond5 = 'forwarded' in flags and msg.forwarded
+            cond1 = 'Read' in flags and msg.read
+            cond2 = 'Answered' in flags and msg.answered
+            cond3 = 'Deleted' in flags and msg.deleted
+            cond4 = 'Flagged' in flags and msg.flagged
+            cond5 = 'Forwarded' in flags and msg.forwarded
             if cond1 and cond2 and cond3 and cond4 and cond5:
                 msg_list.append(msg)
         return msg_list
@@ -620,11 +620,11 @@ class MailFolder(BTreeFolder2):
             then on the zodb (no sync)
         """
         mailbox = self.getMailBox()
-
         if has_connection:
             connector = self._getconnector()
             res = connector.copy(self.server_name, new_mailbox.server_name, uid)
-            connector.setFlags(self.server_name, uid, {'deleted': 1})
+            connector.setFlags(self.server_name, uid, {'Deleted': 1})
+            mailbox.validateChanges()
             if not res:
                 return False
         # XXX todo : check if is the same msg uid
@@ -652,8 +652,8 @@ class MailFolder(BTreeFolder2):
         trash_name = mailbox.getTrashFolderName()
         if has_connection:
             connector = self._getconnector()
-            connector.setFlags(self.server_name, uid, {'deleted': 1})
             res = connector.copy(self.server_name, trash_name, uid)
+            connector.setFlags(self.server_name, uid, {'Deleted': 1})
             if not res:
                 return False
         # XXX todo : check if is the same msg uid
