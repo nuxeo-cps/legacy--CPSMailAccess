@@ -73,8 +73,7 @@ class MailTool(Folder, UniqueObject):
 InitializeClass(MailTool)
 
 manage_addMailToolForm = PageTemplateFile(
-    "www/zmi_addmailtool", globals(),
-    __name__ = 'manage_addMailTool')
+    "www/zmi_addmailtool", globals())
 
 def manage_addMailTool(container, REQUEST=None, **kw):
     """ Add a portal_webmail to the portal
