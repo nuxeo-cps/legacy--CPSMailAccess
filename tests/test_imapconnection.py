@@ -29,11 +29,78 @@ from time import time,sleep
 installProduct('FiveTest')
 installProduct('Five')
 
+fake_imap_enabled = 1
 
+"""
+    xxxx
+    need to finish fake IMAP lib
+"""
 class IMAPConnectionTestCase(ZopeTestCase):
-    pass
+
+    def makeConnection(self):
+        my_params = {}
+        my_params['HOST'] = 'localhost'
+        my_params['UserID'] = 'tarek'
+        my_params['UserPassword'] = 'tarek'
+        my_params['TYPE'] = 'IMAP'
+        myconnection = IMAPConnection(my_params)
+        return myconnection
+
+    def test_Instance(self):
+        """ testing simple instanciation with parameters
+        """
+        if not fake_imap_enabled:
+            return
+        my_params = {}
+        my_params['HOST'] = 'localhost'
+        my_params['UserID'] = 'tarek'
+        my_params['UserPassword'] = 'tarek'
+        my_params['TYPE'] = 'IMAP'
+
+        # regular connection
+        myconnection = IMAPConnection(my_params)
+
+        self.assertNotEqual(myconnection, None)
+
+    def test_SSLInstance(self):
+        """ testing simple SSL instanciation with parameters
+        """
+        if not fake_imap_enabled:
+            return
+        my_params = {}
+        my_params['HOST'] = 'localhost'
+        my_params['UserID'] = 'tarek'
+        my_params['UserPassword'] = 'tarek'
+        my_params['TYPE'] = 'IMAP'
+        my_params['SSL'] = 1
+
+        # regular connection
+        myconnection = IMAPConnection(my_params)
+
+        self.assertNotEqual(myconnection, None)
+
+    def test_ConnectionParamsError(self):
+        """ testing simple instanciation with missing parameters
+        """
+        from Products.CPSMailAccess.baseconnection import ConnectionParamsError
+        my_params = {}
+
+        self.failUnlessRaises(ConnectionParamsError, IMAPConnection, my_params)
+
+    def test_login(self):
+        """ testing simple instanciation with missing parameters
+        """
+        ob = self.makeConnection()
+
+        login_result = ob.login('tarek','tarek')
+
+        self.assertEquals(login_result, True)
+
+
     """
-    # XXX future unit test
+    xxxx
+    need to finish fake IMAP lib
+
     # testing single connection
     from BaseConnection import BaseConnectionParams
     my_params = BaseConnectionParams()
