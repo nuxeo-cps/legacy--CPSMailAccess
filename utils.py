@@ -31,7 +31,7 @@ from html2text import HTML2Text
 from random import randrange
 from zLOG import LOG, INFO
 from encodings import exceptions as encoding_exceptions
-from Products.CPSUtil import html
+from Products.CPSUtil.html import HTMLSanitizer, remove_attributes
 
 _translation_table = string.maketrans(
     # XXX candidates: @°+=`|
@@ -308,6 +308,14 @@ def cleanUploadedFileName(filename):
 
     return splitted[-1]
 
+class HTMLMailSanitizer(HTMLSanitizer):
+    white_list = ('a', 'b', 'i', 'strong', 'br', 'p', 'h1', 'h2', 'h3', 'h4',
+                  'h5', 'div', 'span', 'table', 'tr', 'th', 'td', 'font',
+                  'style')
+
+    tolerant_tags = ('br', 'p')
+
+
 def sanitizeHTML(content):
     """ satinize html """
     work = content.replace('&lt;', '<')
@@ -315,7 +323,15 @@ def sanitizeHTML(content):
     # thunderbid's html has \n instead of \r\n
     work = fix_eols(work)
     work = work.replace('\r\n', '')    # nothing to care about in HTML
-    return html.sanitize(work)
+
+    attributes = ('accesskey', 'onclick')
+
+    work = remove_attributes(work, attributes)
+    parser = HTMLMailSanitizer()
+    parser.feed(work)
+    parser.close()
+    parser.cleanup()
+    return ''.join(parser.result)
 
 def isValidEmail(mail):
     """ verifies a mail is a mail """
