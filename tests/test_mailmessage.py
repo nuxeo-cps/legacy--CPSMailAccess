@@ -18,7 +18,7 @@
 # 02111-1307, USA.
 #
 # $Id$
-
+from types import StringType, ListType
 import unittest, os
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
@@ -49,7 +49,7 @@ class MailMessageTestCase(ZopeTestCase):
 
             return data
         except:
-            print str(filename) + ' not found'
+            print str(filename) + ' not found for MailMessageTestCase'
             return ''
 
     def getAllMails(self):
@@ -280,7 +280,7 @@ class MailMessageTestCase(ZopeTestCase):
         view = MailMessageView(ob, None)
         self.assertNotEquals(view, None)
 
-    def test_MailMessageParts(self):
+    def test_MailMessageHeaders(self):
         """ testing view instanciation
         """
         ob = self.getMailInstance(6)
@@ -300,6 +300,30 @@ class MailMessageTestCase(ZopeTestCase):
 
         self.assertEquals(view._getToList(),
             '<div id="mailTo">?</div>')
+
+    def test_MailMessageparts(self):
+        """ testing view instanciation
+        """
+        ob = self.getMailInstance(1)
+        body = ob.getPart(0)
+
+        self.assertNotEquals(body, '')
+        self.assertNotEquals(body, None)
+        """
+        ob = self.getMailInstance(6)
+        body = ob.getPart(0, True)
+
+        self.assertNotEquals(body, '')
+        self.assertNotEquals(body, None)
+        raise str(body)
+        """
+
+        view = MailMessageView(ob, None)
+
+        viewbody = view._getBody()
+
+        #self.assertEquals(body, viewbody)
+
 
 
 
