@@ -159,7 +159,7 @@ class MailFolder(Folder):
         self.server_name = server_name
 
     def _addMessage(self, msg_uid='', msg_key=''):
-        """"See interfaces.IMailFolder
+        """See interfaces.IMailFolder
         """
         uid = uniqueId(self, self.mail_prefix)
         new_msg = MailMessage(uid, msg_uid, msg_key)
