@@ -1,5 +1,19 @@
-<html>
-  <body>
-    <p tal:content="structure view/render" />
-  </body>
+<html metal:use-macro="here/main_template/macros/master">
+  <metal:block metal:fill-slot="main">
+    <div id="mailSubject">
+      <tal:block i18n:translate="">Subject :</tal:block>
+      <tal:block tal:replace="structure view/renderSubject" />
+    </div>
+    <div id="mailTo">
+      <tal:block i18n:translate="">To :</tal:block>
+      <tal:block tal:replace="structure view/renderToList" />
+    </div>
+    <div id="mailFrom">
+      <tal:block i18n:translate="">From :</tal:block>
+      <tal:block tal:replace="structure view/renderFromList" />
+    </div>
+    <div id="mailBody">
+      <tal:block tal:replace="structure view/renderBody" />
+    </div>
+  </metal:block>
 </html>
