@@ -138,6 +138,7 @@
       type="zope.app.content.interfaces.IContentType"
       />
 
+
   <browser:page
       for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
@@ -178,6 +179,7 @@
       permission="zope2.View"
       />
 
+
   <browser:page
       for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
@@ -185,6 +187,16 @@
       name="view"
       permission="zope2.View"
       />
+
+
+  <browser:page
+      for=".interfaces.IMailPart"
+      class=".mailmessageview.MailMessageView"
+      name="view_file"
+      attribute="viewFile"
+      permission="zope2.View"
+      />
+
 
   <browser:page
       for=".interfaces.IMailFolder"
@@ -481,6 +493,23 @@
       name="editMessage.html"
       permission="zope2.View"
       />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
+      name="saveMessage"
+      attribute="saveMessage"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
+      name="initializeEditor"
+      attribute="initializeEditor"
+      permission="zope2.View"
+      />
+
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailsearchview.MailSearchView"
