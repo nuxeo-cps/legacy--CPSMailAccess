@@ -24,17 +24,13 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
-
 from Products.CPSMailAccess.mailfolder import MailFolder
 from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
-
 
 installProduct('FiveTest')
 installProduct('Five')
 
-
 class MailFolderTestCase(ZopeTestCase):
-
     msg_key = 0
 
     def msgKeyGen(self):
@@ -183,8 +179,6 @@ class MailFolderTestCase(ZopeTestCase):
         ob = self.test_getMailMessagesCountRecursive()
         count = ob.childFoldersCount()
         self.assertEquals(count, 10)
-
-
 
 def test_suite():
     return unittest.TestSuite((

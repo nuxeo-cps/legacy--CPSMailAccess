@@ -31,7 +31,6 @@ from Products.CPSMailAccess.interfaces import IMailBox
 installProduct('FiveTest')
 installProduct('Five')
 
-
 class MailBoxTestCase(ZopeTestCase):
 
     msg_key = 0
@@ -73,7 +72,6 @@ class MailBoxTestCase(ZopeTestCase):
         mailbox['connection_type'] = 'IMAP'
         self.assertEquals('IMAP', mailbox['connection_type'])
         self.assertEquals('tarek', mailbox['uid'])
-
 
 def test_suite():
     return unittest.TestSuite((

@@ -16,7 +16,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
-
 import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
@@ -28,7 +27,6 @@ installProduct('FiveTest')
 installProduct('Five')
 
 class MailToolTestCase(ZopeTestCase):
-
     def test_base(self):
         """ single instance
         """
@@ -42,8 +40,7 @@ class MailToolTestCase(ZopeTestCase):
         ob = MailTool()
         ct = ob.listConnectionTypes()
         self.assertNotEquals(ct , [])
-
-
+        
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailToolTestCase),
