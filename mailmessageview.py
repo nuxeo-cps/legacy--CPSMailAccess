@@ -166,11 +166,15 @@ class MailMessageView(BaseMailMessageView):
         msg = mailbox.getCurrentEditorMessage()
         msg.setPart(0, reply_content)
         recipients = []
+
         if not forward:
+            msg.answerType = 'reply'
             froms = origin_msg.getHeader('From')
             for element in froms:
                 if element not in recipients:
                     recipients.append(element)
+        else:
+            msg.answerType = 'forward'
 
         if reply_all and not forward:
             ccs = origin_msg.getHeader('Cc')
