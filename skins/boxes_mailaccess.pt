@@ -1,56 +1,125 @@
 <!-- mailaccess boxes macros -->
 <!-- $Id$ -->
 <metal:block define-macro="node">
-<div>
-  <tal:block tal:repeat="icon_ob element/front_icons">
-    <tal:block tal:condition="icon_ob/clickable">
-
-     <img tal:attributes="src icon_ob/icon;
+  <div tal:define="unreads element/unreads|python:0">
+    <tal:block tal:repeat="icon_ob element/front_icons">
+      <tal:block tal:condition="icon_ob/clickable">
+        <img tal:attributes="src icon_ob/icon;
                           style string:cursor: hand;
                           onclick element/javacall;
                           id element/img_id;">
+      </tal:block>
+      <tal:block tal:condition="not:icon_ob/clickable">
+        <img tal:attributes="src icon_ob/icon">
+      </tal:block>
     </tal:block>
-    <tal:block tal:condition="not:icon_ob/clickable">
-     <img tal:attributes="src icon_ob/icon">
-    </tal:block>
-  </tal:block>
-  <img tal:attributes="src element/icon_name"/>
-  <a tal:attributes="href element/url">
-    <span tal:replace="element/short_title"/>
-  </a>
-  <div tal:attributes="id element/short_title_id">
-  <tal:block tal:repeat="element element/childs">
-    <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
-  </tal:block>
+    <img tal:attributes="src element/icon_name"/>
+    <a tal:attributes="href element/url">
+      <span tal:replace="element/short_title"/>
+    </a><tal:block tal:condition="unreads">&#160;(<span tal:replace="unreads"/>)</tal:block>
+    <div tal:attributes="id element/short_title_id">
+      <tal:block tal:repeat="element element/childs">
+        <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
+      </tal:block>
+    </div>
   </div>
-
-</div>
 </metal:block>
 
 <metal:block define-macro="basebox_treeview">
-  <div style="background-color: white;border:solid black 1px;
-              padding-bottom: 10px;padding-top: 10px;margin-bottom:10px;">
   <tal:block tal:define="treeview here/treeview|nothing">
-    <tal:block tal:repeat="element treeview">
-      <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
-    </tal:block>
-  </tal:block>
- </div>
-</metal:block>
-
-
-<metal:block define-macro="basebox_actions">
-  <tal:block tal:define="actions here/actionview|nothing">
-    <tal:block tal:repeat="action actions">
-      <div>
-        <a tal:attributes="href action/action">
-          <img tal:attributes="src action/icon"/>
-          <span tal:content="action/title"/>
-        </a>
+    <tal:block tal:condition="treeview">
+      <div class="box">
+        <div class="body">
+          <div class="content" style="background-color: white">
+            <div class="title2">
+            Webmail Navigation
+            </div>
+            <tal:block tal:repeat="element treeview">
+              <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
+            </tal:block>
+          </div>
+        </div>
       </div>
     </tal:block>
   </tal:block>
 </metal:block>
 
+<metal:block define-macro="basebox_actions">
+ <tal:block tal:define="actions here/actionview|nothing">
+   <tal:block tal:condition="actions">
+     <div class="box">
+       <div class="body">
+         <div class="content" style="background-color: white">
+           <div class="title2" i18n:translate="">
+                Webmail Actions
+           </div>
+           <table width="100%">
+             <tal:block tal:repeat="action_pack actions">
+               <tr>
+                 <tal:block tal:repeat="action action_pack">
+                   <td class="selectable">
+                     <a tal:attributes="href action/action;
+                                        target action/target|nothing">
+                       <center>
+                         <img tal:attributes="src action/icon;
+                                    title action/long_title;
+                                    onclick action/onclick|nothing"/>
+                          <br/>
+                          <span i18n:translate=""
+                            tal:content="action/title"/>
+                       </center>
+                     </a>
+                   </td>
+                 </tal:block>
+               </tr>
+             </tal:block>
+           </table>
+         </div>
+       </div>
+     </div>
+    </tal:block>
+  </tal:block>
+</metal:block>
 
-
+<metal:block define-macro="basebox_attached_files">
+ <tal:block tal:define="attached_files here/attached_files|nothing;
+                        mailedit here/is_editor|nothing">
+   <tal:block tal:condition="attached_files">
+      <div class="box">
+        <div class="body">
+          <div class="content" style="background-color: white">
+            <div class="title2">
+            Attached files
+            </div>
+            <table width="100%">
+             <tal:block tal:repeat="attached_file_pack attached_files">
+               <tr>
+                 <tal:block tal:repeat="attached_file attached_file_pack">
+                   <td class="selectable">
+                     <div style="float:right" tal:condition="mailedit">
+                       <a onclick="return window.confirm('Are you sure?');"
+                          tal:attributes="href attached_file/delete_url">
+                         <img src="cpsma_delete_file.png"/>
+                       </a>
+                      </div>
+                     <a tal:attributes="href attached_file/url">
+                       <center>
+                         <img tal:attributes="src attached_file/icon;
+                                    title attached_file/title;
+                                    onclick attached_file/onclick|nothing"/>
+                          <br/>
+                          <span i18n:translate=""
+                            tal:content="attached_file/title"/>
+                       </center>
+                     </a>
+                   </td>
+                 </tal:block>
+               </tr>
+             </tal:block>
+           </table>
+          </div>
+        </div>
+      </div>
+    </tal:block>
+  </tal:block>
+</metal:block>
