@@ -74,7 +74,9 @@ class MailMessageViewTestCase(MailTestCase):
 
     def test_MailMessageparts(self):
         # testing message parts
+        box = self._getMailBox()
         ob = self.getMailInstance(1)
+        ob = ob.__of__(box)
         body = ob.getPart(0)
 
         self.assertNotEquals(body, '')
@@ -136,7 +138,9 @@ class MailMessageViewTestCase(MailTestCase):
         # lotus note mail message
         # the body gets empty in the view
         # added this test
+        box = self._getMailBox()
         ob = self.getMailInstance(35)
+        ob = ob.__of__(box)
 
         ob.getPhysicalPath = self.fakePhysicalPath
 
@@ -152,7 +156,10 @@ class MailMessageViewTestCase(MailTestCase):
 
     def test_renderBody(self):
         # thunderbird html
-        ob = MailMessage()
+        box = self._getMailBox()
+        ob = box._addMessage('msg', 'msg')
+
+
         ob.setDirectBody(u'<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> <html> <head>  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">  <title></title> </head> <body bgcolor="#ffffff" text="#000000"> ezezf<br> ezf<br> <b>ezf</b><br> ef<br> <br> <u>ez<br> <br> <span class="moz-smiley-s6"><span> :-[ </span></span><br> </u>ezf<br> </body> </html>')
 
         ob.setHeader('Content-Type', 'text/html')

@@ -346,7 +346,7 @@ class MailMessageTestCase(MailTestCase):
         self.assert_(ob.getFlag('read') == 1)
 
         # try out event triggering
-        ob.onflagchanged = self._onFlagChanged
+        ob.onFlagChanged = self._onFlagChanged
         self._called = 0
         ob.setFlag('read', 0)
         # test continues in _onFlagChanged
