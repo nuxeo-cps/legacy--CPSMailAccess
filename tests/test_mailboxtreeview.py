@@ -24,7 +24,8 @@ from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
 
-from Products.CPSMailAccess.mailboxtreeview import MailBoxTreeView
+from Products.CPSMailAccess.mailboxtreeview import MailBoxTreeView, \
+    manage_addMailBoxTreeview
 from Products.CPSMailAccess.interfaces import IMailBox
 
 
@@ -33,11 +34,21 @@ installProduct('Five')
 
 class MailBoxViewTestCase(ZopeTestCase):
 
+    def _setObject(self, id, ob):
+        setattr(self, id, ob)
+
     def test_base(self):
-        """ single instance
-        """
+        # simple instanciation
         ob = MailBoxTreeView('mailboxtreeview')
         self.assertNotEquals(ob, None)
+
+    def test_adder(self):
+        # dispatcher adder
+        dispatcher = self
+        manage_addMailBoxTreeview(dispatcher, 'mailboxtreeview')
+        self.assertEquals(hasattr(dispatcher, 'mailboxtreeview'), True)
+
+
 
 
 
