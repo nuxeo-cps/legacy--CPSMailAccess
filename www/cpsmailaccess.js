@@ -93,25 +93,25 @@ function saveMessageDatas(EditorHTML)
   }
   if (xml)
   {
-    url = "saveMessageForm"
-    xml.onload = null;
+    url = "saveMessageForm";
     status = 503;
-    msg_body = escape(msg_body)
-    msg_subject = escape(msg_subject)
-    var body = "msg_subject="+msg_subject+"&msg_body="+msg_body
+    msg_body = escape(msg_body);
+    msg_subject = escape(msg_subject);
+    var body = "msg_subject="+msg_subject+"&msg_body="+msg_body;
     i = 0;
     while ((status == 503) && (i<10))
     {
       xml.open("POST", url, false);
       xml.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xml.send(body);
-      status = xml.status
+      status = xml.status;
       if (status == 503)
       {
         i++;
         delay(200);
       }
     }
+    alert(xml.status);
   }
 }
 
