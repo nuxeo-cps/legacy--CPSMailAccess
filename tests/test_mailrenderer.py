@@ -112,6 +112,10 @@ class MailRendererTestCase(MailTestCase):
         res = ob.render(None,'charset=iso88-59-15', None)
         self.assertEquals(res, '')
 
+        # testing bad content type
+        res = ob.render('yes', 'charset=iso88-59-15', 'fake content-type')
+        self.assertEquals(res, 'yes')
+
     def test_unicode(self):
 
         ob = MailRenderer()
