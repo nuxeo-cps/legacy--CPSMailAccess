@@ -25,22 +25,22 @@ from interfaces import IMailMessage
 
 class BaseMailMessageView(BrowserView):
 
-    def getIconName(self, short_title, selected):
+    def getIconName(self, short_title, selected, root):
         """ returns icon name
         """
         if short_title == 'Trash':
-            return 'cpsma_trashcan.png'
+            return root + '/cpsma_trashcan.png'
         elif short_title == 'INBOX':
-            return 'cpsma_mailbox.png'
+            return root + '/cpsma_mailbox.png'
         elif short_title == 'Drafts':
-            return 'cpsma_draft.png'
+            return root + '/cpsma_draft.png'
         elif short_title == 'Sent':
-            return 'cpsma_mailsent.png'
+            return root + '/cpsma_mailsent.png'
         else:
             if not selected:
-                return 'cpsma_folder.png'
+                return root + '/cpsma_folder.png'
             else:
-                return 'cpsma_folder_selected.png'
+                return root + '/cpsma_folder_selected.png'
 
     def createShortTitle(self, object):
         """ creates a short title
@@ -51,7 +51,7 @@ class BaseMailMessageView(BrowserView):
         titles = title.split('.')
         return titles[len(titles)-1]
 
-    def setSelected(self, treeview, selected):
+    def _setSelected(self, treeview, selected, root):
         """ sets selection
             XXX linear need optimisation
             this part used to refresh
@@ -66,8 +66,8 @@ class BaseMailMessageView(BrowserView):
             short_title = element['short_title']
             element['selected'] = element['object'] == selected
             element['icon_name'] = self.getIconName(short_title,
-                element['selected'])
-            self.setSelected(element['childs'], selected)
+                element['selected'], root)
+            self._setSelected(element['childs'], selected, root)
 
     def renderTreeView(self, flags=[]):
         """ returns a tree view
@@ -75,6 +75,7 @@ class BaseMailMessageView(BrowserView):
         """
         mailbox = self.context.getMailBox()
         mailbox.clearTreeViewCache()
+        root = mailbox.absolute_url()
 
         # XXX hack to avoid round import
         if hasattr(self.context, 'message_cache'):
@@ -89,7 +90,7 @@ class BaseMailMessageView(BrowserView):
         treeview = mailbox.getTreeViewCache()
 
         if treeview is not None:
-            self.setSelected(treeview, firstfolder)
+            self._setSelected(treeview, firstfolder, root)
             return treeview
         else:
             treeview = []
@@ -109,10 +110,10 @@ class BaseMailMessageView(BrowserView):
             length = len(childs)
             for child in childs:
                 childview.context = child
-                element = self.createTreeViewElement(child, firstfolder,
-                    index, length, level, parent_index, parent_length)
+                element = self._createTreeViewElement(child, firstfolder,
+                    index, length, level, parent_index, parent_length, root)
                 unreads, element['childs'] = childview._renderTreeView(firstfolder, level+1,
-                    parent_index, parent_length, flags)
+                    parent_index, parent_length, root, flags)
                 element['unreads'] = unreads
                 treeview.append(element)
                 index += 1
@@ -121,43 +122,54 @@ class BaseMailMessageView(BrowserView):
 
         return treeview
 
-    def createTreeViewElement(self, element, selected_folder, index, length,
-            level, parent_index, parent_length):
+    def _createTreeViewElement(self, element, selected_folder, index, length,
+            level, parent_index, parent_length, root):
         """ creates a node for the tree
         """
         selected = element == selected_folder
         short_title = self.createShortTitle(element)
-        icon_name = self.getIconName(short_title, selected)
+        icon_name = self.getIconName(short_title, selected, root)
 
         if element.childFoldersCount()==0:
             if index == 0 and length > 1:
-                front_icons = [{'icon':'cma_center_empty.png', 'clickable' : False}]
+                front_icons = [{'icon': root + '/cma_center_empty.png',
+                                'clickable' : False}]
             elif index == length - 1:
-                front_icons = [{'icon':'cma_bottom_corner.png', 'clickable' : False}]
+                front_icons = [{'icon': root + '/cma_bottom_corner.png',
+                                'clickable' : False}]
             else:
-                front_icons = [{'icon':'cma_center_empty.png', 'clickable' : False}]
+                front_icons = [{'icon': root + '/cma_center_empty.png',
+                                'clickable' : False}]
         else:
+
             if index == 0 and length >1 :
-                front_icons = [{'icon':'cma_top_minus.png', 'clickable' : True}]
+                front_icons = [{'icon':root + '/cma_top_minus.png',
+                                'clickable' : True}]
             elif index == 0:
-                front_icons = [{'icon':'cma_minus.png', 'clickable' : True}]
+                front_icons = [{'icon':root + '/cma_minus.png',
+                                'clickable' : True}]
             elif index == length - 1:
-                front_icons = [{'icon':'cma_bottom_minus.png', 'clickable' : True}]
+                front_icons = [{'icon':root + '/cma_bottom_minus.png',
+                                'clickable' : True}]
             else:
-                front_icons = [{'icon':'cma_bottom_minus.png', 'clickable' : True}]
+                front_icons = [{'icon':root + '/cma_bottom_minus.png',
+                                'clickable' : True}]
 
         for i in range(level-1):
             if self._hasParentNext(parent_index, parent_length):
-                front_icons.insert(0, {'icon':'cma_center_line.png', 'clickable' : False})
+                front_icons.insert(0, {'icon': root + '/cma_center_line.png',
+                                       'clickable' : False})
             else:
-                front_icons.insert(0, {'icon':'cma_empty.png', 'clickable' : False})
+                front_icons.insert(0, {'icon':root + '/cma_empty.png',
+                                       'clickable' : False})
 
         short_title_id = short_title.replace(' ', '.')
 
         # todo : see for localhost problems here
         # all this is done due to python interpreting problems
-        # (should be ok when Five is merged tisupport Z2 page templates)
+        # (should be ok when Five is merged with support Z2 page templates)
         url = element.absolute_url()
+
         rename_url = 'rename?fullname=1&new_name=%s.%s' % (element.server_name,
             selected_folder.simpleFolderName())
 
@@ -187,7 +199,7 @@ class BaseMailMessageView(BrowserView):
         return parent_index < parent_length -1
 
     def _renderTreeView(self, current, level, parent_index, parent_length,
-            flags=[]):
+                        root, flags=[]):
         """ returns a tree view
             XXX need optimisation and cache use
         """
@@ -202,15 +214,15 @@ class BaseMailMessageView(BrowserView):
         length = len(childs)
         for child in childs:
             childview.context = child
-            element = self.createTreeViewElement(child, current,
-                index, length, level, parent_index, parent_length)
+            element = self._createTreeViewElement(child, current,
+                index, length, level, parent_index, parent_length, root)
             if hasattr(element, 'getFlaggedMessageList'):
                 # todo : a finir
                 list = element.getFlaggedMessageList(['read'])
                 unreads += len(list)
 
             unreads, element['childs'] = childview._renderTreeView(current, level+1,
-                flags, length, index)
+                index, length, root, flags)
             element['unreads'] =  unreads
             treeview.append(element)
             index += 1
