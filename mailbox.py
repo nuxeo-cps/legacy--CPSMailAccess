@@ -39,35 +39,36 @@ class MailBox(MailFolder):
     """ the main container
 
     >>> f = MailBox()
-    >>> IMailFolder.providedBy(f)    
+    >>> IMailFolder.providedBy(f)
     True
     >>> IMailBox.providedBy(f)
     True
-    """    
+    """
     implements(IMailBox)
-    
+
     def __init__(self, uid=None, server_name='', **kw):
-        MailFolder.__init__(self, uid, server_name, **kw)    
-          
-        
+        MailFolder.__init__(self, uid, server_name, **kw)
+
+
     def synchronize(self):
         """ see interface
         """
-        sub_folders = self.getMailMessages(True, False, True)
-        
+        sub_folders = self.getMailMessages(list_folder=True, list_messages=False,
+            recursive=True)
+
         for sub_folder in sub_folders:
             sub_folder._synchronizeFolder()
-            
-        self._synchronizeFolder()    
-            
-                           
+
+        self._synchronizeFolder()
+
+
 """ classic Zope 2 interface for class registering
-"""        
+"""
 manage_addMailBox = PageTemplateFile(
     "www/zmi_addmailbox", globals(),
     __name__ = 'manage_addMailBox')
-    
-def manage_addMailBox(container, id=None, server_name ='', 
+
+def manage_addMailBox(container, id=None, server_name ='',
         REQUEST=None, **kw):
     """Add a box to a container (self).
     >>> from OFS.Folder import Folder
@@ -82,4 +83,4 @@ def manage_addMailBox(container, id=None, server_name ='',
     if REQUEST is not None:
         ob = container._getOb(ob.getId())
         REQUEST.RESPONSE.redirect(ob.absolute_url()+'/manage_main')
-        
+
