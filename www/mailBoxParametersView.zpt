@@ -23,7 +23,7 @@
           </td>
           <td width="50%" align="left">
             <input tal:attributes="type parameter/type;
-                                   name parameter/name;
+                                   name python:parameter['name']+':'+parameter['ptype'];
                                    value parameter/value;"/>
           </td>
         </tr>
