@@ -32,6 +32,10 @@ from utils import uniqueId, makeId
 from Products.CPSMailAccess.mailmessage import MailMessage
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from Globals import InitializeClass
+from Acquisition import aq_parent, aq_inner
+
+class MailContainerError(Exception) :
+    pass
 
 class MailFolder(Folder):
     """A container of mail messages and other mail folders.
@@ -152,6 +156,8 @@ class MailFolder(Folder):
 
         new_msg = MailMessage(uid, uid, msg_key)
         self._setObject(new_msg.getId(), new_msg)
+        new_msg = self._getOb(new_msg.getId())
+
         return new_msg
 
     def _addFolder(self, uid='', server_name=''):
@@ -164,6 +170,8 @@ class MailFolder(Folder):
 
         new_folder = MailFolder(uid, server_name)
         self._setObject(new_folder.getId(), new_folder)
+        new_folder = self._getOb(new_folder.getId())
+
         return new_folder
 
     def findMessage(self, msg_key, recursive=True):
@@ -193,6 +201,18 @@ class MailFolder(Folder):
         """See interfaces.IMailFolder
         """
         raise NotImplementedError
+
+    def _getconnector(self):
+        """See interfaces.IMailFolder
+        """
+        current = self
+        while not IMailBox.providedBy(current) and current is not None:
+            current = aq_parent(current)
+
+        if current is not None:
+            return current._getconnector()
+        else:
+            raise MailContainerError('%s is not contained in a mailbox' % self.getId())
 
 """ classic Zope 2 interface for class registering
 """
