@@ -123,9 +123,6 @@ class MailBox(MailFolder):
             logtext = '\n'.join(log)
             return logtext
 
-        # now check messages within this folder
-        # XXXX to be done
-
     def _syncdirs(self, server_directories = [], return_log=False):
         """ syncing dirs
         """
@@ -255,8 +252,7 @@ class MailBox(MailFolder):
 
 
     def _sendMailMessage(self, msg_from, msg_to, msg):
-        """ sends an instance of MailMessage
-        """
+        """ sends an instance of MailMessage """
         # sends it
         portal_webmail = getToolByName(self, 'portal_webmail')
         maildeliverer = portal_webmail.maildeliverer
@@ -266,13 +262,13 @@ class MailBox(MailFolder):
         user_id = self.connection_params['login']
         password = self.connection_params['password']
 
-        maildeliverer.sendMail(smtp_host, smtp_port,
-            user_id, password, msg_from, msg_to, msg.getRawMessage())
+        maildeliverer.send(msg_from, msg_to, msg.getRawMessage(), smtp_host,
+                           smtp_port, user_id, passwor)
         return True
 
     def sendEditorsMessage(self):
-        """ sends the cached message
-        """
+        """ sends the cached message """
+
         msg = self.getCurrentEditorMessage()
         if msg is None:
             return False
@@ -295,64 +291,43 @@ class MailBox(MailFolder):
                 self._synchronizeFolder(return_log=False)
             self.clearEditorMessage()
 
-
-
-    def sendMessage(self, msg_from, msg_to, msg_subject, msg_body):
-        """ sends the message
-        """
-        ob = self.getCurrentEditorMessage()
-        ob.setHeader('Subject', msg_subject)
-        ob.setHeader('From', msg_from)
-        ob.setHeader('Date', getCurrentDateStr())
-        if type(msg_to) is list:
-            ob.setHeader('To', ", ".join(msg_to))
-        else:
-            ob.setHeader('To', msg_to)
-        #XXX todo : fill body
-
-        # sends it
-        self._sendMailMessage(msg_from, msg_to, ob.getRawMessage())
-
-        # if the sent was ok, copy it to the Send folder
-        # a) on the server
-        connector = self._getconnector()
-
-        res = connector.writeMessage('INBOX.Sent', ob.getRawMessage())
-
-        # b) on the zodb, by synchronizing INBOX.Sent folder
-        if hasattr(self, 'INBOX'):
-            if hasattr(self.INBOX, 'Sent'):
-                self.INBOX.Sent._synchronizeFolder(return_log=False)
-            else:
-                self._syncdirs()
-                self.INBOX._synchronizeFolder(return_log=False)
-        else:
-            self._syncdirs()
-            self._synchronizeFolder(return_log=False)
-
-        self.clearEditorMessage()
-
     def getTrashFolderName(self):
-        """ returns the trash name
-        """
+        """ returns the trash name """
+
         return self.connection_params['trash_folder_name']
 
     def getTrashFolder(self):
         """ returns the trash name
         """
         trash_name = self.getTrashFolderName()
-        return getFolder(self, trash_name)
+        trash = getFolder(self, trash_name)
+        if trash is None:
+            if not hasattr(self, 'INBOX'):
+                self._addFolder('INBOX', 'INBOX', server=True)
+            inbox = self['INBOX']
+            uid = self.simpleFolderName(trash_name)
+            trash = inbox._addFolder(uid, trash_name, server=True)
+        return trash
 
     def getDraftFolderName(self):
-        """ returns the trash name
-        """
+        """ returns the draft name """
+
         return self.connection_params['draft_folder_name']
 
     def getDraftFolder(self):
-        """ returns the trash name
+        """ returns the draft folder, creates it in case
+            it does not exists yet
         """
+
         draft_name = self.getDraftFolderName()
-        return getFolder(self, draft_name)
+        draft = getFolder(self, draft_name)
+        if draft is None:
+            if not hasattr(self, 'INBOX'):
+                self._addFolder('INBOX', 'INBOX', server=True)
+            inbox = self['INBOX']
+            uid = self.simpleFolderName(draft_name)
+            draft = inbox._addFolder(uid, draft_name, server=True)
+        return draft
 
     def getSentFolderName(self):
         """ returns the trash name
@@ -363,7 +338,14 @@ class MailBox(MailFolder):
         """ returns the trash name
         """
         sent_name = self.getSentFolderName()
-        return getFolder(self, sent_name)
+        sent = getFolder(self, sent_name)
+        if sent is None:
+            if not hasattr(self, 'INBOX'):
+                self._addFolder('INBOX', 'INBOX', server=True)
+            inbox = self['INBOX']
+            uid = self.simpleFolderName(sent_name)
+            sent = inbox._addFolder(uid, sent_name, server=True)
+        return sent
 
     def getCurrentEditorMessage(self):
         """ returns the message that is beeing edited
@@ -376,19 +358,23 @@ class MailBox(MailFolder):
             self._v_current_editor_message = msg
         return self._v_current_editor_message
 
+    def setCurrentEditorMessage(self, msg):
+        """ sets the message that is beeing edited
+        """
+        self._v_current_editor_message = msg
+
     def clearEditorMessage(self):
         """ empty the cached message
         """
         self._v_current_editor_message = None
 
-    def emptyTrash(self):
-        """ empty the trash
-        """
-        # TODO to do this we need first of all to add message flag managment
-        # at this this is a local rough deletion
+    def emptyTrashFolder(self):
+        """ empty the trash """
+
         trash = self.getTrashFolder()
-        connector = self._getconnector()
+
         if has_connection:
+            connector = self._getconnector()
             connector.select(trash.server_name)
 
         trash = self.getTrashFolder()
@@ -431,6 +417,10 @@ class MailBox(MailFolder):
         """
         self._v_clipboard = []
         self._v_clipboard_action = ''
+
+    def clipBoardEmpty(self):
+        """ tells if clipboard is empty """
+        return self._v_clipboard == []
 
     def validateChanges(self):
         """ call expunger
@@ -648,13 +638,19 @@ class MailBoxView(MailFolderView):
             return ''
 
     def emptyTrash(self):
+        """ empty trash folder """
+
         mailbox = self.context
-        mailbox.emptyTrash()
+        mailbox.emptyTrashFolder()
         trash = mailbox.getTrashFolder()
         if self.request is not None:
-            self.request.response.redirect(trash.absolute_url()+'/view')
+            psm = 'Trash expunged.'
+            self.request.response.redirect(trash.absolute_url()+\
+                                           '/view?portal_status_message=%s' % psm)
 
     def synchronize(self):
+        """ synchronizes mailbox """
+
         mailbox = self.context
         mailbox.synchronize(True)
         if self.request is not None:
@@ -668,12 +664,11 @@ class MailBoxView(MailFolderView):
 
 class MailBoxTraversable(FiveTraversable):
     """ use to vizualize the mail parts in the mail editor
-    """
-    """
     >>> f = MailBoxTraversable(None)
     >>> IMessageTraverser.providedBy(f)
     True
     """
+
     implements(IMessageTraverser)
 
     def traverse(self, path='', request=None):
