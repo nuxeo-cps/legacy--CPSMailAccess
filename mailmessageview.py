@@ -129,6 +129,9 @@ class MailMessageView(BaseMailMessageView):
             #### the user reads the messge, let's
             # sets the read message to 1
             mail.setFlag('read', 1)
+            folder = mail.getMailFolder()
+            if folder is not None:
+                folder.onFlagChanged(mail, 'read', 1)
 
             # do we have everything to show ?
             # here loadParts will automatically
@@ -166,6 +169,7 @@ class MailMessageView(BaseMailMessageView):
         msg = mailbox.getCurrentEditorMessage()
         msg.setPart(0, reply_content)
         recipients = []
+        msg.origin_message = origin_msg
 
         if not forward:
             msg.answerType = 'reply'
@@ -236,6 +240,8 @@ class MailMessageView(BaseMailMessageView):
         msg_container.moveMessage(msg.uid, trash_folder)
         # need to do the same on server
         msg.setFlag('deleted', 1)
+        if msg_container is not None:
+            msg_container.onFlagChanged(msg, 'deleted', 1)
 
         if self.request is not None:
             psm = 'Message sent to Trash.'
