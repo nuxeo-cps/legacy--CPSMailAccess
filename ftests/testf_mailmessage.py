@@ -50,13 +50,16 @@ class MailMessageTest(FunctionalTestCase):
             '/%s/my_message/view.html' % folder_name,
             basic='%s:secret'% user_name
         )
-
         self.assertEqual(response.getStatus(), 200)
 
         body = response.getBody()
+
+        # testing structure
         self.assert_(body.find('body') > 0)
-
-
+        self.assert_(body.find('<div id="mailSubject">') > 0)
+        self.assert_(body.find('<div id="mailFrom">') > 0)
+        self.assert_(body.find('<div id="mailTo">') > 0)
+        self.assert_(body.find('<div id="mailBody">') > 0)
 
 def test_suite():
     return unittest.TestSuite((
