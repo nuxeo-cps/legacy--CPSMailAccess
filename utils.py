@@ -271,3 +271,24 @@ def HTMLToText(html):
     #html_engine.clear()
     html_engine.add_text(html)
     return html_engine.generate()
+
+def cleanUploadedFileName(filename):
+    """ cleans filename from its path
+        this needs to work on any server (it's a client side file)
+    >>> cleanUploadedFileName('C:\Windows\Desktop\Internet Explorer.lnk')
+    'Internet Explorer.lnk'
+    >>> cleanUploadedFileName('/home/ghjk/fghjkl.gif')
+    'fghjkl.gif'
+    >>> cleanUploadedFileName('fghjkl.gif')
+    'fghjkl.gif'
+    >>> cleanUploadedFileName('')
+    ''
+    """
+    if filename.find(':\\') != -1:
+        splitted = filename.split('\\')
+    else:
+        splitted = filename.split('/')
+
+    return splitted[-1]
+
+
