@@ -29,9 +29,7 @@ from Products.CPSMailAccess.dummyconnection import DummyConnection
 from time import time,sleep
 from threading import Thread
 
-installProduct('FiveTest')
 installProduct('Five')
-
 
 class ListTester(Thread):
     """ used to read connections

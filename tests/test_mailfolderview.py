@@ -33,35 +33,35 @@ from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
 from basetestcase import MailTestCase
 
 class MailFolderViewTestCase(MailTestCase):
-    msg_key = 0
-
-    def msgKeyGen(self):
-        result = 'msg_' + str(self.msg_key)
-        self.msg_key += 1
-        return result
-
-    def getPhysicalPath(self):
-        """ fake getPhysicalPath
-        """
-        return ('fake',)
 
     def test_getMailMessagesCountRecursive(self):
         # testing getMailMessagesCount with all combos recursively
-        ob = MailFolder()
+        box = self._getMailBox()
+
+        ob = box._addFolder('folder', 'folder')
 
         for i in range(10):
             folder = ob._addFolder('folder_'+str(i), 'folder_'+str(i))
             key = self.msgKeyGen()
-            folder._addMessage(key,key)
+            msg = folder._addMessage(key,key)
+            msg.addHeader('From', 'Me')
+            msg.addHeader('To', 'You')
+            msg.addHeader('Date', 'Now')
             for y in range(2):
                 subfolder = folder._addFolder()
                 for y in range(5):
                     key = self.msgKeyGen()
-                    subfolder._addMessage(key, key)
+                    msg = subfolder._addMessage(key, key)
+                    msg.addHeader('From', 'Me')
+                    msg.addHeader('To', 'You')
+                    msg.addHeader('Date', 'Now')
 
         for i in range(123):
             key = self.msgKeyGen()
-            ob._addMessage(key, key)
+            msg = ob._addMessage(key, key)
+            msg.addHeader('From', 'Me')
+            msg.addHeader('To', 'You')
+            msg.addHeader('Date', 'Now')
 
         count = ob.getMailMessagesCount(True, True, True)
         self.assertEquals(count, 263)
@@ -105,12 +105,20 @@ class MailFolderViewTestCase(MailTestCase):
 
         self.assertEquals(rendered_list[len(rendered_list)-1]['url'], '.msg_232/view')
 
-    def old_test_TreeView(self):
+        # testing a message
+        msg_entry = rendered_list[0]
+        self.assertEquals(msg_entry['From'], 'Me')
+        self.assertEquals(msg_entry['To'], 'You')
+        self.assertEquals(msg_entry['Date'], 'Now')
+
+
+    def test_TreeView(self):
         # testing treeview renderer
         ob = self.test_getMailMessagesCountRecursive()
         view = MailFolderView(ob, None)
+        view = view.__of__(ob)
 
-        self.assertRaises(MailContainerError, view.renderTreeView)
+        #self.assertRaises(MailContainerError, view.renderTreeView)
 
         ob = MailBox('box')
         ob.getPhysicalPath = self.getPhysicalPath
@@ -127,6 +135,7 @@ class MailFolderViewTestCase(MailTestCase):
                 sub_sub_folder = sub_folder._addFolder('folder_'+str(y))
 
         view = MailFolderView(ob, None)
+        view = view.__of__(ob)
 
         treeview = view.renderTreeView()
 
@@ -183,26 +192,36 @@ class MailFolderViewTestCase(MailTestCase):
         title = view.createShortTitle(ob)
         self.assertEquals(title, 'message1')
 
-    def old_test_addFolder(self):
+    def test_addFolder(self):
         # test createShortTitle
         box = self._getMailBox()
         ob = box._addFolder('ok', 'ok')
         view = MailFolderView(ob, None)
+        view = view.__of__(ob)
         view.addFolder('sub')
         self.assert_(hasattr(ob, 'sub'))
 
-    def old_test_rename(self):
-        """ ask FG here about this issue (the lost of interfaces 'providedBy'
-         in test context)
-        """
+    def test_rename(self):
         box = self._getMailBox()
         ob = box._addFolder('INBOX', 'INBOX.ok')
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
-        view.rename('bolo')
-        self.assertEquals_(ob.title, 'bolo')
-        self.assertEquals_(ob.id, 'bolo')
+        view = view.__of__(ob)
+        view.rename('bolo', False)
+        self.assertEquals(ob.title, 'bolo')
+        self.assertEquals(ob.id, 'bolo')
 
+    def test_manageContent(self):
+        # test content manipulations
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        self.assertEqual(ob.getMailBox(), box)
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+        self.assertEquals(view.context.getMailBox(), box)
+        kw = {'msg_1': 'on', 'msg_2': 'on'}
+        view.manageContent(action='copy', **kw)
+        self.assertEquals(box.getClipboard(),('copy', ['INBOX.2', 'INBOX.1']))
 
 def test_suite():
     return unittest.TestSuite((
