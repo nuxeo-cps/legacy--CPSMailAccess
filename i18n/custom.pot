@@ -174,3 +174,71 @@ msgstr ""
 
 msgid "cpsma_address_books"
 msgstr ""
+
+msgid "cpsma_all_entries"
+msgstr ""
+
+msgid "cpsma_send_a_message"
+msgstr ""
+
+msgid "cpsma_to"
+msgstr ""
+
+msgid "cpsma_bcc"
+msgstr ""
+
+# named parameters
+msgid "HOST"
+msgstr ""
+
+msgid "PORT"
+msgstr ""
+
+msgid "SSH"
+msgstr ""
+
+msgid "cache_level"
+msgstr ""
+
+msgid "connection_type"
+msgstr ""
+
+msgid "draft_folder_name"
+msgstr ""
+
+msgid "login"
+msgstr ""
+
+msgid "max_folder_depth"
+msgstr ""
+
+msgid "max_folder_size"
+msgstr ""
+
+msgid "message_list_cols"
+msgstr ""
+
+msgid "password"
+msgstr ""
+
+msgid "sent_folder_name"
+msgstr ""
+
+msgid "smtp_host"
+msgstr ""
+
+msgid "smtp_port"
+msgstr ""
+
+msgid "trash_folder_name"
+msgstr ""
+
+msgid "treeview_style"
+msgstr ""
+
+# psm messages
+msgid "cpsma_synchronized"
+msgstr ""
+
+msgid "cpsma_failed_synchro"
+msgstr ""
