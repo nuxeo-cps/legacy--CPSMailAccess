@@ -29,6 +29,8 @@ from zope.interface import implements
 from Products.CPSMailAccess.connectionlist import registerConnections,\
      ConnectionList
 import thread
+from Products.Five import BrowserView
+from mailsearch import MailCatalogDict
 
 lock = thread.allocate_lock()
 connector = ConnectionList()
@@ -53,9 +55,9 @@ class MailTool(Folder): # UniqueObject
     implements(IMailTool)
     meta_type = "CPSMailAccess Tool"
     id = 'portal_webmail'
-
     connection_list = getConnection()
     initialized = 0
+    mail_catalogs = MailCatalogDict()
 
     def __init__(self):
         Folder.__init__(self)
