@@ -71,23 +71,22 @@ class MailSearchView(BrowserView):
     def traverseToObject(self, path):
         """ transforms an url to its object
         """
+        # XXX needs refactoring
         mailbox = self.context
         path = path.split('/')
         if len(path) == 0:
             return None
-
         while len(path) > 0 and path[0] != mailbox.id:
             del path[0]
-
         if len(path) == 0:
             return None
-
         # starting at mailbox
         del path[0]
         subject = mailbox
-
         for element in path:
-            subject = subject[element]
-
+            if hasattr(subject, element):
+                subject = getattr(subject, element)
+            else:
+                return None
         return subject
 
