@@ -28,6 +28,11 @@ class DummyConnection(BaseConnection):
     """
     implements(IConnection)
 
+    def __init__(self, connection_params={}):
+
+        connection_params['HOST'] = 'the seventh floor'
+        BaseConnection.__init__(self, connection_params)
+
     def login(self, user, password):
 
         self.connected = True
