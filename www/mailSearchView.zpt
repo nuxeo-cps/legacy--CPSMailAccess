@@ -9,23 +9,28 @@
       src="++resource++cpsmailaccess.js">
     </script>
   </metal:main>
-  <metal:block metal:fill-slot="main">
+  <metal:block metal:fill-slot="main"
+      tal:define="searchable_text request/searchable_text|python:''">
     <form action="searchMessage.html">
-      <input type="text" name="searchable_text"/>
+      <input type="text" name="searchable_text"
+             tal:attributes="value searchable_text"/>
       <input type="submit" name="search_submitted" value="search"/>
      </form>
-
     <tal:block tal:condition="request/search_submitted|python:0">
-        <tal:block tal:define="searchable_text request/searchable_text|python:'';
-                               results python:here.searchMessages(searchable_text)">
-         todo : a mettre en forme
-            <div tal:repeat="result results">
-              <tal:block tal:define="mail_path python:result['path']+'/view'">
-                <a tal:attributes="href mail_path">
-                  <tal:block replace="mail_path"/>
-                </a>
-              </tal:block>
-            </div>
+        <hr/>
+        <tal:block tal:define="results python:here.searchMessages(searchable_text);
+                               num_results python:len(results)">
+            <tal:block tal:condition="python:num_results>0">
+              <div>
+                Found <tal:block tal:replace="num_results"/> results :
+              </div>
+              <div id="searchResults">
+                <metal:block metal:use-macro="here/messagelist_macros/search_messagelist"/>
+              </div>
+            </tal:block>
+            <tal:block tal:condition="python:num_results==0">
+            No results where found.
+            </tal:block>
         </tal:block>
     </tal:block>
   </metal:block>
