@@ -18,6 +18,7 @@
 #
 # $Id$
 import os
+import time
 
 from Products.Five import BrowserView
 from utils import getToolByName
@@ -34,6 +35,7 @@ class MailSearchView(BrowserView):
 
     def searchMessages(self, searchable_text):
         """ search the catalog """
+        start = time.time()
         # XXX encoding in iso8859-15 (today's CPS)
         searchable_text = searchable_text.strip().decode('ISO-8859-15')
         if searchable_text == '':
@@ -63,7 +65,9 @@ class MailSearchView(BrowserView):
                 results.append(current)
         else:
             raise MailCatalogError('No catalog for %s' % user_id)
-        return results
+
+        dtime = time.time() - start
+        return (results, dtime)
 
     def traverseToObject(self, path):
         """ transforms an url to its object """
@@ -105,6 +109,7 @@ class MailSearchView(BrowserView):
 
     def zemanticSearchMessages(self, **kw):
         """ zemantic query """
+        start = time.time()
         mailbox = self.context
         i = 0
         found = True
@@ -192,4 +197,5 @@ class MailSearchView(BrowserView):
 
             results.append(current)
 
-        return results
+        dtime = time.time() - start
+        return (results, dtime)
