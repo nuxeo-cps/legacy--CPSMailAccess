@@ -2,9 +2,15 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
+  <adapter
+      for=".interfaces.IMailMessage"
+      factory=".messagetraversable.MessageTraversable"
+      provides=".interfaces.IMessageTraverser"
+      />
+
   <five:traversable class="OFS.Folder.Folder" />
   <five:traversable class=".mailfolder.MailFolder" />
-  <five:traversable class=".mailmessage.MailMessage" />
+  <!--<five:traversable class=".mailmessage.MailMessage"/>-->
   <five:traversable class=".mailbox.MailBox" />
   <five:traversable class=".connectionlist.ConnectionList" />
   <five:traversable class=".connectionwatcher.ConnectionWatcher" />
@@ -167,6 +173,14 @@
       class=".mailbox.MailBoxView"
       template="www/mailBoxView.zpt"
       name="view"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxActionsView"
+      name="actionview"
+      attribute="renderActions"
       permission="zope2.View"
       />
 
