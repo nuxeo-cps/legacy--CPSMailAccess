@@ -850,6 +850,7 @@ class MailBoxParametersView(BrowserView):
 
             rendered_params.append(rendered_param)
 
+        rendered_params.sort()
         return rendered_params
 
     def renderAddParamForm(self):
@@ -912,6 +913,7 @@ class MailBoxView(MailFolderView):
                 container = mailbox
             self.request.response.redirect(container.absolute_url()+ \
                 '/view?portal_status_message=%s' % psm)
+
 
 class MailBoxTraversable(FiveTraversable):
     """ use to vizualize the mail parts in the mail editor
