@@ -22,7 +22,10 @@
 
 """
 import re
-from time import sleep
+from time import sleep, time
+
+from zLOG import LOG,INFO, DEBUG
+
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
 from zope.interface import implements
 from interfaces import IConnection
@@ -316,7 +319,10 @@ class IMAPConnection(BaseConnection):
         #if self._selected_mailbox <> mailbox:
         #    self._connection.select(mailbox)
         #    self._selected_mailbox = mailbox
-        self._connection.select(mailbox)
+        try:
+            self._connection.select(mailbox)
+        except (IMAP4.error, IMAP4_SSL.error):
+            raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
 
         try:
             imap_result =  self._connection.fetch(message_number, message_parts)
@@ -324,7 +330,7 @@ class IMAPConnection(BaseConnection):
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
         except IndexError:
             raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number, mailbox))
-        except (AttributeError, IMAP4.error):
+        except (AttributeError, IMAP4.error, IMAP4_SSL.error):
             raise ConnectionError(CANNOT_READ_MESSAGE % (message_number, mailbox))
 
         if imap_result[0] == 'OK':
@@ -335,6 +341,7 @@ class IMAPConnection(BaseConnection):
                 raw_result = self.extractResult(query, imap_raw)
                 results.append(raw_result)
                 i += 1
+
         if len(results) == 1:
             return results[0]
         return results
