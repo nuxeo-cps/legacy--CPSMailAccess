@@ -411,18 +411,22 @@ class MailFolder(BTreeFolder2):
                 continue
 
             # gets flags, size and headers
-            fetched = connector.fetch(self.server_name, uid,\
-                '(FLAGS RFC822.SIZE RFC822.HEADER)')
-
+            try:
+                fetched = connector.fetch(self.server_name, uid,\
+                    '(FLAGS RFC822.SIZE RFC822.HEADER)')
+                mailfailed = False
+            except ConnectionError:
+                mailfailed = True
             # msg_flags = fetched[0]
             # msg_size = fetched[1]
-            msg_headers = fetched[2]
+            if not mailfailed:
+                msg_headers = fetched[2]
 
-            digest = self._createKey(msg_headers)
-            msg = mailbox.getMailFromCache(digest, remove=True)
-            raw_msg = ''
+                digest = self._createKey(msg_headers)
+                msg = mailbox.getMailFromCache(digest, remove=True)
+                raw_msg = ''
 
-            if msg is None:
+            if msg is None and not mailfailed:
                 msg = self._addMessage(uid, digest, index=False)
                 skip = False
 
@@ -472,8 +476,14 @@ class MailFolder(BTreeFolder2):
                     self.manage_delObjects([msg.getId()])
             else:
                 # Message was in cache, adding it to self
-                log.append('moving message %s in %s' % (uid, self.server_name))
-                self._setObject(msg.getId(), msg)
+                if not mailfailed:
+                    log.append('moving message %s in %s' % (uid,
+                                                            self.server_name))
+                    self._setObject(msg.getId(), msg)
+                else:
+                    log.append('failed to get message %s in %s' \
+                                % (uid, self.server_name))
+
             msg.setSyncState(state=True)
 
         # now clear messages in zodb that appears to be
