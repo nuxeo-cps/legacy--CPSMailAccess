@@ -23,6 +23,8 @@ from utils import decodeHeader, localizeDateString, parseDateString, \
     isToday, getFolder
 from interfaces import IMailMessage
 
+from zope.app.cache.ram import RAMCache
+
 class MailFolderView(BaseMailMessageView):
 
     def __init__(self, context, request):
@@ -94,11 +96,17 @@ class MailFolderView(BaseMailMessageView):
         """ renders mailfolder content
 
         XXX need to externalize html here
+        XXX need to memoize this
         """
         mailfolder = self.context
+        cache = mailfolder.getMailListFromCache()
+        if cache is not None:
+            return cache
+
         returned = []
         elements = mailfolder.getMailMessages(list_folder=False,
             list_messages=True, recursive=False)
+
         for element in elements:
             part = {}
             part['object'] = element
@@ -138,7 +146,15 @@ class MailFolderView(BaseMailMessageView):
         # now sorting upon date
         returned.sort()
         returned.reverse()        # most recent on top
-        return [element[1] for element in returned]
+
+        returned = [element[1] for element in returned]
+
+        # test XXXXXXXXx no more than 200 elements
+        while len(returned) > 200:
+            del returned[len(returned)-1]
+
+        mailfolder.addMailListToCache(returned)
+        return returned
 
     def getMsgIconName(self, message):
         """ icon representing the mail depends on flags
