@@ -300,6 +300,31 @@ class MailMessage(MailPart):
                 self.setFlag(item, 1)
             else:
                 self.setFlag(item, 0)
+
+    def setBody(self, content):
+        """ sets body content """
+        if not self.isMultipart():
+            self.setPart(0, content)
+        else:
+            # the mail editor message structure does not move
+            sub = self.getPart(0)
+            sub._payload = content
+            self.setPart(0, sub)
+
+    def getBody(self):
+        """ gets body """
+        try:
+            res = self.getPart(0)
+            if res is None:
+                return ''
+        except IndexError:
+            res = ''
+
+        if type(res) is str:
+            return res
+        else:
+            return res.get_payload()
+
 """ classic Zope 2 interface for class registering
 """
 InitializeClass(MailMessage)
