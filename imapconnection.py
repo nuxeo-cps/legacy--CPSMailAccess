@@ -29,7 +29,8 @@ from baseconnection import BaseConnection
 from baseconnection import LOGIN_FAILED
 from baseconnection import ConnectionError
 from baseconnection import ConnectionParamsError
-from baseconnection import CANNOT_SEARCH_MAILBOX
+from baseconnection import CANNOT_SEARCH_MAILBOX, MAILBOX_INDEX_ERROR
+
 
 class IMAPConnection(BaseConnection):
     """ IMAP4 v1 implementation for Connection
@@ -198,6 +199,8 @@ class IMAPConnection(BaseConnection):
             imap_result =  self._connection.fetch(message_number, message_parts)
         except self._connection.error:
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
+        except IndexError:
+            raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number, mailbox))
 
         if imap_result[0] == 'OK':
             imap_raw = imap_result[1]
@@ -292,7 +295,9 @@ class IMAPConnection(BaseConnection):
         else:
             imap_results = imap_result[1]
             for res in imap_results:
-                results.extend(res.split(' '))
+                if res.strip() != '':
+                    results.extend(res.split(' '))
+
         return results
 
     def noop(self):
