@@ -94,7 +94,7 @@ class MailFolderViewTestCase(MailTestCase):
         rendered_list = view.renderMailList()
 
         # empty folder
-        self.assertEquals(rendered_list, [])
+        self.assertEquals(rendered_list, (0, []))
 
         # 5 sub folders and 2 messages
         ob = self.test_getMailMessagesCountRecursive()
@@ -103,10 +103,10 @@ class MailFolderViewTestCase(MailTestCase):
         ob.getPhysicalPath = self.getPhysicalPath
 
         view = MailFolderView(ob, None)
-        rendered_list = view.renderMailList()
+        rendered_list = view.renderMailList()[1]
 
         self.assertEquals(rendered_list[len(rendered_list)-1]['url'],
-                          '.msg_110/view')
+                          '.msg_213/view')
 
         # testing a message
         msg_entry = rendered_list[0]
