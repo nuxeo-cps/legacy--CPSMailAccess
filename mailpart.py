@@ -254,7 +254,7 @@ class MailPart:
 
         elements = store.get_all(name, [])
         if elements is None:
-            return None
+            return []
         return elements
 
     def setHeader(self, name, value):
