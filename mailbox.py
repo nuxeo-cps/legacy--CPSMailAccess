@@ -29,7 +29,6 @@ from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 from OFS.Folder import Folder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-
 from Products.Five import BrowserView
 from Products.Five.traversable import FiveTraversable
 
@@ -49,7 +48,7 @@ from mailfolderview import MailFolderView
 from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
 from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
-from mailsearch import MailCatalog
+from mailsearch import MailCatalog, ZemanticMailCatalog
 from directorypicker import DirectoryPicker
 from baseconnection import has_connection
 
@@ -459,8 +458,7 @@ class MailBox(MailBoxBaseCaching):
             connector.expunge()
 
     def _getCatalog(self):
-        """ returns the catalog
-        """
+        """ returns the catalog """
         if not self.getConnectionParams().has_key('uid'):
             raise Exception('Need a uid to get the catalog')
 
@@ -475,24 +473,50 @@ class MailBox(MailBoxBaseCaching):
 
         return getattr(self, catalog_id)
 
+    def _getZemanticCatalog(self):
+        """ returns the catalog """
+        if not self.getConnectionParams().has_key('uid'):
+            raise Exception('Need a uid to get the catalog')
+
+        uid = self.getConnectionParams()['uid']
+
+        catalog_id = '.zemanticcatalog'
+        if hasattr(self, catalog_id):
+            return getattr(self, catalog_id)
+        else:
+            cat = ZemanticMailCatalog()
+            #self._setObject(catalog_id, cat)
+            setattr(self, catalog_id, cat)
+
+        return getattr(self, catalog_id)
+
     def reindexMailCatalog(self):
-        """ reindex the catalog
-        """
+        """ reindex the catalog """
         cat = self._getCatalog()
+        zemantic_cat = self._getZemanticCatalog()
+
         mails = self.getMailMessages(list_folder=False,
             list_messages=True, recursive=True)
+
         for mail in mails:
             cat.indexMessage(mail)
+            zemantic_cat.indexMessage(mail)
 
     def indexMessage(self, msg):
         """ indexes message """
         cat = self._getCatalog()
         cat.indexMessage(msg)
 
+        zemantic_cat = self._getZemanticCatalog()
+        zemantic_cat.indexMessage(msg)
+
     def unIndexMessage(self, msg):
         """ unindexes message """
         cat = self._getCatalog()
         cat.unIndexMessage(msg)
+
+        zemantic_cat = self._getZemanticCatalog()
+        zemantic_cat.unIndexMessage(msg)
 
     def saveEditorMessage(self):
         """ makes a copy of editor message into Drafts """
