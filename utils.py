@@ -207,14 +207,6 @@ def mimetype_to_icon_name(mimetype):
         return 'unknown.png'
     return mimetype.replace('/', '_')+'.png'
 
-def _isinstance(ob, cls):
-    try:
-        return isinstance(ob, cls)
-    except TypeError:
-        # In python 2.1 isinstance() raises TypeError
-        # instead of returning 0 for ExtensionClasses.
-        return 0
-
 def getFolder(mailbox, folder_name):
     current = mailbox
     path = folder_name.split('.')
@@ -379,4 +371,55 @@ def sameMail(mail1, mail2):
 
     return mail1.strip(' ') == mail2.strip(' ')
 
+def getHumanReadableSize(octet_size):
+    """ returns a human readable file size """
+    if not isinstance(octet_size, int):
+        if not isinstance(octet_size, str):
+            raise Exception('need an integer')
+        else:
+            octet_size = int(octet_size)
 
+    mega = 1024*1024
+    kilo = 1024
+
+    if octet_size is None or octet_size <= 0:
+        return (0, '')
+    elif octet_size >= mega:
+        if octet_size == mega:
+            return (1, 'mo')
+        else:
+            msize = float(octet_size/float(mega))
+            msize = int(msize)
+            return (msize, 'mo')
+    elif octet_size >= kilo:
+
+        if octet_size == kilo:
+            return (1, 'ko')
+        else:
+            msize = float(octet_size/float(kilo))
+            msize = int(msize)
+            return (msize, 'ko')
+    else:
+        if octet_size == 1:
+            return (1, 'o')
+        else:
+            return (octet_size ,'o')
+
+def intToSortableStr(values):
+    """ takes an integer and returns a string that can be sorted
+
+    >>> serie = [1, 123, 768, 988765, 65]
+    >>> intToSortableStr(serie)
+    ['000001', '000123', '000768', '988765', '000065']
+    """
+    strings = [str(value) for value in values]
+    max_ = 0
+    for value in strings:
+        if len(value) > max_:
+            max_ = len(value)
+    fvalues = []
+    for value in strings:
+        while len(value) < max_:
+            value = '0' + value
+        fvalues.append(value)
+    return fvalues
