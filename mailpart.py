@@ -30,8 +30,9 @@ from email import message_from_string
 from email.Charset import Charset
 from email.Header import decode_header
 from Globals import InitializeClass
+from OFS.Folder import Folder
 
-class MailPart:
+class MailPart(Folder):
     """ A Mail part encapsulates a python message
         it is generated on the fly when needeed
         and adapts the message
@@ -357,6 +358,16 @@ class MailPart:
             # back to simple message
             store._payload = new_payload[0]
         return True
+
+    def getDirectBody(self):
+        """ returns direct body
+        """
+        if self.getPartCount() > 0 and not self.isMultipart():
+            store = self._getStore()
+            return store._payload
+        else:
+            return ''
+
 
 InitializeClass(MailPart)
 
