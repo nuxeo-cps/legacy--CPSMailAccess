@@ -58,10 +58,9 @@ class MailBoxBaseCaching(MailFolder):
     """ a mailfolder that implements
         mail box caches
     """
-    _cache = RAMCache()
-
     def __init__(self, uid, server_name, **kw):
         MailFolder.__init__(self, uid, server_name, **kw)
+        self._cache = RAMCache()
 
     def addMailToCache(self, msg, key):
         key = {'digest' : key}
@@ -643,8 +642,7 @@ class MailBox(MailBoxBaseCaching):
         return render
 
     def _directoryToParam(self, value):
-        """ check if a given parameter has to be taken from a directory """.strip()
-
+        """ check if a given parameter has to be taken from a directory """
         id = self.id.replace('box_', '')
         if isinstance(value, str) and value.startswith('${'):
             name = value[2:-1]
@@ -663,6 +661,18 @@ class MailBox(MailBoxBaseCaching):
             return fields[field]
         return value
 
+
+    def elementIsInTrash(self, element):
+        """ tells if the given element is in trash
+        Just working on folders at this time
+        """
+        if IMailFolder.providedBy(element):
+            trash_folder = self.getTrashFolder()
+            trash_name = trash_folder.server_name
+            folder_name = element.server_name
+            return folder_name.startswith(trash_name)
+        else:
+            return False
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
@@ -767,6 +777,7 @@ class MailBoxParametersView(BrowserView):
         if self.request is not None:
             psm = 'All mails are indexed'
             self.request.response.redirect('configure.html?portal_status_message=%s' % psm)
+
 #
 # MailBoxView Views
 #
@@ -797,7 +808,6 @@ class MailBoxView(MailFolderView):
 
     def synchronize(self):
         """ synchronizes mailbox """
-
         mailbox = self.context
         mailbox.synchronize(True)
         if self.request is not None:
@@ -808,9 +818,6 @@ class MailBoxView(MailFolderView):
                 container = mailbox
             self.request.response.redirect(container.absolute_url()+ \
                 '/view?portal_status_message=%s' % psm)
-
-
-
 
 class MailBoxTraversable(FiveTraversable):
     """ use to vizualize the mail parts in the mail editor
