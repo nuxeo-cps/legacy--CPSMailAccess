@@ -22,6 +22,7 @@
 
 A MailFolder contains mail messages and other mail folders.
 """
+import time
 from zLOG import LOG, DEBUG, INFO
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
@@ -32,6 +33,7 @@ from Products.Five import BrowserView
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
+from zope.app.cache.ram import RAMCache
 
 from mailmessage import MailMessage
 from mailexceptions import MailContainerError
@@ -65,6 +67,7 @@ class MailFolder(BTreeFolder2):
         BTreeFolder2.__init__(self, uid)
         self.setServerName(server_name)
         self.title = self.simpleFolderName()
+        self._cache = RAMCache()
 
     def getNextMessageUid(self):
         """ retrieves next id for messages
@@ -249,6 +252,7 @@ class MailFolder(BTreeFolder2):
     def _moveMessage(self, uid, to_mailbox):
         """ moves the message to another mailbox
         """
+        self._cache.invalidate(self.server_name)
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
         if not hasattr(self, id):
@@ -267,6 +271,7 @@ class MailFolder(BTreeFolder2):
         #link it to the newmailbox
         to_mailbox._setObject(id, msg)
         to_mailbox.message_count += 1
+        to_mailbox._cache.invalidate(to_mailbox.server_name)
         msg = getattr(to_mailbox, id)
         self._indexMessage(msg)
         return msg
@@ -282,6 +287,7 @@ class MailFolder(BTreeFolder2):
 
     def _deleteMessage(self, uid):
         """ see interfaces ImailFolder """
+        self._cache.invalidate(self.server_name)
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
         if hasattr(self, id):
@@ -303,6 +309,7 @@ class MailFolder(BTreeFolder2):
 
     def _addMessage(self, uid, digest, index=True):
         """ See interfaces.IMailFolder """
+        self._cache.invalidate(self.server_name)
         self.clearMailBoxTreeViewCache()
         self.message_count +=1
         id = self.getIdFromUid(uid)
@@ -382,9 +389,9 @@ class MailFolder(BTreeFolder2):
         s = ''.join(header.values())
         return md5Hash(s)
 
-    def _synchronizeFolder(self, return_log=False):
-        """ See interfaces.IMailFolder
-        """
+    def _synchronizeFolder(self, return_log=False, indexStack=[]):
+        """ See interfaces.IMailFolder """
+        sync_states = {}
         log = []
         mailbox = self.getMailBox()
         cache_level = self.getCacheLevel()
@@ -393,7 +400,7 @@ class MailFolder(BTreeFolder2):
             list_messages=True, recursive=False)
         # now syncing server_folder and current one
         for message in zodb_messages:
-            message.setSyncState(state=False)
+            sync_states['%s.%s' % (self.server_name, message.uid)] = False
 
         try:
             uids = connector.search(self.server_name, None,'ALL')
@@ -402,12 +409,16 @@ class MailFolder(BTreeFolder2):
             # this will happen if the directory has been
             # deleted form the server
             uids = []
-        for uid in uids:
-            LOG('synchro', INFO, '%s %s' % (str(uid), self.server_name))
-            msg = self.findMessageByUid(uid)
 
+        for uid in uids:
+            #start = time.time()
+            #LOG('synchro', INFO, '%s %s' % (str(uid), self.server_name))
+
+            sync_id = '%s.%s' % (self.server_name, uid)
+
+            msg = self.findMessageByUid(uid)
             if msg is not None:
-                msg.setSyncState(state=True)
+                sync_states[sync_id] = True
                 continue
 
             # gets flags, size and headers
@@ -417,6 +428,7 @@ class MailFolder(BTreeFolder2):
                 mailfailed = False
             except ConnectionError:
                 mailfailed = True
+
             # msg_flags = fetched[0]
             # msg_size = fetched[1]
             if not mailfailed:
@@ -428,8 +440,8 @@ class MailFolder(BTreeFolder2):
 
             if msg is None and not mailfailed:
                 msg = self._addMessage(uid, digest, index=False)
-                skip = False
 
+                skip = False
                 # Message is not in cache
                 if cache_level == 0:
                     # nothing is uploaded
@@ -467,11 +479,15 @@ class MailFolder(BTreeFolder2):
                     log.append('adding message %s in %s' % (uid, self.server_name))
 
                     # todo: parse flags
+                    startf = time.time()
+
                     msg.loadMessage(raw_msg, cache_level)
-
-
-                    self._indexMessage(msg)
+                    #self._indexMessage(msg)
+                    indexStack.append(msg)
                     self._updateDirectories(msg)
+
+                    total = time.time() - startf
+                    #LOG('synchro', INFO, 'load  %0.2f' % (total))
                 else:
                     self.manage_delObjects([msg.getId()])
             else:
@@ -484,16 +500,25 @@ class MailFolder(BTreeFolder2):
                     log.append('failed to get message %s in %s' \
                                 % (uid, self.server_name))
 
-            msg.setSyncState(state=True)
-
+            sync_states[sync_id] = True
+            #total = time.time() - start
+            #LOG('synchro', INFO, '  %0.2f' % (total))
+            # print '%s.%s' % (str(self.server_name), str(uid))
         # now clear messages in zodb that appears to be
         # deleted from the directory
         # and put them in the cache
         for message in zodb_messages:
-            if not message.sync_state:
+            if not sync_states['%s.%s' % (self.server_name, message.uid)]:
                 digest = message.digest
                 mailbox.addMailToCache(message, digest)
+                # XXX need to remove for catalogs
                 self.manage_delObjects([message.getId()])
+
+        # print '%s synchro' % self.server_name
+        # print time.asctime() + ' : zodb commit'
+        get_transaction().commit()
+        get_transaction().begin()
+
         if return_log:
             return log
         else:
@@ -525,6 +550,7 @@ class MailFolder(BTreeFolder2):
     def rename(self, new_name, fullname=False):
         """ renames the box
         """
+        self._cache.invalidate(self.server_name)
         self.clearMailBoxTreeViewCache()
         oldmailbox = self.server_name
 
@@ -600,6 +626,7 @@ class MailFolder(BTreeFolder2):
         """ sends the mailbox to the thrash
             by renaming it
         """
+        self._cache.invalidate(self.server_name)
         mailbox = self.getMailBox()
         trash_folder_name = mailbox.getTrashFolderName()
         trash = mailbox.getTrashFolder()
@@ -700,6 +727,24 @@ class MailFolder(BTreeFolder2):
 
         current_depth = self.depth()
         return current_depth + 1 <=  max_depth
+
+    def addMailListToCache(self, elements):
+        """ to be extern. in mailfolder """
+        if not hasattr(self, '_cache'):
+            self._cache = RAMCache()
+
+        folder_id = self.server_name
+        self._cache.set(elements, folder_id)
+
+    def getMailListFromCache(self):
+        """ to be extern. in mailfolder """
+        if not hasattr(self, '_cache'):
+            self._cache = RAMCache()
+            return None
+
+        folder_id = self.server_name
+        elements = self._cache.query(folder_id)
+        return elements
 
 
 
