@@ -18,6 +18,11 @@
 #
 # $Id$
 from zLOG import LOG, INFO, DEBUG
+
+import time
+from StringIO import StringIO
+from types import StringType, ListType
+
 from email.MIMEAudio import MIMEAudio
 from email.MIMEText import MIMEText
 from email.MIMEImage import MIMEImage
@@ -25,14 +30,15 @@ from email.MIMEBase import MIMEBase
 from email.MIMEMessage import MIMEMessage
 from email.MIMEMultipart import MIMEMultipart
 from email import Iterators, Message
-from interfaces import IMailRenderer
-from zope.interface import implements
-from mimetools import decode
 from email import Parser
-from types import StringType, ListType
-from utils import decodeHeader, HTMLize, HTMLToText, sanitizeHTML
 import mimetools
-from StringIO import StringIO
+from mimetools import decode
+
+from zope.interface import implements
+
+from utils import decodeHeader, HTMLize, HTMLToText, sanitizeHTML
+from interfaces import IMailRenderer
+
 
 EMPTYSTRING = ''
 
@@ -99,12 +105,13 @@ class MailRenderer:
         if ptype.startswith('multipart'):
             return content
 
-        raise NotImplementedError('part_type %s charset %s type %s \n content %s' \
+        raise NotImplementedError('part_type %s charset %s type %s content %s' \
                 % (part_type, pcharset, ptype, content))
 
     def _extractBodies(self, mail):
         """ extracts the body """
         part_type = mail['Content-type']
+
         if part_type is not None and isinstance(part_type, str):
             html = part_type.strip().startswith('text/html')
         else:
@@ -163,7 +170,8 @@ class MailRenderer:
         # so this is only for the first level
         if is_msg:
             part = mail.getVolatilePart(part_index)
-        if part is None:
+
+        if part is None and mail.cache_level == 2:
             # this works for all level
             if mail.isMultipart():
                 part_type = mail.getHeader('Content-type')
@@ -180,7 +188,7 @@ class MailRenderer:
             else:
                 part = mail.getPart(part_index, True)
 
-        if part is None:
+        if part is None and mail.cache_level == 1:
             # need to fetch server then
             # but will charge the highest part
             # XXXXX charging into volatile
@@ -188,7 +196,13 @@ class MailRenderer:
             # to know if it will get persistent then
             if is_msg:
                 volatile = True
-                part = root_msg.loadPart(part_index, part_content='', volatile=volatile)
+                part_str = str(part_index+1)
+                if mail.isMultipart():
+                    ct = mail.getContentType()
+                    if ct.startswith('multipart/alternative'):
+                        part_str = '2'
+
+                part = root_msg.loadPart(part_str, part_content='', volatile=volatile)
                 html, body = self._extractBodies(part)
             else:
                 #need to load the whole branch
@@ -199,7 +213,6 @@ class MailRenderer:
 
         if not html:
             body = HTMLize(body)
-
         return body
 
     def _stringToUnicode(self, string, charset='ISO-8859-15'):
