@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-15 -*-
-# Copyright (c) 2004 Nuxeo SARL <http://nuxeo.com>
+# Copyright (c) 2005 Nuxeo SARL <http://nuxeo.com>
 # Authors: Tarek Ziadé <tz@nuxeo.com>
 #          Florent Guillaume <tz@nuxeo.com>
 #

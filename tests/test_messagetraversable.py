@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- encoding: iso-8859-15 -*-
-# Copyright (C) 2004 Nuxeo SARL <http://nuxeo.com>
+# Copyright (C) 2005 Nuxeo SARL <http://nuxeo.com>
 # Author: Tarek Ziadé <tz@nuxeo.com>
 #
 # This program is free software; you can redistribute it and/or modify
