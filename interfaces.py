@@ -26,8 +26,6 @@ from zope.app.container.constraints import ContainerTypesConstraint
 from zope.app.traversing.interfaces import ITraverser
 from zope.schema import Field, Text, List
 
-
-
 class IMailFolder(IContainer):
     """A container of mail messages and other mail folders.
     """
@@ -91,6 +89,11 @@ class IMailFolder(IContainer):
         """ returns mailbox holder
         """
 
+    def rename(new_name):
+        """ renames the folder
+        """
+
+
 class IMailMessage(IContainer):
     """A mail message.
 
@@ -108,6 +111,10 @@ class IMailMessage(IContainer):
         description=u'Digest used to uniquely identify message',
         default=u'',
         required=False)
+
+    def attachFile(file):
+        """ attacha file to the message
+        """
 
 class IMailBox(IContainer):
     """ mailboxes gives a few api to synchronize
@@ -239,6 +246,12 @@ class IConnection(Interface):
         """ gets a part of a message
         """
 
+    def rename(oldmailbox, newmailbox):
+        """ renames a mailbox
+        """
+    def copy(from_mailbox, to_mailbox, message_number):
+        """ copy a message from a box to another
+        """
 
 class IConnectionList(Interface):
 
@@ -303,7 +316,6 @@ class IMailMessageCache(Interface):
     This cache is keyed by a digest which is usually based on the
     headers only.
     """
-
     def clear():
         """Clear the message cache."""
 
@@ -339,6 +351,11 @@ class IMailPart(Interface):
     """
     def getRawMessage():
         """ retrieves the raw message
+        """
+
+    def getFileInfos():
+        """ returns a dictionnary with info on the file
+            None if not a file
         """
 
     def isMultipart():
