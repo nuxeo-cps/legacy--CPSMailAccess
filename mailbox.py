@@ -79,6 +79,8 @@ class MailBox(MailFolder):
                          'password' :'',
                          'login' : ''}
 
+    cache_level = 1
+
     # one mail cache by mailbox
     mail_cache = getCache()
 
@@ -174,7 +176,7 @@ class MailBox(MailFolder):
         # let's order folder : leaves at first
         for folder in folders:
             if not folder.sync_state:
-                # before deleting message that this folder hold,
+                # before deleti_synchronizeFolderng message that this folder hold,
                 # we want to put them in orphan list
                 for id, item in folder.objectItems():
                     if IMailMessage.providedBy(item):
@@ -335,10 +337,10 @@ class MailBoxParametersView(BrowserView):
 #
 # MailBoxView Views
 #
-class MailBoxView(BaseMailMessageView):
+class MailBoxView(MailFolderView):
 
     def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
+        MailFolderView.__init__(self, context, request)
 
     def renderMailList(self, flags=[]):
         """ returns mails that contains given flags
@@ -346,6 +348,7 @@ class MailBoxView(BaseMailMessageView):
         if flags == []:
             return MailFolderView.renderMailList(self)
         else:
+            # todo (flag view)
             return ''
 
 manage_addMailBoxForm = PageTemplateFile(
