@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-import mailbox
+import mailbox, mailfolder
 
 def initialize(context):
 
@@ -27,3 +27,8 @@ def initialize(context):
                         mailbox.manage_addMailBox),
         )
 
+    context.registerClass(
+        mailfolder.MailFolder,
+        constructors = (mailfolder.manage_addMailFolderForm,
+                        mailfolder.manage_addMailFolder),
+        )
