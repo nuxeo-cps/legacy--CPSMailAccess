@@ -22,28 +22,28 @@
 A MailBox is the root MailFolder for a given mail account
 """
 from zLOG import LOG, DEBUG, INFO
+from Globals import InitializeClass
+import sys
+from smtplib import SMTP
+from utils import getToolByName, getCurrentDateStr, _isinstance
+import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
+from Products.Five import BrowserView
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
-from utils import uniqueId, makeId
-from Products.CPSMailAccess.interfaces import IMailBox
-from Products.CPSMailAccess.mailmessage import MailMessage
-from Products.CPSMailAccess.mailfolder import MailFolder, MailFolderView, \
-    manage_addMailFolder
-from Products.CPSMailAccess.baseconnection import ConnectionError, BAD_LOGIN, \
-    NO_CONNECTOR
-from Products.CPSMailAccess.mailcache import MailCache
-from interfaces import IMailFolder, IMailMessage
-from Globals import InitializeClass
 from zope.schema.fieldproperty import FieldProperty
-from Products.Five import BrowserView
-from Products.CPSMailAccess.basemailview import BaseMailMessageView
-import sys
-from smtplib import SMTP
-from utils import getToolByName
-import thread
+from zope.publisher.browser import FileUpload
+from utils import uniqueId, makeId, getFolder
+from interfaces import IMailBox, IMailMessage, IMailFolder
+from mailmessage import MailMessage
+from mailfolder import MailFolder, manage_addMailFolder
+from mailfolderview import MailFolderView
+from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
+from mailcache import MailCache
+from basemailview import BaseMailMessageView
+from mailmessageview import MailMessageView
 
 lock = thread.allocate_lock()
 cache = MailCache()
@@ -68,6 +68,7 @@ class MailBox(MailFolder):
     meta_type = "CPSMailAccess Box"
     portal_type = meta_type
     _v_treeview_cache = None
+    _v_current_editor_message = None
 
     implements(IMailBox)
 
@@ -78,7 +79,10 @@ class MailBox(MailFolder):
                          'password' :'',
                          'login' : '',
                          'smtp_host' : 'localhost',
-                         'smtp_port' : 25}
+                         'smtp_port' : 25,
+                         'trash_folder_name' : 'INBOX.Trash',
+                         'draft_folder_name' : 'INBOX.Drafts',
+                         'sent_folder_name' : 'INBOX.Sent'}
 
     cache_level = 1
 
@@ -257,15 +261,25 @@ class MailBox(MailFolder):
             # TODO: look upon failures here
             pass
 
-    def sendMessage(self, msg_from, msg_to, msg_subject, msg_body,
-            msg_attachments):
-        """ see interface
+    def sendEditorsMessage(self):
+        """ sends the cached message
         """
-        # first create a message
-        # TODO: needs date
-        ob = MailMessage()
+        msg = self.getCurrentEditorMessage()
+        if msg is None:
+            return False
+        msg_from = ob.getHeader('From')
+        msg_to = ob.getHeader('To')
+        result = self._sendMailMessage(msg_from, msg_to, msg)
+        if result:
+            self.clearEditorMessage()
+
+    def sendMessage(self, msg_from, msg_to, msg_subject, msg_body):
+        """ sends the message
+        """
+        ob = self.getCurrentEditorMessage()
         ob.setHeader('Subject', msg_subject)
         ob.setHeader('From', msg_from)
+        ob.setHeader('Date', getCurrentDateStr())
         if type(msg_to) is list:
             ob.setHeader('To', ", ".join(msg_to))
         else:
@@ -291,6 +305,68 @@ class MailBox(MailFolder):
             self._syncdirs()
             self._synchronizeFolder(return_log=False)
 
+        self.clearEditorMessage()
+
+    def getTrashFolderName(self):
+        """ returns the trash name
+        """
+        return self.connection_params['trash_folder_name']
+
+    def getTrashFolder(self):
+        """ returns the trash name
+        """
+        trash_name = self.getTrashFolderName()
+        return getFolder(self, trash_name)
+
+    def getDraftFolderName(self):
+        """ returns the trash name
+        """
+        return self.connection_params['draft_folder_name']
+
+    def getDraftFolder(self):
+        """ returns the trash name
+        """
+        draft_name = self.getDraftFolderName()
+        return getFolder(self, draft_name)
+
+    def getSentFolderName(self):
+        """ returns the trash name
+        """
+        return self.connection_params['sent_folder_name']
+
+    def getSentFolder(self):
+        """ returns the trash name
+        """
+        sent_name = self.getSentFolderName()
+        return getFolder(self, sent_name)
+
+    def getCurrentEditorMessage(self):
+        """ returns the message that is beeing edited
+        """
+        if self._v_current_editor_message is None:
+            msg = MailMessage()
+            msg.setHeader('Date', getCurrentDateStr())
+            self._v_current_editor_message = msg
+        return self._v_current_editor_message
+
+    def clearEditorMessage(self):
+        """ empty the cached message
+        """
+        self._v_current_editor_message = None
+
+    def emptyTrash(self):
+        """ empty the trash
+        """
+        # TODO to do this we need first of all to add message flag managment
+        # at this this is a local rough deletion
+        trash = self.getTrashFolder()
+        ids = []
+        for id, ob in trash.objectItems():
+            ids.append(id)
+        trash.manage_delObjects(ids)
+        trash.message_count = 0
+        trash.folder_count = 0
+        self.clearMailBoxTreeViewCache()
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
@@ -396,18 +472,44 @@ class MailBoxView(MailFolderView):
             # todo (flag view)
             return ''
 
+    def emptyTrash(self):
+        mailbox = self.context
+        mailbox.emptyTrash()
+        trash = mailbox.getTrashFolder()
+        if self.request is not None:
+            self.request.response.redirect(trash.absolute_url()+'/view')
+
 #
 # MailMessageEdit view
 #
 class MailMessageEdit(BrowserView):
+
+    def initMessage(self):
+        """ will init message editor
+        """
+        mailbox = self.context
+        # this creates a mailmessage instance
+        # XXX todo manage a list of editing message in case of multiediting
+        mailbox.getCurrentEditorMessage()
 
     def sendMessage(self, msg_from, msg_to, msg_subject, msg_body,
             msg_attachments, came_from=None):
         """ calls MailTool
         """
         # call mail box to send a message and to copy it to "send" section
-        result = self.context.sendMessage(msg_from, msg_to, msg_subject, msg_body,
-            msg_attachments)
+        mailbox = self.context
+        msg = mailbox.getCurrentEditorMessage()
+
+        msg.setHeader('From', msg_from)
+        msg.setHeader('To', msg_to)
+        msg.setHeader('Subject', msg_subject)
+
+        # XX todo load body according to attached parts
+        msg.set_payload(msg_body)
+
+
+        # using the message instance that might have attached files already
+        result = self.context.sendEditorsMessage()
 
         if self.request is not None and came_from is not None:
             if result:
@@ -416,28 +518,65 @@ class MailMessageEdit(BrowserView):
                 #XXXX need to redirect to an error screen here later
                 self.request.response.redirect(came_from)
 
-
-class MailBoxActionsView(BrowserView):
-    """ XXXX using a view to retrieve actions
-        to avoid the use of portal_actions
-        in the rendering process
-    """
-    def renderActions(self):
-        """ XXX need to use the mapping menuItems in CMFOnFive instead
+    def getIdentitites(self):
+        """ gives to the editor the list of current mùailbox idendities
         """
-        root = self.context.absolute_url()
+        # XXXX todo
+        identity = {'email' : 'tarek@ziade.org', 'fullname' : 'Tarek Ziadé'}
 
-        synchro = {'icon' : 'cpsma_getmails.png',
-                   'title' : 'synchronize',
-                   'action' : root + '/synchronize'}
+        return [identity]
 
-        write   = {'icon' : 'cpsma_writemail.png',
-                   'title' : 'write_mail',
-                   'action' : root + '/editMessage.html'}
+    def is_editor(self):
+        """ tells if we are in editor view (hack)
+        """
+        if self.request is not None:
+            url_elements = self.request['URL'].split('/')
+            len_url = len(url_elements)
+            return url_elements[len_url-1]=='editMessage.html'
+        else:
+            return False
 
-        return [synchro, write]
+    def attached_files(self):
+        """ gets attached file list
+        """
+        mailbox = self.context
+        msg = mailbox.getCurrentEditorMessage()
+        msg_viewer = MailMessageView(msg, self.request)
+        return msg_viewer.attached_files()
 
+    def attachFile(self, file):
+        """ attach a file to the current message
+        """
+        if file == '':
+            return
+        # file is the file name
+        # need to load binary here
+        mailbox = self.context
+        #max_size = mailbox.max_file_size
+        max_size = 0
+        msg = mailbox.getCurrentEditorMessage()
+        #if not _isinstance(file, FileUpload) or not type(file) is FileUpload:
+        #    raise TypeError('%s' % str(type(file)))
+        if file.read(1) == '':
+            return
+        elif max_size and len(file.read(max_size)) == max_size:
+            raise FileError('file is too big')
+        else:
+            msg.attachFile(file)
 
+        if self.request is not None:
+            self.request.response.redirect('editMessage.html')
+
+    def detachFile(self, filename):
+        """ detach a file
+        """
+        mailbox = self.context
+        msg = mailbox.getCurrentEditorMessage()
+
+        msg.detachFile(filename)
+
+        if self.request is not None:
+            self.request.response.redirect('editMessage.html')
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
