@@ -24,19 +24,19 @@ A MailBox is the root MailFolder for a given mail account
 from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 import sys
-from smtplib import SMTP
-from utils import getToolByName, getCurrentDateStr, \
-    _isinstance, decodeHeader
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from Products.Five import BrowserView
+
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from zope.publisher.browser import FileUpload
-from utils import uniqueId, makeId, getFolder
+
+from utils import getToolByName, getCurrentDateStr, \
+    _isinstance, decodeHeader, uniqueId, makeId, getFolder
 from interfaces import IMailBox, IMailMessage, IMailFolder, IMessageTraverser
 from mailmessage import MailMessage
 from mailfolder import MailFolder, manage_addMailFolder
@@ -47,7 +47,8 @@ from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
 from Products.Five.traversable import FiveTraversable
 
-has_connection = 1
+
+has_connection = 0
 
 lock = thread.allocate_lock()
 cache = MailCache()
@@ -257,14 +258,16 @@ class MailBox(MailFolder):
         """ sends an instance of MailMessage
         """
         # sends it
+        portal_webmail = getToolByName(self, 'portal_webmail')
+        maildeliverer = portal_webmail.maildeliverer
+
         smtp_host = self.connection_params['smtp_host']
         smtp_port = self.connection_params['smtp_port']
-        server = SMTP(smtp_host, smtp_port)
-        res = server.sendmail(msg_from, msg_to, msg.getRawMessage())
-        server.quit()
-        if res != {}:
-            # TODO: look upon failures here
-            pass
+        user_id = self.connection_params['login']
+        password = self.connection_params['password']
+
+        maildeliverer.sendMail(smtp_host, smtp_port,
+            user_id, password, msg_from, msg_to, msg.getRawMessage())
         return True
 
     def sendEditorsMessage(self):
@@ -440,6 +443,7 @@ class MailBox(MailFolder):
         """ returns the catalog
         """
         mailtool = getToolByName(self, 'portal_webmail')
+
         if not self.connection_params.has_key('uid'):
             raise MailCatalogError('Need a uid to get the catalog')
         uid = self.connection_params['uid']
@@ -489,6 +493,45 @@ class MailBox(MailFolder):
             connector = self._getconnector()
             # need to create the message on server side
             connector.writeMessage(drafts.server_name, msg.getRawMessage())
+
+    def getIdentitites(self):
+        """ returns identities
+        """
+        # reads in the directory entry
+        uid = self.connection_params['uid']
+
+        results = self.readDirectoryValue(dirname='members',
+            id=uid, fields=['email','givenName', 'sn'])
+
+        if results is None:
+            return [{'email' : '?', 'fullname' : '?'}]
+        else:
+            email = results['email']
+            givenName = results['givenName']
+            sn = results['sn']
+            if givenName == '':
+                fullname = sn
+            else:
+                fullname = '%s %s' %(givenName, sn)
+
+            return [{'email' : email, 'fullname' : fullname}]
+
+    #
+    # cps apis
+    #
+
+    def readDirectoryValue(self, dirname, id, fields):
+        """ see interface
+        """
+        directories = getToolByName(self, 'portal_directories')
+        # will raise in case the dir does not exists
+        directory = directories[dirname]
+        kw = {'id' : id}
+        results = directory.searchEntries(return_fields=fields, **kw)
+        if len(results) == 1:
+            return results[0][1]
+        else:
+            return None
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
@@ -587,7 +630,6 @@ class MailBoxParametersView(BrowserView):
         if self.request is not None:
             psm = 'All mails are indexed'
             self.request.response.redirect('configure.html?portal_status_message=%s' % psm)
-
 #
 # MailBoxView Views
 #
@@ -623,7 +665,6 @@ class MailBoxView(MailFolderView):
                 container = mailbox
             self.request.response.redirect(container.absolute_url()+ \
                 '/view?portal_status_message=%s' % psm)
-
 
 class MailBoxTraversable(FiveTraversable):
     """ use to vizualize the mail parts in the mail editor
