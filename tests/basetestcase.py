@@ -98,6 +98,7 @@ class MailTestCase(ZopeTestCase):
         mailbox.connection_params['trash_folder_name'] = 'INBOX.Trash'
         mailbox.connection_params['smtp_host'] = 'localhost'
         mailbox.connection_params['smtp_port'] = 25
+        mailbox.connection_params['cache_level'] = 2
         return mailbox
 
     def _msgobj(self, filename):

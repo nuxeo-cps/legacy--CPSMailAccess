@@ -199,9 +199,10 @@ class MailFolderTestCase(MailTestCase):
             ob._addMessage('ok'+str(i), 'ok'+str(i))
         self.assertEquals(ob.childFoldersCount(), 10)
 
-    def oldtest_renaming(self):
+    def test_renaming(self):
         mailbox = self._getMailBox()
         Todos = mailbox._addFolder('Todos', 'Todos')
+        self.assertEquals(Todos.server_name, 'Todos')
         res = Todos.rename('Done')
         self.assertEquals(Todos.server_name, 'Done')
         self.assert_(hasattr(mailbox, 'Done'))
@@ -215,19 +216,18 @@ class MailFolderTestCase(MailTestCase):
         ob.server_name = 'INBOX.Todos'
         self.assertEquals(ob.simpleFolderName(), 'Todos')
 
-    def oldtest_folder_deleting(self):
+    def test_folder_deleting(self):
         mailbox = self._getMailBox()
-        Trash = mailbox._addFolder('Trash')
-
-        mailbox.emptyTrash()
-
+        Trash = mailbox._addFolder('Trash', 'Trash')
         Todos = mailbox._addFolder('Todosez', 'Todosez')
-        # setting up the trash
-
         res = Todos.delete()
         self.assertEquals(Todos.server_name, 'INBOX.Trash.Todosez')
         self.assert_(hasattr(mailbox.Trash, 'Todosez'))
-        self.assertEquals(mailbox.Trash.Todos.getMailFolder().id, 'Trash')
+        self.assertEquals(mailbox.Trash.Todosez.getMailFolder().id, 'Trash')
+        Todos = mailbox._addFolder('Todosez', 'Todosez')
+        res = Todos.delete()
+        self.assertEquals(Todos.server_name, 'INBOX.Trash.Todosez_1')
+        self.assert_(hasattr(mailbox.Trash, 'Todosez_1'))
 
     def test_message_moving(self):
         mailbox = self._getMailBox()
@@ -258,6 +258,10 @@ class MailFolderTestCase(MailTestCase):
         msg3 = mailbox._addMessage('3', '1234567TCFDZGVYBH')
         id = mailbox.getNextMessageUid()
         self.assertEquals(id, '4')
+
+    def test_synchronizeFolder(self):
+        mailbox = self._getMailBox()
+        mailbox._synchronizeFolder()
 
 def test_suite():
     return unittest.TestSuite((

@@ -28,9 +28,17 @@ from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.interfaces import IMailMessage
 
 from CPSMailAccess.tests import __file__ as landmark
-from basetestcase import MailTestCase
+from basetestcase import MailTestCase, openfile
+
+from zope.publisher.browser import FileUpload
 
 # XXXXXXXXX todo : move part tests to test_mailpart.py
+
+class FakeFieldStorage:
+    file = None
+    filename = ''
+    headers = []
+
 
 class MailMessageTestCase(MailTestCase):
 
@@ -259,6 +267,39 @@ class MailMessageTestCase(MailTestCase):
         self.assertNotEquals(ob.uid, ob2.uid)
         self.assertEquals(ob._v_volatile_parts, ob2._v_volatile_parts)
         self.assertEquals(ob.read, ob2.read)
+
+    def test_attachfile(self):
+        ob = self.getMailInstance(2)
+        initial_message = ob.getRawMessage()
+
+        file = openfile('audiotest.au')
+        storage = FakeFieldStorage()
+        storage.file = file
+        storage.filename = 'audiotest.au'
+        uploaded = FileUpload(storage)
+        ob.attachFile(uploaded)
+        raw = ob.getRawMessage()
+        self.assertNotEquals(raw.find('AAAAAAABnZ+fn59PNzefnZ1tbZ1'), -1)
+
+        file = openfile('PyBanner048.gif')
+        storage = FakeFieldStorage()
+        storage.file = file
+        storage.filename = 'PyBanner048.gif'
+        uploaded = FileUpload(storage)
+        ob.attachFile(uploaded)
+
+        raw = ob.getRawMessage()
+        self.assertNotEquals(raw.find('PyBanner'), -1)
+
+        ob.detachFile('PyBanner048.gif')
+        ob.detachFile('audiotest.au')
+        # to be thaught
+        #self.assertEquals(ob.getRawMessage(), initial_message)
+
+
+
+
+
 
 def test_suite():
     return unittest.TestSuite((

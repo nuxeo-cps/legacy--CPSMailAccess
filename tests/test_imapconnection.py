@@ -26,14 +26,11 @@ from Products.CPSMailAccess.connectionlist import ConnectionList
 import fakeimaplib
 if sys.modules.has_key('imaplib'):
     del sys.modules['imaplib']
-
 sys.modules['imaplib'] = fakeimaplib
 
 from Products.CPSMailAccess.imapconnection import IMAPConnection
 from time import time,sleep
-
-installProduct('FiveTest')
-installProduct('Five')
+from basetestcase import MailTestCase
 
 fake_imap_enabled  = 1
 
@@ -42,9 +39,7 @@ fake_imap_enabled  = 1
     xxxx
     need to finish fake IMAP lib
 """
-
-
-class IMAPConnectionTestCase(ZopeTestCase):
+class IMAPConnectionTestCase(MailTestCase):
 
     old_uimaplib = None
 
@@ -98,10 +93,42 @@ class IMAPConnectionTestCase(ZopeTestCase):
     def test_login(self):
         # testing simple instanciation with missing parameters
         ob = self.makeConnection()
-
         login_result = ob.login('tarek','tarek')
-
         self.assertEquals(login_result, True)
+
+    def test_partQueriedList(self):
+        box = self._getMailBox()
+        ob = self.makeConnection()
+        res = ob.partQueriedList('(FLAGS RFC822.SIZE RFC822.HEADER)')
+        self.assertEquals(res, ['FLAGS', 'RFC822.SIZE', 'RFC822.HEADER'])
+
+        res = ob.partQueriedList('(')
+        self.assertEquals(res, [])
+
+    def test_extractresults(self):
+        box = self._getMailBox()
+        ob = self.makeConnection()
+        res = ob.extractResult('FLAGS',
+        [('1 (FLAGS (\\Seen) RFC822.SIZE 515 RFC822.HEADER {474}', 'Return-Path: <webmaster@zopeur.org>\r\nDelivered-To: webmaster@openconference.org\r\nReceived: (qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000\r\nMessage-ID: <20050101013152.24339.qmail@ns2641.ovh.net>\r\nFrom: webmaster@openconference.org\r\nTo: webmaster@openconference.org\r\nSubject: webmaster@openconference.org\r\nDate: Sat, 01 Jan 2005 02:31:52 +0100\r\nMime-Version: 1.0\r\nContent-Type: text/plain; format=flowed; charset="iso-8859-1"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n'), ')'])
+        self.assertEquals(res, ['Seen'])
+
+        res = ob.extractResult('RFC822.SIZE', [('1 (FLAGS (\\Seen) RFC822.SIZE 515 RFC822.HEADER {474}', 'Return-Path: <webmaster@zopeur.org>\r\nDelivered-To: webmaster@openconference.org\r\nReceived: (qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000\r\nMessage-ID: <20050101013152.24339.qmail@ns2641.ovh.net>\r\nFrom: webmaster@openconference.org\r\nTo: webmaster@openconference.org\r\nSubject: webmaster@openconference.org\r\nDate: Sat, 01 Jan 2005 02:31:52 +0100\r\nMime-Version: 1.0\r\nContent-Type: text/plain; format=flowed; charset="iso-8859-1"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n'), ')'])
+        self.assertEquals(res, '515')
+
+        res = ob.extractResult('RFC822.HEADER', [('1 (FLAGS (\\Seen) RFC822.SIZE 515 RFC822.HEADER {474}', 'Return-Path: <webmaster@zopeur.org>\r\nDelivered-To: webmaster@openconference.org\r\nReceived: (qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000\r\nMessage-ID: <20050101013152.24339.qmail@ns2641.ovh.net>\r\nFrom: webmaster@openconference.org\r\nTo: webmaster@openconference.org\r\nSubject: webmaster@openconference.org\r\nDate: Sat, 01 Jan 2005 02:31:52 +0100\r\nMime-Version: 1.0\r\nContent-Type: text/plain; format=flowed; charset="iso-8859-1"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n'), ')'])
+
+        self.assertEquals(res, {'Received': '(qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000', 'Delivered-To': 'webmaster@openconference.org', 'From': 'webmaster@openconference.org', 'Return-Path': '<webmaster@zopeur.org>', 'Content-Transfer-Encoding': '8bit', 'To': 'webmaster@openconference.org', 'Mime-Version': '1.0', 'Date': 'Sat, 01 Jan 2005 02:31:52 +0100', 'Message-ID': '<20050101013152.24339.qmail@ns2641.ovh.net>', 'Content-Type': 'text/plain; format=flowed; charset="iso-8859-1"', 'Subject': 'webmaster@openconference.org'})
+
+
+
+    def test_infoExtraction(self):
+        box = self._getMailBox()
+        ob = self.makeConnection()
+        results = ob.fetch(box, 1, '(FLAGS RFC822.SIZE RFC822.HEADER)')
+
+        self.assertEquals(results[0], ['Seen'])
+        self.assertEquals(results[1], '515')
+
 
 
 def test_suite():

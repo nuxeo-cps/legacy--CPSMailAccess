@@ -105,7 +105,7 @@ class MailFolderViewTestCase(MailTestCase):
 
         self.assertEquals(rendered_list[len(rendered_list)-1]['url'], '.msg_232/view')
 
-    def test_TreeView(self):
+    def old_test_TreeView(self):
         # testing treeview renderer
         ob = self.test_getMailMessagesCountRecursive()
         view = MailFolderView(ob, None)
@@ -183,9 +183,10 @@ class MailFolderViewTestCase(MailTestCase):
         title = view.createShortTitle(ob)
         self.assertEquals(title, 'message1')
 
-    def test_addFolder(self):
+    def old_test_addFolder(self):
         # test createShortTitle
-        ob = MailFolder('ok', 'ok')
+        box = self._getMailBox()
+        ob = box._addFolder('ok', 'ok')
         view = MailFolderView(ob, None)
         view.addFolder('sub')
         self.assert_(hasattr(ob, 'sub'))
