@@ -101,6 +101,9 @@ var updownColor = 'gray';               // Specified the color for up/downs
 
 function prepareTableSorting()
 {
+  // Check whether it's viewed by IE 5.0 or greater
+  if (! checkBrowser()) return;
+
   table = document.getElementById("tableMessageList");
   if (table)
   {
@@ -111,9 +114,6 @@ function prepareTableSorting()
 
 function initTable(obj)
 {
-        // Check whether it's viewed by IE 5.0 or greater
-        if (! checkBrowser()) return;
-
         // Local variables
         var countCol;
         var nChildNodes;
