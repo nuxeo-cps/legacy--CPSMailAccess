@@ -253,7 +253,7 @@ class MailFolderViewTestCase(MailTestCase):
         self.assertEquals(ob.title, 'bolod')
         self.assertEquals(ob.id, 'bolod')
 
-    def test_manageContent(self):
+    def test_manageContent_copy(self):
         # test content manipulations
         box = self._getMailBox()
         ob = box._addFolder('INBOX', 'INBOX')
@@ -264,6 +264,154 @@ class MailFolderViewTestCase(MailTestCase):
         kw = {'msg_1': 'on', 'msg_2': 'on'}
         view.manageContent(action='copy', **kw)
         self.assertEquals(box.getClipboard(),('copy', ['INBOX.2', 'INBOX.1']))
+
+    def test_manageContent_cut(self):
+        # test content manipulations
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        self.assertEqual(ob.getMailBox(), box)
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+        self.assertEquals(view.context.getMailBox(), box)
+        kw = {'msg_1': 'on', 'msg_2': 'on'}
+        view.manageContent(action='cut', **kw)
+        self.assertEquals(box.getClipboard(),('cut', ['INBOX.2', 'INBOX.1']))
+        self.assert_(not view.clipBoardEmpty())
+
+    def test_manageContent_clear_clipboard_empty_and_count(self):
+        # test content manipulations
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        self.assertEqual(ob.getMailBox(), box)
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+        self.assertEquals(view.context.getMailBox(), box)
+        kw = {'msg_1': 'on', 'msg_2': 'on'}
+
+        view.manageContent(action='cut', **kw)
+        self.assertEquals(box.getClipboard(),('cut', ['INBOX.2', 'INBOX.1']))
+        self.assert_(view.clipBoardCount()==2)
+
+        view.manageContent(action='clear')
+        self.assertEquals(box.getClipboard(),(None, None))
+        self.assert_(view.clipBoardEmpty())
+        self.assert_(view.clipBoardCount()==0)
+
+    def test_manageContent_cut_paste(self):
+        # test content manipulations
+        box = self._getMailBox()
+
+        ob2 = box._addFolder('INBOX2', 'INBOX2')
+        view2 = MailFolderView(ob2, self.request)
+        view2 = view2.__of__(ob2)
+
+        ob = box._addFolder('INBOX', 'INBOX')
+        ob._addMessage('1', '1')
+        ob._addMessage('2', '2')
+        ob._addMessage('3', '3')
+
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+
+        # cut
+        kw = {'msg_1': 'on', 'msg_2': 'on'}
+        view.manageContent(action='cut', **kw)
+        self.assertEquals(box.getClipboard(),('cut', ['INBOX.2', 'INBOX.1']))
+
+        # paste
+        view2.manageContent(action='paste', **kw)
+
+        self.assertEquals(len(ob2.objectIds()), 2)
+        self.assertEquals(len(ob.objectIds()), 1)
+
+    def test_manageContent_copy_paste(self):
+        # test content manipulations
+        box = self._getMailBox()
+
+        ob2 = box._addFolder('INBOX2', 'INBOX2')
+        view2 = MailFolderView(ob2, self.request)
+        view2 = view2.__of__(ob2)
+
+        ob = box._addFolder('INBOX', 'INBOX')
+        ob._addMessage('1', '1')
+        ob._addMessage('2', '2')
+        ob._addMessage('3', '3')
+
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+
+        # cut
+        kw = {'msg_1': 'on', 'msg_2': 'on'}
+        view.manageContent(action='copy', **kw)
+        self.assertEquals(box.getClipboard(),('copy', ['INBOX.2', 'INBOX.1']))
+
+        # paste
+        view2.manageContent(action='paste', **kw)
+
+        self.assertEquals(len(ob2.objectIds()), 2)
+        self.assertEquals(len(ob.objectIds()), 3)
+
+
+    def test_manageContent_delete(self):
+        # test content manipulations
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        ob._addFolder('Trash', 'Trash')
+
+        ob._addMessage('1', '1')
+        ob._addMessage('2', '2')
+        ob._addMessage('3', '3')
+
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+
+        # DELETE
+        kw = {'msg_1': 'on', 'msg_2': 'on'}
+        view.manageContent(action='delete', **kw)
+
+        self.assertEquals(len(ob.objectIds()), 2)
+
+
+    def test_getMaxFolderSize(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+        mfs = view.getMaxFolderSize()
+        self.assertEquals(mfs, 20)
+
+    def test_getMsgIconName(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+
+        message = box._addMessage('msg', 'msg')
+
+        message.read = 0
+        icon = view.getMsgIconName(message)
+        self.assertEquals(icon, 'cpsma_message_new.png')
+
+        message.deleted = 1
+        icon = view.getMsgIconName(message)
+        self.assertEquals(icon, 'cpsma_mini_mail_delete.png')
+
+    def test_getMessageUidAndFolder(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+
+        message = box._addMessage('msg', 'msg')
+
+        res = view.getMessageUidAndFolder('INBOX.msg')
+        self.assertEquals(res, (ob, 'msg'))
+
+        res = view.getMessageUidAndFolder('INBOX.mdzsg')
+        self.assertEquals(res, (ob, None))
+
+        res = view.getMessageUidAndFolder('INadzadzBOX.mdzsg')
+        self.assertEquals(res, (None, None))
 
 def test_suite():
     return unittest.TestSuite((

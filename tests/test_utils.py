@@ -21,7 +21,9 @@ from zope.testing import doctest
 from Testing.ZopeTestCase import ZopeTestCase
 from datetime import datetime
 from CPSMailAccess.utils import isToday, replyToBody, verifyBody, \
-    sanitizeHTML, HTMLize, HTMLToText, decodeHeader, getCurrentDateStr
+    sanitizeHTML, HTMLize, HTMLToText, decodeHeader, getCurrentDateStr, \
+    isValidEmail
+
 from basetestcase import MailTestCase
 
 class UtilsTestCase(MailTestCase):
@@ -29,9 +31,8 @@ class UtilsTestCase(MailTestCase):
     def test_isToday(self):
         today = datetime(2000, 1, 1)
         today = today.now()
-        today_str = today.strftime("%d/%y/%m")
-
-        #self.assert_(isToday(today_str))
+        today_str = today.strftime("%m/%d/%y")
+        self.assert_(isToday(today_str))
 
     def test_replyToBody(self):
         body = 'voici\r\nun petit message'
@@ -44,6 +45,7 @@ class UtilsTestCase(MailTestCase):
     def test_verifyBody(self):
         msg = self.getMailInstance(2)
         verifyBody(msg)
+        # NEED MORE TEST HERE
 
     def test_replyToBodywithHTML(self):
         body = ['Welcome to your cps webmail, webmailtest4 !']
@@ -73,11 +75,11 @@ class UtilsTestCase(MailTestCase):
     def test_sanitizeHTML(self):
         html = 'dfghjuik<body> ghfrtgy<script >hj</script>uikolmù</body>'
         res = sanitizeHTML(html)
-        self.assertEquals(res, ' ghfrtgyuikolmù')
+        self.assertEquals(res, 'dfghjuik ghfrtgyhjuikolm\xf9')
 
         html = 'dfghjuik&lt;body&gt; ghfrtgy&lt;script &gt;hj&lt;/script&gt;uikolmù&lt;/body&gt;'
         res = sanitizeHTML(html)
-        self.assertEquals(res, ' ghfrtgyuikolmù')
+        self.assertEquals(res, 'dfghjuik ghfrtgyhjuikolm\xf9')
         html = """<html>
 <body>
 ezezf<br>
@@ -85,7 +87,7 @@ ezezf<br>
 </html>
 """
         res = sanitizeHTML(html)
-        self.assertEquals(res, u'ezezf<br/>')
+        self.assertEquals(res, 'ezezf<br>')
 
     def test_HTMLToText(self):
         html = 'ezezf<br><span>ezezf</span><br>'
@@ -116,8 +118,16 @@ The CPS Team.
         self.assertEquals(res, u'8\x1b$B@iK|1_$N3MF@J}\x1b(B\x1b$BK!!&%a%k%^%,%8%s\x1b(B<delivery@hosyou-r01.mine.nu>')
 
     def test_getCurrentDateStr(self):
-        getCurrentDateStr
+        date = getCurrentDateStr()
 
+
+    def test_isValidEmail(self):
+        self.assert_(isValidEmail('tz@nuxeo.com'))
+        self.assert_(not isValidEmail('tarek@nuxeo.comfmm'))
+        self.assert_(not isValidEmail('tarek_AT_nuxeo.commm'))
+        self.assert_(not isValidEmail('fezefz'))
+        self.assert_(not isValidEmail(''))
+        self.assert_(isValidEmail('tdddd.dddddd.ddd@nu.x.eo.com'))
 
 def test_suite():
     return unittest.TestSuite((

@@ -22,14 +22,19 @@ from Testing.ZopeTestCase import installProduct
 from CPSMailAccess.mailbox import manage_addMailBox
 from CPSMailAccess.mailactions import MailActionsView
 from basetestcase import MailTestCase
-
+from CPSMailAccess.interfaces import IMailBox
 
 class MailActionsTestCase(MailTestCase):
 
-    def oldtest_MailActionsView(self):
+    def old_test_MailActionsView(self):            # see why providedBy fails
         # mailmessageedit view
         mailbox = self._getMailBox()
+        self.assert_(IMailBox.providedBy(mailbox))
         view = MailActionsView(mailbox, None)
+        view = view.__of__(mailbox)
+
+        self.assert_(IMailBox.providedBy(view.context))
+
         self.assertNotEquals(view, None)
 
         actions = view.renderActions()
