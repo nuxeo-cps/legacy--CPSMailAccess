@@ -1,7 +1,12 @@
 <html metal:use-macro="here/main_template/macros/master">
-  <metal:block metal:fill-slot="main">
-    <h2>MailBox Managment tasks</h2>
+  <metal:block metal:fill-slot="main"
+      tal:define="first_time request/first_time|nothing">
+    <div class="message" tal:condition="first_time">
+     Welcome to CPSWebMail this is the first time
+      you launched it, blalalalalala (texte à externaliser)
+    </div>
 
+    <h2>MailBox Managment tasks</h2>
     <form action="reindexMailCatalog">
       <input type="submit" name="reindex" value="reindex mail catalog"/>
     </form>
