@@ -258,6 +258,18 @@ class IConnection(Interface):
         """ creates the given mailbox
         """
 
+    def getFlags(mailbox, message_number):
+        """ return flags of a message
+        """
+
+    def setFlags(mailbox, message_number, flags):
+        """ set flag of a message
+        """
+
+    def expunge():
+        """ validate deletions
+        """
+
 class IConnectionList(Interface):
 
     def listConnectionTypes():
