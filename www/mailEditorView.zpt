@@ -77,7 +77,7 @@
          <td colspan="3">
            <div id="To" tal:define="elements python:here.getDestList(type_='To');
                                     elements python:'\r\n'.join(elements)">
-             <div class="recipient_header">To:</div>
+             <div class="recipient_header"><span i18n:translate="cpsma_to">To</span>:</div>
              <div  class="recipient">
                <textarea name="msg_to" id="msg_to"
                          class="recipients" tal:content="elements"></textarea>
@@ -89,7 +89,7 @@
             tal:attributes="style python:test(cc_on==0,'visibility: hidden','visibility: visible');class python:test(cc_on==0,'hidden_part','')"
                 tal:define="elements python:here.getDestList(type_='Cc');
                                     elements python:'\r\n'.join(elements)">
-             <div class="recipient_header">Cc:</div>
+             <div class="recipient_header"><span i18n:translate="cpsma_cc">Cc</span>:</div>
              <div  class="recipient">
                <textarea name="msg_cc"  id="msg_cc"
                          class="recipients" tal:content="elements"></textarea>
@@ -102,7 +102,7 @@
                 class python:test(bcc_on==0,'hidden_part','')"
                 tal:define="elements python:here.getDestList(type_='BCc');
                                     elements python:'\r\n'.join(elements)">
-             <div class="recipient_header">BCc:</div>
+             <div class="recipient_header"><span i18n:translate="cpsma_bcc">BCc</span>:</div>
              <div  class="recipient">
                <textarea name="msg_bcc" id="msg_bcc"
                          class="recipients" tal:content="elements"></textarea>
@@ -116,9 +116,17 @@
                  <span i18n:translate="cpsma_attach_file">Attach file</span>
                 </span> |
                 <span class="link" onmouseover="setCursor(this);"
-                    onclick="toggleElementVisibility('Cc')">Cc</span> |
+                    onclick="toggleElementVisibility('Cc')">
+                      <span i18n:translate="cpsma_cc">
+                      Cc
+                      </span>
+                      </span> |
                 <span class="link" onmouseover="setCursor(this);"
-                    onclick="toggleElementVisibility('BCc')">Bcc</span>
+                    onclick="toggleElementVisibility('BCc')">
+                    <span i18n:translate="cpsma_bcc">
+                    Bcc
+                    </span>
+                    </span>
                     <!--|-->
                 <!--<span class="link" onmouseover="setCursor(this);"
                     onclick="popupRecipientPicker()">Directories</span>-->
@@ -129,7 +137,7 @@
 
         <tr>
           <td colspan="3">
-          <div class="subject">Subject:</div>
+          <div class="subject"><span i18n:translate="cpsma_subject">Subject</span>:</div>
           <div class="message_edit_input">
             <input class="message_edit_input" type="text" name="msg_subject"
                 id="msg_subject"

@@ -34,7 +34,7 @@
           <tr>
             <td width="50%" align="right">
               <div class="dlabel">
-                <tal:block tal:replace="parameter/name"/> :
+                <tal:block i18n:translate="" tal:content="parameter/name"/> :
               </div>
             </td>
             <td width="50%" align="left">

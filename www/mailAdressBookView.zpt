@@ -29,7 +29,9 @@
                                     id python:private[1]['id'];
                                     msg_to python:'%s <%s>' % (fullname, email)">
                 <a tal:attributes="href python:'writeTo.html?msg_to='+msg_to">
-                <img src="cpsma_draft.png" title="send a message" alt="send a message"/>
+                <img src="cpsma_draft.png"
+                     i18n:attributes="title alt"
+                     title="cpsma_send_a_message" alt="cpsma_send_a_message"/>
                 </a>
                 &#160;
                 <a tal:attributes="href
@@ -43,7 +45,7 @@
           <div style="margin-top:15px;margin-left: 4px">
             <a tal:attributes="href
                 python:base_url+'/cpsdirectory_entry_search_form?dirname=.addressbook'">
-            All entries
+            <span i18n:translate="">cpsma_all_entries</span>
             </a>
           </div>
         </div>

@@ -910,9 +910,9 @@ class MailBoxView(MailFolderView):
         mailbox = self.context
         try:
             mailbox.synchronize(True)
-            psm = 'synchronized'
+            psm = 'cpsma_synchronized'
         except ConnectionError:
-            psm = 'failed to synchronize. (server seems to be down)'
+            psm = 'cpsma_failed_synchro'
 
         if self.request is not None:
             if hasattr(mailbox, 'INBOX'):
