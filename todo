@@ -9,7 +9,7 @@ a) fonctionnel du plus important au moins
 + en parallele du traversable, finaliser la gestion du caching
 + ajouter renommage, suppression de folder coté imap et dans l'interface
 + suppression de message
-+ les reply, replyall, forward doivent pre-remplir le message
++ les reply, replyall, forward doivent pré-remplir le message
 + mettre un composant richedit pour le message
 + intégrer les préférences persos
 + brancher les annuaires
@@ -24,7 +24,7 @@ c) esthétisme
 
 + faire des divs des glissières en javascript et conserver les tailles et les tris dans mailbox
 + réussir à se positionner dans le scroll
-+ ajouter unevue détaché pour la création du message
++ ajouter une vue détaché pour la création du message
 
 d) après
 
@@ -32,4 +32,5 @@ d) après
 + régler le pb du japonais japanese.iso-2022-jp
 + ajouter les actions de boite
 + refactorer les objets trop liés à Zope
++ newsgroups (gestion des acls)
 
