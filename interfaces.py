@@ -24,7 +24,7 @@ from zope.interface.common.mapping import IMapping
 from zope.app.container.interfaces import IContained, IContainer
 from zope.app.container.constraints import ContainerTypesConstraint
 from zope.app.traversing.interfaces import ITraverser
-from zope.schema import Field, Text, List
+from zope.schema import Field, Text, List, Dict
 
 class IMailFolder(IContainer):
     """A container of mail messages and other mail folders.
@@ -173,6 +173,12 @@ class IMailBox(IContainer):
 class IMailTool(Interface):
     """ portal tool
     """
+    mail_catalogs = Dict(
+        title=u'Mail Catalogs',
+        description=u'Catalog for mail search',
+        readonly=False,
+        required=True)
+
     def listConnectionTypes():
         """ returns a list of founded connection
             types, based on what plugins have been successfully
