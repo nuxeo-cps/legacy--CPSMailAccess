@@ -170,6 +170,17 @@ class IMailBox(IContainer):
         """ creates a message, sends it and copy it to Send folder
         """
 
+    def readDirectoryValue(dirname, id, field):
+        """ reads an entry field value from a directory
+            this has been isolated here,
+            so it can evolve easily when cps directory get zope3-ed
+        """
+
+    def getIdentitites():
+        """ reads the user's identity
+            returns a list of indentities
+        """
+
 class IMailTool(Interface):
     """ portal tool
     """
