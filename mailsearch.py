@@ -129,20 +129,29 @@ class MailCatalogDict(Folder):
     def __init__(self):
         Folder.__init__(self)
 
+    def createCatalogId(self, user_id):
+        """ creates an id """
+
+        return '..' + user_id
+
     def getCatalog(self, user_id):
+        """ get a catalog entry """
+
         user_id = makeId(user_id)
-        folder_id = '.' + user_id
+        folder_id = self.createCatalogId(user_id)
         if hasattr(self, folder_id):
             return getattr(self, folder_id)
         return None
 
     def addCatalog(self, user_id):
+        """ sets a catalog entry """
+
         user_id = makeId(user_id)
-        folder_id = '.' + user_id
+        folder_id = self.createCatalogId(user_id)
         if not hasattr(self, folder_id):
             catalog = MailCatalog(folder_id, user_id, user_id)
             self._setObject(folder_id, catalog)
-            catalog = gatattr(self, folder_id)
+            catalog = getattr(self, folder_id)
 
 """ classic Zope 2 interface for class registering
 """
