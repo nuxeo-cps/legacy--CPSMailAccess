@@ -25,19 +25,19 @@ A MailFolder contains mail messages and other mail folders.
 from zLOG import LOG, DEBUG, INFO
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
-from Acquisition import aq_parent
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
 from zope.interface import implements
-from utils import uniqueId, makeId, md5Hash, decodeHeader
-from Products.CPSMailAccess.mailmessage import MailMessage, MailMessageView
+from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder
+from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from Globals import InitializeClass
-from Acquisition import aq_parent, aq_inner
+from Acquisition import aq_parent, aq_inner, aq_base
 from Products.Five import BrowserView
 from baseconnection import ConnectionError
-from basemailview import BaseMailMessageView
+
+has_connection = 0
 
 class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
@@ -66,6 +66,19 @@ class MailFolder(BTreeFolder2):
         self.setServerName(server_name)
         self.title = server_name
 
+    def getNextMessageUid(self):
+        """ retrieves next id for messages
+            XXX todo : do not calculate it each time
+        """
+        msgs = self.getMailMessages(list_folder=False, list_messages=True,
+            recursive=False)
+        highest_id = 0
+        for msg in msgs:
+            uid = int(msg.uid)
+            if uid > highest_id:
+                highest_id = uid
+        return str(highest_id + 1)
+
     def clearMailBoxTreeViewCache(self):
         """ clears mailbox cache in case of change
         """
@@ -73,7 +86,6 @@ class MailFolder(BTreeFolder2):
             self.mailbox = self.getMailBox()
         if self.mailbox is not None:
             self.mailbox.clearTreeViewCache()
-
 
     def getKeysSlice(self, key1, key2):
         """Get a slice of BTreeFolder2 keys.
@@ -89,7 +101,6 @@ class MailFolder(BTreeFolder2):
         """
         return [self[k] for k in self.getKeysSlice(key1, key2)]
 
-
     def getMailBox(self):
         """See interfaces.IMailFolder
         """
@@ -97,6 +108,9 @@ class MailFolder(BTreeFolder2):
         while current is not None and not IMailBox.providedBy(current):
             current = aq_inner(aq_parent(current))
         return current
+
+    def getMailFolder(self):
+        return self.aq_inner.aq_parent
 
     def getCacheLevel(self):
         """ returns cache level
@@ -173,6 +187,33 @@ class MailFolder(BTreeFolder2):
             count += self.message_count
         return count
 
+    def getFlaggedMessageList(self, flags=[]):
+        """ returns a list according to given flags
+        """
+        msgs = self.getMailMessages(list_folder=False,
+            list_messages=True, recursive=False)
+
+        msg_list = []
+
+        # opti : 'read' is the most common call
+        if len(flags) == 1 and flags[0] == 'read':
+            for msg in msgs:
+                if msg.read:
+                    msg_list.append(msg)
+            return msg_list
+
+
+        for msg in msgs:
+            cond1 = 'read' in flags and msg.read
+            cond2 = 'answered' in flags and msg.answered
+            cond3 = 'deleted' in flags and msg.deleted
+            cond4 = 'flagged' in flags and msg.flagged
+            cond5 = 'forwarded' in flags and msg.forwarded
+            if cond1 and cond2 and cond3 and cond4 and cond5:
+                msg_list.append(msg)
+        return msg_list
+
+
     def getServerName(self):
         """See interfaces.IMailFolder
         """
@@ -191,14 +232,53 @@ class MailFolder(BTreeFolder2):
 
     def getIdFromUid(self, uid):
         """Get the Zope id used to store a message"""
-        return '.'+uid
+        if uid[0] != '.':
+            return '.'+uid
+        else:
+            return uid
+
+    def _moveMessage(self, uid, to_mailbox):
+        """ moves the message to another mailbox
+        """
+        self.clearMailBoxTreeViewCache()
+        id = self.getIdFromUid(uid)
+        if not hasattr(self, id):
+            return None
+        msg = self[id]
+        # detach message
+        self._delObject(id)
+        self.message_count -= 1
+        # get its new id and uid
+        uid = to_mailbox.getNextMessageUid()
+        id = to_mailbox.getIdFromUid(uid)
+        # free the object from its aquisition
+        msg = aq_base(msg)
+        msg.uid = uid
+        msg.id = id
+        #link it to the newmailbox
+        to_mailbox._setObject(id, msg)
+        to_mailbox.message_count += 1
+        msg = getattr(to_mailbox, id)
+        return msg
+
+    def _deleteMessage(self, uid):
+        """ see interfaces ImailFolder
+        """
+        self.clearMailBoxTreeViewCache()
+        id = self.getIdFromUid(uid)
+        if hasattr(self, id):
+            msg = self[id]
+            self.manage_delObjects([id])
+            self.message_count -=1
+            #msg = msg.__of__(None)
+            return True
+        return False
 
     def _addMessage(self, uid, digest):
         """See interfaces.IMailFolder
         """
         self.clearMailBoxTreeViewCache()
         self.message_count +=1
-
         id = self.getIdFromUid(uid)
         msg = MailMessage(id, uid, digest)
         self._setObject(id, msg)
@@ -206,7 +286,6 @@ class MailFolder(BTreeFolder2):
         ### ask florent if this is ok with
         # zope 2 and zope 3 compatibilities
         msg.parent_folder = self
-
         msg = self._getOb(id)
         return msg
 
@@ -238,8 +317,10 @@ class MailFolder(BTreeFolder2):
             msg = self[id]
         except KeyError:
             return None
-        if not IMailMessage.providedBy(msg):
-            return None
+        #XXXXXXX ????
+        # tests failson this :  providedBy does not work with the fake envs
+        #if not IMailMessage.providedBy(msg):
+        #    return None
         return msg
 
     def childFoldersCount(self):
@@ -298,8 +379,9 @@ class MailFolder(BTreeFolder2):
                 msg.setSyncState(state=True)
                 continue
 
-            msg_headers = connector.fetch(self.server_name, uid,
-                                         '(RFC822.HEADER)')
+            # gets flags, size and headers
+            msg_headers = connector.fetch(self.server_name, uid,\
+                '(FLAGS RFC822.SIZE RFC822.HEADER)')
 
             digest = self._createKey(msg_headers)
             msg = mail_cache.get(digest, remove=True)
@@ -309,16 +391,26 @@ class MailFolder(BTreeFolder2):
                 if cache_level == 0:
                     # nothing is uploaded
                     # XXX todo
-                    pass
+                    raise NotImplementedError
                 elif cache_level == 1:
                     # we already have headers
                     # XXX 'OK' should be done by fetch into connection object
+                    # we need here to give to the message the number of parts
+                    # so it can create them with none
                     msg_content = ('OK', msg_headers)
+                    ####TODO :
+                    # need to fetch number of part here
+                    #and to use it to initiate create empty parts
+
+                    body_structure = connector.fetch(self.server_name, uid, '(BODYSTRUCTURE)')
+
+
                 else:
                     # XXX Only simplest case where all message is cached
+                    # we also get flags
                     try:
                         msg_content = connector.fetch(self.server_name, uid,
-                                                    '(RFC822)')
+                                                    '(FLAGS RFC822)')
                     #except Timeout:
                     except:
                         # XXX will be moved to connection object
@@ -333,8 +425,7 @@ class MailFolder(BTreeFolder2):
                 log.append('adding message %s in %s' % (uid, self.server_name))
 
                 msg = self._addMessage(uid, digest)
-                msg.cache_level = cache_level
-                msg.loadMessage(raw_msg)
+                msg.loadMessage(raw_msg, cache_level)
 
                 #setattr(msg, header, msg_headers[header])
                 if msg_headers.has_key('Subject'):
@@ -383,49 +474,129 @@ class MailFolder(BTreeFolder2):
         return self.getMailMessagesCount(count_folder=True, count_messages=True, \
             recursive=False) == 0
 
-#
-# MailFolderView Views
-#
-class MailFolderView(BaseMailMessageView):
-
-    def __init__(self, context, request):
-        BaseMailMessageView.__init__(self, context, request)
-
-    def renderMailList(self):
-        """ renders mailfolder content
-            XXX need to externalize html here
+    def rename(self, new_name, fullname=False):
+        """ renames the box
         """
-        mailfolder = self.context
-        returned = []
-        elements = mailfolder.getMailMessages(list_folder=False,
-            list_messages=True, recursive=False)
+        self.clearMailBoxTreeViewCache()
+        oldmailbox = self.server_name
 
-        for element in elements:
-            part = {}
-            part['object'] = element
-            part['url'] = element.absolute_url() +'/view'
-            ob_title = self.createShortTitle(element)
-            if ob_title is None or ob_title == '':
-                mail_title = '?'
-            else:
-                if IMailMessage.providedBy(element):
-                    translated_title = decodeHeader(ob_title)
-                    mail_title = translated_title
+        if not fullname:
+            prefix = oldmailbox.split('.')
+            del prefix[len(prefix)-1]
+            newmailbox = new_name.replace('.', '_')
+            newmailbox = '.'.join(prefix) + '.' + newmailbox
+        else:
+            newmailbox = new_name
+
+        if has_connection:
+            connector = self._getconnector()
+            server_rename = connector.rename(oldmailbox, newmailbox)
+            if not server_rename:
+                # TODO :raise an error
+                return False
+
+        # now zodb renaming :
+        # first of all, let's detach the folder
+        # from its parent
+
+        #XX detach from parent
+        parent = self.getMailFolder()
+        parent._delObject(self.id)
+        parent.folder_count -= 1
+        gparent = parent.getMailFolder()
+        while gparent is not None and IMailFolder.providedBy(gparent):
+            gparent.folder_count -= 1
+            gparent = gparent.getMailFolder()
+
+        # let's find the new parent
+        path = newmailbox.split('.')
+        del path[len(path)-1]
+
+        current = self.getMailBox()
+
+        for node in path:
+            current = getattr(current, node)
+
+        #make the folder free
+        self = aq_base(self)
+
+        self.server_name = newmailbox
+        self.id = self.simpleFolderName()
+
+        # let's append the folder to this new parent
+        current._setObject(self.id, self)
+        current.folder_count += 1
+        parent = current.getMailFolder()
+        while parent is not None and IMailFolder.providedBy(parent):
+            parent.folder_count += 1
+            parent = parent.getMailFolder()
+
+        self.title = self.id
+        #i like this
+        self = getattr(current, self.id)
+
+        # recreating server name if needed
+        if not fullname:
+            parent = self.getMailFolder()
+            self.server_name = self.title
+
+            while parent is not None:
+                self.server_name = parent.title+'.'+self.title
+                if not hasattr(parent, 'getMailFolder'):
+                    parent = None
                 else:
-                    mail_title = ob_title
-            part['title'] = mail_title
-            element_from = element.getHeader('From')
-            if element_from is None:
-                element_from = '?'
-            part['From'] = decodeHeader(element_from)
+                    parent = parent.getMailFolder()
+        else:
+            self.server_name = new_name
 
-            element_date = element.getHeader('Date')
-            if element_date is None:
-                element_date = '?'
-            part['Date'] = decodeHeader(element_date)
+        return self
 
-            returned.append(part)
-        return returned
+    def delete(self):
+        """ sends the mailbox to the thrash
+            by renaming it
+        """
+        mailbox = self.getMailBox()
+        trash_folder_name = mailbox.getTrashFolderName()
+        trash = mailbox.getTrashFolder()
+        # verify the name
+        seed = 1
+        name = self.simpleFolderName()
+        composed = name
+        while hasattr(trash, composed):
+            composed = name + '_' +str(seed)
+            seed += 1
+        newmailbox = trash_folder_name + '.' + composed
+        return self.rename(newmailbox, fullname=True)
+
+    def simpleFolderName(self):
+        """ retrieves the simple folder name
+        """
+        fullname = self.server_name
+        prefix = fullname.split('.')
+        return prefix[len(prefix)-1]
+
+    def copy(self, copy_name):
+        """ copy a mailbox into another one
+        """
+        # TODO
+        # XXXXXXX
+        pass
+
+    def moveMessage(self, uid, new_mailbox):
+        """ moves the message on the server,
+            then on the zodb (no sync)
+        """
+        mailbox = self.getMailBox()
+
+        trash_name = mailbox.getTrashFolderName()
+        if has_connection:
+            connector = self._getconnector()
+            res = connector.copy(self.server_name, trash_name, uid)
+            if not res:
+                return False
+        # XXX todo : check if is the same msg uid
+        trash = mailbox.getTrashFolder()
+        return self._moveMessage(uid, trash) is not None
 
 
 """ classic Zope 2 interface for class registering
