@@ -94,6 +94,10 @@ class IMailFolder(IContainer):
         """ returns the number of child fodlers
         """
 
+    def getMailBox():
+        """ returns mailbox holder
+        """
+
 class IMailMessage(IContainer):
     """A mail message.
 
@@ -117,10 +121,6 @@ class IMailMessageStore(IContainer):
     """ Provides interface to a mail message store
 
     """
-    def getMailBox():
-        """ returns mailbox holder
-        """
-
     def loadMessage(raw_msg):
         """ loads a message from a string raw content
         """
@@ -246,6 +246,11 @@ class IMailBox(IContainer):
 
     def _getconnector():
         """ used to get a server connection object
+        """
+
+    def setParameters(connection_params, resync=True):
+        """ sets connections parameters
+            if resync is True, resyncs with the server
         """
 
 class IMailTool(IContainer):
