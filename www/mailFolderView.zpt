@@ -11,7 +11,8 @@
   </metal:main>
   <metal:block metal:fill-slot="main"
               tal:define="edit_name request/edit_name|nothing;
-                          add_folder request/add_folder|nothing;">
+                          add_folder request/add_folder|nothing;
+                          move_folder request/move_folder|nothing;">
     <div tal:condition="edit_name">
      <a href="view"
         class="close_rename_form"
@@ -19,6 +20,7 @@
         <img src="cpsma_delete_file.png"/>
      </a>
      <form action="rename" class="rename_form">
+       <input type="hidden" name="fullname" value="0"/>
        <input type="text" name="new_name"
               tal:attributes="value here/simpleFolderName"/>
        <input type="submit" name="submit" value="change"/>
@@ -35,6 +37,17 @@
        <input type="submit" name="submit" value="add"/>
      </form>
     </div>
+    <div tal:condition="move_folder">
+      <a href="view"
+         class="close_rename_form"
+         title="close">
+        <img src="cpsma_delete_file.png"/>
+      </a>
+      <div class="rename_form">
+        <metal:block use-macro="here/boxes_mailaccess/macros/basebox_moveview"/>
+      </div>
+    </div>
+
     <div id="maillist"
          tal:define="is_folder python:1">
       <metal:block use-macro="here/messagelist_macros/messagelist"/>
