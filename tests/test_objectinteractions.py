@@ -162,6 +162,24 @@ class ObjectInteractionTest(ZopeTestCase):
         self.assertEquals(len(folders), 3)
         self.assertEquals(hasattr(folders, 'Trash'), False)
 
+    def test_syncdirs_with_messages(self):
+        # tests synchro with messages
+        # testing folder synchro
+        mailbox = self._getMailBox()
+
+        # first synchronize to create structure
+        mailbox._syncdirs([{'Name' : 'INBOX.Lop', 'Attributes' : ''},
+                           {'Name' : 'INBOX.One', 'Attributes' : ''},
+                           {'Name' : 'INBOX.[BCEAO]', 'Attributes' : ''},
+                           {'Name' : 'Trash', 'Attributes' : ''}])
+
+        self.assertEquals(hasattr(mailbox, 'INBOX'), True)
+
+        inbox = mailbox.INBOX
+
+        inbox._synchronizeFolder()
+
+
     def test_MailBoxParametersInterface(self):
         # testing MailBoxParametersView parameters interface
         mailbox = self._getMailBox()

@@ -60,6 +60,7 @@ class MailRendererTestCase(ZopeTestCase):
         res = []
         for i in range(35):
             ob = MailMessage()
+            ob.cache_level = 2
             if i < 9:
                 data = self._msgobj('msg_0'+str(i+1)+'.txt')
             else:
@@ -72,6 +73,7 @@ class MailRendererTestCase(ZopeTestCase):
 
     def getMailInstance(self,number):
         ob = MailMessage()
+        ob.cache_level = 2
 
         if number < 9:
             data = self._msgobj('msg_0'+str(number+1)+'.txt')
