@@ -35,7 +35,7 @@ from Acquisition import aq_get
 from zope.app.datetimeutils import DateTimeParser, SyntaxError as ZSyntaxError
 
 from html2text import HTML2Text
-from Products.CPSUtil.html import HTMLSanitizer, remove_attributes
+from Products.CPSUtil.html import HTMLSanitizer
 
 _translation_table = string.maketrans(
     # XXX candidates: @°+=`|
@@ -328,10 +328,7 @@ def sanitizeHTML(content):
     work = fix_eols(work)
     work = work.replace('\r\n', '')    # nothing to care about in HTML
 
-    attributes = ('accesskey', 'onclick')
-
-    work = remove_attributes(work, attributes)
-    parser = HTMLMailSanitizer()
+    parser = HTMLMailSanitizer(attributes_to_remove=('accesskey', 'onclick'))
     parser.feed(work)
     parser.close()
     parser.cleanup()
