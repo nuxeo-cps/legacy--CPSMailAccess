@@ -98,6 +98,55 @@ class MailMessageEditTestCase(MailTestCase):
         self.assertEquals(view.getDestList(), [{'type': 'To', 'value': u'tziade@nuxeo.com'},
             {'type': 'Cc', 'value': u'tz@nuxeo.com'}])
 
+    def test_addMultipleRecipients(self):
+        mailbox = self._getMailBox()
+        msg = mailbox.getCurrentEditorMessage()
+        view = MailMessageEdit(mailbox, None)
+        view.addRecipient('tziade@nuxeo.com, tarek@ziade.org;tz@nuxeo.com', 'To')
+
+        self.assertEquals(view.getDestList(),
+                          [{'type': 'To', 'value': u'tziade@nuxeo.com'},
+                           {'type': 'To', 'value': u'tarek@ziade.org'},
+                           {'type': 'To', 'value': u'tz@nuxeo.com'}])
+
+    def test_addingPartsThenSends(self):
+
+        mailbox = self._getMailBox()
+        msg = mailbox.getCurrentEditorMessage()
+        msg.setPart(0, 'the body')
+        self.assert_(not msg.isMultipart())
+
+        my_file = self._openfile('PyBanner048.gif')
+        storage = FakeFieldStorage()
+        storage.file = my_file
+        storage.filename = 'PyBanner048.gif'
+        uploaded = FileUpload(storage)
+
+        my_file2 = self._openfile('PyBanner048.gif')
+        storage2 = FakeFieldStorage()
+        storage2.file = my_file2
+        storage2.filename = 'SecondPyBanner048.gif'
+        uploaded2 = FileUpload(storage2)
+
+        my_file3 = self._openfile('PyBanner048.gif')
+        storage3 = FakeFieldStorage()
+        storage3.file = my_file3
+        storage3.filename = 'SecondPyBanner048.gif'
+        uploaded3 = FileUpload(storage3)
+
+        view = MailMessageEdit(mailbox, None)
+        view.attachFile(uploaded)
+        view.attachFile(uploaded2)
+        view.attachFile(uploaded3)
+        view.detachFile('PyBanner048.gif')
+
+        view.sendMessage('from me', 'subject', 'body')
+
+
+
+
+
+
 
 
     ### need more tests here on EditorMessage
