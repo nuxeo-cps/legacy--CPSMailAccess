@@ -186,6 +186,14 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessage.MailMessageView"
+      name="treeview"
+      attribute="renderTreeView"
+      permission="zope2.View"
+      />
+
   <five:pagesFromDirectory
       module="Products.CPSDefault"
       directory="skins/cps_default"
