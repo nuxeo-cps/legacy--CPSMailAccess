@@ -44,6 +44,7 @@ def getConnection():
         return connector
     finally:
         lock.release()
+    return None
 
 class MailTool(Folder): # UniqueObject
     """ the portal tool wich holds
@@ -77,7 +78,11 @@ class MailTool(Folder): # UniqueObject
                                  'cache_level' :  2,
                                  'max_folder_size' : 20,
                                  'max_folder_depth' : 2,
-                                 'treeview_style' : 'lotus'}
+                                 'treeview_style' : 'lotus',
+                                 'message_list_cols' : ['Attachments', 'Icon',
+                                                        'From', 'Date',
+                                                        'Subject', 'Size']
+                                }
 
     def __init__(self):
         Folder.__init__(self)
