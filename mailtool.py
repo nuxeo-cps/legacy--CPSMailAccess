@@ -30,8 +30,9 @@ from Products.CPSMailAccess.connectionlist import registerConnections,\
      ConnectionList
 import thread
 from Products.Five import BrowserView
-from mailsearch import MailCatalogDict
 from smtpmailer import SmtpQueuedMailer
+from mailbox import manage_addMailBox
+from utils import makeId
 
 lock = thread.allocate_lock()
 connector = ConnectionList()
@@ -58,13 +59,11 @@ class MailTool(Folder): # UniqueObject
     id = 'portal_webmail'
     connection_list = getConnection()
     initialized = 0
-    mail_catalogs = None
     # to be externalized
     maildeliverer = SmtpQueuedMailer()
 
     def __init__(self):
         Folder.__init__(self)
-        self._setObject('mail_catalogs', MailCatalogDict())
         self._initializeConnectionList()
 
     def getConnectionList(self):
@@ -104,6 +103,23 @@ class MailTool(Folder): # UniqueObject
         """ kill someone connections
         """
         self.getConnectionList().killAllConnections()
+
+    def addMailBox(self, user_id):
+        """ creates a mailbox for a given user """
+
+        mailbox_name = makeId('box_%s' % user_id)
+        if hasattr(self, mailbox_name):
+            return getattr(self, mailbox_name)
+        else:
+            return manage_addMailBox(self, mailbox_name)
+
+    def deleteMailBox(self, user_id):
+        """ deletes the mailbox for a given user """
+
+        mailbox_name = makeId('box_%s' % user_id)
+        if hasattr(self, mailbox_name):
+            self.manage_delObjects([mailbox_name])
+
 
 """ classic Zope 2 interface for class registering
 """
