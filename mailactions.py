@@ -61,25 +61,29 @@ class MailActionsView(BrowserView):
                      'onclick' : 'saveMessageDatas(GetHTML())',
                      'action' : 'saveMessage'}
 
+                """
                 attach_file = {'icon' : base_url + '/cpsma_attach.png',
                      'title' : 'attach file',
                      'long_title' : 'add a file to the message',
                      'action' : 'editMessage.html?attach=1',
                      'onclick' : 'saveMessageDatas(GetHTML())'}
 
+                """
                 init = {'icon' : base_url + '/cpsma_initeditor.png',
                      'title' : 'init editor',
                      'long_title' : 'initialize editor',
                      'action' : 'initializeEditor',
                      'onclick' : ''}
 
+                """
                 send = {'icon' : base_url + '/cpsma_sendmsg.png',
                                  'title' : 'send message',
                                  'long_title' : 'send the message',
                                  'action' : 'editMessage.html',
                                  'onclick' : 'saveMessageDatas(GetHTML());alert("click below");'}
+                """
 
-                return [[save, attach_file], [init, send]]
+                return [[save, init]]
 
         elif IMailFolder.providedBy(container):
             mailbox = container.getMailBox()
