@@ -185,8 +185,11 @@ class MailMessage(Folder, MailPart):
             mailfolder = self.getMailFolder()
             connector = mailfolder._getconnector()
             if connector is not None:
+                """
                 part_str = connector.fetchPartial(mailfolder.server_name, self.uid,
-                    part_num, 0, 0)
+                    'RFC822.BODY', 0, 10)
+                """
+                part_str = connector.fetch(mailfolder.server_name, self.uid, '(RFC822.BODY)')
             else:
                 raise NotImplementedError
 
@@ -235,13 +238,15 @@ class MailMessage(Folder, MailPart):
         store = self._getStore()
         if not self.isMultipart():
             new_message = Message.Message()
-            new_message['From'] = self.getHeader('From')
-            new_message['To'] = self.getHeader('To')
-            new_message['Subject'] = self.getHeader('Subject')
-            new_message.add_header('Content-Type', 'multipart/mixed', boundary='BOUNDARY')
+            new_message['Content-Type'] = 'multipart/mixed; boundary=BOUNDARY'
+            for header in self.getHeaders().keys():
+                head = self.getHeader(header)
+                for part in head:
+                    new_message.add_header(header, part)
             new_message.attach(MIMEText(store.get_payload(),
                 _encoder=Encoders.encode_7or8bit))
             store = new_message
+
             self._setStore(new_message)
         file.seek(0)
         try:
