@@ -56,6 +56,18 @@ class MailBoxTestCase(ZopeTestCase):
         self.assertEquals('IMAP', mailbox['connection_type'])
         self.assertEquals('tarek', mailbox['uid'])
 
+    def test_setters(self):
+        """ testing setters
+        """
+        mailbox = MailBox()
+        params = {}
+        params['uid'] = 'tarek'
+        params['connection_type'] = 'IMAP'
+        mailbox.setParameters(params, False)
+        self.assertEquals('IMAP', mailbox['connection_type'])
+        self.assertEquals('tarek', mailbox['uid'])
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),
