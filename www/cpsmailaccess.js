@@ -73,9 +73,9 @@ function saveMessageDatas() {
 
   // find how to extract  [object HTMLTextAreaElement] content to save it
   msg_body = document.getElementById('msg_body');
+  msg_body = msg_body.value
 
   url = "saveMessageForm?msg_subject=" + msg_subject.value + "&msg_body=" + msg_body
-
   var xml = new XMLHttpRequest();
   xml.open("GET", url,true);
   xml.send(null);
