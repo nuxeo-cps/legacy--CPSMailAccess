@@ -293,6 +293,15 @@
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailmessageeditview.MailMessageEdit"
+      name="addRecipient"
+      attribute="addRecipient"
+      permission="zope2.View"
+      />
+
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
       name="deleteAttachement.html"
       attribute="detachFile"
       permission="zope2.View"
