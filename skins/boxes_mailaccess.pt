@@ -1,27 +1,33 @@
 <!-- mailaccess boxes macros -->
 <!-- $Id$ -->
 <metal:block define-macro="node">
-  <div tal:define="unreads element/unreads|python:0">
-    <tal:block tal:repeat="icon_ob element/front_icons">
-      <tal:block tal:condition="icon_ob/clickable">
-        <img tal:attributes="src icon_ob/icon;
+  <div>
+  <table border="0" tal:define="unreads element/unreads|python:0">
+    <tr>
+      <td nowrap>
+        <tal:block tal:repeat="icon_ob element/front_icons">
+          <tal:block tal:condition="icon_ob/clickable">
+           <img tal:attributes="src icon_ob/icon;
                           style string:cursor: hand;
                           onclick element/javacall;
                           id element/img_id;">
-      </tal:block>
-      <tal:block tal:condition="not:icon_ob/clickable">
-        <img tal:attributes="src icon_ob/icon">
-      </tal:block>
-    </tal:block>
-    <img tal:attributes="src element/icon_name"/>
-    <a tal:attributes="href element/url">
-      <span tal:replace="element/short_title"/>
-    </a><tal:block tal:condition="unreads">&#160;(<span tal:replace="unreads"/>)</tal:block>
-    <div tal:attributes="id element/short_title_id">
-      <tal:block tal:repeat="element element/childs">
-        <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
-      </tal:block>
-    </div>
+          </tal:block>
+          <tal:block tal:condition="not:icon_ob/clickable">
+            <img tal:attributes="src icon_ob/icon">
+          </tal:block>
+        </tal:block>
+        <img tal:attributes="src element/icon_name"/>
+        <a tal:attributes="href element/url">
+          <span tal:replace="element/short_title"/>
+        </a><tal:block tal:condition="unreads">&#160;(<span tal:replace="unreads"/>)</tal:block>
+        <div tal:attributes="id element/short_title_id">
+          <tal:block tal:repeat="element element/childs">
+            <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
+          </tal:block>
+        </div>
+       </td>
+    </tr>
+  </table>
   </div>
 </metal:block>
 
