@@ -56,7 +56,7 @@
 <metal:block define-macro="basebox_moveview">
   <tal:block tal:define="treeview here/treeview.html|nothing">
     <tal:block tal:condition="treeview">
-      <div class="form_title" i18n:translate="">
+      <div class="form_title" i18n:translate="cpsma_choose_new_folder">
         Choose a new parent folder
       </div>
       <tal:block tal:repeat="element treeview">
@@ -100,8 +100,10 @@
                      <a tal:attributes="href action/action;
                                         target action/target|nothing">
                        <center>
-                         <img tal:attributes="src action/icon;
+                         <img i18n:attributes="title alt"
+                              tal:attributes="src action/icon;
                                     title action/long_title;
+                                    alt action/long_title;
                                     onclick action/onclick|nothing"/>
                           <br/>
                           <span i18n:translate=""
@@ -145,6 +147,7 @@
                        <center>
                          <img tal:attributes="src attached_file/icon;
                                     title attached_file/fulltitle;
+                                    alt attached_file/fulltitle;
                                     onclick attached_file/onclick|nothing"/>
                           <br/>
                           <span i18n:translate=""
