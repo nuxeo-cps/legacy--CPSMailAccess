@@ -43,14 +43,15 @@ class MailTool(Folder, UniqueObject):
     meta_type = "CPSMailAccess Tool"
     id = 'portal_webmail'
 
-    _v_connection_list = None
+    _v_connection_list = ConnectionList()
 
     def __init__(self):
-        self._v_connection_list = ConnectionList()
         self._initializeConnectionList()
 
+
     def _initializeConnectionList(self):
-        # registers all access plugins
+        """ registers all access plugins
+        """
         registerConnections(self._v_connection_list)
 
     def listConnectionTypes(self):
@@ -63,7 +64,7 @@ class MailTool(Folder, UniqueObject):
         """
         self._initializeConnectionList()
 
-    def getConnection(connection_type):
+    def getConnection(self, connection_type):
         """ see IMailTool
         """
         return self._v_connection_list.getConnection(connection_type)
