@@ -1,4 +1,4 @@
-ajouté dernièrement (controle /refactoring ):
+ajouté dernièrement:
 
 + envois des messages (sauf le body)
 + le cycle : création d'un message -> envoi smtp -> ajout dans INBOX/Send resync
@@ -13,7 +13,7 @@ a) fonctionnel du plus important au moins
 + mettre un composant richedit pour le message
 + intégrer les préférences persos
 + brancher les annuaires
-+ mettre en place les traductions
++ mettre en place les traductions et mettre en place le bind i18n Zope3 <-> Zope2
 + mettre en place la sécu
 + tester sur des très grosses BAL
 
@@ -29,9 +29,11 @@ c) esthétisme
 
 d) après
 
++ la vue gmail !!
 + passer les formulaires en schemas zope 3
 + régler le pb du japonais japanese.iso-2022-jp
 + ajouter les actions de boite
 + refactorer les objets trop liés à Zope
 + newsgroups (gestion des acls)
+
 
