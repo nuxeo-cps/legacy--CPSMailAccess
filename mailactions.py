@@ -105,11 +105,13 @@ class MailActionsView(BaseMailMessageView):
             elif container == mailbox.getSentFolder():
                 pass
             else:
-                add_folder = {'icon' : base_url + '/cpsma_addfolder.png',
-                            'title' : 'add subfolder',
-                            'long_title' : 'add a subfolder',
-                            'action' : 'view?add_folder=1'}
-                actions.append(add_folder)
+                if container.canCreateSubFolder():
+
+                    add_folder = {'icon' : base_url + '/cpsma_addfolder.png',
+                                'title' : 'add subfolder',
+                                'long_title' : 'add a subfolder',
+                                'action' : 'view?add_folder=1'}
+                    actions.append(add_folder)
 
                 if container.server_name != 'INBOX':
                     move_folder = {'icon' : root + '/cpsma_movefolder.png',
@@ -181,7 +183,7 @@ class MailActionsView(BaseMailMessageView):
         synchro = {'icon' : base_url + '/cpsma_getmails.png',
                    'title' : 'get messages',
                    'long_title' : 'get all messages',
-                   'action' : root + '/synchronize.html'}
+                   'action' : root + '/syncProgress.html'}
 
         search = {'icon' : base_url + '/cspma_mail_find.png',
                    'title' : 'search messages',
