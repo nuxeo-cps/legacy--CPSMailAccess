@@ -6,7 +6,12 @@
       tal:content="string:@import
            url(${context/portal_url}/++resource++calendar/calendar-win2k-1.css);"/>
   </metal:block>
-
+  <metal:block fill-slot="javascript_head_slot">
+    <script type="text/javascript"
+      tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
+      src="++resource++cpsmailaccess.js">
+    </script>
+ </metal:block>
   <metal:block metal:fill-slot="main"
       tal:define="first_time request/first_time|nothing">
     <div class="message" tal:condition="first_time">
