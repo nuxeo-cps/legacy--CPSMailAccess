@@ -275,6 +275,20 @@ class MailMessageTestCase(MailTestCase):
         self.assertEquals(ob2.getHeader('Subject') , ob.getHeader('Subject'))
 
 
+    def test_attachPart(self):
+        ob = self.getMailInstance(2)
+        initial_message = ob.getRawMessage()
+
+        file = openfile('audiotest.au')
+        storage = FakeFieldStorage()
+        storage.file = file
+        storage.filename = 'audiotest.au'
+        uploaded = FileUpload(storage)
+
+        ob.attachFile(uploaded)
+
+        #raise str(ob._payload)
+
     def test_attachfile(self):
         ob = self.getMailInstance(2)
         initial_message = ob.getRawMessage()
@@ -287,7 +301,6 @@ class MailMessageTestCase(MailTestCase):
 
         ob.attachFile(uploaded)
         raw = ob.getRawMessage()
-
         self.assertNotEquals(raw.find('AAAAAAABnZ+fn59PNzefnZ1tbZ1'), -1)
 
         file = openfile('PyBanner048.gif')

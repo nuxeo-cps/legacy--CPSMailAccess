@@ -105,7 +105,8 @@ class MailFolderViewTestCase(MailTestCase):
         view = MailFolderView(ob, None)
         rendered_list = view.renderMailList()
 
-        self.assertEquals(rendered_list[len(rendered_list)-1]['url'], '.msg_232/view')
+        self.assertEquals(rendered_list[len(rendered_list)-1]['url'],
+                          '.msg_110/view')
 
         # testing a message
         msg_entry = rendered_list[0]
