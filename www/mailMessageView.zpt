@@ -1,16 +1,51 @@
 <html metal:use-macro="here/main_template/macros/master">
+  <metal:block fill-slot="css_slot">
+    <style type="text/css" media="all"
+      tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
+  </metal:block>
   <metal:block metal:fill-slot="main">
-    <div id="mailSubject">
-      <tal:block i18n:translate="">Subject :</tal:block>
-      <tal:block tal:replace="structure view/renderSubject" />
+    <div id="folder" tal:condition="request/showfolders|python:0">
+    todo : show folder
     </div>
-    <div id="mailTo">
-      <tal:block i18n:translate="">To :</tal:block>
-      <tal:block tal:replace="structure view/renderToList" />
+    <div id="mailToolbar">
+      <tal:block tal:condition="not:request/showfolders|python:0">
+        <img id="midPageButton" src="cpsma_down.png"/>
+      </tal:block>
+      <tal:block tal:condition="request/showfolders|python:0">
+        <img id="fullPageButton" src="cpsma_up.png"/>
+      </tal:block>
     </div>
-    <div id="mailFrom">
-      <tal:block i18n:translate="">From :</tal:block>
-      <tal:block tal:replace="structure view/renderFromList" />
+    <div id="mailBreak"/>
+    <div id="mailHeaders">
+        <div id="mailLessInfos">
+          <img id="headerButton" src="cpsma_lessinfos.png"/>
+          <div id="mailSubject">
+            <b>
+              <tal:block i18n:translate="">Subject :</tal:block>
+              <tal:block tal:replace="structure view/renderSubject" />
+            </b>
+          </div>
+        </div>
+        <div id="mailBreak"/>
+        <div id="mailMoreInfos">
+          <div id="mailTo">
+            <b>
+              <tal:block i18n:translate="">To :</tal:block>
+              <a tal:attributes="href python:'sendmail?to:'+view.renderToList()">
+                <tal:block tal:replace="view/renderToList" />
+              </a>
+            </b>
+          </div>
+          <div id="mailFrom">
+            <b>
+              <tal:block i18n:translate="">From :</tal:block>
+              <a tal:attributes="href python:'sendmail?to:'+view.renderFromList()">
+                <tal:block tal:replace="view/renderFromList" />
+              </a>
+            </b>
+          </div>
+        </div>
+
     </div>
     <div id="mailBody">
       <tal:block tal:replace="structure view/renderBody" />
