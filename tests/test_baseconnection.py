@@ -26,7 +26,6 @@ from Products.CPSMailAccess.connectionlist import ConnectionList
 from Products.CPSMailAccess.dummyconnection import BaseConnection
 from time import time,sleep
 
-installProduct('FiveTest')
 installProduct('Five')
 
 
