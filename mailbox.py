@@ -34,6 +34,7 @@ from zope.app import zapi
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from zope.publisher.browser import FileUpload
+from zope.app.cache.ram import RAMCache
 
 from utils import getToolByName, getCurrentDateStr, \
     _isinstance, decodeHeader, uniqueId, makeId, getFolder
@@ -42,7 +43,6 @@ from mailmessage import MailMessage
 from mailfolder import MailFolder, manage_addMailFolder
 from mailfolderview import MailFolderView
 from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
-from mailcache import MailCache
 from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
 from Products.Five.traversable import FiveTraversable
@@ -51,17 +51,89 @@ from mailsearch import MailCatalog
 
 has_connection = 1
 
-lock = thread.allocate_lock()
-cache = MailCache()
+class MailBoxBaseCaching(MailFolder):
+    """ a mailfolder that implements
+        mail box caches
+    """
 
-def getCache():
-    lock.acquire()
-    try:
-        return cache
-    finally:
-        lock.release()
+    _cache = RAMCache()
 
-class MailBox(MailFolder):
+    def addMailToCache(self, msg, key):
+        key = {'digest' : key}
+        self._cache.set(msg, 'mails', key)
+
+    def getMailFromCache(self, key, remove=True):
+        key = {'digest' : key}
+        mail = self._cache.query('mails', key)
+        if mail is not None:
+            self._cache.invalidate('mails', key)
+        return mail
+
+    def clearMailCache(self, key=None):
+        if key is not None:
+            key = {'digest' : key}
+        self._cache.invalidate('mails', key)
+
+    def setTreeViewCache(self, treeview):
+        self._cache.set(treeview, 'treeview')
+
+    def getTreeViewCache(self):
+        return self._cache.query('treeview')
+
+    def clearTreeViewCache(self):
+        self._cache.invalidate('treeview')
+
+    def getCurrentEditorMessage(self):
+        """ returns the message that is beeing edited
+        """
+        editor = self._cache.query('maileditor')
+        if editor is None:
+            msg = MailMessage()
+            # hack to identify it , need to do this better
+            msg.editor_msg = 1
+            msg.setHeader('Date', getCurrentDateStr())
+            self._cache.set(msg, 'maileditor')
+            editor = msg
+        return editor
+
+    def setCurrentEditorMessage(self, msg):
+        """ sets the message that is beeing edited
+        """
+        self._cache.set(msg, 'maileditor')
+
+    def clearEditorMessage(self):
+        """ empty the cached message
+        """
+        self._cache.invalidate('maileditor')
+
+    #
+    # message clipboard apis
+    #
+    def fillClipboard(self, action, msg_ids):
+        """ adds msgs to clipboard
+        """
+        self._cache.set(action, 'clipboard_action')
+        self._cache.set(msg_ids, 'clipboard_content')
+
+    def getClipboard(self):
+        """ get the clipboard content
+        """
+        action = self._cache.query('clipboard_action')
+        msg_ids = self._cache.query('clipboard_content')
+        return action, msg_ids
+
+    def clearClipboard(self):
+        """ clears clipboard
+        """
+        self._cache.invalidate('clipboard_action')
+        self._cache.invalidate('clipboard_content')
+
+    def clipBoardEmpty(self):
+        """ tells if clipboard is empty """
+        return self._cache.query('clipboard_content') == None
+
+
+class MailBox(MailBoxBaseCaching):
     """ the main container
 
     >>> f = MailBox()
@@ -73,10 +145,6 @@ class MailBox(MailFolder):
     ### XXX see if "properties" are ok in zope3/five context
     meta_type = "CPSMailAccess Box"
     portal_type = meta_type
-    _v_treeview_cache = None
-    _v_current_editor_message = None
-    _v_clipboard = []
-    _v_clipboard_action =''
 
     implements(IMailBox)
 
@@ -94,11 +162,8 @@ class MailBox(MailFolder):
                          'cache_level' :  2,
                          'max_folder_size' : 20}
 
-    # one mail cache by mailbox
-    mail_cache = getCache()
-
     def __init__(self, uid=None, server_name='', **kw):
-        MailFolder.__init__(self, uid, server_name, **kw)
+        MailBoxBaseCaching.__init__(self, uid, server_name, **kw)
 
     def setParameters(self, connection_params=None, resync=True):
         """ sets the parameters
@@ -187,8 +252,7 @@ class MailBox(MailFolder):
                 for id, item in folder.objectItems():
                     if IMailMessage.providedBy(item):
                         digest = item.digest
-                        if not self.mail_cache.has_key(digest):
-                            self.mail_cache[digest] = item
+                        self.addMailToCache(digest, item)
 
                 # delete the folder (see for order problem later here)
                 parent_folder = folder.aq_inner.aq_parent
@@ -208,12 +272,9 @@ class MailBox(MailFolder):
                 folder._synchronizeFolder()
             folder.setSyncState(state=False)
 
-        # if there's stillelements in mail_cache,
-        # that means that thse messages are really gone
-        cache_size = len(self.mail_cache)
-        if cache_size > 0:
-            log.append('deleting %d messages' % cache_size)
-            self.mail_cache.clear()
+        # if there's still elements in mail_cache,
+        # that means that the messages are really gone
+        self.clearMailCache()
 
         if return_log:
             return log
@@ -235,23 +296,6 @@ class MailBox(MailFolder):
             raise ValueError(NO_CONNECTOR)
 
         return connector
-
-    def setTreeViewCache(self, treeview):
-        """ see interface
-        """
-        self._v_treeview_cache = treeview
-
-    def getTreeViewCache(self):
-        """ see interface
-        """
-        return self._v_treeview_cache
-
-    def clearTreeViewCache(self):
-        """ see interface
-        """
-        if self._v_treeview_cache is not None:
-            self._v_treeview_cache = None
-
 
     def _sendMailMessage(self, msg_from, msg_to, msg):
         """ sends an instance of MailMessage """
@@ -350,27 +394,6 @@ class MailBox(MailFolder):
             sent = inbox._addFolder(uid, sent_name, server=True)
         return sent
 
-    def getCurrentEditorMessage(self):
-        """ returns the message that is beeing edited
-        """
-        if self._v_current_editor_message is None:
-            msg = MailMessage()
-            # hack to identify it , need to do this better
-            msg.editor_msg = 1
-            msg.setHeader('Date', getCurrentDateStr())
-            self._v_current_editor_message = msg
-        return self._v_current_editor_message
-
-    def setCurrentEditorMessage(self, msg):
-        """ sets the message that is beeing edited
-        """
-        self._v_current_editor_message = msg
-
-    def clearEditorMessage(self):
-        """ empty the cached message
-        """
-        self._v_current_editor_message = None
-
     def emptyTrashFolder(self):
         """ empty the trash """
 
@@ -400,30 +423,6 @@ class MailBox(MailFolder):
         # calls expunge
         self.validateChanges()
         self.clearMailBoxTreeViewCache()
-
-    #
-    # message clipboard apis
-    #
-    def fillClipboard(self, action, msg_ids):
-        """ adds msgs to clipboard
-        """
-        self._v_clipboard = msg_ids
-        self._v_clipboard_action = action
-
-    def getClipboard(self):
-        """ get the clipboard content
-        """
-        return self._v_clipboard_action, self._v_clipboard
-
-    def clearClipboard(self):
-        """ clears clipboard
-        """
-        self._v_clipboard = []
-        self._v_clipboard_action = ''
-
-    def clipBoardEmpty(self):
-        """ tells if clipboard is empty """
-        return self._v_clipboard == []
 
     def validateChanges(self):
         """ call expunger
