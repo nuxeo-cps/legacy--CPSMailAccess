@@ -54,7 +54,7 @@ class IMAPConnection(BaseConnection):
         params = self.connection_params
         host = params['HOST']
         if params.has_key('SSL'):
-            is_ssl =  params['SSL'] == 1
+            is_ssl = str(params['SSL']) == '1'
         else:
             is_ssl = 0
         if params.has_key('PORT'):
@@ -195,14 +195,77 @@ class IMAPConnection(BaseConnection):
             return imap_raw
         return results
 
+    def partQueriedList(self, message_parts):
+        """ creates a list of part queried
+        """
+        len_mp = len(message_parts)
+        if len_mp <= 2:
+            return []
+        mp = message_parts[1:len_mp-1]
+        return mp.split(' ')
 
+    def extractResult(self, query, results):
+        """ extracts a result from a block of results
+        """
+        # at ths time it's done "case by case"
+        if query == 'FLAGS':
+            raw = results[0][0]
+            # todo use regexprs
+            index = raw.find('FLAGS (')+7
+            if index < 7:
+                return ''
+            else:
+                out = raw.find(')')
+                flags = raw[index:out].replace('\\','')
+                return flags.split(' ')
 
+        if query == 'RFC822.SIZE':
+            raw = results[0][0]
+            # todo use regexpr
+            index = raw.find('RFC822.SIZE ')+12
+            raw = raw[index:]
+            out = raw.find(' ')
+            return raw[:out]
+
+        if query == 'RFC822.HEADER':
+            if len(results[0]) <= 1:
+                raise str(results)
+            raw = results[0][1]
+            raw_parts = raw.split('\r\n')
+            i  = 0
+            returned = {}
+            for raw_part in raw_parts:
+                raw_part = raw_part.strip()
+                if raw_part == '':
+                    continue
+                first_semicolumn = raw_part.find(':')
+                if first_semicolumn == -1:
+                    first_semicolumn = raw_part.find('=')
+                #raw_parts = raw_part.split(':')
+                if first_semicolumn > -1:
+                    raw_name = raw_part[0:first_semicolumn].strip()
+                    raw_data = raw_part[first_semicolumn+1:].strip()
+                else:
+                    raw_name = raw_part
+                    raw_data = ''
+                returned[raw_name] = raw_data
+                i += 1
+            return returned
+        if query == 'RFC822':
+            return results[0][1]
+
+        raise NotImplementedError('%s : %s' % (query, results))
 
     def fetch(self, mailbox, message_number, message_parts):
         """ see interface for doc
         """
+        query_list = self.partQueriedList(message_parts)
+        if len(query_list) == 0:
+            return {}
+
         self._respawn()
-        results =  {}
+        results =  []
+
         # XXX forcing each time but
         # we should select mailbox once for all
         # like in the commented code
@@ -220,82 +283,15 @@ class IMAPConnection(BaseConnection):
 
         if imap_result[0] == 'OK':
             imap_raw = imap_result[1]
-
-            part_queried = message_parts.split(' ')
-            len_query = len(part_queried)
-
-            part_queried[0] = part_queried[0].replace('(', '')
-            part_queried[len_query-1] = part_queried[len_query-1].replace('(', '')
-
             results = []
-            for query in part_queried:
-                raw_result = re.sub(r'(.+)('+query+' \()(.+)(\).+)', r'\3', val)
-                # raw imap results looks like this : 1 (UID 1)
-                # we want to get the number after (UID
-                #for raw_content in imap_raw:
-                #try:
-                if raw_result is list:
-                    for element in raw_result:
-                        # this is the cool part : we are going
-                        # to generalize imap datas
-                        element_list = self._generalize(element)
-                elif imap_raw is tuple:
-                    for element in raw_result:
-                        # this is the cool part : we are going
-                        # to generalize imap datas
-                        element_list = self._generalize(element)
-                else :
-                    element_list = self._generalize(raw_result)
-
-                results.append(element_list)
-
+            i = 0
+            for query in query_list:
+                raw_result = self.extractResult(query, imap_raw)
+                results.append(raw_result)
+                i += 1
         if len(results) == 1:
             return results[0]
-
         return results
-
-    def _generalize(self, element):
-        """ this definitely needs to be externalized
-            in an external file
-            as a "generalization grammar"
-            based on regular expression
-            for transformation
-        """
-        returned = {}
-        str_element = str(element)
-
-        if str_element.find('(UID') >= 0:
-            element = str_element.split('(UID ')[1]
-            element = element.split(')')[0]
-            element = element.strip()
-            returned['UID'] = element
-
-        elif str_element.find('RFC822.HEADER') >= 0:
-            parts = []
-            raw_part = element[0][1]
-            raw_parts = raw_part.split('\r\n')
-
-            # todo : find the name
-            i  = 0
-            for raw_part in raw_parts:
-                raw_part = raw_part.strip()
-                first_semicolumn = raw_part.find(':')
-                if first_semicolumn == -1:
-                    first_semicolumn = raw_part.find('=')
-                #raw_parts = raw_part.split(':')
-                if first_semicolumn > -1:
-                    raw_name = raw_part[0:first_semicolumn].strip()
-                    raw_data = raw_part[first_semicolumn+1:].strip()
-                else:
-                    raw_name = raw_part
-                    raw_data = ''
-                returned[raw_name] = raw_data
-                i += 1
-        else:
-            returned = element
-            #raise Exception('generalize fails on %s' % str(element) )
-
-        return returned
 
     def search(self, mailbox, charset, *criteria):
         """See interface for doc.
@@ -371,6 +367,13 @@ class IMAPConnection(BaseConnection):
             pass
 
         return res[0] == 'OK'
+
+    def create(self, mailbox):
+        self._respawn()
+        res = self._connection.create(mailbox)
+        return res[0] == 'OK'
+
+
 
 connection_type = 'IMAP'
 
