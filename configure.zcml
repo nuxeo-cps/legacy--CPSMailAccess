@@ -483,6 +483,30 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailsearchview.MailSearchView"
+      name="zemanticSearchMessages"
+      attribute="zemanticSearchMessages"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailsearchview.MailSearchView"
+      name="zemanticPredicateList"
+      attribute="zemanticPredicateList"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailsearchview.MailSearchView"
+      template="www/mailZemanticSearchView.zpt"
+      name="zemanticSearchMessage.html"
+      permission="zope2.View"
+      />
+
 
   <include file="cpsdefault.zcml" />
 
