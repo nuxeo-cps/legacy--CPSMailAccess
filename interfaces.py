@@ -174,6 +174,10 @@ class IMailMessageStore(Interface):
             for single part messages, part_index is 0
         """
 
+    def getRawMessage():
+        """ retrieves the raw message
+        """
+
 class IMailBox(IContainer):
     """ mailboxes gives a few api to synchronize
     """
@@ -221,6 +225,11 @@ class IMailBox(IContainer):
 
     def clearTreeViewCache():
         """ empty the cache
+        """
+
+    def sendMessage(msg_from, msg_to, msg_subject, msg_body,
+            msg_attachments):
+        """ creates a message, sends it and copy it to Send folder
         """
 
 class IMailTool(Interface):
@@ -290,6 +299,11 @@ class IConnection(Interface):
     def noop():
         """ null command sended to keep connection alive
         """
+
+    def writeMessage(mailbox, raw_message):
+        """ writes a message to the given mailbox
+        """
+
 
 class IConnectionList(Interface):
 
