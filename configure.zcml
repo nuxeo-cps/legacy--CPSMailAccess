@@ -106,5 +106,64 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailfolder.MailFolderView"
+      template="www/mailFolderView.zpt"
+      name="view.html"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessage.MailMessageView"
+      template="www/mailMessageView.zpt"
+      name="view"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailfolder.MailFolderView"
+      template="www/mailFolderView.zpt"
+      name="view"
+      permission="zope2.View"
+      />
+
+  <five:pagesFromDirectory
+      module="Products.CPSDefault"
+      directory="skins/cps_default"
+      for=".interfaces.IMailMessage"
+      />
+
+  <five:pagesFromDirectory
+      module="Products.CPSDefault"
+      directory="skins/cps_devel"
+      for=".interfaces.IMailMessage"
+      />
+
+  <five:pagesFromDirectory
+      module="Products.CPSDefault"
+      directory="skins/cps_styles"
+      for=".interfaces.IMailMessage"
+      />
+
+  <five:pagesFromDirectory
+      module="Products.CPSDefault"
+      directory="skins/cps_default"
+      for=".interfaces.IMailFolder"
+      />
+
+  <five:pagesFromDirectory
+      module="Products.CPSDefault"
+      directory="skins/cps_devel"
+      for=".interfaces.IMailFolder"
+      />
+
+  <five:pagesFromDirectory
+      module="Products.CPSDefault"
+      directory="skins/cps_styles"
+      for=".interfaces.IMailFolder"
+      />
 
 </configure>
