@@ -50,6 +50,16 @@ class MailBox(MailFolder):
         MailFolder.__init__(self, uid, server_name, **kw)    
           
         
+    def synchronize(self):
+        """ see interface
+        """
+        sub_folders = self.getMailMessages(True, False, True)
+        
+        for sub_folder in sub_folders:
+            sub_folder._synchronizeFolder()
+            
+        self._synchronizeFolder()    
+            
                            
 """ classic Zope 2 interface for class registering
 """        
