@@ -28,7 +28,7 @@ class MailMessageTest(FunctionalTestCase):
         user = self.folder.acl_users.getUser(user_name)
         user.roles.append('Manager')
 
-    def testAddMailBox(self):
+    def test_addMessage(self):
         """ testing mailbox adding
         """
         response = self.publish( '/%s/manage_addProduct/CPSMailAccess/' \
@@ -40,6 +40,23 @@ class MailMessageTest(FunctionalTestCase):
         self.assertEqual(response.getStatus(), 302)
         self.assertEqual(response.getHeader('location'),
                          'http://nohost/%s/my_message/manage_main' % folder_name)
+
+    def test_ViewMessage(self):
+        """ testing message view
+        """
+        self.test_addMessage()
+
+        response = self.publish(
+            '/%s/my_message/view.html' % folder_name,
+            basic='%s:secret'% user_name
+        )
+
+        self.assertEqual(response.getStatus(), 200)
+
+        body = response.getBody()
+        self.assert_(body.find('body') > 0)
+
+
 
 def test_suite():
     return unittest.TestSuite((
