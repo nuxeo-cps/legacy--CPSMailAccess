@@ -305,3 +305,6 @@ a.selectable:hover {
   background-color:  #c0ff75;
 }
 
+input.fullwidth {
+  width: 100%;
+}
