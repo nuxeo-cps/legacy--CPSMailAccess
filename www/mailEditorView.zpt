@@ -85,10 +85,11 @@
             <input class="message_edit_input" id="msg_to" name="msg_to" type="text"/>
           </td>
           <td>
-            <input style="margin-left : 4px" type="submit" name="action" value="add_recipient"/>
+            <input style="margin-left : 4px" type="submit"
+              onclick="saveMessageDatas()"
+              name="action" value="add_recipient"/>
           </td>
         </tr>
-
         <tr>
           <td class="tr_title">Subject:
           </td>
