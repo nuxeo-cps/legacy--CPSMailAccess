@@ -21,7 +21,7 @@ import unittest
 
 from Testing.ZopeTestCase import user_name, folder_name
 from Testing.ZopeTestCase import installProduct
-from CPSMailAccess.mailbox import manage_addMailBox
+from CPSMailAccess.mailbox import manage_addMailBox, MailBoxActionsView
 from CPSMailAccess.mailtool import manage_addMailTool, MailTool
 from CPSMailAccess.mailfolder import MailFolder
 from Products.CPSMailAccess.mailexceptions import MailContainerError
@@ -41,6 +41,9 @@ class FakePortal(Implicit):
 
     def _setObject(self, id, ob):
         setattr(self, id, ob)
+
+    def getPhysicalPath(self):
+        return ('http://nowhere',)
 
 fakePortal = FakePortal()
 portal_webmail = MailTool()
@@ -205,7 +208,14 @@ class ObjectInteractionTest(ZopeTestCase):
         mailbox.sendMessage(msg_from, msg_to, msg_subject, msg_body,
             msg_attachments)
 
+    def test_MailBoxActionsView(self):
+        # mailmessageedit view
+        mailbox = self._getMailBox()
+        view = MailBoxActionsView(mailbox, None)
+        self.assertNotEquals(view, None)
 
+        actions = view.renderActions()
+        self.assertNotEquals(actions, [])
 
 def test_suite():
     return unittest.TestSuite((
