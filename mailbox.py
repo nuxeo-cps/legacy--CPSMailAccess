@@ -25,7 +25,8 @@ from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 import sys
 from smtplib import SMTP
-from utils import getToolByName, getCurrentDateStr, _isinstance, decodeHeader
+from utils import getToolByName, getCurrentDateStr, \
+    _isinstance, decodeHeader, verifyBody
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
@@ -272,6 +273,7 @@ class MailBox(MailFolder):
             return False
         msg_from = msg.getHeader('From')
         msg_to = msg.getHeader('To')
+        verifyBody(msg)
         result = self._sendMailMessage(msg_from, msg_to, msg)
         if result:
             connector = self._getconnector()
