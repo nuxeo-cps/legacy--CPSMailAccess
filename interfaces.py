@@ -178,15 +178,6 @@ class IMailMessageStore(Interface):
             for single part messages, part_index is 0
         """
 
-class IMailMessageMapping(IMapping):
-
-    def get(name, failobj=None):
-        """Get a header value.
-
-        Like __getitem__() but return failobj instead of None when the field
-        is missing.
-        """
-
 class IMailBox(IContainer):
     """ mailboxes gives a few api to synchronize
     """

@@ -17,16 +17,17 @@
 # 02111-1307, USA.
 #
 # $Id$
-"""MailFolder
+"""MailMessage
 
-A MailFolder contains mail messages and other mail folders.
+A MailMessage is an individual message from the server.
 """
+
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
-from interfaces import IMailMessage, IMailMessageStore, IMailMessageMapping
+from interfaces import IMailMessage, IMailMessageStore
 from utils import decodeHeader
 from email import Message as Message
 from email import message_from_string
@@ -38,14 +39,18 @@ from Products.Five import BrowserView
 from mailrenderer import MailRenderer
 
 class MailMessage(Folder):
-    """A folderish mail
+    """A mail message.
+
+    A mail message wraps an email.Message object.
+    It makes its subparts accessible as subobjects.
+
     A MailMessage implements IMailMessage:
     >>> f = MailMessage()
     >>> IMailMessage.providedBy(f)
     True
 
     """
-    implements(IMailMessage, IMailMessageStore, IMailMessageMapping)
+    implements(IMailMessage, IMailMessageStore)
 
     meta_type = "CPSMailAccess Message"
     uid = ''
@@ -217,73 +222,19 @@ class MailMessage(Folder):
             payload = store.get_payload()
             payload[part_index-1].del_param(param_name)
 
-    #
-    # MAPPING INTERFACE (partial)
-    #
-    def __len__(self):
-        """ see interface
+    def getHeader(self, name):
+        """Get a message header.
         """
-        store = self._getStore()
-        return store.__len__()
+        return self._getStore().get(name)
 
-    def __getitem__(self, name):
-        """ see interface
+    def setHeader(self, name, value):
+        """Set a message header.
         """
-        store = self._getStore()
-        return store.__getitem__(name)
-
-    def __setitem__(self, name, val):
-        """ see interface
-        """
-        # we want to override existing item if the
-        # given value differs
         store = self._getStore()
         if store.has_key(name):
-            if store[name] <> val:
-                store.__delitem__(name)
-        store.__setitem__(name, val)
-
-    def __delitem__(self, name):
-        """ see interface
-        """
-        store = self._getStore()
-        store.__delitem__(name)
-
-    def __contains__(self, name):
-        """ see interface
-        """
-        store = self._getStore()
-        return store.__contains__(name)
-
-    def has_key(self, name):
-        """ see interface
-        """
-        store = self._getStore()
-        return store.has_key(name)
-
-    def keys(self):
-        """ see interface
-        """
-        store = self._getStore()
-        return store.keys()
-
-    def values(self):
-        """ see interface
-        """
-        store = self._getStore()
-        return store.values()
-
-    def items(self):
-        """ see interface
-        """
-        store = self._getStore()
-        return store.items()
-
-    def get(self, name, failobj=None):
-        """ see interface
-        """
-        store = self._getStore()
-        return store.get(name, failobj)
+            # Erase previous header
+            del store[name]
+        store[name] = value
 
 #
 # MailMessage Views
@@ -299,7 +250,7 @@ class MailMessageView(BrowserView):
         """ renders the mail subject
         """
         if self.context is not None:
-            subject = self.context['Subject']
+            subject = self.context.getHeader('Subject')
             if subject is None:
                 subject = '?'
             else:
@@ -314,7 +265,7 @@ class MailMessageView(BrowserView):
         """ renders the mail From
         """
         if self.context is not None:
-            froms = self.context['From']
+            froms = self.context.getHeader('From')
             if froms is None:
                 froms = '?'
             else:
@@ -328,7 +279,7 @@ class MailMessageView(BrowserView):
         """ renders the mail list
         """
         if self.context is not None:
-            tos = self.context['To']
+            tos = self.context.getHeader('To')
             if tos is None:
                 tos = '?'
             else:
