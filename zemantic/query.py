@@ -80,7 +80,6 @@ class Query(object):
       True
 
     """
-
     implements(IQuery)
 
     inner = False
@@ -166,12 +165,18 @@ class Query(object):
         self.o = o
         self.c = c
 
-    def __call__(self, store):
+    def __call__(self, store, max_results=100):
 
         # common path, no inner queries
         try:
             if not self.inner:
-                for result in store.triples((self.s, self.p, self.o), self.c):
+                stored = store.triples((self.s, self.p, self.o), self.c)
+                i = 1
+                for result in stored:
+                    if i > max_results:
+                        break
+                    else:
+                        i+=1
                     yield Result(result)
             else:
 
@@ -299,7 +304,7 @@ class UnionChain(QueryChain):
         result.sort()
         return result
 
-    def __call__(self, store):
+    def __call__(self, store, max_results=100):
         if len(self._queries) == 0:
             pass
         else:
@@ -307,7 +312,12 @@ class UnionChain(QueryChain):
             for query in self._queries:
                 results = self._union(results, (list(query(store))))
                 #results = BTrees.OOBTree.union(results, Set(list(query(store))))
+            i = 0
             for result in results:
+                if i >= max_results:
+                    break
+                else:
+                    i += 1
                 yield result
 
 class IntersectionChain(QueryChain):

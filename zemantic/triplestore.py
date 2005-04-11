@@ -63,7 +63,7 @@ class TripleStore(Persistent):
       True
 
     See Zontology class doctests for more tests.
-    
+
     """
 
     implements(ITripleStore)
@@ -76,12 +76,9 @@ class TripleStore(Persistent):
             backend = IOZODBTextIndexBackend()
         self.backend = backend
 
-    def clear(self):
-        """
-        Clear zemantic.
-        """
-        for t in self.triples((None, None, None)):
-            self.remove(t)
+    def clear(self, backend=None):
+        """ Clear zemantic. """
+        self.__init__(backend)
 
     def notifyOn(self):
         """
@@ -255,7 +252,7 @@ class TripleStore(Persistent):
         which can contain a valid value or None to indicate any value
         is desired.
         """
-        
+
         for triple in self.store.triples((subject, predicate, object)):
             yield triple
 
@@ -263,14 +260,14 @@ class TripleStore(Persistent):
         """
         Query zemantic with a query object.
         """
-        
+
         return q(self)
 
     # no need to test the rest, they're all based on triples()
 
     def subjects(self, predicate=None, object=None):
         return self.store.subjects(predicate, object)
-        
+
     def predicates(self, subject=None, object=None):
         return self.store.predicates(subject, object)
 
@@ -279,10 +276,10 @@ class TripleStore(Persistent):
 
     def subject_predicates(self, object=None):
         return self.store.subject_predicates(object)
-            
+
     def subject_objects(self, predicate=None):
         return self.store.subject_objects(predicate)
-        
+
     def predicate_objects(self, subject=None):
         return self.store.predicate_objects(subject)
 
@@ -291,7 +288,7 @@ class TripleStore(Persistent):
 
     def transitive_subjects(self, predicate, object, remember=None):
         return self.store.transitive_subjects(predicate, object, remember)
-        
+
     def uniqueSubjects(self):
         return self.backend.uniqueSubjects()
 
