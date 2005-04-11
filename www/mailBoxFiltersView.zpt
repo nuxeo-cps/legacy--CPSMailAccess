@@ -1,0 +1,90 @@
+<html metal:use-macro="here/main_template/macros/master">
+  <metal:block fill-slot="css_slot">
+    <style type="text/css" media="all"
+      tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
+  </metal:block>
+  <metal:block metal:fill-slot="main">
+    <h2>
+      <img src="cpsma_filter_big.png"/>&#160;
+      <span i18n:translate="">
+        Filters for incoming messages
+      </span>
+    </h2>
+    <table width="100%">
+      <tr class="containersHeader">
+        <td class="tr_title" i18n:translate="">Element</td>
+        <td class="tr_title" i18n:translate="">Condition</td>
+        <td class="tr_title" i18n:translate="">Value</td>
+        <td class="tr_title" i18n:translate="">Action</td>
+        <td class="tr_title" i18n:translate="">Action param</td>
+        <td/>
+      </tr>
+      <tr tal:repeat="filter here/renderFilters">
+        <td>
+          <span i18n:translate="" tal:content="filter/subject"/>
+        </td>
+        <td>
+          <i><span i18n:translate="" tal:content="filter/condition"/></i>
+        </td>
+        <td>
+          <span tal:content="filter/value"/>
+        </td>
+        <td>
+          <i><span i18n:translate="" tal:content="filter/action"/></i>
+        </td>
+        <td>
+          <span tal:content="filter/action_param"/>
+        </td>
+        <td>
+          <form method="post" action="removeFilter.html">
+           <input type="hidden" name="index:int"
+                  tal:attributes="value repeat/filter/index"/>
+
+           <input class="deleteFilter" type="submit" name="submit" value=""/>
+          </form>
+        </td>
+      </tr>
+
+    <tr>
+        <form method="post" action="addFilter.html">
+        <td>
+        <select name="subject" class="cellInput">
+            <option i18n:translate="" value="Subject">Subject</option>
+            <option i18n:translate="" value="From">Sender</option>
+            <option i18n:translate="" value="To">To</option>
+            <option i18n:translate="" value="Cc">Cc</option>
+        </select>
+        </td>
+        <td>
+        <select name="condition:int" class="cellInput">
+            <option i18n:translate="" value="1">contains</option>
+            <option i18n:translate="" value="2">does not contains</option>
+            <option i18n:translate="" value="3">begin with</option>
+            <option i18n:translate="" value="4">ends with</option>
+            <option i18n:translate="" value="5">is</option>
+            <option i18n:translate="" value="6">isn't</option>
+        </select>
+        </td>
+        <td>
+          <input type="text" name="value" class="cellInput"/>
+        </td>
+        <td>
+        <select name="action:int" class="cellInput">
+            <option i18n:translate="" value="1">move to</option>
+            <option i18n:translate="" value="2">copy to</option>
+            <option i18n:translate="" value="3">label with</option>
+            <option i18n:translate="" value="4">set junk status</option>
+        </select>
+        </td>
+        <td>
+          <input type="text" name="action_param" class="cellInput"/>
+        </td>
+        <td>
+          <input type="submit" class="addFilter" name="submit" value=""/>
+        </td>
+
+        </form>
+    </tr>
+    </table>
+  </metal:block>
+</html>
