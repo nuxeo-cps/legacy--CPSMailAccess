@@ -19,12 +19,10 @@
 # need to contralize timeoutsocket
 
 # XXX need to make timeoutsocket comaptible with ssl sockets
-#import timeoutsocket
-#
-
-from zope.interface import implements
 from time import time
-from Products.CPSMailAccess.interfaces import IConnection
+from zope.interface import implements
+
+from interfaces import IConnection
 
 has_connection = 1
 

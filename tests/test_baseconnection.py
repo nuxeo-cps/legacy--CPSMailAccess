@@ -16,22 +16,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
-
+import os
+from time import time,sleep
 import unittest
-from zope.testing import doctest
+
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
-import os
-from Products.CPSMailAccess.connectionlist import ConnectionList
-from Products.CPSMailAccess.dummyconnection import BaseConnection
-from time import time,sleep
+
+from zope.testing import doctest
 
 installProduct('Five')
 
-
 class ConnectionTestCase(ZopeTestCase):
     pass
-
 
 def test_suite():
     return unittest.TestSuite((

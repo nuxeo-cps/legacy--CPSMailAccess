@@ -34,15 +34,24 @@
         </table>
     </metal:block>
 
-    <metal:block define-macro="messagelist">
-    <tal:block tal:define="page request/page|python:1;
-                           nb_items request/nb_items|python:20;
-                           sort_with request/sort_with|string:Date;
-                           sort_asc request/sort_asc|python:0;
-                           messagesl python:view.renderMailList(int(page), int(nb_items),
-                                                               sort_with, int(sort_asc));
+    <metal:block define-macro="messagelist"
+                 tal:define="page request/page|python:1;
+                             nb_items request/nb_items|python:20;
+                             sort_with request/sort_with|python:'Date';
+                             sort_asc request/sort_asc|python:0;"
+                           >
+    <tal:block tal:define="messagesl python:test(keep_last_sort,
+                                                 view.renderMailList(keep_last_sort=1),
+                                                 view.renderMailList(int(page), int(nb_items),
+                                                                     sort_with, int(sort_asc),
+                                                                     keep_last_sort));
                            messages python:messagesl[1];
-                           nbpages python:messagesl[0]">
+                           nbpages python:messagesl[0];
+                           last_sort python:view.getLastMailListSortCache();
+                           page python:test(last_sort, last_sort[0], page);
+                           nb_items python:test(last_sort, last_sort[1], nb_items);
+                           sort_with python:test(last_sort, last_sort[2], sort_with);
+                           sort_asc python:test(last_sort, last_sort[3], sort_asc)">
 
        <div tal:attributes="class
               python:test(is_folder,'folder_msglist','message_msglist')">
@@ -56,9 +65,12 @@
             <th class="mailToolBarElement mailToolBarInsideElement"
                 tal:repeat="col cols">
               <tal:block tal:define="sort_order
-                                     python:test(sort_with==col, not int(sort_asc), int(sort_asc));
+                                     python:test(sort_with==col, not int(sort_asc),
+                                     int(sort_asc));
                                      sort_order python:test(sort_order, 1, 0)">
-                <a tal:attributes="href    python:here.absolute_url()+'/view?page=%s&nb_items=%s&sort_with=%s&sort_asc=%s' %(page, nb_items, col, sort_order)">
+                <a tal:attributes="href
+                python:here.absolute_url()+'/view?page=%s&nb_items=%s&sort_with=%s&sort_asc=%s'
+                %(page, nb_items, col, sort_order)">
 
                 <tal:block tal:condition="python:col not in ('Attachments', 'Icon')">
                     <span tal:replace="col"/>
@@ -88,6 +100,8 @@
                 onmouseover python:'setCursor(this)'+chr(59);
                 onclickurl python:'gotoUrl('+chr(34)+gotoUrl+chr(34)+')';
                 base_url here/getBaseUrl;
+                new_message python:message['new'];
+                textstyle python:test(new_message, 'newMessage', 'seenMessage');
                 divclass python:test(is_current, class_selected, class_not_selected)">
 
           <tr tal:attributes="class
@@ -95,10 +109,11 @@
 
             <td tal:condition="content_managment">
 
-              <input type="checkbox"
+              <input type="checkbox" id="check"
                      tal:attributes="name python:'msg_'+message['uid']"/>
             </td>
             <td tal:repeat="col cols">
+             <div class="cellDrag" tal:attributes="id python:'msg_'+message['folder_id_uid']">
              <div tal:attributes="class divclass;
                                   onclick onclickurl;
                                   onmouseover onmouseover">
@@ -109,16 +124,19 @@
                   <img src="cpsma_attach_mini.png" tal:condition="python:message[col]==1"/>
                 </tal:block>
                 <tal:block tal:condition="python:col=='Size'">
-                  <span tal:replace="python:str(message[col][0])+' '+message[col][1]"/>
+                  <span tal:attributes="class textstyle"
+                        tal:content="python:str(message[col][0])+' '+message[col][1]"/>
                 </tal:block>
                 <tal:block tal:condition="python:col=='Icon'">
                   <img tal:attributes="src python:base_url+message[col]"
                        src="cpsma_message.png"/>
                 </tal:block>
                 <tal:block tal:condition="python:col not in ('Attachments', 'Size', 'Icon')">
-                 <span class="truncable" tal:content="python:message[col]"/>
+                 <span tal:attributes="class python:textstyle+' truncable'"
+                       tal:content="python:message[col]"/>
                 </tal:block>
               </a>
+              </div>
               </div>
             </td>
           </tr>
@@ -133,7 +151,9 @@
             </tal:block>
             <tal:block tal:condition="python:i+1!=int(page)">
 
-              <a tal:attributes="href    python:here.absolute_url()+'/view?page=%s&nb_items=%s&sort_with=%s&sort_asc=%s' %(i+1, nb_items, sort_with, sort_asc)">
+              <a tal:attributes="href
+              python:here.absolute_url()+'/view?page=%s&nb_items=%s&sort_with=%s&sort_asc=%s'
+              %(i+1, nb_items, sort_with, sort_asc)">
                 <span tal:replace="python:i+1"/>
               </a>
             </tal:block>
@@ -144,13 +164,25 @@
     </metal:block>
 
     <metal:block define-macro="messagetoolbar">
-      <div class="mailToolBar">
+      <div class="mailToolBar"
+           tal:define="folder python:here.getMailFolder()">
+          <a tal:condition="folder" style="float: right; margin-right: 4px"
+             i18n:attributes="title"
+             tal:attributes="href python:folder.absolute_url()+'/view';
+                             title string:Back to folder">
+            <img id="new_page" src="cpsma_back.png"/>
+          </a>
           <a style="float: right; margin-right: 4px"
-            tal:attributes="href python:here.absolute_url()+'/viewAlone.html'" target="_blank">
+             i18n:attributes="title"
+             tal:attributes="href python:here.absolute_url()+'/viewAlone.html';
+                             title string:In a new page"
+             target="_blank">
             <img id="new_page" src="launch.png"/>
           </a>
         <tal:block tal:condition="request/showfolders|python:0">
-            <a tal:attributes="href python:here.absolute_url()+'/view'">
+            <a  i18n:attributes="title"
+                tal:attributes="href python:here.absolute_url()+'/view';
+                                title string:In a new page">
             <img id="fullPageButton" src="cpsma_up.png" style="margin-right: 4px"/>
             </a>
         </tal:block>

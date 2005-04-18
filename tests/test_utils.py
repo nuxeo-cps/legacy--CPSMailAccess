@@ -20,13 +20,18 @@ import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import ZopeTestCase
 from datetime import datetime
-from Products.CPSMailAccess.utils import isToday, replyToBody, verifyBody, \
-    sanitizeHTML, HTMLize, HTMLToText, decodeHeader, getCurrentDateStr, \
-    isValidEmail, parseDateString
-
+from Products.CPSMailAccess.utils import *
 from basetestcase import MailTestCase
 
 class UtilsTestCase(MailTestCase):
+
+    total = 0
+
+    def method(self, arg1, arg2):
+        self.total = arg1 + arg2
+
+    def addOne(self):
+        self.total += 1
 
     def test_isToday(self):
         today = datetime(2000, 1, 1)
@@ -38,9 +43,15 @@ class UtilsTestCase(MailTestCase):
         body = 'voici\r\nun petit message'
         from_ = 'me'
         result = replyToBody(from_, body)
-        self.assertEquals(result, '> me wrote\r\n> voici\r\n> un petit message')
+        self.assertEquals(result, u'> me wrote\r\n> voici\r\n> un petit message')
+
         result = replyToBody(from_, body, 'Yo> ')
-        self.assertEquals(result, 'Yo> me wrote\r\nYo> voici\r\nYo> un petit message')
+        self.assertEquals(result, u'Yo> me wrote\r\nYo> voici\r\nYo> un petit message')
+
+        body = 'voici\r\nun petit mesééééééésage'
+        from_ = 'mé'
+        result = replyToBody(from_, body)
+        self.assertEquals(result, u'> m\xe9 wrote\r\n> voici\r\n> un petit mes\xe9\xe9\xe9\xe9\xe9\xe9\xe9sage')
 
     def test_verifyBody(self):
         msg = self.getMailInstance(2)
@@ -56,20 +67,20 @@ class UtilsTestCase(MailTestCase):
 
         result = result.split('\r\n')
 
-        self.assertEqual(result[0], '> Tarek Ziad\xe9 <tz@nuxeo.com> wrote')
-        self.assertEqual(result[1], '> Welcome to your cps webmail, webmailtest4 !')
-        self.assertEqual(result[2], '> ')
-        self.assertEqual(result[3], '> The CPS Team.')
+        self.assertEqual(result[0], u'> Tarek Ziad\xe9 <tz@nuxeo.com> wrote')
+        self.assertEqual(result[1], u'> Welcome to your cps webmail, webmailtest4 !')
+        self.assertEqual(result[2], u'> ')
+        self.assertEqual(result[3], u'> The CPS Team.')
 
         result = replyToBody('Tarek Ziadé <tz@nuxeo.com>', body)
         result = HTMLize(result)
 
         result = result.split('<br/>')
 
-        self.assertEqual(result[0], '&gt; Tarek Ziad\xe9 &lt;tz@nuxeo.com&gt; wrote')
-        self.assertEqual(result[1], '&gt; Welcome to your cps webmail, webmailtest4 !')
-        self.assertEqual(result[2], '&gt; ')
-        self.assertEqual(result[3], '&gt; The CPS Team.')
+        self.assertEqual(result[0], u'&gt; Tarek Ziad\xe9 &lt;tz@nuxeo.com&gt; wrote')
+        self.assertEqual(result[1], u'&gt; Welcome to your cps webmail, webmailtest4 !')
+        self.assertEqual(result[2], u'&gt; ')
+        self.assertEqual(result[3], u'&gt; The CPS Team.')
 
 
     def test_sanitizeHTML(self):
@@ -137,6 +148,21 @@ The CPS Team.
         # those are hard to guess so we return 1 jan 70
         date = parseDateString('Sat, 04 Dec 2004 20:03:34 01900')
         self.assertEquals(date, datetime(1970, 1, 1, 0, 0))
+
+    def test_asynCall(self):
+        caller = AsyncCall(self.method, 1, 3)
+        caller.start()
+        # place to drink a coffe
+        caller.join()
+        self.assertEquals(self.total, 4)
+
+    def test_asynCallTerminate(self):
+        caller = AsyncCall(self.method, 1, 3)
+        caller.onTerminate(self.addOne)
+        caller.start()
+        # place to drink a coffe
+        caller.join()
+        self.assertEquals(self.total, 5)
 
 def test_suite():
     return unittest.TestSuite((

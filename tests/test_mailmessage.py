@@ -59,7 +59,6 @@ class MailMessageTestCase(MailTestCase):
     def test_base(self):
         # loading a lot of different mails
         ob = MailMessage()
-        ob.cache_level = 2
         for i in range(37):
             if i < 9:
                 data = self._msgobj('msg_0'+str(i+1)+'.txt')
@@ -69,50 +68,32 @@ class MailMessageTestCase(MailTestCase):
             if data <> '':
                 ob.loadMessage(data)
 
-
-    def test_getPartCount(self):
-        # testing part count on msg_07.txt
-        ob = self.getMailInstance(7)
-        part_count = ob.getPartCount()
-        self.assertEquals(part_count, 4)
-
-        ob = self.getMailInstance(2)
-        part_count = ob.getPartCount()
-        self.assertEquals(part_count, 1)
-
-
     def test_getCharset(self):
         # testing charsets on msg_07.txt
         ob = self.getMailInstance(7)
 
-        self.assertEquals(ob.getCharset(0), None)
+        self.assertEquals(ob.getCharset(), None)
+        """
         self.assertEquals(ob.getCharset(1), "us-ascii")
         self.assertEquals(ob.getCharset(2), "iso-8859-1")
         self.assertEquals(ob.getCharset(3), "iso-8859-2")
+        """
 
         ob = self.getMailInstance(2)
         self.assertEquals(ob.getCharset(), None)
 
 
-    def test_getCharset(self):
+    def test_getsetCharset(self):
         # testing charsets on msg_07.txt
         ob = self.getMailInstance(7)
-        self.assertEquals(ob.getCharset(1), "us-ascii")
-        ob.setCharset("iso-8859-1", 1)
-        self.assertEquals(ob.getCharset(1), "iso-8859-1")
+        self.assertEquals(ob.getCharset(), None)
+        ob.setCharset("iso-8859-1")
+        self.assertEquals(ob.getCharset(), "iso-8859-1")
 
         ob = self.getMailInstance(2)
         self.assertEquals(ob.getCharset(), None)
         ob.setCharset("iso-8859-1")
         self.assertEquals(ob.getCharset(), "iso-8859-1")
-
-    def test_isMultipart(self):
-        # testing Multipart
-        ob = self.getMailInstance(7)
-        self.assertEquals(ob.isMultipart(), True)
-
-        ob = self.getMailInstance(2)
-        self.assertEquals(ob.isMultipart(), False)
 
     def test_getContentType(self):
         # testing getContentType
@@ -121,17 +102,10 @@ class MailMessageTestCase(MailTestCase):
         ct = ob.getContentType()
         self.assertEquals(ct, 'multipart/mixed')
 
-        ct = ob.getContentType(1)
-        self.assertEquals(ct, 'text/plain')
-
-        ct = ob.getContentType(2)
-        self.assertEquals(ct, 'image/gif')
-
         ob = self.getMailInstance(2)
 
         ct = ob.getContentType()
         self.assertEquals(ct, 'text/plain')
-
 
     def test_setContentType(self):
         # testing setContentType
@@ -143,12 +117,6 @@ class MailMessageTestCase(MailTestCase):
         ct = ob.getContentType()
         self.assertEquals(ct, 'text/plain')
 
-        ct = ob.getContentType(1)
-        self.assertEquals(ct, 'text/plain')
-        ob.setContentType('image/gif', 1)
-        ct = ob.getContentType(1)
-        self.assertEquals(ct, 'image/gif')
-
     def test_getParams(self):
         # testing getParams
         ob = self.getMailInstance(6)
@@ -158,12 +126,6 @@ class MailMessageTestCase(MailTestCase):
 
         ct = ob.getParam('boundary')
         self.assertEquals(ct, 'BOUNDARY')
-
-        ct = ob.getParams(1)
-        self.assertEquals(ct, [('text/plain', ''), ('charset', 'us-ascii')])
-
-        ct = ob.getParams(2)
-        self.assertEquals(ct, [('image/gif', ''), ('name', 'dingusfish.gif')])
 
         ob = self.getMailInstance(2)
 
@@ -180,13 +142,6 @@ class MailMessageTestCase(MailTestCase):
         ct = ob.getParam('boundary')
         self.assertEquals(ct, 'FRONTIERE')
 
-        ob.setParam('boundary', 'FRONTIERE', 1)
-        ct = ob.getParams(1)
-        self.assertEquals(ct, [('text/plain', ''), ('charset', 'us-ascii'),
-            ('boundary', 'FRONTIERE')])
-        ct = ob.getParam('boundary', 1)
-        self.assertEquals(ct, 'FRONTIERE')
-
         ob = self.getMailInstance(2)
         ob.setParam('boundary', 'FRONTIERE')
         ct = ob.getParam('boundary')
@@ -199,11 +154,6 @@ class MailMessageTestCase(MailTestCase):
         ob.setParam('boundary', 'FRONTIERE')
         ob.delParam('boundary')
         ct = ob.getParam('boundary')
-        self.assertEquals(ct, None)
-
-        ob.setParam('boundary', 'FRONTIERE', 1)
-        ob.delParam('boundary', 1)
-        ct = ob.getParam('boundary', 1)
         self.assertEquals(ct, None)
 
         ob = self.getMailInstance(2)
@@ -221,8 +171,6 @@ class MailMessageTestCase(MailTestCase):
 
     def test_setHeaders(self):
         ob = MailMessage()
-        ob.cache_level = 2
-
         s = 'Tarek <tz@nuxeo.com>'
         ob.setHeader('From', s)
         self.assertEquals(ob.getHeader('From'), [s])
@@ -238,34 +186,12 @@ class MailMessageTestCase(MailTestCase):
         self.assertEquals(ob.getHeader('From'), [s])
         self.assertEquals(ob.getHeader('from'), [s])
 
-    def test_partialMessages(self):
-        ob = self.getMailInstance(6)
-        count = ob.getPartCount()
-        self.assertEquals(count, 2)
-
-        self.assertEquals(ob.getPersistentPartIds(), [0, 1])
-
-        # supress a part
-        ob.setPart(1, None)
-        self.assertEquals(ob.getPart(1), None)
-
-        # testing if it's the persistent list
-        self.assertEquals(ob.getPersistentPartIds(), [0])
-
-        # try to reload it as a volatile part
-        vp = ob.loadPart('1', 'dfghj', volatile=True)
-
-        self.assertEquals(ob.getPart(1), None)
-        self.assertEquals(vp, ob.getVolatilePart(1))
-        self.assertNotEquals(ob.getVolatilePart(1), 'dfghj')
-        self.assertEquals(ob.getVolatilePart(1).as_string(), '\ndfghj\n')
-
     def test_copyFrom(self):
         ob = self.getMailInstance(6)
         ob2 = MailMessage('uid2', 'uid2')
         ob2.copyFrom(ob)
         self.assertNotEquals(ob.uid, ob2.uid)
-        self.assertEquals(ob.read, ob2.read)
+        self.assertEquals(ob.seen, ob2.seen)
 
     def test_copyFromHeaders(self):
         ob = self.getMailInstance(6)
@@ -283,10 +209,12 @@ class MailMessageTestCase(MailTestCase):
         storage.file = file
         storage.filename = 'audiotest.au'
         uploaded = FileUpload(storage)
-
         ob.attachFile(uploaded)
+        message_and_attachment = ob.getRawMessage()
 
-        #raise str(ob._payload)
+        # just checking that the file was included
+        pos = message_and_attachment.find('bq2waywxcnn/zZBSUVJ07zFwbjN501NND')
+        self.assertNotEquals(pos, -1)
 
     def test_attachfile(self):
         ob = self.getMailInstance(2)
@@ -299,8 +227,10 @@ class MailMessageTestCase(MailTestCase):
         uploaded = FileUpload(storage)
 
         ob.attachFile(uploaded)
-        raw = ob.getRawMessage()
-        self.assertNotEquals(raw.find('AAAAAAABnZ+fn59PNzefnZ1tbZ1'), -1)
+
+        files = ob.getFileList()
+        self.assertEquals(files[0]['mimetype'], 'audio/basic')
+        self.assertEquals(files[0]['filename'], 'audiotest.au')
 
         file = openfile('PyBanner048.gif')
         storage = FakeFieldStorage()
@@ -309,59 +239,70 @@ class MailMessageTestCase(MailTestCase):
         uploaded = FileUpload(storage)
         ob.attachFile(uploaded)
 
-        raw = ob.getRawMessage()
-        self.assertNotEquals(raw.find('PyBanner'), -1)
+        files = ob.getFileList()
+        self.assertEquals(files[1]['filename'], 'PyBanner048.gif')
+
+        message_and_attachment = ob.getRawMessage()
+
+        # just checking that the files were included
+        pos = message_and_attachment.find('PyBanner048.gif')
+        self.assertNotEquals(pos, -1)
+        pos = message_and_attachment.find('audiotest.au')
+        self.assertNotEquals(pos, -1)
 
         ob.detachFile('PyBanner048.gif')
         ob.detachFile('audiotest.au')
-        # to be thaught
-        #self.assertEquals(ob.getRawMessage(), initial_message)
+
+        files = ob.getFileList()
+        self.assertEquals(len(files), 0)
 
     def test_hasAttachment(self):
         ob = self.getMailInstance(2)
         self.assert_(not ob.hasAttachment())
+
         file = openfile('audiotest.au')
         storage = FakeFieldStorage()
         storage.file = file
         storage.filename = 'audiotest.au'
         uploaded = FileUpload(storage)
         ob.attachFile(uploaded)
-        self.assert_(ob.hasAttachment())
 
-    def test_multipartAlternativeRead(self):
-        ob = self.getMailInstance(35)
-        # lotus note mail message
-        # let's try to read the body
-        mailpart = ob.getPart(0)
-        subpart_1 = mailpart._payload[0]
-        self.assert_(subpart_1._payload.startswith('sqdsqd'))
+        self.assert_(ob.hasAttachment())
 
     def test_flags(self):
         # testing get an set flags and triggering
         ob = self.getMailInstance(35)
 
-        self.assertEquals(ob.getFlag('read'), 0)
-        ob.setFlag('read', 1)
-        self.assert_(ob.getFlag('read') == 1)
+        self.assertEquals(ob.getFlag('seen'), 0)
+        ob.setFlag('seen', 1)
+        self.assert_(ob.getFlag('seen') == 1)
 
         # try out event triggering
         ob.onFlagChanged = self._onFlagChanged
         self._called = 0
-        ob.setFlag('read', 0)
+        ob.setFlag('seen', 0)
         # test continues in _onFlagChanged
         # checks that _onFlagChanged has been called
         self.assertEquals(self._called, 1)
 
         # if no changes, it's not called
         self._called = 0
-        ob.setFlag('read', 0)
+        ob.setFlag('seen', 0)
         self.assertEquals(self._called, 0)
 
     def _onFlagChanged(self, msg, flag, value):
-        self.assert_(flag == 'read')
+        self.assert_(flag == 'seen')
         self.assert_(value == 0)
-        self.assert_(msg.getFlag('read') ==  0)
+        self.assert_(msg.getFlag('seen') ==  0)
         self._called = 1
+
+    def test_getDirectBody(self):
+        ob = self.getMailInstance(35)
+        body = ob.getDirectBody()
+        self.assertNotEquals(body, '')
+        ob.setDirectBody('okay')
+        self.assertEquals(ob.getDirectBody(), 'okay')
+
 
 def test_suite():
     return unittest.TestSuite((

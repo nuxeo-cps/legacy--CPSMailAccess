@@ -21,13 +21,15 @@
 
 A MailBox is the root MailFolder for a given mail account
 """
-
 import re
+import time
 from email.Utils import parseaddr
 
 from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 from OFS.Folder import Folder
+from OFS.ObjectManager import BadRequest
+
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.Five import BrowserView
 from Products.Five.traversable import FiveTraversable
@@ -51,6 +53,7 @@ from mailmessageview import MailMessageView
 from mailsearch import MailCatalog, ZemanticMailCatalog
 from directorypicker import DirectoryPicker
 from baseconnection import has_connection
+from mailfiltering import ZMailFiltering
 
 class MailBoxBaseCaching(MailFolder):
     """ a mailfolder that implements
@@ -94,6 +97,7 @@ class MailBoxBaseCaching(MailFolder):
             # hack to identify it , need to do this better
             msg.editor_msg = 1
             msg.setHeader('Date', getCurrentDateStr())
+            msg.seen = 1
             self._cache.set(msg, 'maileditor')
             editor = msg
         return editor
@@ -137,7 +141,6 @@ class MailBoxBaseCaching(MailFolder):
         """ tells if clipboard is empty """
         return self._cache.query('clipboard_content') is None
 
-
 class MailBox(MailBoxBaseCaching):
     """ the main container
 
@@ -158,15 +161,21 @@ class MailBox(MailBoxBaseCaching):
 
     zcatalog_id = '.zemantic_catalog'
     catalog_id = '.zcatalog'
+    synchronizing = False
 
     def __init__(self, uid=None, server_name='', **kw):
         MailBoxBaseCaching.__init__(self, uid, server_name, **kw)
+        self.search_available = True
+        self._filters = ZMailFiltering()
 
     def getConnectionParams(self):
         if self._connection_params == {}:
             portal_webmail = getToolByName(self, 'portal_webmail')
             self._connection_params = portal_webmail.default_connection_params
         return self._connection_params
+
+    def getFilters(self):
+        return self._filters
 
     def _getDirectoryPicker(self):
         if self._directory_picker is None:
@@ -184,18 +193,25 @@ class MailBox(MailBoxBaseCaching):
             self._getconnector()
             self.synchronize()
 
-    def synchronize(self, no_log=False):
+    def synchronize(self, no_log=False, light=True):
         """ see interface """
         if not has_connection:
             return []
 
+        start_time = time.time()
+
         indexStack = []
         # retrieving folder list from server
         connector = self._getconnector()
-        server_directory = connector.list()
+
+        if light:
+            server_directory = [{'Name': 'INBOX'}]
+        else:
+            server_directory = connector.list()
 
         if no_log:
-            returned = self._syncdirs(server_directory, False, indexStack)
+            returned = self._syncdirs(server_directory, False, indexStack,
+                                      light)
         else:
             log = self._syncdirs(server_directory, True, indexStack)
             log.insert(0, 'synchronizing mailbox...')
@@ -204,21 +220,32 @@ class MailBox(MailBoxBaseCaching):
             returned = logtext
 
         # now indexing
+        LOG('synchro', INFO, 'half time : %s seconds' % \
+            (time.time() - start_time))
+
+        # now indexing
+        get_transaction().commit()
+        get_transaction().begin()
+        self.search_available = False
         i = 0
         y = 0
         len_ = len(indexStack)
         for item in indexStack:
+            LOG('synchro', INFO, 'indexing %d/%d' %(y, len_))
             self.indexMessage(item)
-            if i == 99:
+            if i == 299:
                 get_transaction().commit(1)     # used to prevent swapping
                 i = 0
             else:
                 i += 1
             y += 1
+        self.search_available = True
+        endtime = time.time() - start_time
+        LOG('synchro', INFO, 'total time : %s seconds' % endtime)
         return returned
 
     def _syncdirs(self, server_directories=[], return_log=False,
-                  indexStack=[]):
+                  indexStack=[], light=True):
         """ syncing dirs """
         log = []
 
@@ -269,7 +296,10 @@ class MailBox(MailBoxBaseCaching):
         self.setSyncState(state=True)
 
         # cheking for orphan folders
-        folders = self.getMailMessages(list_folder=True, list_messages=False, recursive=True)
+        if not light:
+            folders = self.getMailMessages(list_folder=True, list_messages=False, recursive=True)
+        else:
+            folders = []
 
         # let's order folder : leaves at first
         for folder in folders:
@@ -288,7 +318,13 @@ class MailBox(MailBoxBaseCaching):
         # now syncronizing messages
         # this is done after to be able
         # to retrieve orphan message thus accelerate the work
-        folders = self.getMailMessages(list_folder=True, list_messages=False, recursive=True)
+        if not light:
+            folders = self.getMailMessages(list_folder=True,
+                                           list_messages=False, recursive=True)
+        else:
+            folders = self.getMailMessages(list_folder=True,
+                                           list_messages=False, recursive=False)
+
         for folder in folders:
             # let's synchronize messages now
             if return_log:
@@ -332,15 +368,24 @@ class MailBox(MailBoxBaseCaching):
 
     def _sendMailMessage(self, msg_from, msg_to, msg):
         """ sends an instance of MailMessage """
-        # sends it
+        params = self.getConnectionParams()
         portal_webmail = getToolByName(self, 'portal_webmail')
         maildeliverer = portal_webmail.maildeliverer
 
-        smtp_host = self.getConnectionParams()['smtp_host']
-        smtp_port = self.getConnectionParams()['smtp_port']
+        signature = params['signature']
+        if signature.strip() != '':
+            msg_body = msg.getDirectBody()
+            # thunderbird-style signature
+            msg_body = msg_body + '\r\n\r\n-- \r\n%s' % signature
+            msg.setDirectBody(msg_body)
 
-        return maildeliverer.send(msg_from, msg_to, msg.getRawMessage(), smtp_host,
-                           smtp_port, None, None)
+        msg_content = msg.getRawMessage()
+
+        smtp_host = params['smtp_host']
+        smtp_port = params['smtp_port']
+
+        return maildeliverer.send(msg_from, msg_to, msg_content,
+                                  smtp_host, smtp_port, None, None)
 
     def sendEditorsMessage(self):
         """ sends the cached message """
@@ -499,38 +544,46 @@ class MailBox(MailBoxBaseCaching):
         if hasattr(self, zcatalog_id):
             return getattr(self, zcatalog_id)
         else:
-            cat = ZemanticMailCatalog(zcatalog_id)
-            self._setObject(zcatalog_id, cat)
+            cat = ZemanticMailCatalog()
+            #self._setObject(zcatalog_id, cat)
             setattr(self, zcatalog_id, cat)
 
         return getattr(self, zcatalog_id)
 
+    def clearMailCatalog(self):
+        """ clears the catalog """
+        zemantic_cat = self._getZemanticCatalog()
+        zemantic_cat.clear()
+
     def reindexMailCatalog(self):
         """ reindex the catalog """
-        if hasattr(self, self.zcatalog_id):
-            self.manage_delObjects([self.zcatalog_id])
-        zemantic_cat = self._getZemanticCatalog()    # regeneratea new cat
+        zemantic_cat = self._getZemanticCatalog()
+        zemantic_cat.clear()
 
-        mails = self.getMailMessages(list_folder=False,
-                                     list_messages=True, recursive=True)
+        mails = self.getMailMessages(list_folder=False, list_messages=True,
+                                     recursive=True)
         len_ = len(mails)
         i = 0
         y = 0
+
+        start_time = time.time()
         for mail in mails:
             #cat.indexMessage(mail)
+            LOG('synchro', INFO, 'indexing %d/%d' %(i, len_))
             zemantic_cat.indexMessage(mail)
-            if y == 99:
+            if y == 299:
                 get_transaction().commit(1)     # used to prevent swapping
                 y = 0
             else:
                 y += 1
             i += 1
+        endtime = time.time() - start_time
+        LOG('synchro', INFO, 'total time : %s seconds' % endtime)
 
     def indexMessage(self, msg):
         """ indexes message """
         #cat = self._getCatalog()
         #cat.indexMessage(msg)
-
         zemantic_cat = self._getZemanticCatalog()
         zemantic_cat.indexMessage(msg)
 
@@ -538,7 +591,6 @@ class MailBox(MailBoxBaseCaching):
         """ unindexes message """
         #cat = self._getCatalog()
         #cat.unIndexMessage(msg)
-
         zemantic_cat = self._getZemanticCatalog()
         zemantic_cat.unIndexMessage(msg)
 
@@ -546,12 +598,15 @@ class MailBox(MailBoxBaseCaching):
         """ makes a copy of editor message into Drafts """
         # TODO: add a TO section
         msg = self.getCurrentEditorMessage()
-        msg.title = decodeHeader(msg.getHeader('Subject')[0])
+        subjects = msg.getHeader('Subject')
+        if subjects != []:
+            subject = subjects[0]
+            msg.title = decodeHeader(subject)
 
         drafts = self.getDraftFolder()
         new_uid = drafts.getNextMessageUid()
 
-        msg_copy = drafts._addMessage(new_uid, msg.digest)
+        msg_copy = drafts._addMessage(new_uid, msg.digest, index=False)
         msg_copy.copyFrom(msg)
         # todo check flag on server's side
         msg_copy.draft = 1
@@ -710,17 +765,18 @@ class MailBox(MailBoxBaseCaching):
             elements = msg.getHeader(part)
             for element in elements:
                 entry = self._createMailDirectoryEntry(element)
-                id = entry['id']
-                if not self._hasEntry('.addressbook', id ):
-                    self._createEntry('.addressbook', entry)
-                else:
-                    entries = self._searchEntries('.addressbook',
-                                        ['fullname', 'email', 'id',
-                                         'mails_sent'],
-                                        **{'id' : id })
-                    entry = entries[0][1]
-                entry['mails_sent'] += 1
-                self._editEntry('.addressbook', entry)
+                if entry is not None:
+                    id = entry['id']
+                    if not self._hasEntry('.addressbook', id ):
+                        self._createEntry('.addressbook', entry)
+                    else:
+                        entries = self._searchEntries('.addressbook',
+                                            ['fullname', 'email', 'id',
+                                            'mails_sent'],
+                                            **{'id' : id })
+                        entry = entries[0][1]
+                    entry['mails_sent'] += 1
+                    self._editEntry('.addressbook', entry)
 
     def _createMailDirectoryEntry(self, mail):
         """ translate a mail to an entry """
@@ -791,6 +847,7 @@ class MailBox(MailBoxBaseCaching):
 
     def elementIsInTrash(self, element):
         """ tells if the given element is in trash
+
         Just working on folders at this time
         """
         if IMailFolder.providedBy(element):
@@ -800,6 +857,74 @@ class MailBox(MailBoxBaseCaching):
             return folder_name.startswith(trash_name)
         else:
             return False
+
+    def moveElement(self, from_place, to_place):
+        """ moves an element
+
+        do not move folder when :
+            o the target folder is a subfolder of the folder
+
+        when moving a message or a folder change flags when :
+            o it is coming from a special folder (drafts, sent, trash)
+            o it is going to a special folder    (drafts, sent, trash)
+        """
+        # translating first parameter
+        if from_place.find('from_folder_') != -1:
+            from_place = from_place[12:]
+            from_place = from_place.split('.')
+            message_to_folder = False
+        else:
+            from_place = from_place[4:]
+            from_place = from_place.split('__')
+            folder = from_place[0].split('.')
+            message_id = self.getIdFromUid(from_place[1])
+            from_place = folder + [message_id]
+            message_to_folder = True
+
+        # translating second parameter
+        if to_place.find('to_folder_') != -1:
+            to_place = to_place[10:]
+            to_place = to_place.split('.')
+        else:
+            to_place = None
+
+        if to_place is None or from_place is None:
+            return None
+
+        # translating name to object
+        from_object = self
+        for element in from_place:
+            from_object = getattr(from_object, element, None)
+            if from_object is None:
+                break
+
+        to_object = self
+        for element in to_place:
+            to_object = getattr(to_object, element, None)
+            if to_object is None:
+                break
+
+        if from_object is not None and to_object is not None:
+            if message_to_folder:
+                # maybe already in ?
+                # see if id comp. instead of object comp. is quicker
+                from_folder = from_object.getMailFolder()
+                if from_folder != to_object:
+                    from_folder.moveMessage(from_object.uid, to_object)
+                    # now heading to the old folder
+                    return from_folder
+            else:
+                # is folder a parent of target folder ?
+                old_parent = from_object.getMailFolder()
+                from_id = from_object.server_name
+                to_id = to_object.server_name
+                if not to_id.startswith(from_id):
+                    from_id = from_id.split('.')[-1]
+                    new_id = '%s.%s' % (to_id, from_id)
+                    from_object.rename(new_id, fullname=True)
+                    return old_parent
+
+        return None
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
@@ -873,6 +998,8 @@ class MailBoxParametersView(BrowserView):
             rendered_param['value'] = value
             if param == 'password' and not params[param].startswith('${'):
                 rendered_param['type'] = 'password'
+            elif param == 'signature':
+                rendered_param['type'] = 'list'
             else:
                 rendered_param['type'] = 'text'
 
@@ -899,9 +1026,17 @@ class MailBoxParametersView(BrowserView):
         rendered_param['type'] = 'text'
         return [rendered_param]
 
+    def clearMailCatalog(self):
+        """ clear catalog """
+        box = self.context
+        box.clearMailCatalog()
+
+        if self.request is not None:
+            psm = 'Catalog cleared.'
+            self.request.response.redirect('configure.html?portal_status_message=%s' % psm)
+
     def reindexMailCatalog(self):
-        """ calls the catalog indexation
-        """
+        """ calls the catalog indexation """
         box = self.context
         box.reindexMailCatalog()
 
@@ -928,7 +1063,6 @@ class MailBoxView(MailFolderView):
 
     def emptyTrash(self):
         """ empty trash folder """
-
         mailbox = self.context
         mailbox.emptyTrashFolder()
         trash = mailbox.getTrashFolder()
@@ -937,14 +1071,25 @@ class MailBoxView(MailFolderView):
             self.request.response.redirect(trash.absolute_url()+\
                                            '/view?portal_status_message=%s' % psm)
 
-    def synchronize(self):
+    def synchronize(self, light=True):
         """ synchronizes mailbox """
-        mailbox = self.context
-        try:
-            mailbox.synchronize(True)
-            psm = 'cpsma_synchronized'
-        except ConnectionError:
-            psm = 'cpsma_failed_synchro'
+        # todo : block a new synchronization if it's already
+        # XXX inside
+        if isinstance(light, str):
+            light = light == '1'
+        if not hasattr(self, 'synchronizing'):
+            self.synchronizing = False
+        if not self.synchronizing:
+            self.synchronizing = True
+            try:
+                mailbox = self.context
+                try:
+                    mailbox.synchronize(no_log=True, light=light)
+                    psm = 'cpsma_synchronized'
+                except ConnectionError:
+                    psm = 'cpsma_failed_synchro'
+            finally:
+                self.synchronizing = False
 
         if self.request is not None:
             if hasattr(mailbox, 'INBOX'):
@@ -954,6 +1099,12 @@ class MailBoxView(MailFolderView):
             self.request.response.redirect(container.absolute_url()+ \
                 '/view?portal_status_message=%s' % psm)
 
+    def moveElement(self, from_place, to_place):
+        """ moves an element """
+        mailbox = self.context
+        target = mailbox.moveElement(from_place, to_place)
+        if self.request is not None and target is not None:
+            self.request.response.redirect(target.absolute_url()+ '/view')
 
 class MailBoxTraversable(FiveTraversable):
     """ use to vizualize the mail parts in the mail editor
@@ -974,6 +1125,93 @@ class MailBoxTraversable(FiveTraversable):
             return msg
         # let the regular traverser do the job
         return FiveTraversable.traverse(self, path, '')
+
+class MailBoxFiltersView(BrowserView):
+
+    def getFilterCount(self):
+        mailbox = self.context
+        filters = mailbox.getFilters()
+        return len(filters.getFilters())
+
+    def _render(self, item):
+        render_item = {}
+
+        if item['subject'] == 'From':
+            render_item['subject'] = 'Sender'
+        else:
+            render_item['subject'] = item['subject']
+
+        render_item['action_param'] = item['action_param']
+        render_item['value'] = item['value']
+
+        cond = item['condition']
+
+        if cond == 1:
+            render_item['condition']  = 'contains'
+        elif cond == 2:
+            render_item['condition']  = 'does not contains'
+        elif cond == 3:
+            render_item['condition']  = 'begins with'
+        elif cond == 4:
+            render_item['condition']  = 'ends with'
+        elif cond == 5:
+            render_item['condition']  = 'is'
+        elif cond == 6:
+            render_item['condition']  = 'is not'
+        else:
+            render_item['condition'] = '? : %s' % str(cond)
+
+        action = item['action']
+
+        if action == 1:
+            render_item['action']  = 'move to'
+        elif action == 2:
+            render_item['action']  = 'copy to'
+        elif action == 3:
+            render_item['action']  = 'label with'
+        elif action == 4:
+            render_item['action']  = 'set junk status'
+        else:
+            render_item['action'] = '? : %s' % str(action)
+
+        return render_item
+
+    def renderFilters(self):
+        """ renders filter list
+
+        Replaces values by human readable values
+        """
+        mailbox = self.context
+        filters = mailbox.getFilters().getFilters()
+        return map(self._render, filters)
+
+    def removeFilter(self, index):
+        """ removes a filter given its index"""
+        mailbox = self.context
+        filters = mailbox.getFilters()
+        filters.deleteFilter(index)
+
+        if self.request is not None:
+            self.request.response.redirect('filters.html')
+
+    def addFilter(self, subject, condition, value, action, action_param=None):
+        """ adds a filter given its values """
+        mailbox = self.context
+        filters = mailbox.getFilters()
+
+        # controling input
+        if action != 4 and action_param.strip() == '':
+            psm = 'Need an action param'
+        else:
+            filters.addFilter(subject, condition, value, action, action_param)
+            psm = None
+
+        if self.request is not None:
+            if psm is None:
+                self.request.response.redirect('filters.html')
+            else:
+                self.request.response.redirect(
+                    'filters.html?portal_status_message=%s' % psm)
 
 
 

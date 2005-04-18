@@ -45,8 +45,10 @@ class MailMessageEditTestCase(MailTestCase):
         mailbox = self._getMailBox()
         mailbox.clearEditorMessage()        # clean previous tests
         msg = mailbox.getCurrentEditorMessage()
-        msg.setPart(0, 'the body')
-        self.assert_(not msg.isMultipart())
+
+        self.assertEquals(len(msg.getFileList()), 0)
+        msg.setDirectBody('the body')
+
         my_file = self._openfile('PyBanner048.gif')
         storage = FakeFieldStorage()
         storage.file = my_file
@@ -58,9 +60,7 @@ class MailMessageEditTestCase(MailTestCase):
         view.attachFile(uploaded)
 
         # now verify the result
-        self.assert_(msg.isMultipart())
-        self.assertEquals(msg.getPartCount(), 2)
-        self.assertNotEquals(msg.getPart(1), None)
+        self.assertEquals(len(msg.getFileList()), 1)
 
         # for reuse
         return (msg, view)
@@ -73,7 +73,8 @@ class MailMessageEditTestCase(MailTestCase):
         view = ret[1]
         view.detachFile('PyBanner048.gif')
         # now verify the result
-        self.assert_(not msg.isMultipart())
+        self.assertEquals(len(msg.getFileList()), 0)
+
         # check that the message is okby re-attaching a file
         ret = self.test_attach_file()
 
@@ -118,8 +119,8 @@ class MailMessageEditTestCase(MailTestCase):
         mailbox = self._getMailBox()
         mailbox.clearEditorMessage()        # clean previous tests
         msg = mailbox.getCurrentEditorMessage()
-        msg.setPart(0, 'the body')
-        self.assert_(not msg.isMultipart())
+        msg.setDirectBody('the body')
+        self.assertEquals(len(msg.getFileList()), 0)
 
         view = MailMessageEdit(mailbox, None)
 
@@ -138,8 +139,8 @@ class MailMessageEditTestCase(MailTestCase):
 
         view.attachFile(uploaded2)
 
-        self.assert_(msg.isMultipart())
-        self.assertEquals(msg.getPartCount(), 2)
+        self.assertEquals(len(msg.getFileList()), 1)
+
 
         view.sendMessage('from me', 'subject', 'body')
 
@@ -149,8 +150,8 @@ class MailMessageEditTestCase(MailTestCase):
         mailbox = self._getMailBox()
         mailbox.clearEditorMessage()        # clean previous tests
         msg = mailbox.getCurrentEditorMessage()
-        msg.setPart(0, 'the body')
-        self.assert_(not msg.isMultipart())
+        msg.setDirectBody('the body')
+        self.assertEquals(len(msg.getFileList()), 0)
 
         my_file = self._openfile('PyBanner048.gif')
         storage = FakeFieldStorage()
@@ -167,7 +168,7 @@ class MailMessageEditTestCase(MailTestCase):
         my_file3 = self._openfile('PyBanner048.gif')
         storage3 = FakeFieldStorage()
         storage3.file = my_file3
-        storage3.filename = 'SecondPyBanner048.gif'
+        storage3.filename = 'SecondPyBansxzner048.gif'
         uploaded3 = FileUpload(storage3)
 
         view = MailMessageEdit(mailbox, None)
@@ -176,8 +177,7 @@ class MailMessageEditTestCase(MailTestCase):
         view.attachFile(uploaded3)
         view.detachFile('PyBanner048.gif')
 
-        self.assert_(msg.isMultipart())
-        self.assertEquals(msg.getPartCount(), 2)
+        self.assertEquals(len(msg.getFileList()), 2)
 
         view.sendMessage('from me', 'subject', 'body')
 

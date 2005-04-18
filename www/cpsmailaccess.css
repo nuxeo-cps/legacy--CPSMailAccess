@@ -270,6 +270,24 @@ input.manage_delete:hover {
   background-color:  #c0ff75;
 }
 
+input.manage_selectall {
+  border: none;
+  padding-left: 23px;
+  padding-right: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  cursor: hand;
+  background-image: url('cpsma_manage_content.png');
+  background-repeat: no-repeat;
+  background-position: left center;
+  font-weight: bold;
+}
+
+input.manage_selectall:hover {
+  background-color:  #c0ff75;
+}
+
+
 div.recipient {
   float: left;
   width: 80%;
@@ -380,4 +398,72 @@ div.onBlock {
   width: 100%;
   float: left;
   margin-top: 8px;
+}
+
+tr.containers {
+  background-color: white;
+  padding: 4px;
+  margin:4px;
+}
+
+tr.containersHeader {
+  margin-bottom: 10px;
+  padding: 8px;
+  background-color: #e7e7e7;
+}
+
+
+div.containersLine {
+  margin-right: 10px;
+
+}
+
+div.containersLine a img {
+  border: none;
+  margin-right: 4px;
+}
+
+span.newMessage {
+  font-weight: bold;
+}
+
+span.seenMessage {
+}
+
+div.cellDrag:hover {
+  background-color: #c0ff75;
+}
+
+div.cellDesthighlighted {
+  background-color: #c0ff75;
+}
+
+div.dragBox {
+  vertical-align: middle;
+  text-align: center;
+  position: absolute;
+  display: none;
+  border: 1px solid black;
+}
+
+input.cellInput {
+  width: 75px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+input.deleteFilter {
+  background-image: url('cpsma_delete_file.png');
+  background-repeat: no-repeat;
+  background-position: left center;
+  cursor: hand;
+  border: none;
+}
+
+input.addFilter {
+  background-image: url('cpsma_add.png');
+  background-repeat: no-repeat;
+  background-position: left center;
+  cursor: hand;
+  border: none;
 }

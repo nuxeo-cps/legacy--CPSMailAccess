@@ -38,7 +38,8 @@ from zope.app.cache.ram import RAMCache
 from mailmessage import MailMessage
 from mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
-from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder
+from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder,\
+                  AsyncCall
 from baseconnection import ConnectionError, has_connection
 
 class MailFolder(BTreeFolder2):
@@ -51,12 +52,13 @@ class MailFolder(BTreeFolder2):
     True
     """
     implements(IMailFolder)
-    meta_type = "CPSMailAccess Folder"
+    meta_type = 'CPSMailAccess Folder'
     server_name = ''
     sync_state = False
     mailbox = None
     message_count = 0
     folder_count = 0
+    loose_sync = True
 
     def __init__(self, uid=None, server_name='""'):
         """
@@ -125,15 +127,6 @@ class MailFolder(BTreeFolder2):
     def getMailFolder(self):
         return self.aq_inner.aq_parent
 
-    def getCacheLevel(self):
-        """ returns cache level
-        """
-        mailbox = self.getMailBox()
-        if mailbox is not None:
-            return mailbox.getConnectionParams()['cache_level']
-        else:
-            return 0
-
     def _getServerMailList(self):
         """ returns direct server content """
         # need caching and recursion
@@ -147,10 +140,10 @@ class MailFolder(BTreeFolder2):
         folders = []
         depth = len(server_name.split('.'))
         for directory in server_directory:
-            dir_split = directory.split('.')
+            dir_split = directory['Name'].split('.')
             dir_depth = len(dir_split)
-            if dir_depth == dir_split + 1:
-                if directory.startswith(server_name):
+            if dir_depth == depth + 1:
+                if directory['Name'].startswith(server_name):
                     folders.append(dir_split[-1])
         return folders + [self.getIdFromUid(uid) for uid in uids]
 
@@ -160,16 +153,10 @@ class MailFolder(BTreeFolder2):
 
         >>> from mailbox import MailBox
         >>> mb = MailBox()
-        >>> mb.cache_level = 1
         >>> f = mb._addFolder('folder', 'folder')
         >>> f.getMailMessages()
         []
         """
-        if self.getCacheLevel() == 0:
-            if recursive:
-                raise Exception('Incompatible parameters in cache level 0')
-            return self._getServerMailList()
-
         results = []
         if list_folder:
             # use btree slices
@@ -201,10 +188,9 @@ class MailFolder(BTreeFolder2):
 
     def getMailMessagesCount(self, count_folder=True,
                              count_messages=True, recursive=False):
-        """See interfaces.IMailFolder
+        """ See interfaces.IMailFolder
         >>> from mailbox import MailBox
         >>> mb = MailBox()
-        >>> mb.cache_level = 1
         >>> f = mb._addFolder('folder', 'folder')
         >>> f.getMailMessagesCount()
         0
@@ -213,12 +199,6 @@ class MailFolder(BTreeFolder2):
         >>> f.getMailMessagesCount(False, True)
         0
         """
-        if self.getCacheLevel() == 0:
-            # XXX todo : use direct api
-            if recursive:
-                raise Exception('Incompatible parameters in cache level 0')
-            return len(self._getServerMailList())
-
         count = 0
 
         if recursive:
@@ -239,28 +219,44 @@ class MailFolder(BTreeFolder2):
             count += self.message_count
         return count
 
+    def _loweritem(self, item):
+        return item.lower()
+
+    def getFlaggedMessageCount(self, flags=[]):
+        """ returns a number of msg """
+        key = '<<>>'.join(flags)
+        count = self._cache.query(key)
+        if count is not None:
+            return count
+        else:
+            count = len(self.getFlaggedMessageList(flags))
+            self._cache.set(count, key)
+            return count
+
     def getFlaggedMessageList(self, flags=[]):
         """ returns a list according to given flags """
+        flags = map(self._loweritem, flags)
+
         msgs = self.getMailMessages(list_folder=False,
             list_messages=True, recursive=False)
 
         msg_list = []
 
-        # opti : 'read' is the most common call
-        if len(flags) == 1 and flags[0] == 'Read':
+        # opti : 'seen' is the most common call
+        if len(flags) == 1 and flags[0] == 'unseen':
             for msg in msgs:
-                if msg.read:
+                if msg.seen == 0:
                     msg_list.append(msg)
             return msg_list
 
-
         for msg in msgs:
-            cond1 = 'Read' in flags and msg.read
-            cond2 = 'Answered' in flags and msg.answered
-            cond3 = 'Deleted' in flags and msg.deleted
-            cond4 = 'Flagged' in flags and msg.flagged
-            cond5 = 'Forwarded' in flags and msg.forwarded
-            if cond1 and cond2 and cond3 and cond4 and cond5:
+            cond1 = 'seen' in flags and msg.seen
+            cond2 = 'answered' in flags and msg.answered
+            cond3 = 'deleted' in flags and msg.deleted
+            cond4 = 'flagged' in flags and msg.flagged
+            cond5 = 'forwarded' in flags and msg.forwarded
+            cond6 = 'unseen' in flags and not msg.seen
+            if cond1 and cond2 and cond3 and cond4 and cond5 and cond6:
                 msg_list.append(msg)
         return msg_list
 
@@ -290,9 +286,6 @@ class MailFolder(BTreeFolder2):
 
     def _moveMessage(self, uid, to_mailbox):
         """ moves the message to another mailbox """
-        if self.getCacheLevel() == 0:
-            raise Exception('Not available in cache level 0')
-
         self._clearCache()
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
@@ -319,8 +312,6 @@ class MailFolder(BTreeFolder2):
 
     def _copyMessage(self, uid, to_mailbox):
         """ copies a message """
-        if self.getCacheLevel() == 0:
-            raise Exception('Not available in cache level 0')
         id = self.getIdFromUid(uid)
         msg = self[id]
         new_uid = to_mailbox.getNextMessageUid()
@@ -329,8 +320,6 @@ class MailFolder(BTreeFolder2):
 
     def _deleteMessage(self, uid):
         """ see interfaces ImailFolder """
-        if self.getCacheLevel() == 0:
-            raise Exception('Not available in cache level 0')
         self._clearCache()
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
@@ -343,6 +332,13 @@ class MailFolder(BTreeFolder2):
             return True
         return False
 
+    def _asyncOnFlagChanged(self, server_name, uid, kw, connector):
+        """ asynced """
+        try:
+            connector.setFlags(server_name, uid, kw)
+        except ConnectionError:
+            pass
+
     def onFlagChanged(self, msg, flag, value):
         """ event triggered when a message flag changes """
         # has to be desynced......
@@ -350,14 +346,14 @@ class MailFolder(BTreeFolder2):
             connector = self._getconnector()
             flag = flag.capitalize()
             kw = {flag: value}
-            connector.setFlags(self.server_name, msg.uid, kw)
+            connector.setFlags(self.server_name,
+                             msg.uid, kw)
+
         # invalidate cache
         self._clearCache()
 
     def _addMessage(self, uid, digest, index=True):
         """ See interfaces.IMailFolder """
-        if self.getCacheLevel() == 0:
-            raise Exception('Not available in cache level 0')
         self._clearCache()
         self.clearMailBoxTreeViewCache()
         self.message_count +=1
@@ -383,19 +379,18 @@ class MailFolder(BTreeFolder2):
 
     def _addFolder(self, uid='', server_name='', server=False):
         """see interfaces.IMailFolder """
-        if self.getCacheLevel() != 0:
-            self.clearMailBoxTreeViewCache()
-            self.folder_count +=1
-            if uid == '':
-                uid = uniqueId(self, 'folder_', use_primary=False)
-            else:
-                uid = makeId(uid)
-            if server_name == '':
-                server_name = uid
-            new_folder = MailFolder(uid, server_name)
-            new_id = new_folder.getId()
-            self._setObject(new_id, new_folder)
-            new_folder = self[new_id]
+        self.clearMailBoxTreeViewCache()
+        self.folder_count +=1
+        if uid == '':
+            uid = uniqueId(self, 'folder_', use_primary=False)
+        else:
+            uid = makeId(uid)
+        if server_name == '':
+            server_name = uid
+        new_folder = MailFolder(uid, server_name)
+        new_id = new_folder.getId()
+        self._setObject(new_id, new_folder)
+        new_folder = self[new_id]
 
         if server and has_connection:
             connector = self._getconnector()
@@ -406,17 +401,11 @@ class MailFolder(BTreeFolder2):
 
     def findMessageByUid(self, uid):
         """ See interfaces.IMailFolder """
-        if self.getCacheLevel() == 0:
-            raise Exception('Not available in cache level 0')
         id = self.getIdFromUid(uid)
         try:
             msg = self[id]
         except KeyError:
             return None
-        #XXXXXXX ????
-        # tests failson this :  providedBy does not work with the fake envs
-        #if not IMailMessage.providedBy(msg):
-        #    return None
         return msg
 
     def childFoldersCount(self):
@@ -441,36 +430,126 @@ class MailFolder(BTreeFolder2):
         s = ''.join(header.values())
         return md5Hash(s)
 
+    def getMessagePart(self, uid, part):
+        """ retrieves a part from the server """
+        server_name = self.server_name
+        connector = self._getconnector()
+        fetched = connector.fetch(server_name, uid, '(BODY.PEEK[%s])' % str(part))
+        return fetched
+
+
+    def _loadMessageStructureFromServer(self, server_name, uid, msg_flags,
+                                        msg_headers, msg_size, msg_object,
+                                        connector):
+        """ loads a message from server """
+        msg_body = None
+        skip = False
+        part_num = 1
+        structure = connector.getMessageStructure(server_name, uid)
+        part_infos =  structure
+
+        if part_infos[0] in ('related', 'relative', 'mixed', 'alternative',
+                             'signed'):
+            # we don't want to load attached files
+            # we just want to get their names
+            if part_infos[0] == 'mixed':
+                file_list = msg_object.getFileList()
+                i = 1
+                for part in part_infos[1:]:
+                    if isinstance(part, list):
+                        have_file = False
+                        for sub_part in part:
+                            if isinstance(sub_part, list):
+                                if sub_part[0] == 'name':
+                                    have_file = True
+                                    break
+                        if have_file:
+                            file = {}
+                            file['mimetype'] = '%s/%s' % (part[0],
+                                                          part[1])
+                            file['content-transfer-encoding'] = part[4]
+                            file['size'] = part[5]
+                            # we don't want to load the file
+                            file['data'] = None
+                            file['part'] = i
+                            for sub in part:
+                                if isinstance(sub, list):
+                                    if sub[0] == 'name':
+                                        file['filename'] = sub[1]
+                                        break
+                            file_list.append(file)
+                        i += 1
+            if part_infos[0] in ('mixed', 'related', 'signed'):
+                part_infos = part_infos[1]
+                part_num = '1'
+            else:
+                if len(part_infos) > 2:
+                    part_infos = part_infos[2]
+                    part_num = '2'
+                else:
+                    # some spams does not give the second part
+                    part_infos = part_infos[1]
+                    part_num = '1'
+
+        if part_infos[0] == 'alternative':
+            if len(part_infos) > 2:
+                part_infos = part_infos[2]
+                part_num = '%s.2' % part_num
+            else:
+                part_infos = part_infos[1]
+                part_num = '%s.1' % part_num
+
+        elif part_infos[0] == 'relative':
+            part_infos = part_infos[1]
+            part_num = '%s.1' % part_num
+        else:
+            part_num = str(part_num)
+
+        try:
+            msg_body = connector.fetch(server_name, uid,
+                                       '(BODY.PEEK[%s])' % part_num)
+        except ConnectionError:
+            skip = True
+
+        if not skip:
+            msg_object.loadMessage(msg_flags, msg_headers, msg_body,
+                            part_infos)
+            msg_object.size = msg_size
+
+        return skip
+
     def _synchronizeFolder(self, return_log=False, indexStack=[]):
         """ See interfaces.IMailFolder """
-        if self.getCacheLevel() == 0:
-            raise Exception('Not available in cache level 0')
         self._clearCache()
         sync_states = {}
         log = []
         mailbox = self.getMailBox()
-        cache_level = self.getCacheLevel()
+        filter_engine = mailbox.getFilters()
         connector = self._getconnector()
         zodb_messages = self.getMailMessages(list_folder=False,
-                                             list_messages=True, recursive=False)
+                                             list_messages=True,
+                                             recursive=False)
         # now syncing server_folder and current one
         for message in zodb_messages:
             sync_states['%s.%s' % (self.server_name, message.uid)] = False
 
         try:
-            uids = connector.search(self.server_name, None,'ALL')
+            uids = connector.search(self.server_name, None, 'ALL')
         except ConnectionError:
             # XXX should be a more specific exception (no such dir)
             # this will happen if the directory has been
             # deleted form the server
             uids = []
 
+        LOG('synchro', INFO, 'synchronizing %s' % self.server_name)
+        i = 0
+        y = 0
+        len_ = len(uids)
         for uid in uids:
             sync_id = '%s.%s' % (self.server_name, uid)
-            LOG('synchro', INFO, sync_id)
             msg = self.findMessageByUid(uid)
 
-            if msg is not None:
+            if msg is not None and self.loose_sync:
                 sync_states[sync_id] = True
                 continue
 
@@ -484,57 +563,46 @@ class MailFolder(BTreeFolder2):
 
             msg_flags = fetched[0]
             msg_size = fetched[1]
+            msg_headers = None
+            digest = None
+
             if not mailfailed:
                 msg_headers = fetched[2]
-
                 digest = self._createKey(msg_headers)
-                msg = mailbox.getMailFromCache(digest, remove=True)
 
-                raw_msg = ''
+            # comparing digest with msg digest
+            if msg is not None:
+                if msg.digest != digest:
+                    # same uid but not same message
+                    digest = msg.digest
+                    mailbox.addMailToCache(msg, digest)
+                    # XXX need to remove for catalogs
+                    self.manage_delObjects([msg.getId()])
+                    msg = None
+                else:
+                    sync_states[sync_id] = True
+                    continue
+            else:
+                msg = mailbox.getMailFromCache(digest, remove=True)
 
             if msg is None and not mailfailed:
                 msg = self._addMessage(uid, digest, index=False)
 
-                raw_msg = ''
-                skip = False
-                # Message is not in cache
-                if cache_level == 0:
-                    # nothing is uploaded
-                    # XXX todo
-                    raise NotImplementedError
-                elif cache_level == 1:
-                    # we already have headers
-                    # XXX 'OK' should be done by fetch into connection object
-                    # we need here to give to the message the number of parts
-                    # so it can create them with none
-                    #msg_content = ('OK', msg_headers)
-                    ####TODO :
-                    LOG('sync', INFO, 'syncing %s' % str(uid))
-                    raw_msg = msg_headers
-                    # need to fetch number of part here
-                    #and to use it to initiate create empty parts
-                    #body_structure = connector.fetch(self.server_name, uid, '(BODYSTRUCTURE)')
-                else:
-                    # XXX Only simplest case where all message is cached
-                    # we also get flags
-                    try:
-                        msg_content = connector.fetch(self.server_name, uid,
-                                                      '(FLAGS RFC822)')
-                    except ConnectionError:
-                        skip = True
-
-                    #msg_flags = msg_content[0]
-                    if not skip:
-                        msg_body = msg_content[1]
-                        if msg_content:
-                            raw_msg = msg_body
+                skip = self._loadMessageStructureFromServer(self.server_name,
+                                                            uid, msg_flags,
+                                                            msg_headers,
+                                                            msg_size, msg,
+                                                            connector)
 
                 if not skip:
                     log.append('adding message %s in %s' % (uid, self.server_name))
-                    msg.loadMessage(raw_msg, cache_level)
-                    msg.size = msg_size
+                    # XXX todo : laod filelist
                     indexStack.append(msg)
                     self._updateDirectories(msg)
+
+                    # XXX opti might want to call this before
+                    # creating the message
+                    filter_engine.filterMessage(msg)
                 else:
                     self.manage_delObjects([msg.getId()])
             else:
@@ -548,7 +616,16 @@ class MailFolder(BTreeFolder2):
                                 % (uid, self.server_name))
 
             sync_states[sync_id] = True
-            self._checkFlags(msg, msg_flags)
+            if msg is not None:
+                self._checkFlags(msg, msg_flags)
+            if i > 299:
+                i = 0
+                get_transaction().commit()  # implicitly usable without import
+                get_transaction().begin()   # implicitly usable without import
+                LOG('synchro', INFO, 'commited %d/%d' % (y, len_))
+            else:
+                i += 1
+            y = y + 1
 
             #total = time.time() - start
             #LOG('synchro', INFO, '  %0.2f' % (total))
@@ -600,22 +677,20 @@ class MailFolder(BTreeFolder2):
             recursive=False) == 0
 
     def rename(self, new_name, fullname=False):
-        """ renames the box
-        """
-        if self.getCacheLevel() != 0:
-            self._clearCache()
-            self.clearMailBoxTreeViewCache()
-            oldmailbox = self.server_name
+        """ renames the box """
+        self._clearCache()
+        self.clearMailBoxTreeViewCache()
+        oldmailbox = self.server_name
 
-            if not fullname:
-                # making sure the new name has no dot
-                new_name = new_name.replace('.', '_')
+        if not fullname:
+            # making sure the new name has no dot
+            new_name = new_name.replace('.', '_')
 
-                splitted = oldmailbox.split('.')
-                splitted[len(splitted)-1] = new_name
-                newmailbox = '.'.join(splitted)
-            else:
-                newmailbox = new_name
+            splitted = oldmailbox.split('.')
+            splitted[len(splitted)-1] = new_name
+            newmailbox = '.'.join(splitted)
+        else:
+            newmailbox = new_name
 
         if has_connection:
             connector = self._getconnector()
@@ -723,10 +798,7 @@ class MailFolder(BTreeFolder2):
             if not res:
                 return False
         # XXX todo : check if is the same msg uid
-        if self.getCacheLevel() != 0:
-            return self._moveMessage(uid, new_mailbox) is not None
-        else:
-            return True
+        return self._moveMessage(uid, new_mailbox) is not None
 
     def copyMessage(self, uid, to_mailbox):
         """ make a copy """
@@ -736,10 +808,7 @@ class MailFolder(BTreeFolder2):
             if not res:
                 return False
         # XXX todo : check if is the same msg uid
-        if self.getCacheLevel() != 0:
-            return self._copyMessage(uid, to_mailbox) is not None
-        else:
-            return True
+        return self._copyMessage(uid, to_mailbox) is not None
 
     def deleteMessage(self, uid):
         """ moves the message on the server,
@@ -755,16 +824,13 @@ class MailFolder(BTreeFolder2):
             if not res:
                 return False
         # XXX todo : check if is the same msg uid
-        if self.getCacheLevel() != 0:
-            trash = mailbox.getTrashFolder()
-            msg = self._moveMessage(uid, trash)
-            if msg:
-                msg.deleted = 1
-                return True
-            else:
-                return False
-        else:
+        trash = mailbox.getTrashFolder()
+        msg = self._moveMessage(uid, trash)
+        if msg:
+            msg.deleted = 1
             return True
+        else:
+            return False
 
     def _updateDirectories(self, message):
         """ update a directory given a message """
@@ -798,6 +864,7 @@ class MailFolder(BTreeFolder2):
 
         page_id = '%d.%d.%s.%d' % (page, nb_items, sort_with, sort_asc)
         self._cache.set(elements, page_id)
+        self._cache.set((page, nb_items, sort_with, sort_asc), 'last_sort')
 
     def getMailListFromCache(self, page, nb_items, sort_with, sort_asc):
         """ to be extern. in mailfolder """
@@ -809,11 +876,25 @@ class MailFolder(BTreeFolder2):
         elements = self._cache.query(page_id)
         return elements
 
+    def getLastMailListSortCache(self):
+        """ returns the last sorting parameters """
+        return self._cache.query('last_sort')
+
     def _clearCache(self):
         """ clear the cache """
         self._cache = RAMCache()
 
+    def runFilters(self):
+        """ runs filter on folder """
+        mailbox = self.getMailBox()
+        filter_engine = mailbox.getFilters()
+        msgs = self.getMailMessages(list_folder=False, list_messages=True,
+                                    recursive=False)
+        for msg in msgs:
+            filter_engine.filterMessage(msg)
 
+        # XXx opti : to be run only if something has changed
+        self._clearCache()
 
 
 """ classic Zope 2 interface for class registering

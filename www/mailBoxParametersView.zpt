@@ -24,6 +24,17 @@
        <span i18n:translate="">cpsma_mailbox_configuration</span>
     </h2>
 
+   <h4><span i18n:translate="">Preferences</span></h4>
+   <div class="manageGroup">
+        <h4>
+            <img src="cpsma_filter_big.png"/>&#160;
+            <a href="filters.html" i18n:translate="">
+            Filters for incoming messages
+            </a>
+        </h4>
+   </div>
+   <br/>
+
     <h4><span i18n:translate="">cpsma_mailbox_parameters</span></h4>
 
     <form name="parameters" action="editParameters.html" method="post">
@@ -31,37 +42,75 @@
         <table width="100%">
 
           <tal:block tal:repeat="parameter view/renderParametersForm">
-          <tr>
+          <tr tal:define="type parameter/type;
+                          name python:parameter['name']+':'+parameter['ptype'];
+                          value parameter/value;">
+
             <td width="50%" align="right">
               <div class="dlabel">
                 <tal:block i18n:translate="" tal:content="parameter/name"/> :
               </div>
             </td>
             <td width="50%" align="left">
-              <input tal:attributes="type parameter/type;
-                                name python:parameter['name']+':'+parameter['ptype'];
-                                value parameter/value;"/>
+                  <input tal:condition="python:type!='list'"
+                     tal:attributes="type type;
+                                     name name;
+                                     value value;"/>
+              <textarea tal:condition="python:type=='list'"
+                        tal:content="value"
+                        tal:attributes="type type;
+                                        name name;">
+
+              </textarea>
             </td>
           </tr>
           </tal:block>
         </table>
       </div>
       <input type="submit" class="standalone"
-             name="submit" value="submit" i18n:attributes="value"/>
+             name="submit" value="submit" i18n:translate="sumbit_mailbox_params"/>
    </form>
    <br/>
-
-
     <h4><span i18n:translate="">cpsma_mailbox_managment_tasks</span></h4>
     <div class="manageGroup">
-    <form action="reindexMailCatalog.html">
-      <input type="submit" name="reindex"
-        class="standalone"
-        value="cpsma_reindex_mail_catalog"
-        i18n:attributes="value"/>
-    </form>
+    <table>
+      <tr>
+        <td>
+          <div>
+            <form action="reindexMailCatalog.html">
+              <input type="submit" name="reindex"
+                     class="standalone"
+                     value="cpsma_reindex_mail_catalog"
+                     i18n:attributes="value"/>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div>
+            <form action="clearMailCatalog.html">
+              <input type="submit" name="clear"
+                 class="standalone"
+                 value="cpsma_clear_mail_catalog"
+                 i18n:attributes="value"/>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <form action="synchronize.html">
+            <input type="hidden" name="light" value="0"/>
+            <input type="submit" name="reindex"
+                   class="standalone"
+                   value="cpsma_resync_all"
+                   i18n:attributes="value"/>
+          </form>
+        </td>
+      <tr>
+    </table>
     </div>
-
-
+    <br/>
   </metal:block>
 </html>

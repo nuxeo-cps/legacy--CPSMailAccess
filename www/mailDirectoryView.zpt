@@ -25,24 +25,53 @@
 
       </h4>
 
-    <div class="recipientSection">
-      <h3>To</h3>
-      <tal:block tal:repeat="To Tos">
+    <table>
+    <tr class="containersHeader">
+      <td class="tr_title">
+        <h3>To</h3>
+      </td>
+      <td class="tr_title">
+        <h3>Cc</h3>
+      </td>
+      <td class="tr_title">
+        <h3>BCc</h3>
+      </td>
+    </tr>
+    <tr class="containers">
+    <td>
+      <div class="containersLine" tal:repeat="To Tos">
         <span tal:replace="To"/>
-      </tal:block>
-    </div>
-    <div class="recipientSection">
-      <h3>Cc</h3>
-      <tal:block tal:repeat="Cc Ccs">
-        <span tal:replace="Cc"/>
-      </tal:block>
-    </div>
-    <div class="recipientSection">
-      <h3>BCc</h3>
-      <tal:block tal:repeat="BCc BCcs">
-        <span tal:replace="BCc"/>
-      </tal:block>
-    </div>
+        <a tal:attributes="href
+                      python:'removeRecipient.html?value=%s&type=To&redirect=selectRecipients.html'
+                      % To">
+          <img src="cpsma_delete_file.png"/>
+        </a>
+
+      </div>
+    </td>
+    <td>
+      <div class="containersLine" tal:repeat="Cc Ccs">
+       <span tal:replace="Cc"/>
+        <a tal:attributes="href
+                      python:'removeRecipient.html?value=%s&type=Cc&redirect=selectRecipients.html'
+                      % Cc">
+          <img src="cpsma_delete_file.png"/>
+        </a>
+
+      </div>
+    </td>
+    <td>
+      <div class="containersLine" tal:repeat="BCc BCcs">
+       <span tal:replace="BCc"/>
+        <a tal:attributes="href
+                      python:'removeRecipient.html?value=%s&type=BCc&redirect=selectRecipients.html'
+                      % BCc">
+            <img src="cpsma_delete_file.png"/>
+        </a>
+
+      </div>
+    </td>
+    </table>
     </span>
   </div>
   <div style="clear: both"/>

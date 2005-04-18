@@ -201,6 +201,10 @@ class BaseMailMessageView(BrowserView):
             element.id in ('Trash', 'Sent', 'Drafts')
 
         short_title_id = 'tree_' + short_title_id
+        if hasattr(element, 'server_name'):
+            server_name = element.server_name
+        else:
+            server_name = ''
 
         return {'object': element,
                 'level': level,
@@ -216,6 +220,7 @@ class BaseMailMessageView(BrowserView):
                 'rename_url': rename_url,
                 'short_title_id': short_title_id,
                 'not_for_move': not_for_move,
+                'server_name' : server_name,
                 'front_icons': front_icons}
 
     def _hasParentNext(self, parent_index, parent_length):
@@ -247,7 +252,8 @@ class BaseMailMessageView(BrowserView):
             lotus_style = False
 
         childs = current_place.getMailMessages(list_folder=True,
-            list_messages=False, recursive=False)
+                                               list_messages=False,
+                                               recursive=False)
 
         childview = BaseMailMessageView(None, self.request)
         index = 0
@@ -255,16 +261,18 @@ class BaseMailMessageView(BrowserView):
         length = len(childs)
         for child in childs:
             childview.context = child
-            element = self._createTreeViewElement(child, current,
-                index, length, level, parent_index, parent_length, root)
-            if hasattr(element, 'getFlaggedMessageList'):
-                # todo : a finir
-                list = element.getFlaggedMessageList(['read'])
-                unreads += len(list)
+            element = self._createTreeViewElement(child, current, index,
+                                                  length, level, parent_index,
+                                                  parent_length, root)
+            """ time consuming, cut at this time
+            if IMailFolder.providedBy(element['object']):
+                count = element['object'].getFlaggedMessageCount(['unseen'])
+                unreads += count
+            """
 
-            unreads, element['childs'] = childview._renderTreeView(current, level+1,
+            child_unreads, element['childs'] = childview._renderTreeView(current, level+1,
                 index, length, root, flags)
-            element['unreads'] =  unreads
+            element['unreads'] =  unreads + child_unreads
             treeview.append(element)
             index += 1
 

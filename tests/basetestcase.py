@@ -142,7 +142,6 @@ class MailTestCase(ZopeTestCase):
         mailbox._connection_params['trash_folder_name'] = 'INBOX.Trash'
         mailbox._connection_params['smtp_host'] = 'localhost'
         mailbox._connection_params['smtp_port'] = 25
-        mailbox._connection_params['cache_level'] = 2
         mailbox._connection_params['email_adress'] = 'tz@nuxeo.com'
         mailbox._connection_params['max_folder_depth'] = 0
         mailbox._connection_params['treeview_style'] = 'lotus'
@@ -163,13 +162,15 @@ class MailTestCase(ZopeTestCase):
         return openfile(filename)
 
 
-    def getMailInstance(self,number):
+    def getMailInstance(self, number):
         ob = MailMessage()
-        ob.cache_level = 2
         if number < 9:
             data = self._msgobj('msg_0'+str(number+1)+'.txt')
         else:
             data = self._msgobj('msg_'+str(number+1)+'.txt')
-        ob.loadMessage(data)
+        ob.loadMessageFromRaw(data)
+        store = ob._getStore()
+        while isinstance(store._payload, list):
+            store._payload = store._payload[0]._payload
         return ob
 

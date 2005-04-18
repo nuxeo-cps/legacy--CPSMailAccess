@@ -57,6 +57,9 @@ class MailRenderer:
         ptypes = {}
         types = part_type.split(';')
         for ptype in types:
+            ptype = ptype.strip()
+            if ptype == '':
+                continue
             if ptype.find('=') > -1:
                 parts = ptype.split('=')
                 name = parts[0].strip()
@@ -64,7 +67,7 @@ class MailRenderer:
                 value = value.strip('"')
                 ptypes[name] = value
             else:
-                ptypes['type'] = ptype.strip()
+                ptypes['type'] = ptype
 
         return ptypes
 
@@ -98,6 +101,12 @@ class MailRenderer:
                     result = content
             else:
                 result = content
+
+            # try to find html in text/plain
+            # in some spam/ads
+            if result.lower().startswith('<html>') and ptype != 'text/html':
+                ptype = 'text/html'
+
             if ptype == 'text/html':
                 result = sanitizeHTML(result)
             return result
@@ -111,45 +120,25 @@ class MailRenderer:
     def _extractBodies(self, mail):
         """ extracts the body """
         part_type = mail['Content-type']
-
         if part_type is not None and isinstance(part_type, str):
             html = part_type.strip().startswith('text/html')
         else:
             html = False
-        part_cte =  mail['Content-transfer-encoding']
-        if mail.is_multipart():
-            # have to choose an alternative here
-            if part_type is not None and \
-                part_type.startswith('multipart/alternative'):
-                # always choose the last one (html rendering)
-                last = len(mail._payload) - 1
-                mail = mail._payload[last]
-                sub_part_type = mail['Content-type']
-                if sub_part_type is not None and \
-                   isinstance(sub_part_type, str):
-                    html = sub_part_type.strip().startswith('text/html')
-                part_cte =  mail['Content-transfer-encoding']
-                part_type = mail['Content-type']
-            it = Iterators.body_line_iterator(mail)
-            lines = list(it)
-            res = EMPTYSTRING.join(lines)
-        else:
-            # check if there's sub parts
-            payload = mail.get_payload()
-            if isinstance(payload, ListType):
-                # XXXwe'll need deeper extraction here
-                res = payload
-            else:
-                res = payload
+
+        part_cte = mail['Content-transfer-encoding']
+
+        res = mail.get_payload()
 
         if res is None:
-            # body is empty
             return False, ''
         else:
+            if res.lower().startswith('<html>'):
+                html = True
             return html, self.render(res, part_type, part_cte)
 
 
-    def renderBody(self, mail, part_index=0):
+
+    def renderBody(self, mail):
         """ Renders the mail given body part
 
         Used with a MailMessage *or* or MailPart
@@ -158,61 +147,12 @@ class MailRenderer:
         """
         if mail is None:
             return ''
-        # ugly
-        is_msg = hasattr(mail, 'getVolatilePart')
-        if not is_msg:
-            root_msg = mail.msg
-        else:
-            root_msg = mail
-
-        # volatile ?
-        # a sub part cannot be obtained thru the root
-        # so this is only for the first level
-        if is_msg:
-            part = mail.getVolatilePart(part_index)
-
-        if part is None and mail.cache_level == 2:
-            # this works for all level
-            if mail.isMultipart():
-                part_type = mail.getHeader('Content-type')
-                if len(part_type) > 0:
-                    part_type = part_type[0].lower()
-                else:
-                    part_type = None
-                if part_type is not None and \
-                   part_type.startswith('multipart/alternative'):
-                    part_count = mail.getPartCount()
-                    part = mail.getPart(part_count-1, True)
-                else:
-                    part = mail.getPart(part_index, True)
-            else:
-                part = mail.getPart(part_index, True)
-
-        if part is None and mail.cache_level == 1:
-            # need to fetch server then
-            # but will charge the highest part
-            # XXXXX charging into volatile
-            # TODO : read the cache configuration, of the message
-            # to know if it will get persistent then
-            if is_msg:
-                volatile = True
-                part_str = str(part_index+1)
-                if mail.isMultipart():
-                    ct = mail.getContentType()
-                    if ct.startswith('multipart/alternative'):
-                        part_str = '2'
-
-                part = root_msg.loadPart(part_str, part_content='', volatile=volatile)
-                html, body = self._extractBodies(part)
-            else:
-                #need to load the whole branch
-                raise NotImplementedError
-
-        else:
-            html, body = self._extractBodies(part)
-
+        # XXX need to be put in mailmessage
+        part = mail._getStore()
+        html, body = self._extractBodies(part)
         if not html:
             body = HTMLize(body)
+
         return body
 
     def _stringToUnicode(self, string, charset='ISO-8859-15'):

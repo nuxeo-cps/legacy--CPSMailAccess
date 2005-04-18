@@ -35,7 +35,7 @@ from Products.TextIndexNG2.TextIndexNG import TextIndexNG
 from Products.TextIndexNG2.Stopwords import FileStopwords
 
 from configuration import __file__ as landmark
-from utils import makeId, parseDateString
+from utils import makeId, parseDateString, removeHTML, decodeHeader
 from interfaces import IMailCatalog
 
 from zemantic.triplestore import TripleStore
@@ -135,26 +135,51 @@ class ZemanticMessageAdapter:
 
     implements(IRDFThreeTuples)
 
-    def __init__(self, message):
+    default_charset = 'ISO-8859-15'
+    headers = ('date', 'from', 'to', 'subject', 'cc', 'sender')
+
+    def __init__(self, message, full_indexation=False):
         self.context = message
+        self.full_indexation = full_indexation
+        charset = message.getHeader('Charset')
+        if charset is None or charset == []:
+            self.charset = self.default_charset
+        else:
+            self.charset = charset[0]
 
     def threeTuples(self):
         """ give zemantic the sequence of relations """
         message = self.context
+        default_charset = self.default_charset
+
         ob_uri = URIRef(u'%s' % message.absolute_url())    # zope 2 dependant
 
         triples = []
+        if self.full_indexation:
+            headers = message.getHeaders()
+        else:
+            headers = self.headers
 
-        for header in message.getHeaders():
+        for header in headers:
             header_name = header
             values = message.getHeader(header_name)
             for value in values:
                 header_name = header_name.lower()
-                relation = URIRef(u'%s' % header_name)
+                if isinstance(header_name, str):
+                    try:
+                        header_name = header_name.decode(self.charset)
+                    except (encoding_exceptions.LookupError,
+                            UnicodeDecodeError):
+                        header_name = header_name.decode(default_charset)
 
+                relation = URIRef(header_name)
+                value = decodeHeader(value)
                 if isinstance(value, str):
-                    value = value.decode('ISO8859-15')     # need to use mail encoding
-
+                    try:
+                        value = value.decode(self.charset)
+                    except (encoding_exceptions.LookupError,
+                            UnicodeDecodeError):
+                        value = value.decode(default_charset)
                 if header_name == 'date':
                     # fixed string date indexing
                     cdate = parseDateString(value)
@@ -162,65 +187,34 @@ class ZemanticMessageAdapter:
                     value = URIRef(value)
                 else:
                     value = Literal(value)
-
                 triple = (ob_uri, relation, value)
                 triples.append(triple)
-
         # a triple for the direct body
-        charset = message.getHeader('Charset')
-        if charset is None or charset == []:
-            charset = 'ISO-8859-15'
-        else:
-            charset = charset[0]
+        if self.full_indexation:
+            body = message.getDirectBody()
+            if body is not None:
+                body = removeHTML(body)
 
-        body = message.getDirectBody()
+            if isinstance(body, str):
+                try:
+                    body = body.decode(self.charset)
+                except (encoding_exceptions.LookupError, UnicodeDecodeError):
+                    body = body.decode(default_charset)
 
-        if isinstance(body, str):
-            try:
-                body = body.decode(charset)
-            except encoding_exceptions.LookupError:
-                body = body.decode('ISO-8859-15')
-
-        body = Literal(body)
-        triples.append((ob_uri, URIRef(u'body'), body))
+            body = Literal(body)
+            triples.append((ob_uri, URIRef(u'body'), body))
 
         return triples
 
-class ZemanticMailCatalog(Folder):
+class ZemanticMailCatalog(TripleStore):
 
     implements(IMailCatalog)
 
-    def __init__(self, id, backend=None):
-        Folder.__init__(self, id)
-        self._store = TripleStore(backend)
-
-    def indexMessage(self, message):
-        message = ZemanticMessageAdapter(message)
-        self._store.addTriples(message.threeTuples())
+    def indexMessage(self, message, full_indexation=False):
+        message = ZemanticMessageAdapter(message, full_indexation)
+        self.addTriples(message.threeTuples())
 
     def unIndexMessage(self, message):
         raise NotImplementedError
 
-    def clear(self):
-        self._store.clear()
-
-    def addTriples(self, statements):
-        self._store.addTriples(statements)
-
-    def remove(self, (subject, predicate, object)):
-        self._store.remove((subject, predicate, object))
-
-    def query(self, q):
-        return self._store.query(q)
-
-    def add(self, (subject, predicate, object)):
-        self._store.add((subject, predicate, object))
-
-    def uniqueSubjects(self):
-        return self._store.uniqueSubjects()
-
-    def uniquePredicates(self):
-        return self._store.uniquePredicates()
-
-    def uniqueObjects(self):
-        return self._store.uniqueObjects()
+InitializeClass(ZemanticMailCatalog)

@@ -30,11 +30,10 @@ from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 
-from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
+from interfaces import IMailMessage, IMailFolder, IMailBox
 from baseconnection import ConnectionError
 from mailrenderer import MailRenderer
 from basemailview import BaseMailMessageView
-from mailpart import MailPart
 from mailfolderview import MailFolderView
 from mailexceptions import MailPartError
 from utils import *
@@ -122,34 +121,24 @@ class MailMessageView(BaseMailMessageView):
         else:
             return u'?'
 
-    def _bodyRender(self, mail, part_index):
-        return self._RenderEngine.renderBody(mail, part_index)
+    def _bodyRender(self, mail):
+        return self._RenderEngine.renderBody(mail)
 
     def renderBody(self):
         """ renders the mail body """
         if self.context is not None:
             mail = self.context
-
-            #### the user reads the messge, let's
+            # the user reads the messge, let's
             # sets the read message to 1
-            try:
-                mail.setFlag('read', 1)
+            if mail.getFlag('seen') == 0:
+                mail.setFlag('seen', 1)
+                """
                 folder = mail.getMailFolder()
+
                 if folder is not None:
-                    folder.onFlagChanged(mail, 'read', 1)
-            except ConnectionError:
-                pass
-
-            try:
-                part_count = mail.getPartCount()
-                if part_count > 0:
-                    body = self._bodyRender(mail, 0)
-                else:
-                    body = ''
-            except ConnectionError:
-                #tobe externalized
-                return '<div class="message">Could not reach server.</div>'
-
+                    folder.onFlagChanged(mail, 'seen', 1)
+                """
+            body = self._bodyRender(mail)
         else:
             body = ''
         return body
@@ -174,9 +163,13 @@ class MailMessageView(BaseMailMessageView):
         reply_content = replyToBody(from_value, body_value)
         mailbox.clearEditorMessage()
         msg = mailbox.getCurrentEditorMessage()
-        msg.setPart(0, reply_content)
+        msg.setDirectBody(reply_content)
         recipients = []
         msg.origin_message = origin_msg
+
+        # adding from
+        from_ = origin_msg.getHeader('From')[0]
+        msg.addHeader('To', from_)
 
         if not forward:
             msg.answerType = 'reply'
@@ -191,16 +184,20 @@ class MailMessageView(BaseMailMessageView):
             ccs = origin_msg.getHeader('Cc')
             tos = origin_msg.getHeader('To')
             boxmail = self._getBoxMail()
+            # cc -> cc
+            # to -> cc if to is different than boxmail
             for to in tos:
                 if sameMail(boxmail, to):
                     del tos[to]
             ccs.extend(tos)
+
             for element in ccs:
-                if element not in recipients:
-                    recipients.append(element)
+                msg.addHeader('Cc', element)
 
         if not reply_all and forward:
             # todo : append attached files
+            # XXX to be done
+            """
             for part in range(origin_msg.getPartCount()):
                 # XX todo : avoid re-generate part on each visit : use caching
                 current_part = origin_msg.getPart(part)
@@ -208,9 +205,8 @@ class MailMessageView(BaseMailMessageView):
                 infos = part_ob.getFileInfos()
                 if infos is not None:
                     msg.attachPart(current_part)
-
-        for element in recipients:
-            msg.addHeader('To', element)
+            """
+            pass
 
         subjects = origin_msg.getHeader('Subject')
         if subjects == []:
@@ -265,10 +261,6 @@ class MailMessageView(BaseMailMessageView):
     def attached_files(self):
         # todo :scans attached files
         message = self.context
-
-        if not message.isMultipart():
-            return []
-
         # XX hack : need to do better
         if hasattr(message, 'editor_msg'):
             prefix = 'editorMessage'
@@ -279,8 +271,8 @@ class MailMessageView(BaseMailMessageView):
         list_files = []
 
         for file in files:
-            file['url'] = '%s/%s/viewFile.html?filename=%s' \
-                    %(prefix, str(file['part']+1), str(file['filename']))
+            file['url'] = '%s/viewFile.html?filename=%s' \
+                    %(prefix, str(file['filename']))
             file['icon'] =  mimetype_to_icon_name(file['mimetype'])
             file['fulltitle'] = file['filename']
             file['title'] = file['filename']
@@ -298,26 +290,39 @@ class MailMessageView(BaseMailMessageView):
             i += 2
         return clist_files
 
+    def _getMailFile(self, mail, part):
+        """ mailfile """
+        mailfolder = mail.getMailFolder()
+        if mailfolder is None:
+            return None
+        else:
+            uid = mail.uid
+            return mailfolder.getMessagePart(uid, part)
+
     def viewFile(self, filename):
         """ returns a file """
-        ### XXX todo : add a view page to be able to save the file
-        part = self.context
-        infos = part.getFileInfos()
+        mail = self.context
+        files = mail.getFileList()
         found = False
-        if infos is not None:
-            if infos['filename'] == filename:
-                filecontent = part.getDirectBody()
-                cte = part.getHeader('content-transfer-encoding')
-                content_type = part.getHeader('Content-Type')
-                if cte != []:
-                    cte = cte[0]
-                else:
-                    cte ='7bit'
+        for file in files:
+            if file['filename'] == filename:
+                data = file['data']
+                if data is None:
+                    data = self._getMailFile(mail, file['part'])
+
+                filecontent = data
+                cte = file['content-transfer-encoding']
+
+                content_type = file['mimetype']
+                if isinstance(cte, list):
+                    if cte != []:
+                        cte = cte[0]
+                    else:
+                        cte ='7bit'
+
                 if cte == 'base64':
                     filecontent = base64MIME.decode(filecontent)
                 found = True
-        else:
-            raise MailPartError('%s has no file %s' %(self.id, filename))
 
         if not found:
             return None
@@ -360,4 +365,10 @@ class MailMessageView(BaseMailMessageView):
         if isinstance(list_cols, str):
             list_cols = [item.strip() for item in list_cols.split(',')]
         return list_cols
+
+    def getMailFolder(self):
+        """ returns mail folder """
+        message = self.context
+        return message.getMailFolder()
+
 

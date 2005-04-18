@@ -119,19 +119,6 @@ class IMailMessage(IContainer):
 class IMailBox(IContainer):
     """ mailboxes gives a few api to synchronize
     """
-
-    """ indicates the cache level used by
-        the mailbox
-        0 : no cache
-        1 : headers cached
-        2 : full cache (slow)
-    """
-    cache_level = Field(
-        title=u'Cache level',
-        description=u'Indicates the cache level for this mailbox',
-        default=u'',
-        required=True)
-
     connection_params = List(
         title=u'Connection parameters',
         description=u'Connection parameters properties',
@@ -368,19 +355,6 @@ class IMailPart(Interface):
         """ returns a dictionnary with info on the file
             None if not a file
         """
-
-    def isMultipart():
-        """ tells if the mail is multipart
-        """
-
-    def getPartCount():
-        """ returns the number of parts the message holds
-        """
-
-    def getPart(self, index=0):
-        """ returns the given index part
-        """
-
     def getCharset(part_index=0):
         """ returns the charset for the given part
             for single part messages, part_index is 0
@@ -426,7 +400,7 @@ class IMailPart(Interface):
             for single part messages, part_index is 0
         """
 
-    def setPart(self, index, content):
+    def setDirectBody(self, content):
         """ sets a part
         """
 
@@ -447,10 +421,21 @@ class IDirectoryPicker(Interface):
 
 class IMailCatalog(Interface):
 
-    def indexMessage(self, message):
+    def indexMessage(message):
         """ indexes a message """
 
-    def unIndexMessage(self, message):
+    def unIndexMessage(message):
         """ unindexes a message """
 
 
+class IMailFilteringBackEnd(Interface):
+    """ stores filters
+    """
+    def countFilters():
+        """ retrieve number of filters """
+
+    def appendFilter(filter_):
+        """ add a filter """
+
+    def deleteFilter(index):
+        """ delete a filter """

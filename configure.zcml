@@ -2,24 +2,6 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
-  <adapter
-      for=".interfaces.IMailMessage"
-      factory=".messagetraversable.MessageTraversable"
-      provides=".interfaces.IMessageTraverser"
-      />
-
-  <adapter
-      for=".interfaces.IMailPart"
-      factory=".messagetraversable.MessageTraversable"
-      provides=".interfaces.IMessageTraverser"
-      />
-
-  <adapter
-      for=".interfaces.IMailBox"
-      factory=".mailbox.MailBoxTraversable"
-      provides=".interfaces.IMessageTraverser"
-      />
-
   <five:traversable class="OFS.Folder.Folder" />
   <five:traversable class=".mailfolder.MailFolder" />
   <five:traversable class=".mailbox.MailBox" />
@@ -51,10 +33,6 @@
       type="zope.app.content.interfaces.IContentType"
       />
 
-  <interface
-      interface=".interfaces.IMailPart"
-      type="zope.app.content.interfaces.IContentType"
-      />
 
   <content class=".mailmessage.MailMessage">
     <implements
@@ -65,9 +43,6 @@
         interface="zope.app.container.interfaces.IContentContainer"
         />
 
-    <implements
-        interface=".interfaces.IMailPart"
-        />
 
     <implements
         interface=".interfaces.IMailMessage"
@@ -79,26 +54,6 @@
         />
 
   </content>
-
-  <content class=".mailpart.MailPart">
-    <implements
-        interface="zope.app.annotation.interfaces.IAttributeAnnotatable"
-        />
-
-    <implements
-        interface="zope.app.container.interfaces.IContentContainer"
-        />
-
-    <implements
-        interface=".interfaces.IMailPart"
-        />
-    <require
-        permission="zope2.View"
-        interface=".interfaces.IMailPart"
-        />
-  </content>
-
-
 
   <interface
       interface=".interfaces.IMailBox"
@@ -164,6 +119,31 @@
 
   <browser:page
       for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxView"
+      name="moveElement.html"
+      attribute="moveElement"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailbox.MailBoxView"
+      name="moveElement.html"
+      attribute="moveElement"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailbox.MailBoxView"
+      name="moveElement.html"
+      attribute="moveElement"
+      permission="zope2.View"
+      />
+
+
+  <browser:page
+      for=".interfaces.IMailBox"
       class=".adressbook.AddressBookViewer"
       template="www/mailAdressBookView.zpt"
       name="addressBooks.html"
@@ -203,6 +183,14 @@
       />
 
   <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailfolderview.MailFolderView"
+      name="runFilters.html"
+      attribute="runFilters"
+      permission="zope2.View"
+      />
+
+  <browser:page
       for=".interfaces.IMailTool"
       class=".mailtool.MailToolView"
       name="webmailRedirect.html"
@@ -219,7 +207,7 @@
       />
 
   <browser:page
-      for=".interfaces.IMailPart"
+      for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
       name="viewFile.html"
       attribute="viewFile"
@@ -236,9 +224,41 @@
 
   <browser:page
       for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxFiltersView"
+      template="www/mailBoxFiltersView.zpt"
+      name="filters.html"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxFiltersView"
+      name="addFilter.html"
+      attribute="addFilter"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxFiltersView"
+      name="removeFilter.html"
+      attribute="removeFilter"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
       class=".mailbox.MailBoxParametersView"
       name="reindexMailCatalog.html"
       attribute="reindexMailCatalog"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxParametersView"
+      name="clearMailCatalog.html"
+      attribute="clearMailCatalog"
       permission="zope2.View"
       />
 
@@ -344,6 +364,14 @@
       class=".mailmessageview.MailMessageView"
       name="mailList.html"
       attribute="renderMailList"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailFolder"
+      class=".mailmessageview.MailFolderView"
+      name="getLastMailListSortCache"
+      attribute="getLastMailListSortCache"
       permission="zope2.View"
       />
 
@@ -563,6 +591,11 @@
   <browser:resource
     file="www/sorttable.js"
     name="sorttable.js"
+  />
+
+  <browser:resource
+    file="www/pdlib.js"
+    name="pdlib.js"
   />
 
   <browser:resourceDirectory

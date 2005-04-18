@@ -127,7 +127,8 @@ class ObjectInteractionTest(MailTestCase):
         # now removes Trash
         mailbox._syncdirs([{'Name' : 'INBOX', 'Attributes' : ''},
                            {'Name' : 'INBOX.One', 'Attributes' : ''},
-                           {'Name' : 'INBOX.[BCEAO]', 'Attributes' : ''}])
+                           {'Name' : 'INBOX.[BCEAO]', 'Attributes' : ''}],
+                           light=False)
 
         folders = mailbox.getMailMessages(True, False, True)
 

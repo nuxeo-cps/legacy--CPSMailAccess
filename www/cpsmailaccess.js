@@ -236,21 +236,23 @@ function toggleElementVisibility(id)
 /*
   Will popup the recipient picker window
 */
+var parent_window;
+
 function popupRecipientPicker()
  {
+    saveMessageDatas();
     var args;
     url = "selectRecipients.html";
-    popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=400, height=600');
+    popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=500, height=450');
     if(!popup.opener)
         popup.opener = window;
 }
 
 function closeDirectoryPicker()
 {
-    mailer = document.forms[0];
-    //mailer.refresh();
-    // need to refresh and open right textareas
-    window.close();
+  // XXX can do better : insufllate changes in text areas
+  window.opener.location.reload();
+  window.close();
 }
 /*
   Will popup a message if the text gets too big,given a max_size
@@ -282,7 +284,7 @@ function truncateFields(max_size)
   for (i=0; i<elements.length; i++)
   {
     element = elements[i];
-    if (element.className == "truncable")
+    if (element.className.indexOf("truncable") != -1)
     {
       if (element.innerHTML.length>max_size)
       {
@@ -354,5 +356,67 @@ function eraseCookie(name)
 
 function gotoUrl(dest)
 {
-  self.location.href= dest;
+  self.location.href = dest;
 }
+
+/* setting up drag and drop things */
+var Destinations = [];
+
+function cellMove(selected_items, target_node)
+{
+  from = selected_items[0].id;
+  to = target_node.id;
+  url = "moveElement.html?from_place="+from+"&to_place="+ to
+  gotoUrl(url);
+}
+
+function cellCheckMove(selected_items, target_node)
+{
+  return true;
+}
+
+function cellDrag(node)
+{
+  pd_setupDragUI(node, cellMove, cellCheckMove);
+}
+
+
+function cellDest(node)
+{
+  if (Destinations.push)
+    Destinations.push(node);
+  else
+    Destinations = Destinations.concat([node]);
+  pd_setupDropTarget(node, 1);
+
+}
+
+pd_node_setup['cellDrag'] = cellDrag;
+pd_node_setup['cellDest'] = cellDest;
+
+
+/* select all messages in content managment mode */
+function selectAllMessages(object)
+{
+  if (object.value == "select all")
+  {
+    checkboxes = object.form.elements;
+
+    for (var i=0; i < checkboxes.length; i++)
+    {
+      checkboxes[i].checked = true;
+    }
+    object.value = "deselect all";
+  }
+  else
+  {
+    checkboxes = object.form.elements;
+
+    for (var i=0; i < checkboxes.length; i++)
+    {
+      checkboxes[i].checked = false;
+    }
+    object.value = "select all";
+  }
+}
+

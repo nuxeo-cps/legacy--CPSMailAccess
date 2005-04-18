@@ -85,29 +85,36 @@
            </div>
            <div style="clear: both"/>
 
-           <div id="Cc"
-            tal:attributes="style python:test(cc_on==0,'visibility: hidden','visibility: visible');class python:test(cc_on==0,'hidden_part','')"
-                tal:define="elements python:here.getDestList(type_='Cc');
-                                    elements python:'\r\n'.join(elements)">
-             <div class="recipient_header"><span i18n:translate="cpsma_cc">Cc</span>:</div>
-             <div  class="recipient">
-               <textarea name="msg_cc"  id="msg_cc"
-                         class="recipients" tal:content="elements"></textarea>
-             </div>
-           </div>
+           <tal:block tal:define="Ccs python:here.getDestList(type_='Cc');
+                                  Bcs python:here.getDestList(type_='BCc');">
 
-           <div style="clear: both"/>
-           <div id="BCc"
-                tal:attributes="style python:test(bcc_on==0,'visibility: hidden','visibility: visible');
-                class python:test(bcc_on==0,'hidden_part','')"
-                tal:define="elements python:here.getDestList(type_='BCc');
-                                    elements python:'\r\n'.join(elements)">
-             <div class="recipient_header"><span i18n:translate="cpsma_bcc">BCc</span>:</div>
-             <div  class="recipient">
-               <textarea name="msg_bcc" id="msg_bcc"
-                         class="recipients" tal:content="elements"></textarea>
-             </div>
-           </div>
+            <div id="Cc"
+                tal:attributes="style python:test(cc_on==0 and len(Ccs)==0,'visibility:
+                                                  hidden','visibility: visible');
+                                class python:test(cc_on==0  and len(Ccs)==0,'hidden_part','')"
+                    tal:define="elements python:'\r\n'.join(Ccs)">
+                <div class="recipient_header"><span i18n:translate="cpsma_cc">Cc</span>:</div>
+                <div  class="recipient">
+                <textarea name="msg_cc"  id="msg_cc"
+                          class="recipients" tal:content="elements"></textarea>
+                </div>
+            </div>
+
+            <div style="clear: both"/>
+            <div id="BCc"
+                    tal:attributes="style python:test(bcc_on==0 and len(Bcs)==0,
+                                                      'visibility: hidden',
+                                                      'visibility: visible');
+                                    class python:test(bcc_on==0 and len(Bcs)==0,'hidden_part','')"
+                    tal:define="elements Bcs;
+                                        elements python:'\r\n'.join(elements)">
+                <div class="recipient_header"><span i18n:translate="cpsma_bcc">BCc</span>:</div>
+                <div  class="recipient">
+                <textarea name="msg_bcc" id="msg_bcc"
+                            class="recipients" tal:content="elements"></textarea>
+                </div>
+            </div>
+           </tal:block>
 
             <div class="recipient_toggler">
                 <span class="link" onmouseover="setCursor(this);"

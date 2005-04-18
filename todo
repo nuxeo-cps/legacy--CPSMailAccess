@@ -1,41 +1,23 @@
-foreword
+todos
 
-performance info :
-
-cache levels are :
-   1. full cache
-   2. cached headers
-   3. no cache
-
-at this time cache level 2 is not finished
-and the webmail runs on level 1
-
-level 1 is very slow when the mailbox is created (everithing gets loaded)
- but very fast after.
-
-so be patient on mailbox first synchro
-
--> level 2 will be much,much faster at box generation
-
-features (must and in precise order)
-
-+ finish directory picker -- find something cool
-+ security
-+ translations in french
-+ batch of directories
-+ finish cache level 1
-+ index body in cache level 1
++ add security
++ translations in english
++ set some options in mailtool by manager
+  that can't be changed by user
++ recreate attache part in fwd messages
++ add a star in front of folder that contains unread messages
++ define several synchronization strategies depending on users use
++ use ZSync to deal with concurrent syncrhonizations
++ filesystem storages
 
 cosmetics
 
-+ fix scroll positions when a mail is selected
 + review CSS naming conventions
 + review all html code style
 
 later
 
-+ set up all drag and drop features
-+ message filtering
++ entring message filtering
 + spell checker
 + scan mail body to generate contacts
 + anti spam

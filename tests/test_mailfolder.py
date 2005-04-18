@@ -31,6 +31,10 @@ from Products.CPSMailAccess.mailbox import MailBox
 from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
 from basetestcase import MailTestCase
 
+def openfile(filename, mode='r'):
+    path = os.path.join(os.path.dirname(landmark), 'data', filename)
+    return open(path, mode)
+
 installProduct('TextIndexNG2')
 
 class MailFolderTestCase(MailTestCase):
@@ -359,6 +363,74 @@ class MailFolderTestCase(MailTestCase):
         self.assert_(folder1.canCreateSubFolder())
         self.assert_(folder11.canCreateSubFolder())
         self.assert_(not folder111.canCreateSubFolder())
+
+    def test_caching(self):
+        # testing caches
+        mailbox = self._getMailBox()
+
+        folder1 = mailbox._addFolder('folder1', 'folder1')
+        cached = folder1.getMailListFromCache(1, 787, 'yo', True)
+        self.assertEquals(cached, None)
+
+        folder1.addMailListToCache('data', 1, 787, 'yo', True)
+        folder1.addMailListToCache('more data', 3, 387, 'yo', True)
+        folder1.addMailListToCache('dadddta', 1, 383, 'yo', True)
+
+        cached = folder1.getMailListFromCache(1, 787, 'yo', True)
+        self.assertEquals(cached, 'data')
+
+        cached = folder1.getMailListFromCache(3, 387, 'yo', True)
+        self.assertEquals(cached, 'more data')
+
+        cached = folder1.getMailListFromCache(1, 383, 'yo', True)
+        self.assertEquals(cached, 'dadddta')
+
+        infos = folder1.getLastMailListSortCache()
+        self.assertEquals(infos, (1, 383, 'yo', True))
+
+    def test_runFilters(self):
+
+        mailbox = self._getMailBox()
+        filter_engine = mailbox.getFilters()
+
+        # labels with [COOL] some messages
+        filter_engine.addFilter('Subject', 1, 'cool', 3, 'COOL')
+
+        folder1 = mailbox._addFolder('folder1', 'folder1')
+
+        for i in range(5):
+            key = self.msgKeyGen()
+            msg = folder1._addMessage(key, key)
+            msg.setHeader('Subject', 'banal subject')
+
+        for i in range(5):
+            key = self.msgKeyGen()
+            msg = folder1._addMessage(key, key)
+            msg.setHeader('Subject', 'pretty cool subject')
+
+        # checkink post state
+        msgs = folder1.getMailMessages(list_folder=False,
+                                       list_messages=True, recursive=False)
+
+        for msg in msgs:
+            subject = msg.getHeader('Subject')
+            subject = subject[0]
+            self.assert_(subject in ('banal subject',
+                                          'pretty cool subject'))
+
+        folder1.runFilters()
+
+        # checkink result
+        msgs = folder1.getMailMessages(list_folder=False,
+                                       list_messages=True, recursive=False)
+
+        for msg in msgs:
+            subject = msg.getHeader('Subject')
+            subject = subject[0]
+            self.assert_(subject in ('banal subject',
+                                          '[COOL] pretty cool subject'))
+
+
 
 def test_suite():
     return unittest.TestSuite((

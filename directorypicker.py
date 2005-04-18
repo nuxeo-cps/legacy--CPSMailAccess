@@ -63,6 +63,8 @@ class DirectoryPickerView(BrowserView):
 
     def searchUsers(self, email):
         """ search adressbooks and renders results """
+        if email.strip() == '':
+            return []
         return self.context.searchDirectoryEntries(email)
 
     def getEditorContainers(self):
@@ -71,5 +73,5 @@ class DirectoryPickerView(BrowserView):
         msg = mbox.getCurrentEditorMessage()
         Tos = msg.getHeader('To')
         Ccs = msg.getHeader('Cc')
-        Bccs = msg.getHeader('Bcc')
-        return {'To': Tos, 'Cc' : Ccs, 'Bcc' : Bccs}
+        Bccs = msg.getHeader('BCc')
+        return {'To': Tos, 'Cc' : Ccs, 'BCc' : Bccs}

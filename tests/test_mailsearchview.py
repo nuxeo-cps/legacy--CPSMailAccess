@@ -37,7 +37,7 @@ class MailSearchViewTestCase(MailTestCase):
         self.count +=1
         return ('', 'nowere/my_message_' + str(self.count))
 
-    def _getView(self):
+    def _getView(self, full_indexation=True):
         """ for test purpose,
             we create one catalog for the user "bob"
             with a few mails indexed
@@ -51,7 +51,7 @@ class MailSearchViewTestCase(MailTestCase):
             ob.getPhysicalPath = self.fakeGetPhysicalPath
             ob = ob.__of__(self.portal)
             cat.indexMessage(ob)
-            zcat.indexMessage(ob)
+            zcat.indexMessage(ob, full_indexation)
 
         searchview = MailSearchView(box, self.request)
         searchview = searchview.__of__(box)
@@ -106,6 +106,80 @@ class MailSearchViewTestCase(MailTestCase):
 
     def test_zemantic_searchs(self):
         searchview, cat, zcat, box = self._getView()    # also fills cat
+        self.assertEquals(box._getCatalog(), cat)
+
+        query = {}
+        query['relation_0'] = 'cc'        # relations keys are normalized (lower)
+        query['value_0'] = '*'    # all
+        results = searchview.zemanticSearchMessages(**query)[0]
+
+        # results order won't be known
+        self.assertEquals(len(results), 3)
+
+        query = {}
+        query['relation_0'] = 'cc'        # relations keys are normalized (lower)
+        query['value_0'] = 'ccc*'
+        results = searchview.zemanticSearchMessages(**query)[0]
+
+        self.assertEquals(len(results), 1)
+
+        # trying intersections
+        query = {}
+        query['relation_0'] = 'cc'        # relations keys are normalized (lower)
+        query['value_0'] = 'ccc*'
+        query['intersection'] = 'store is open'
+        results = searchview.zemanticSearchMessages(**query)[0]
+
+        self.assertEquals(len(results), 1)
+
+        # trying intersections
+        query = {}
+        query['relation_0'] = 'cc'        # relations keys are normalized (lower)
+        query['value_0'] = '*'
+        query['relation_1'] = 'subject'        # relations keys are normalized (lower)
+        query['value_1'] = 'test'
+        query['intersection'] = 'store is open'
+        results = searchview.zemanticSearchMessages(**query)[0]
+
+        self.assertEquals(len(results), 3)
+
+        query = {}
+        query['intersection'] = 'store is open'
+        results = searchview.zemanticSearchMessages(**query)[0]
+        self.assertEquals(len(results), 0)
+
+    def test_instanciation_light(self):
+        searchview = self._getView(False)
+        self.assertNotEquals(searchview, None)
+
+    def test_searchs_light(self):
+        searchview, cat, zcat, box = self._getView(False)
+        self.assertEquals(box._getCatalog(), cat)
+        query = {}
+        query['searchable_text'] = u'Lovers'
+
+        res = cat.search(query_request=query)
+        direct_search = []
+        for brain in res:
+            direct_search.append(brain.getPath())
+
+        results = searchview.searchMessages('Dingus Lovers')[0]
+
+        for res in results:
+            self.assert_(res['path'] in direct_search)
+
+    def test_weirdo_searchs_light(self):
+        searchview, cat, zcat, box = self._getView(False)
+        results = searchview.searchMessages('é')
+
+    def test_zemanticPredicateList_light(self):
+        searchview, cat, zcat, box = self._getView(False)
+        list_ = searchview.zemanticPredicateList()
+        self.assertEquals(list_, [u'cc', u'date', u'from', u'sender',
+                                  u'subject', u'to'])
+
+    def test_zemantic_searchs_light(self):
+        searchview, cat, zcat, box = self._getView(False)
         self.assertEquals(box._getCatalog(), cat)
 
         query = {}

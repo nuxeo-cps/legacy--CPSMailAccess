@@ -5,6 +5,10 @@
   </metal:block>
   <metal:main fill-slot="javascript_head_slot">
     <script type="text/javascript"
+      tal:attributes="src string:${context/portal_url}/++resource++pdlib.js;"
+      src="++resource++pdlib.js">
+    </script>
+    <script type="text/javascript"
       tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
       src="++resource++cpsmailaccess.js">
     </script>
@@ -17,6 +21,7 @@
               tal:define="edit_name request/edit_name|nothing;
                           add_folder request/add_folder|nothing;
                           move_folder request/move_folder|nothing;
+                          keep_last_sort request/keep_last_sort|python:0;
                           content_managment request/manage_content|nothing;
                           clipboard not:here/clipBoardEmpty;
                           max_folder_size here/getMaxFolderSize;
@@ -92,16 +97,19 @@
             </div>
 
             <input class="manage_copy" type="submit" name="action" value="copy"
-                i18n:attributes="value"/>
+                i18n:attributes="name"/>
             <input class="manage_cut" type="submit" name="action" value="cut"
-                i18n:attributes="value"/>
+                i18n:attributes="name"/>
             <input class="manage_paste" type="submit" name="action" value="paste"
-                i18n:attributes="value"/>
+                i18n:attributes="name"/>
             <input class="manage_delete" type="submit" name="action" value="delete"
-                i18n:attributes="value"/>
+                i18n:attributes="name"/>
+            <input class="manage_selectall" type="button" name="selectall"
+                   value="select all"
+                   onclick="selectAllMessages(this)" i18n:attributes="name"/>
             <tal:block tal:condition="clipboard">
               <input class="manage_delete" type="submit" name="action" value="clear"
-                i18n:attributes="value"/>
+                i18n:attributes="name"/>
             </tal:block>
           </div>
           <metal:block use-macro="here/messagelist_macros/messagelist"/>
@@ -112,6 +120,7 @@
       </tal:block>
       <script langage="javascript">
         truncateFields(32);
+        pd_setupPage();
       </script>
     </div>
   </metal:block>

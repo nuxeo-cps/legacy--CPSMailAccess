@@ -1,0 +1,85 @@
+Return-Path: <org2005-owner@osiris.abul.org>
+Delivered-To: tziade@nuxeo.com
+Received: (qmail 23876 invoked by uid 1009); 5 Apr 2005 12:17:15 +0200
+Received: from org2005-owner@osiris.abul.org by tamise.nuxeo.com by uid 1008 with qmail-scanner-1.22-st-qms
+ (clamscan: 0.75-1. spamassassin: 3.0.0.  Clear:RC:0(147.210.68.129):SA:0(-2.6/5.0):.
+ Processed in 3.065256 secs); 05 Apr 2005 10:17:15 -0000
+X-Spam-Status: No, hits=-2.6 required=5.0
+Received: from osiris.abul.org (147.210.68.129)
+  by tamise.nuxeo.com with SMTP; 5 Apr 2005 12:17:12 +0200
+Received: by osiris.abul.org (Postfix, from userid 103)
+        id 187E131762; Tue,  5 Apr 2005 12:17:11 +0200 (CEST)
+Delivered-To: org2005@lsm.abul.org
+Received: from mallaury.noc.nerim.net (smtp-102-tuesday.noc.nerim.net [62.4.17.102])
+        by osiris.abul.org (Postfix) with ESMTP id C9D8831746
+        for <org2005@lsm.abul.org>; Tue,  5 Apr 2005 12:17:04 +0200 (CEST)
+Received: from [192.168.1.3] (xxxx.net1.nerim.net [213.41.140.165])
+        by mallaury.noc.nerim.net (Postfix) with ESMTP id AD47762E4E
+        for <org2005@lsm.abul.org>; Tue,  5 Apr 2005 12:17:03 +0200 (CEST)
+From: xxxx <xxxx@nerim.net>
+To: org2005@lsm.abul.org
+Subject: Re: [org2005] 14 mai
+Date: Tue, 5 Apr 2005 12:16:48 +0200
+User-Agent: KMail/1.7.1
+References: <424FF77B.3020303@abul.org> <1112546881.10475.75.camel@athlon.brefort.fr> <1112637120.42517ec02e26e@webmail.ac-dijon.fr>
+In-Reply-To: <1112637120.42517ec02e26e@webmail.ac-dijon.fr>
+MIME-Version: 1.0
+Content-Type: multipart/signed;
+  boundary="nextPart1660785.1Nuy80iv2x";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha1
+Content-Transfer-Encoding: 7bit
+Message-Id: <200504051216.52850.xxxx@nerim.net>
+Reply-To: org2005@lsm.abul.org
+X-Loop: org2005@lsm.abul.org
+X-Sequence: 645
+Precedence: list
+X-no-archive: yes
+List-Id: <org2005@lsm.abul.org>
+List-Help: <mailto:sympa@lsm.abul.org?subject=help>
+List-Subscribe: <mailto:sympa@lsm.abul.org?subject=subscribe%20org2005>
+List-Unsubscribe: <mailto:sympa@lsm.abul.org?subject=unsubscribe%20org2005>
+List-Post: <mailto:org2005@lsm.abul.org>
+List-Owner: <mailto:org2005-request@lsm.abul.org>
+List-Archive: <http://lsm.abul.org/wws//arc/org2005>
+
+--nextPart1660785.1Nuy80iv2x
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Le Lundi 04 Avril 2005 19:52, bourdot@ac-dijon.fr a =E9crit :
+> Bonjour tout le monde,
+>
+> Je prend le train en marche, mais je suis souvent en vadrouille en ce
+> moment ....
+>
+>
+>
+> Pour  la pub, via le courrier Electronique je pense qu'il n'y aura pas de
+> probl=E8me pour utiliser les listes du serveur Acad=E9mique et contacter =
+tous
+> les =E9tablissements. Il suffit de m'envoyer le 'tract' en pdf et je le
+> diffuse quand vous le souhaitez.
+>
+> Aucun probl=E8me pour faire une petite conf=E9rence m=EAme si le public l=
+ocal est
+> assez 'inform=E9' sur notre projet. Il nous est =E9galement possible de f=
+aire
+> un atelier de demos.
+
+Merci beaucoup.
+
+--nextPart1660785.1Nuy80iv2x
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.6 (GNU/Linux)
+
+iD8DBQBCUmWULL3VFkCzxL0RAjI5AJ9cPjRvYLfnPY/JfJVDjfO34mInqACfVoNT
+4PMd0gB+Uyg7dk3L7lwaCZQ=
+=K9ik
+-----END PGP SIGNATURE-----
+
+--nextPart1660785.1Nuy80iv2x--

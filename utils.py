@@ -21,6 +21,8 @@
 """
 import os
 import string, re, md5
+from sgmllib import SGMLParseError
+from threading import Thread
 from email.Header import decode_header, make_header
 from exceptions import UnicodeDecodeError
 from datetime import datetime
@@ -28,6 +30,7 @@ from time import strftime
 from random import randrange
 from email.Utils import fix_eols
 from encodings import exceptions as encoding_exceptions
+
 from zLOG import LOG, INFO
 from DateTime import DateTime
 from Acquisition import aq_get
@@ -129,14 +132,21 @@ def parseDateString(date_string):
     datetime.datetime(2004, 12, 29, 0, 0)
     >>> parseDateString('hahahaha')
     datetime.datetime(1970, 1, 1, 0, 0)
+    >>> parseDateString('Tue,  5 Apr 2005 11:33:39 +0200 (CEST)')
+    datetime.datetime(2005, 4, 5, 11, 33, 39)
     """
+    elements = date_string.split(' ')
+    while len(elements) > 6:
+        del elements[6]
+    date_string = ' '.join(elements)
+
     parser = DateTimeParser()
     try:
         result = parser.parse(date_string)
         result = datetime(result[0], result[1], result[2],
-            result[3], result[4], result[5])
+                          result[3], result[4], result[5])
     except (ZSyntaxError, DateTimeError):
-        result = datetime(1970,1,1)
+        result = datetime(1970, 1, 1)
 
     return result
 
@@ -152,6 +162,8 @@ def localizeDateString(date_string, format=0):
     '29/12'
     >>> localizeDateString('Wed, 29 Dec 2004 21:42:19 +0100', 3)
     '29/12/04'
+    >>> localizeDateString('Tue,  5 Apr 2005 11:33:39 +0200 (CEST)', 3)
+    '05/04/05'
     """
     date = parseDateString(date_string)
     if format == 1:
@@ -211,6 +223,7 @@ def getFolder(mailbox, folder_name):
     current = mailbox
     path = folder_name.split('.')
     for element in path:
+        element = element.strip()
         if not hasattr(current, element):
             return None
         current = getattr(current, element)
@@ -238,7 +251,15 @@ def getToolByName(obj, name, default=_marker):
 
 def replyToBody(from_value, body, line_header='> '):
     """ return a reply bloc """
-    reply_content = [line_header+from_value + ' wrote']
+    # comes from CPS so ISO-8859-15
+    # making sure we're all unicode
+    if not isinstance(body, unicode):
+        body = body.decode('ISO-8859-15')
+
+    if not isinstance(from_value, unicode):
+        from_value = from_value.decode('ISO-8859-15')
+
+    reply_content = [line_header + from_value + u' wrote']
     body = verifyBody(body)
     body_lines = body.split('\r\n')
     for line in body_lines:
@@ -331,6 +352,27 @@ def sanitizeHTML(content):
     parser.cleanup()
     return ''.join(parser.result)
 
+class HTMLExtraction(HTMLSanitizer):
+    tags_to_keep = ()
+    attributes_to_keep = ()
+
+def removeHTML(content):
+    """ remove html """
+    work = content.replace('&lt;', '<')
+    work = work.replace('&gt;', '>')
+    # thunderbid's html has \n instead of \r\n
+    work = fix_eols(work)
+    work = work.replace('\r\n', '')    # nothing to care about in HTML
+
+    parser = HTMLExtraction()
+    try:
+        parser.feed(work)
+    except SGMLParseError:
+        return content
+    parser.close()
+    parser.cleanup()
+    return ''.join(parser.result)
+
 def isValidEmail(mail):
     """ verifies a mail is a mail """
     re_script = r'.*@.*\..{2,4}'
@@ -339,6 +381,32 @@ def isValidEmail(mail):
         return False
     res = res.group(0)
     return res == mail.strip()
+
+def extractMailParts(mail):
+    """ extracts parts
+    >>> extractMailParts('Tarek Ziade <tz@nuxeo.com>')
+    ['Tarek Ziade', 'tz@nuxeo.com']
+    >>> extractMailParts('Tarek Ziade     <tz@nuxeo.com > ')
+    ['Tarek Ziade', 'tz@nuxeo.com']
+    >>> extractMailParts('<tz@nuxeo.com>')
+    ['tz@nuxeo.com']
+    >>> extractMailParts('tz@nuxeo.com')
+    ['tz@nuxeo.com']
+    """
+    re_script = r'(.*)(<.*>)'
+    res = re.findall(re_script, mail.strip())
+    if len(res) == 0:
+        return [mail.strip()]
+    else:
+        res = list(res[0])
+        res[0] = res[0].strip()
+        if len(res) > 1:
+            email = res[1].strip()
+            email = email[1:-1]
+            res[1] = email.strip()
+        if res[0] == '':
+            del res[0]
+        return res
 
 def sameMail(mail1, mail2):
     """ tells if the recipients are the same
@@ -423,3 +491,22 @@ def intToSortableStr(values):
             value = '0' + value
         fvalues.append(value)
     return fvalues
+
+class AsyncCall(Thread):
+    def __init__(self, callableObj, *args, **kwargs):
+        Thread.__init__(self)
+        self.callableObj = callableObj
+        self.args = args
+        self.kwargs = kwargs
+        self.terminateEvent = None
+
+    def onTerminate(self, method):
+        self.terminateEvent = method
+
+    def run(self):
+        try:
+            self.callableObj(*self.args, **self.kwargs)
+        finally:
+            # beware that this is called within the thread
+            if self.terminateEvent is not None:
+                self.terminateEvent()

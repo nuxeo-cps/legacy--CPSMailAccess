@@ -105,13 +105,17 @@ class MailFolderView(BaseMailMessageView):
                 else:
                     sorter = 0
             elif sort_with == 'Subject':
-                ob_title = self.createShortTitle(element)
-                if ob_title is None or ob_title == '':
-                    mail_title = '?'
-                else:
-                    if IMailMessage.providedBy(element):
-                        translated_title = decodeHeader(ob_title)
+                if IMailMessage.providedBy(element):
+                    subject = element.getHeader('Subject')
+                    if subject != []:
+                        translated_title = decodeHeader(subject[0])
                         mail_title = translated_title
+                    else:
+                        mail_title = '?'
+                else:
+                    ob_title = self.createShortTitle(element)
+                    if ob_title is None or ob_title == '':
+                        mail_title = '?'
                     else:
                         mail_title = ob_title
                 sorter = mail_title
@@ -130,6 +134,8 @@ class MailFolderView(BaseMailMessageView):
                 sorter = int(element.size)
             elif sort_with == 'Icon':
                 sorter = self.getMsgIconName(element)
+            else:
+                sorter = 0
 
             sort_list.append((sorter, element))
 
@@ -139,13 +145,27 @@ class MailFolderView(BaseMailMessageView):
 
         return [element[1] for element in sort_list]
 
+    def getLastMailListSortCache(self):
+        """ returns the last parameters used for sorting """
+        mailfolder = self.context
+        return mailfolder.getLastMailListSortCache()
+
     def renderMailList(self, page=1, nb_items=20, sort_with='Date',
-                       sort_asc=0):
+                       sort_asc=0, keep_last_sort=0):
         """ renders mailfolder content
 
         uses a batch
         """
         mailfolder = self.context
+        if int(keep_last_sort) == 1:
+            founded = self.getLastMailListSortCache()
+            if founded is not None:
+                # getting back parameters from last sort
+                page = founded[0]
+                nb_items = founded[1]
+                sort_with = founded[2]
+                sort_asc = founded[3]
+
         cache = mailfolder.getMailListFromCache(page, nb_items,
                                                 sort_with, sort_asc)
         if cache is not None:
@@ -183,19 +203,25 @@ class MailFolderView(BaseMailMessageView):
             part['Icon'] = self.getMsgIconName(element)
             part['url'] = element.absolute_url() +'/view'
             part['uid'] = element.uid
+            part['folder_id_uid'] = '%s__%s' % (mailfolder.server_name,
+                                                element.uid)
 
             if element.hasAttachment():
                 part['Attachments'] = 1
             else:
                 part['Attachments'] = 0
 
-            ob_title = self.createShortTitle(element)
-            if ob_title is None or ob_title == '':
-                mail_title = '?'
-            else:
-                if IMailMessage.providedBy(element):
-                    translated_title = decodeHeader(ob_title)
+            if IMailMessage.providedBy(element):
+                subject = element.getHeader('Subject')
+                if subject != []:
+                    translated_title = decodeHeader(subject[0])
                     mail_title = translated_title
+                else:
+                    mail_title = '?'
+            else:
+                ob_title = self.createShortTitle(element)
+                if ob_title is None or ob_title == '':
+                    mail_title = '?'
                 else:
                     mail_title = ob_title
 
@@ -218,6 +244,8 @@ class MailFolderView(BaseMailMessageView):
                 part['Size'] = getHumanReadableSize(element.size)
             else:
                 part['Size'] = 0
+
+            part['new'] = not element.seen
             returned.append(part)
             i += 1
 
@@ -231,11 +259,11 @@ class MailFolderView(BaseMailMessageView):
         if deleted == 1:
             return 'cpsma_mini_mail_delete.png'
 
-        read = message.getFlag('read')
+        seen = message.getFlag('seen')
         answered = message.getFlag('answered')
         forwarded = message.getFlag('forwarded')
 
-        if read == 0:
+        if seen == 0:
             return 'cpsma_message_new.png'
         if answered == 1 and forwarded == 0:
             return 'cpsma_replied.png'
@@ -384,3 +412,12 @@ class MailFolderView(BaseMailMessageView):
         list_cols = [item.strip() for item in list_cols.split(',')]
         return list_cols
 
+    def runFilters(self):
+        """ runs filters """
+        mailfolder = self.context
+        mailfolder.runFilters()
+
+        if self.request is not None:
+            # let's go to the mailbox
+            url = mailfolder.absolute_url()
+            self.request.response.redirect(url+'/view')

@@ -61,7 +61,6 @@ class MailSearchView(BrowserView):
                 current['From'] = msg_viewer.renderFromList()
                 current['Subject'] = msg_viewer.renderSubject()
                 current['Date'] = msg_viewer.renderDate()
-
                 results.append(current)
         else:
             raise MailCatalogError('No catalog for %s' % user_id)
@@ -134,7 +133,7 @@ class MailSearchView(BrowserView):
                 if value.strip() == '*':    # stands for all entries
                     query = Query(Any, u'<%s>' % relation, Any)
                 else:
-                    if not isinstance(relation, unicode):
+                    if not isinstance(value, unicode):
                         value = value.strip().decode('ISO-8859-15')
                     query = Query(Any, u'<%s>' % relation, u'"%s"' % value)
                 queries.append(query)

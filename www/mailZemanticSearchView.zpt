@@ -168,6 +168,11 @@
                  (<span tal:replace="nbitems"/>
                  <span i18n:translate="cpsma_objects">objects</span>) :
               </div>
+              <div class="message" tal:condition="python:num_results==20">
+                  <span i18n:translate="cpsma_max_reached">
+                    Maximum number of results reached, please refine your criterias.
+                  </span>
+              </div>
               <div id="searchResults">
                 <metal:block metal:use-macro="here/messagelist_macros/search_messagelist"/>
               </div>

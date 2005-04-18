@@ -214,7 +214,7 @@ class MailSearchTestCase(MailTestCase):
         msg = self.getMailInstance(15)
 
         # empty body
-        msg.setPart(0, '')
+        msg.setDirectBody('')
 
         cat.wrapMessage(msg)
         wrap = msg.searchable_text
@@ -253,7 +253,7 @@ class MailSearchTestCase(MailTestCase):
         self.assertEquals(len(res), 0)
 
     def test_ZemanticInstanciation(self):
-        ob = ZemanticMailCatalog('zem')
+        ob = ZemanticMailCatalog()
 
         from rdflib.URIRef import URIRef
 

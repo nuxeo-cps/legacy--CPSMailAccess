@@ -119,8 +119,7 @@ class IMAPConnection(BaseConnection):
         # extra paramcheck will fit here
 
     def login(self, user, password):
-        """ see interface for doc
-        """
+        """ see interface for doc """
         self._respawn()
         try:
             typ, dat = self._connection.login(user, password)
@@ -231,13 +230,17 @@ class IMAPConnection(BaseConnection):
         mp = message_parts[1:len_mp-1]
         return mp.split(' ')
 
-    def extractResult(self, query, results):
-        """ extracts a result from a block of results
-        """
+    def extractResult(self, fullquery, query, results):
+        """ extracts a result from a block of results """
         # at ths time it's done "case by case"
+        fullquery = fullquery[1:-1]
+        fullquery = fullquery.split(' ')
+        index = fullquery.index(query)
+        results = results[0]
+
         if query == 'FLAGS':
             try:
-                raw = results[0][0]
+                raw = results[0]
             except TypeError:
                 return []
             # todo use regexprs
@@ -251,7 +254,7 @@ class IMAPConnection(BaseConnection):
 
         if query == 'RFC822.SIZE':
             try:
-                raw = results[0][0]
+                raw = results[0]
             except TypeError:
                 return ''
             # todo use regexpr
@@ -261,9 +264,7 @@ class IMAPConnection(BaseConnection):
             return raw[:out]
 
         if query == 'RFC822.HEADER':
-            if len(results[0]) <= 1:
-                raise str(results)
-            raw = results[0][1]
+            raw = results[1]
             raw_parts = raw.split('\r\n')
             i  = 0
             returned = {}
@@ -285,16 +286,20 @@ class IMAPConnection(BaseConnection):
                 i += 1
             return returned
         if query == 'RFC822':
-            return results[0][1]
+            return results[0]
 
-        if query == 'BODY':
+        if query == 'BODY' or query == 'BODYSTRUCTURE':
             # todo
             # parse message
             # XXX should be use by all sub cases
-            index = results[0].find('(')
-            result = results[0][index:]
+
+            # extract subpart if needed
+            cindexstart = results.find('%s (' % query)
+            #cindexstart = cindexstart + len('%s (' % query)
+            cindexstop = self._findClosingParenthesis(results, cindexstart)
+            result = results[cindexstart:cindexstop]
             result = self._parseIMAPMessage(result)
-            result = result[0]
+            #result = result[0]
             # body structure
             if len(result) > 1:
                 result = result[1]
@@ -303,10 +308,26 @@ class IMAPConnection(BaseConnection):
             return result
 
         if query.startswith('BODY.PEEK'):
-            return results[0][1]
+            if len(results) < 2:
+                return None
+            return results[1]
 
         raise NotImplementedError('%s : %s' % (query, results))
 
+    def _findClosingParenthesis(self, text, start):
+        opened = 0
+        i = start + 1
+        while i < len(text):
+            char = text[i]
+            if char == '(':
+                opened += 1
+            elif char == ')':
+                if opened == 0:
+                    return i
+                else:
+                    opened -= 1
+            i+=1
+        return -1
 
     def fetch(self, mailbox, message_number, message_parts):
         """ see interface for doc
@@ -343,7 +364,7 @@ class IMAPConnection(BaseConnection):
             results = []
             i = 0
             for query in query_list:
-                raw_result = self.extractResult(query, imap_raw)
+                raw_result = self.extractResult(message_parts, query, imap_raw)
                 results.append(raw_result)
                 i += 1
 
@@ -549,12 +570,7 @@ class IMAPConnection(BaseConnection):
                           '(BODY.PEEK[%s])' % part_number)
 
     def getMessageStructure(self, mailbox, message_number):        #xxxxxxxxxxxxxxxxxxxxx
-        from time import asctime
-        print 'getMessageStructure %s %s %s' % (mailbox, message_number, asctime())
-        try:
-            return self.fetch(mailbox, message_number, '(BODY)')
-        finally:
-            print 'getMessageStructure end %s' % asctime()
+        return self.fetch(mailbox, message_number, '(BODY)')
 
     def _extractInfos(self, infos, part):
         if infos[0] not in ('alternative', 'related'):

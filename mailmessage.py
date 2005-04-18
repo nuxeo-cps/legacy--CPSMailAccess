@@ -25,6 +25,8 @@ from email import message_from_string, Message
 from email.MIMEText import MIMEText
 from email import base64MIME
 from email import Encoders
+from email.Charset import Charset
+from email.Header import decode_header
 
 from zLOG import LOG, DEBUG, INFO
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -37,79 +39,113 @@ from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
 from zope.app.cache.ram import RAMCache
 
-from interfaces import IMailMessage, IMailFolder, IMailBox, IMailPart
+from interfaces import IMailMessage, IMailFolder, IMailBox
 from utils import decodeHeader, parseDateString, localizeDateString
 from mimeguess import mimeGuess
 from mailrenderer import MailRenderer
 from basemailview import BaseMailMessageView
-from mailpart import MailPart
 from mailfolderview import MailFolderView
 
-class MailMessage(MailPart):
-    """A mail message.
-
-    A mail message wraps an email.Message object.
-    It makes its subparts accessible as subobjects.
-
-    It may be incomplete: some parts may be missing (None).
-    XXX still unclear whose responsibility it is to fetch missing parts.
-
-    A MailMessage implements IMailMessage:
-    >>> f = MailMessage()
-    >>> IMailMessage.providedBy(f)
-    True
-    >>> IMailPart.providedBy(f)
-    True
+class MailMessage(Folder):
+    """ Mailmessage is a lightweight message
+        used for web manipulation
     """
-    implements(IMailMessage, IMailPart)
+    implements(IMailMessage)
+
     meta_type = "CPSMailAccess Message"
 
-    store = None
-    sync_state = False
-
-    read = 0
+    _store = None
+    seen = 0
     answered = 0
     deleted = 0
     flagged = 0
     forwarded = 0
     draft = 0
     size = 0
+    isjunk = 0
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
         self.uid = uid
         self.digest = digest
-        self._cache = RAMCache()
-        self.cache_level = 0
+        self._file_list = []
 
-    def _addCache(self, key, data):
-        """ to be extern. in mailfolder """
-        if not hasattr(self, '_cache'):
-            self._cache = RAMCache()
-        self._cache.set(data, key)
+    def loadMessageFromRaw(self, data):
+        store = message_from_string(data)
+        self._setStore(store)
 
-    def _getCache(self, key):
-        """ to be extern. in mailfolder """
-        if not hasattr(self, '_cache'):
-            self._cache = RAMCache()
-            return None
-        elements = self._cache.query(key)
-        return elements
+    def loadMessage(self, flags=None, headers=None, body='',
+                    structure_infos=None):
 
+        self._setStore(Message.Message())
+        store = self._getStore()
 
-    def copyFrom(self, msg):
-        """ make a copy (all but uid) """
-        self.digest = msg.digest
-        self.store = msg.store
-        self.sync_state = msg.sync_state
-        self.read = msg.read
-        self.answered = msg.answered
-        self.deleted = msg.deleted
-        self.flagged = msg.flagged
-        self.forwarded = msg.forwarded
-        self.draft = msg.draft
-        self.title = msg.title
-        MailPart.copyFrom(self, msg)
+        # filling headers
+        if structure_infos is not None:
+            charset = 'ISO8859-15'
+            for item in structure_infos:
+                if isinstance(item, list):
+                    if item[0] == 'charset':
+                        charset = item[1]
+
+            for item in structure_infos:
+                if isinstance(item, list):
+                    if item[0] == 'name':
+                        store['name'] = item[1]
+
+            store['Content-type'] = '%s/%s' % (structure_infos[0],
+                                               structure_infos[1])
+            if len(structure_infos) > 5:
+                store['Content-transfer-encoding'] = structure_infos[4]
+            else:
+                store['Content-transfer-encoding'] = ''
+            store['Charset'] = charset
+            skip_headers = ('content-type', 'content-transfer-encoding',
+                            'charset')
+        else:
+            skip_headers = ()
+
+        if headers is not None:
+            for key in headers.keys():
+                if key.lower() not in skip_headers:
+                    if key.lower() == 'subject':
+                        self.title = decodeHeader(headers[key])
+                    store[key] = headers[key]
+
+        if body is None:
+            body = ''
+
+        store._payload = body
+        self._setStore(store)
+        self._parseFlags(flags)
+
+    def getHeaders(self):
+        """ Get a message headers """
+        store = self._getStore()
+        res = {}
+        for header in store._headers:
+            res[header[0]] = header[1]
+        return res
+
+    def _getStore(self):
+        if self._store is None:
+            self._store = Message.Message()
+        return  self._store
+
+    def _setStore(self, store):
+        self._store = store
+
+    def _parseFlags(self, flags):
+        """ parses given raw flags """
+        if isinstance(flags, list):
+            flags = ' '.join(flags)
+        flags = flags.lower()
+        for item in ('seen', 'answered', 'deleted', 'flagged',
+                     'forwarded', 'draft'):
+            if flags.find(item) > -1:
+                self.setFlag(item, 1)
+            else:
+                self.setFlag(item, 0)
 
     def setFlag(self, flag, value):
         """ sets a flag """
@@ -119,235 +155,117 @@ class MailMessage(MailPart):
                 # call the event trigger
                 self.onFlagChanged(self, flag, value)
 
-    def onFlagChanged(self, msg, flag, value):
-        """ can be used for event triggers """
-        pass
-
-    def getFlag(self, flag):
-        """ gets a flag """
-        return getattr(self, flag, None)
-
-    def setSyncState(self, state=False):
-        """ sets state
-        """
-        self.sync_state = state
-
-    def _getStore(self):
-        """
-        >>> f = MailMessage()
-        >>> f.cache_level = 0
-        >>> f.loadMessage('ok')
-        >>> store = f._getStore()
-        >>> store <> None
-        True
-        """
-        if self.store is None:
-            self.cache_level = 0
-            self.loadMessage('')
-        return self.store
-
-    def _setStore(self, store):
-        self.store = store
-
-    def getMailBox(self):
-        """ Gets mailbox
-
-        XXXX might be kicked out in utils so
-        there's no dependencies with MailBox
-        """
-        parent_folder = self.getMailFolder()
-        if parent_folder is None:
-            return None
-        else:
-            if IMailBox.providedBy(parent_folder):
-                return parent_folder
-            else:
-                return parent_folder.getMailBox()
-
-    def getMailFolder(self):
-        """ gets parent folder
-            XXX zope 2 style
-        """
-        return self.aq_inner.aq_parent
-
-    def getVolatilePart(self, part_name):
-        """ gets volatile part """
-        # keys *are* string
-        part_name = str(part_name)
-        return self._getCache(part_name)
-
-    def loadPart(self, part_num, part_content='', volatile=True):
-        """ loads a part in the volatile list
-            or in the persistent one
-            if part_content is empty,fetching the server
-        """
-        # XXXX still unclear if this is the right place
-        # to do so
-        # this api has to be used for the primary load
-        # optimization = if the part is already here *never*
-        # reloads it, it has to be cleared if reload is needed somehow
-        part = self.getVolatilePart(part_num)
-
-        if part is not None:
-            LOG('loadPart', INFO, 'i had it men')
-            return part
-
-        if part_num.find('.') == -1 and self.cache_level == 2:
-            part_num_int = int(part_num)
-            if part_num_int < self.getPartCount():
-                part = self.getPart(part_num_int, True)
-                if part is not None and part.get_payload() is not None:
-                    return part
-
-        LOG('loadPart - part', INFO, str(part))
-
-        if part_content != '':
-            part_str = part_content
-            part = message_from_string(part_str)
-        else:
-            mailfolder = self.getMailFolder()
-            connector = mailfolder._getconnector()
-            if connector is not None:
-                splitted = part_num.split('.')
-                indexed = []
-                for item in splitted:
-                    indexed.append(int(item))
-
-                raw_part = connector.getMessagePart(mailfolder.server_name,
-                                                      self.uid, part_num)
-
-                part_infos = connector.getPartInfos(mailfolder.server_name,
-                                                    self.uid, indexed[0])
-
-                LOG('loadPart - part_infos', INFO, str(part_infos))
-                part = Message.Message()
-                charset = 'ISO8859-15'
-                for item in part_infos:
-                    if isinstance(item, list):
-                        if item[0] == 'charset':
-                            charset = item[1]
-
-                for item in part_infos:
-                    if isinstance(item, list):
-                        if item[0] == 'name':
-                            part['name'] = item[1]
-
-                part['Content-type'] = '%s/%s' % (part_infos[0], part_infos[1])
-                part['Content-transfer-encoding'] = part_infos[4]
-                part['Charset'] = charset
-                part._payload = raw_part
-                LOG('loadPart', INFO, 'got it from server %s !' % str(part_infos))
-
-            else:
-                part = None
-                raise NotImplementedError
-
-        if volatile:
-            self._addCache(str(part_num), part)
-            LOG('_addCache', INFO, 'saving it')
-            return part
-        else:
-            ## todo : creates a real part
-            raise NotImplementedError
-
-    def loadMessage(self, raw_msg, cache_level=2):
-        """ XXXX next we will
-        implement here partial message load
-        with part with None
-        """
-        self.cache_level = cache_level
-        MailPart.loadMessage(self, raw_msg)
-        self.title = decodeHeader(self._getStore()['Subject'])
-
-    def detachFile(self, filename):
-        """ detach a file """
-        if not self.isMultipart():
-            # it cant' be
-            return False
-
-        part_count = self.getPartCount()
-
-        # we'll need to get back to a
-        # simple string payload
-        for part in range(part_count):
-            part_ob = MailPart('part_'+str(part), self, self.getPart(part))
-            infos = part_ob.getFileInfos()
-            if infos is not None:
-                if infos['filename'] == filename:
-                    # founded
-                    part_num = part
-                    return self.deletePart(part_num)
-
-        return False
-
-    def attachFile(self, file):
-        """ attach an file """
-        file.seek(0)
-        try:
-            part_file = Message.Message()
-            part_file['Content-Disposition'] = 'attachment; filename= %s'\
-                       % file.filename
-            part_file['Content-Transfer-Encoding'] = 'base64'
-            data = file.read()
-            mime_type = mimeGuess(data)
-            data = base64MIME.encode(data)
-            part_file.set_payload(data)
-            part_file['Content-Type'] = '%s; name=%s' % (mime_type,
-                                                         file.filename)
-        finally:
-            file.close()
-
-        self.attachPart(part_file)
-
-    def attachPart(self, part):
-        """ attach an part """
+    def getHeader(self, name):
+        """ Get a message header. """
         store = self._getStore()
 
-        if not self.isMultipart():
-            new_message = Message.Message()
-            main_heads = ('date', 'to', 'from', 'cc', 'bcc')
-            for header in self.getHeaders().keys():
-                head = self.getHeader(header)
-                for element in head:
-                    if header.lower() not in main_heads:
-                        new_message.add_header(header, element)
-            new_message._payload = store._payload
-            store._payload = [new_message]
-            store['Content-Type'] = 'multipart/mixed; boundary="BOUNDARY"'
+        elements = store.get_all(name, [])
+        if elements is None:
+            return []
+        return elements
 
-        store.attach(part)
+    def setHeader(self, name, value):
+        """ Set a message header. """
+        store = self._getStore()
+        while store.has_key(name):
+            # Erase previous header
+            del store[name]
+        store[name] = value
 
-    def hasAttachment(self):
-        """ tells if the message has an attachment """
-        if self.cache_level == 1:
-            return False
+    def addHeader(self, name, value):
+        """ adds an header """
+        store = self._getStore()
+        store[name] = value
 
-        for part in range(self.getPartCount()):
-            part_ob = MailPart('part_'+str(part), self, self.getPart(part))
-            infos = part_ob.getFileInfos()
-            if infos is not None:
-                return True
-        return False
+    def removeHeader(self, name, values=None):
+        """ removes header """
+        store = self._getStore()
+        headers = self.getHeader(name)
+        if values is None:
+            while store.has_key(name):
+                # Erase previous header
+                del store[name]
+        else:
+            for item in values:
+                if item in headers:
+                    headers.remove(item)
+            if headers != values:
+                while store.has_key(name):
+                    # Erase previous header
+                    del store[name]
+                for value in headers:
+                    self.addHeader(name, value)
 
     def setFlags(self, flags):
         flags = [flag.lower() for flag in flags]
 
-        for flag in ('read', 'answered', 'deleted', 'flagged',
+        for flag in ('seen', 'answered', 'deleted', 'flagged',
                      'forwarded', 'draft'):
             if flag in flags:
                 self.setFlag(flag, 1)
             else:
                 self.setFlag(flag, 0)
 
-    def _parseFlags(self, flags):
-        """ parses given raw flags """
-        flags = flags.lower()
-        for item in ('read', 'answered', 'deleted', 'flagged',
-                     'forwarded', 'draft'):
-            if flags.find(item) > -1:
-                self.setFlag(item, 1)
-            else:
-                self.setFlag(item, 0)
+    def onFlagChanged(self, msg, flag, value):
+        """ can be used for event triggers """
+        pass
+
+    def getDirectBody(self):
+        """ gets direct body """
+        store = self._getStore()
+        return store.get_payload()
+
+    def getFlag(self, flag):
+        """ gets a flag """
+        return getattr(self, flag, None)
+
+    def hasAttachment(self):
+        """ tells if the message has an attachment """
+        return len(self._file_list) > 0
+
+    def getFileList(self):
+        """ returns a filelist """
+        # XXX todo
+        return self._file_list
+
+    def attachFile(self, file):
+        """ attach an file """
+        # XXXX not properly atatche, to be
+        files = self._file_list
+        exists =  False
+        for cfile in files:
+            if cfile['filename'] == file.filename:
+                exists =  True
+                break
+
+        if not exists:
+            file.seek(0)
+            try:
+                part_file = Message.Message()
+                part_file['content-disposition'] = 'attachment; filename= %s'\
+                        % file.filename
+                part_file['content-transfer-encoding'] = 'base64'
+                data = file.read()
+                mime_type = mimeGuess(data)
+                data = base64MIME.encode(data)
+                part_file.set_payload(data)
+                part_file['content-type'] = '%s; name=%s' % (mime_type,
+                                                            file.filename)
+            finally:
+                file.close()
+
+            file = {'filename' : file.filename, 'mimetype': mime_type,
+                    'data' : part_file}
+
+            files.append(file)
+
+    def detachFile(self, filename):
+        """ detach a file """
+        files = self._file_list
+        for i in range(len(files)):
+            if files[i]['filename'] == filename:
+                del files[i]
+                break
 
     def setDirectBody(self, content):
         """ sets direct body content
@@ -355,124 +273,121 @@ class MailMessage(MailPart):
         This is a facility for editor's need
         sets the first body content
         """
-        if self.cache_level == 1:
-            raise NotImplementedError
+        store = self._getStore()
+        store._payload = content
 
-        if not self.isMultipart():
-            self.setPart(0, content)
-        else:
-            # the mail editor message structure does not move
-            sub = self.getPart(0)
-            if isinstance(sub, str):
-                self.setPart(0, content)
-            else:
-                sub._payload = content
-                self.setPart(0, sub)
 
-    def getDirectBody(self):
-        """ gets direct body
+    def copyFrom(self, msg):
+        """ make a copy (all but uid) """
+        self.digest = msg.digest
+        self._store = msg._store
+        self.seen = msg.seen
+        self.answered = msg.answered
+        self.deleted = msg.deleted
+        self.flagged = msg.flagged
+        self.forwarded = msg.forwarded
+        self.draft = msg.draft
+        self.title = msg.title
+        self._file_list = msg._file_list
 
-        This is a facility for editor's need
-        sets the first body content
+    def getRawMessage(self):
+        """ returns a raw message
+
+        contains the store and eventually attached files
         """
-        if self.cache_level == 1:
+        # XXX need to attach files in self._file_list
+        store = self._getStore()
+        if store is None:
             return ''
-
-        try:
-            res = self.getPart(0)
-            if res is None:
-                return ''
-        except IndexError:
-            res = ''
-
-        if type(res) is str:
-            return res
         else:
-            return res.get_payload()
+            # creating a mutlipart message
+            copy = message_from_string(store.as_string())   # making a copy
+            copy['content-type'] = 'text/plain; charset=iso-8859-1'
+            copy['content-transfer-encoding'] = '7bits'
 
-    def getPartCount(self):                                #XXXXXXXXXXXXXXXXX
-        """ gets part count
-
-        If cache is set to 1, this retrieves the structure
-        on the server and count number of parts
-        """
-        if self.cache_level == 1:
-            structure = self.getServerStructure()
-            # counting parts
-            # the first item is telling the type of structure
-            if structure[0] not in ('relative', 'alteranive'):
-                return 1
-            return len(structure) - 1
-        else:
-            return MailPart.getPartCount(self)
-
-    def getServerStructure(self):                        #XXXXXXXXXXXXXXXXX
-        """ retrieves server structure """
-        folder = self.getMailFolder()
-        if folder is None:
-            return []
-        connector = folder._getconnector()
-        server_name = folder.server_name
-        return connector.getMessageStructure(server_name, self.uid)
-
-    def isMultipart(self):                                #XXXXXXXXXXXXXXXXX
-        """ gets part count
-
-        If cache is set to 1, this retrieves the structure
-        on the server and count number of parts totellif its multiparted
-        """
-        if self.cache_level == 1:
-            part_count = self._getCache('part_count')
-            if part_count is None:
-                part_count = self.getPartCount()
-                self._addCache('part_count', part_count)
-            return part_count > 1
-        else:
-            return MailPart.isMultipart(self)
-
-    def getContentType(self, part_index=0):
-        if self.cache_level == 1:
-            structure = self.getServerStructure()
-            if isinstance(structure[1], list):
-                return 'multipart/%s' % structure[0]
+            if not self.hasAttachment:
+                message = copy
             else:
-                return '%s/%s' % (structure[0], structure[1])
-        else:
-            return MailPart.getContentType(self, part_index)
+                message = Message.Message()
+                for gheader in ('From', 'To', 'Cc', 'BCc', 'Subject', 'Date',
+                                'Return-Path', 'Received', 'Delivered-To',
+                                'Message-ID'):
+                    if copy[gheader] is not None:
+                        message[gheader] = copy[gheader]
+                        del copy[gheader]
 
-    def getFileList(self):
-        """ returns a filelist """
-        files = []
-        for part in range(self.getPartCount()):
-            file = None
-            if self.cache_level != 1:
-                # XX todo : avoid re-generate part on each visit : use caching
-                part_ob = MailPart('part_'+str(part), self, self.getPart(part))
-                file = part_ob.getFileInfos()
-            else:
-                mailfolder = self.getMailFolder()
-                if mailfolder is None:
-                    return []
-                connector = mailfolder._getconnector()
+                message['content-type'] = \
+                    'multipart/mixed; boundary=---BOUNDARY---'
+                message['MIME-version'] = '1.0'
+                message._payload = [copy]
 
-                infos = connector.getPartInfos(mailfolder.server_name,
-                                               self.uid, part+1)
-                for info in infos:
-                    if isinstance(info, list):
-                        list_ = info
-                        if len(list_) == 2 and list_[0] == 'name':
-                            file = {}
-                            file['filename'] = list_[1]
-                            file['mimetype'] = '%s/%s' % (infos[0], infos[1])
+                # now appending files
+                for file in self.getFileList():
+                    # data contains the part
+                    if file['data'] is not None:
+                        message._payload.append(file['data'])
 
-            if file is not None:
-                file['part'] = part
-                files.append(file)
-        return files
+            message['User-Agent'] = 'Nuxeo CPSMailAccess'
+            if message['Message-ID'] is None:
+                # generate id XXXX need to be more precise here
+                # by including user name
+                folder = self.getMailFolder()
+                if folder is None or folder.server_name=='':
+                    key = '<%s>' % (self.uid)
+                else:
+                    key = '<%s.%s>' % (self.uid, folder.server_name)
+                message['Message-ID'] = key
+            return message.as_string()
 
+    def getParams(self):
+        """ See interfaces.IMailMessage """
+        store = self._getStore()
+        return store.get_params()
 
-""" classic Zope 2 interface for class registering
-"""
+    def getParam(self, param_name):
+        """ See interfaces.IMailMessage """
+        store = self._getStore()
+        return store.get_param(param_name)
+
+    def setParam(self, param_name, param_value):
+        """ See interfaces.IMailMessage """
+        store = self._getStore()
+        store.set_param(param_name, param_value)
+
+    def delParam(self, param_name):
+        """ See interfaces.IMailMessage """
+        store = self._getStore()
+        store.del_param(param_name)
+
+    def getCharset(self):
+        """ See interfaces.IMailMessage """
+        store = self._getStore()
+        return store.get_charsets()[0]
+
+    def getContentType(self):
+        """ See interfaces.IMailMessage """
+        store = self._getStore()
+        return store.get_content_type()
+
+    def setCharset(self, charset):
+        """ See interfaces.IMailMessage """
+        store = self._getStore()
+        ob_charset = Charset(charset)
+        store.set_charset(ob_charset)
+
+    def setContentType(self, content_type):
+        """ See interfaces.IMailMessage """
+        store = self._getStore()
+        store.set_type(content_type)
+
+    def getMailFolder(self):
+        """ gets parent folder
+            XXX zope 2 style
+        """
+        if not hasattr(self, 'aq_inner'):
+            return None
+        return self.aq_inner.aq_parent
+
 InitializeClass(MailMessage)
 
 manage_addMailMessageForm = PageTemplateFile(

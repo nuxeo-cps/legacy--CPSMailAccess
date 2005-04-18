@@ -80,7 +80,8 @@ class MailTool(Folder): # UniqueObject
                                  'max_folder_depth' : 2,
                                  'treeview_style' : 'lotus',
                                  'message_list_cols' :
-                                   'Attachments, Icon, From, Date, Subject, Size'
+                                   'Attachments, Icon, From, Date, Subject, Size',
+                                 'signature' : '',
                                 }
 
     def __init__(self):

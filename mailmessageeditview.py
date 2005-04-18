@@ -136,7 +136,7 @@ class MailMessageEdit(BrowserView):
                         folder.onFlagChanged(origin, 'forwarded', 1)
 
                 # clear the editor
-                self.initializeEditor()
+                self.initializeEditor(False)
 
                 if came_from is not None and came_from !='':
                     goto = came_from
@@ -309,7 +309,7 @@ class MailMessageEdit(BrowserView):
 
         return
 
-    def removeRecipient(self, value, type):
+    def removeRecipient(self, value, type, redirect=''):
         """ removes a recipient
         """
         content = value.strip()
@@ -323,7 +323,10 @@ class MailMessageEdit(BrowserView):
         msg.removeHeader(type, [value])
 
         if self.request is not None:
-            self.request.response.redirect('editMessage.html')
+            if redirect is not None:
+                self.request.response.redirect(redirect)
+            else:
+                self.request.response.redirect('editMessage.html')
 
     def addRecipient(self, content, type, redirect=''):
         """ add a recipient """
@@ -384,11 +387,19 @@ class MailMessageEdit(BrowserView):
             self.request.response.redirect('editMessage.html\
                                             ?portal_status_message=%s' % psm)
 
-    def initializeEditor(self):
+    def initializeEditor(self, back_to_front=True):
         """ cleans the editor
         """
         mailbox = self.context
         mailbox.clearEditorMessage()
 
         if self.request is not None:
-            self.request.response.redirect('editMessage.html')
+            if not back_to_front:
+                self.request.response.redirect('editMessage.html')
+            else:
+                if hasattr(mailbox, 'INBOX'):
+                    url = '%s/INBOX/view' % mailbox.absolute_url()
+                else:
+                    url = '%s/view' % mailbox.absolute_url()
+                self.request.response.redirect(url)
+

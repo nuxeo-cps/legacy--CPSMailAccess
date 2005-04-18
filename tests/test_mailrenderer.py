@@ -41,7 +41,6 @@ class MailRendererTestCase(MailTestCase):
         res = []
         for i in range(37):
             ob = MailMessage()
-            ob.cache_level = 2
             if i < 9:
                 data = self._msgobj('msg_0'+str(i+1)+'.txt')
             else:
@@ -54,8 +53,6 @@ class MailRendererTestCase(MailTestCase):
 
     def getMailInstance(self,number):
         ob = MailMessage()
-        ob.cache_level = 2
-
         if number < 9:
             data = self._msgobj('msg_0'+str(number+1)+'.txt')
         else:
@@ -72,6 +69,7 @@ class MailRendererTestCase(MailTestCase):
     def test_bodyRendering(self):
         # testing the simplest mail structure
         mail = self.getMailInstance(0)
+        mail.setDirectBody('Do you like this message?')
         box = self._getMailBox()
         box._setObject('mail', mail)
         mail = box.mail
@@ -79,19 +77,7 @@ class MailRendererTestCase(MailTestCase):
         rendered = ob.renderBody(mail)
         self.assertNotEqual(rendered, '')
         self.assertNotEqual(rendered, None)
-        self.assertEquals(rendered, '<br/>Hi,<br/><br/>Do you like this message?<br/><br/>-Me<br/>')
-
-    def test_bodyRendering2(self):
-        # testing a mail with an attached file
-        mail = self.getMailInstance(6)
-        box = self._getMailBox()
-        box._setObject('mail2', mail)
-        mail = box.mail2
-        ob = MailRenderer()
-        rendered = ob.renderBody(mail)
-        self.assertNotEqual(rendered, '')
-        self.assertNotEqual(rendered, None)
-        self.assertEquals(rendered, 'Hi there,<br/><br/>This is the dingus fish.<br/>')
+        self.assertEquals(rendered, u'Do you like this message?')
 
     def test_allRendering(self):
         # testing all mails with MIME engine
@@ -117,9 +103,7 @@ class MailRendererTestCase(MailTestCase):
         self.assertEquals(res, 'yes')
 
     def test_unicode(self):
-
         ob = MailRenderer()
-
         res = ob.render('ייי','charset=iso8859-15;type=text/plain', None)
         self.assertEquals(res, u'\xe9\xe9\xe9')
 
@@ -127,23 +111,10 @@ class MailRendererTestCase(MailTestCase):
         res = ob.render('ייי','type=text/plain;charset=us/ascii', None)
         self.assertEquals(res, u'\xe9\xe9\xe9')
 
-    def test_multipartAlternativeSpecial(self):
-        # other kind of multipart received
-        ob = self.getMailInstance(37)
+    def test_extractPartTypes(self):
         rd = MailRenderer()
-        ob.getPhysicalPath = self.fakePhysicalPath
-        body = rd.renderBody(ob, 0)
-        self.assert_(body.startswith('Noel א prix magiques !<table'))
-
-    def test_multipartAlternativeReadLotus(self):
-        # lotus note mail message
-        # the body gets empty in the view
-        # added this test
-        ob = self.getMailInstance(35)
-        rd = MailRenderer()
-        ob.getPhysicalPath = self.fakePhysicalPath
-        body = rd.renderBody(ob, 0)
-        self.assert_(body.startswith(u'<br><font size="2" face="sans-serif">sqdsqd d</font>'))
+        types = rd.extractPartTypes('multipart/mixed;')
+        self.assertEquals(types, {'type' : 'multipart/mixed'})
 
 def test_suite():
     return unittest.TestSuite((

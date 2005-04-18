@@ -20,6 +20,8 @@
 """
     A message with a few more things for editor's view
 """
+from email import Message
+
 from interfaces import IMailMessage, IMailPart
 from zope.app.cache.ram import RAMCache
 from mailmessage import MailMessage
@@ -31,6 +33,7 @@ class MailEditorMessage(MailMessage):
         MailMessage.__init__(self, id, uid, digest, **kw)
         self.answerType = ''
         self.origin_message = None
+        self._setStore(Message.Message())
 
     def setCachedValue(self, name, value):
         name = {'key': name}
@@ -43,4 +46,12 @@ class MailEditorMessage(MailMessage):
     def loadFromMessage(self, msg):
         """ useful to adapt an existing message """
         self.copyFrom(msg)
+
+    def setHeader(self, name, value):
+        """ Set a message header. """
+        store = self._getStore()
+        while store.has_key(name):
+            # Erase previous header
+            del store[name]
+        store[name] = value
 

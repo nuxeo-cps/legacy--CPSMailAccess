@@ -47,6 +47,7 @@ class MailActionsView(BaseMailMessageView):
         """ XXX need to use the mapping menuItems in CMFOnFive instead
             XX need to implements zope 3 action providers
         """
+        root = ''
         container = self.context
         actions = []
         base_url = self.getBaseUrl()
@@ -109,7 +110,7 @@ class MailActionsView(BaseMailMessageView):
                     add_folder = {'icon' : base_url + '/cpsma_addfolder.png',
                                 'title' : 'cpsma_add_subfolder',
                                 'long_title' : 'cpsma_add_subfolder',
-                                'action' : 'view?add_folder=1'}
+                                'action' : 'view?add_folder=1&keep_last_sort=1'}
                     actions.append(add_folder)
 
                 sent_server_name = mailbox.getSentFolder().server_name
@@ -122,7 +123,7 @@ class MailActionsView(BaseMailMessageView):
                     rename = {'icon' : base_url + '/cpsma_rename.png',
                                 'title' : 'cpsma_rename_folder',
                                 'long_title' : 'cpsma_rename_folder',
-                                'action' : 'view?edit_name=1'}
+                                'action' : 'view?edit_name=1&keep_last_sort=1'}
 
                     if candelete:
                         delete = {'icon' : base_url + '/cpsma_delete.png',
@@ -136,11 +137,17 @@ class MailActionsView(BaseMailMessageView):
 
                     actions.extend(list_)
 
+            filter_ = {'icon' : root + '/cpsma_filter_big.png',
+                       'title' : 'cpsma_filter',
+                       'long_title' : 'cpsma_filter',
+                       'action' : 'runFilters.html'}
+
+
             manage = {'icon' : root + '/cpsma_manage_content.png',
                       'title' : 'cpsma_manage_content',
                       'long_title' : 'cpsma_manage_content',
-                      'action' : 'view?manage_content=1'}
-            actions.append(manage)
+                      'action' : 'view?manage_content=1&keep_last_sort=1'}
+            actions.extend([filter_, manage])
 
         elif IMailMessage.providedBy(container):
             mailbox = container.getMailBox()

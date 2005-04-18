@@ -1,25 +1,32 @@
 <!-- mailaccess boxes macros -->
 <!-- $Id$ -->
 <metal:block define-macro="node">
-  <div>
   <table border="0" tal:define="unreads element/unreads|python:0">
     <tr>
       <td nowrap>
-        <tal:block tal:repeat="icon_ob element/front_icons">
-          <tal:block tal:condition="icon_ob/clickable">
-           <img tal:attributes="src icon_ob/icon;
-                          style string:cursor: hand;
-                          onclick element/javacall;
-                          id element/img_id;">
-          </tal:block>
-          <tal:block tal:condition="not:icon_ob/clickable">
-            <img tal:attributes="src icon_ob/icon">
-          </tal:block>
-        </tal:block>
-        <img tal:attributes="src element/icon_name"/>
-        <a tal:attributes="href element/url">
-          <span tal:replace="element/short_title"/>
-        </a><tal:block tal:condition="unreads">&#160;(<span tal:replace="unreads"/>)</tal:block>
+        <div class="cellDest" tal:attributes="id python:'to_folder_'+element['server_name']">
+          <div class="cellDrag" tal:attributes="id python:'from_folder_'+element['server_name']">
+            <tal:block tal:repeat="icon_ob element/front_icons">
+            <tal:block tal:condition="icon_ob/clickable">
+            <img tal:attributes="src icon_ob/icon;
+                            style string:cursor: hand;
+                            onclick element/javacall;
+                            id element/img_id;">
+            </tal:block>
+            <tal:block tal:condition="not:icon_ob/clickable">
+                <img tal:attributes="src icon_ob/icon">
+            </tal:block>
+            </tal:block>
+
+            <img tal:attributes="src element/icon_name"/>
+
+              <a tal:attributes="href element/url">
+                <span tal:replace="element/short_title"/>
+              </a>
+              <tal:block tal:condition="unreads">&#160;(<span tal:replace="unreads"/>)
+              </tal:block>
+          </div>
+        </div>
         <div style="display: block" tal:attributes="id element/short_title_id">
           <tal:block tal:repeat="element element/childs">
             <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
@@ -28,7 +35,6 @@
        </td>
     </tr>
   </table>
-  </div>
 </metal:block>
 
 <metal:block define-macro="basebox_treeview">
@@ -51,6 +57,7 @@
       </div>
     </tal:block>
   </tal:block>
+  <div class="dragBox" id="drag-feedback-box"></div>
 </metal:block>
 
 <metal:block define-macro="basebox_moveview">
@@ -150,13 +157,18 @@
                                     alt attached_file/fulltitle;
                                     onclick attached_file/onclick|nothing"/>
                           <br/>
-                          <span i18n:translate=""
+                          <span class="truncable" i18n:translate=""
                             tal:content="attached_file/title"/>
                        </center>
                      </a>
                    </td>
                  </tal:block>
                </tr>
+             </tal:block>
+             <tal:block tal:condition="python:len(attached_files) &gt; 0">
+                 <script langage="javascript">
+                    truncateFields(15);
+                 </script>
              </tal:block>
            </table>
           </div>

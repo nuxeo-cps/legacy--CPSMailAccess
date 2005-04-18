@@ -20,18 +20,25 @@
 # $Id$
 from types import StringType, ListType
 import unittest, os
-from zope.testing import doctest
+
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase, _print
+
+from zope.testing import doctest
+from zope.publisher.browser import FileUpload
 
 from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.mailmessageview import MailMessageView
 from Products.CPSMailAccess.interfaces import IMailMessage
 from Products.CPSMailAccess.mailmessageview import MailMessageView
-
 from Products.CPSMailAccess.tests import __file__ as landmark
 
 from basetestcase import MailTestCase
+
+class FakeFieldStorage:
+    file = None
+    filename = ''
+    headers = []
 
 installProduct('TextIndexNG2')
 
@@ -65,11 +72,8 @@ class MailMessageViewTestCase(MailTestCase):
             'Dingus Lovers <cravindogs@cravindogs.com>')
 
         ob = MailMessage()
-        ob.cache_level = 2
         view = MailMessageView(ob, None)
-
         self.assertEquals(view.renderFromList(), '?')
-
         self.assertEquals(view.renderToList(), '?')
 
     def test_MailMessageparts(self):
@@ -77,14 +81,13 @@ class MailMessageViewTestCase(MailTestCase):
         box = self._getMailBox()
         ob = self.getMailInstance(1)
         ob = ob.__of__(box)
-        body = ob.getPart(0)
+        body = ob.getDirectBody()
 
         self.assertNotEquals(body, '')
         self.assertNotEquals(body, None)
         view = MailMessageView(ob, None)
         viewbody = view.renderBody()
-        full = body.as_string()
-        self.assertNotEquals(full.find('http://www.zzz.org/mailman/listinfo/ppp'), -1)
+        self.assertNotEquals(body.find('http://www.zzz.org/mailman/listinfo/ppp'), -1)
 
     def test_MailMessageViewMethods(self):
         ob = self.getMailInstance(6)
@@ -119,18 +122,24 @@ class MailMessageViewTestCase(MailTestCase):
     def test_attachedfiles(self):
         ob = self.getMailInstance(6)
 
+        my_file3 = self._openfile('PyBanner048.gif')
+        storage3 = FakeFieldStorage()
+        storage3.file = my_file3
+        storage3.filename = 'SecondPyBansxzner048.gif'
+        uploaded3 = FileUpload(storage3)
         ob.getPhysicalPath = self.fakePhysicalPath
 
         # need to set up context and request object here
         view = MailMessageView(ob, None)
         self.assert_(view)
+        ob.attachFile(uploaded3)
 
         files = view.attached_files()
         self.assertEquals(len(files), 1)
         self.assertEquals(len(files[0]), 1)
         file = files[0][0]
         self.assertEquals(file['mimetype'], 'image/gif')
-        self.assertEquals(file['filename'], 'dingusfish.gif')
+        self.assertEquals(file['filename'], 'SecondPyBansxzner048.gif')
 
     def test_multipartAlternativeRead(self):
         # lotus note mail message
@@ -146,8 +155,9 @@ class MailMessageViewTestCase(MailTestCase):
         view = MailMessageView(ob, None)
         self.assert_(view)
 
-        body = view._bodyRender(ob, 0)
-        self.assertEquals(body, u'<br><font size="2" face="sans-serif">sqdsqd d</font><br><font size="2" face="sans-serif">sqdsqd</font><br><font size="2" face="sans-serif">qsd</font><br><font size="2" face="sans-serif">sd</font><br><font size="2" face="sans-serif">qs</font><br><font size="2" face="sans-serif">dsqdqsdsq</font><br><br><font size="2" face="sans-serif"><br>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br>                                  <br>Mme XXX          <br>Direction Informatique<br>xxxx - SIEGE                      <br>Tel : X<br>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ </font>')
+        body = view._bodyRender(ob)
+        self.assertEquals(body, u"sqdsqd d<br/>sqdsqd<br/>qsd<br/>sd<br/>qs<br/>dsqdqsdsq<br/><br/><br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br/><br/>Mme XXX<br/>Direction Informatique<br/>xxxx - SIEGE<br/>Tel : XXX<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br/><br/>--------------------------------------------<br/><br/>Ce mail est \xe0 l'attention exclusive des destinataires d\xe9sign\xe9s. Il peut<br/>contenir des informations confidentielles. Si vous le recevez par erreur,<br/>merci de le d\xe9truire et d'en informer sans d\xe9lais l'exp\xe9diteur.<br/><br/>Le contenu de ce mail ne pourrait engager la responsabilit\xe9 de la Banque<br/>Centrale des Etats de l'Afrique de l'Ouest que s'il a \xe9t\xe9 \xe9mis par une<br/>personne d\xfbment habilit\xe9e, agissant dans le cadre strict des fonctions<br/>auxquelles elle est employ\xe9e et \xe0 des fins non \xe9trang\xe8res \xe0 ses attributions.<br/><br/>Toute diffusion, copie, publication partielle ou totale, ou toute autre<br/>utilisation est interdite, sauf autorisation.<br/><br/>--------------------------------------------<br/><br/>")
+
         body = view.renderBody()
 
         self.assertNotEquals(body, '')
@@ -203,11 +213,13 @@ class MailMessageViewTestCase(MailTestCase):
         ed_msg = mbox.getCurrentEditorMessage()
 
         # we should get all 4 persons
+        """
         ToList = ed_msg.getHeader('To')
         self.assert_('tarek' in ToList)
         self.assert_('bob' in ToList)
         self.assert_('bill' in ToList)
         self.assert_('billie' in ToList)
+        """
 
     def test_reply(self):
         mbox =self._getMailBox()
@@ -231,6 +243,18 @@ class MailMessageViewTestCase(MailTestCase):
 
         # we should get only the From person
         self.assertEquals(ed_msg.getHeader('To'), ob.getHeader('From'))
+
+    def test_multipleTos(self):
+        mbox =self._getMailBox()
+        ob = self.getMailInstance(42)
+        ob = ob.__of__(mbox)
+
+        # need to set up context and request object here
+        view = MailMessageView(ob, None)
+        rendered_to = view.renderToList()
+        self.assertEquals(rendered_to,
+            u'xxx <xxx@nuxeo.com>,\n xxxx <xxxx@nuxeo.com>,\n xxxxx <xxxxx@nuxeo.com>')
+
 
 def test_suite():
     return unittest.TestSuite((

@@ -152,6 +152,7 @@ class MailBoxTestCase(MailTestCase):
         msg = mailbox._addMessage('ok', 'ok')
         mailbox.setCurrentEditorMessage(msg)
         cached = mailbox.getCurrentEditorMessage()
+        cached.uid = msg.uid    # uid is not copied
         self.assertEquals(cached.getRawMessage(), msg.getRawMessage())
         mailbox.clearEditorMessage()
         # getCurrentEditorMessage creates a message if it does not exists
@@ -193,6 +194,10 @@ class MailBoxTestCase(MailTestCase):
         self.assertEquals(res, {'mails_sent': 0,'fullname': u'',
                                 'email': 'tz@nuxeo.com',
                                 'id': 'tznuxeo.com'})
+
+        res = mailbox._createMailDirectoryEntry('paf')
+        self.assertEquals(res, None)
+
 
     def test_readDirectoryValue(self):
 
@@ -250,7 +255,7 @@ class MailBoxTestCase(MailTestCase):
     def test_synchronize(self):
         mailbox = self._getMailBox()
         logs = mailbox.synchronize()
-        self.assert_(len(logs)>100)
+        self.assert_(len(logs)>30)
 
     def test_searchUsers(self):
         self.portal.portal_directory = FakeDirectoryTool()
@@ -260,6 +265,63 @@ class MailBoxTestCase(MailTestCase):
 
         results = mailbox.searchDirectoryEntries('tarek')
         self.assertEquals(len(results), 2)
+
+    def test_moveElement(self):
+
+        mailbox = self._getMailBox()
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
+
+        # the user can move a message to another folder
+        # msg_INBOX__950   to_folder_INBOX
+        # msg_INBOX.CVS__950   to_folder_INBOX.LOGS
+        folder1 =  inbox._addFolder('folder1', 'INBOX.folder1')
+        folder1._addMessage('message1', 'message1')
+        self.assertEquals(len(folder1.objectIds()), 1)
+
+        folder2 =  inbox._addFolder('folder2', 'INBOX.folder2')
+
+        target = mailbox.moveElement('msg_INBOX.folder1__message1',
+                                     'to_folder_INBOX.folder2')
+
+        self.assertEquals(target, folder1)
+        self.assertEquals(len(folder1.objectIds()), 0)
+        self.assertEquals(len(folder2.objectIds()), 1)
+
+        # make sure a message that moves where it is already
+        # does not do anything
+        target = mailbox.moveElement('msg_INBOX.folder2__message1',
+                                     'to_folder_INBOX.folder2')
+
+        self.assertEquals(target, None)
+
+        # the user can move folder into another folder
+        # from_folder_INBOX.CVS  to_folder_INBOX.LOGS
+
+        # cannot move a folder into its subfolder or descendant
+        folder11 =  folder1._addFolder('folder11', 'INBOX.folder1.folder11')
+        target = mailbox.moveElement('from_folder_INBOX',
+                                     'to_folder_INBOX.folder1')
+        self.assertEquals(target, None)
+
+        target = mailbox.moveElement('from_folder_INBOX',
+                                     'to_folder_INBOX.folder1.folder11')
+        self.assertEquals(target, None)
+
+        # moving folder 2 into folder 1
+        self.assertEquals(len(inbox.objectIds()), 2)
+        self.assertEquals(folder2.getMailFolder(), inbox)
+        self.assertEquals(len(folder1.objectIds()), 1)
+
+        target = mailbox.moveElement('from_folder_INBOX.folder2',
+                                     'to_folder_INBOX.folder1')
+
+        self.assertEquals(target, inbox)
+
+        self.assertEquals(len(folder1.objectIds()), 2)
+        self.assertEquals(len(inbox.objectIds()), 1)
+        folder2 = getattr(folder1, 'folder2')
+        self.assertEquals(folder2.getMailFolder(), folder1)
+        self.assertEquals(folder2.server_name, 'INBOX.folder1.folder2')
 
 
 def test_suite():

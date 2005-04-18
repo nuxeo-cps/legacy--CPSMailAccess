@@ -87,6 +87,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.setupDefaultAddressBooks()
         self.setupMembersSchemasAndLayouts()
         self.addWMAction()
+        self.checkExistingMailBoxes()
         self.setupTranslations()
         self.finalize()
         self.log("End of Install/Update : CPSMailAccess Product")
@@ -657,6 +658,17 @@ class CPSMailAccessInstaller(CPSInstaller):
                   }
         self.deleteActions({'portal_subscriptions': ['notify_content',]})
         self.verifyAction('portal_subscriptions', **action)
+
+    def checkExistingMailBoxes(self):
+        """ checks mailbox parameters """
+        wm = self.portal.portal_webmail
+        dp = wm.default_connection_params
+        for id, box in wm.objectItems():
+            for item in dp.keys():
+                if not box._connection_params.has_key(item):
+                    box._connection_params[item] = dp[item]
+
+
 
 def install(self):
     """Installation is done here.
