@@ -274,3 +274,68 @@ msgstr ""
 msgid "cpsma_objects"
 msgstr ""
 
+msgid "cpsma_filter"
+msgstr ""
+
+msgid "Filters for incoming messages"
+msgstr ""
+
+msgid "Element"
+msgstr ""
+
+msgid "Condition"
+msgstr ""
+
+msgid "Value"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "Action param"
+msgstr ""
+
+msgid "Subject"
+msgstr ""
+
+msgid "Sender"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "Cc"
+msgstr ""
+
+msgid "contains"
+msgstr ""
+
+msgid "does not contains"
+msgstr ""
+
+msgid "begin with"
+msgstr ""
+
+msgid "ends with"
+msgstr ""
+
+msgid "is"
+msgstr ""
+
+msgid "isn't"
+msgstr ""
+
+msgid "move to"
+msgstr ""
+
+msgid "copy to"
+msgstr ""
+
+msgid "label with"
+msgstr ""
+
+msgid "set junk status"
+msgstr ""
+
+msgid "Need an action param"
+msgstr ""

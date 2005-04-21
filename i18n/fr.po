@@ -125,7 +125,7 @@ msgid "cpsma_save_message"
 msgstr "Enregistrer"
 
 msgid "cpsma_init_editor"
-msgstr "Initialiser"
+msgstr "Annuler"
 
 msgid "cpsma_empty_trash"
 msgstr "Vider la poubelle"
@@ -273,3 +273,68 @@ msgstr "Rédindexation du catalogue"
 msgid "cpsma_objects"
 msgstr "Messages indexés"
 
+msgid "cpsma_filter"
+msgstr "Filtrer"
+
+msgid "Filters for incoming messages"
+msgstr "Filtres pour les messages entrants"
+
+msgid "Element"
+msgstr "Elément"
+
+msgid "Condition"
+msgstr "Condition"
+
+msgid "Value"
+msgstr "Valeur"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Action param"
+msgstr "Paramètre"
+
+msgid "Subject"
+msgstr "Sujet"
+
+msgid "Sender"
+msgstr "Expéditeur"
+
+msgid "To"
+msgstr "A"
+
+msgid "Cc"
+msgstr "Cc"
+
+msgid "contains"
+msgstr "contient"
+
+msgid "does not contains"
+msgstr "ne contient pas"
+
+msgid "begin with"
+msgstr "commence par"
+
+msgid "ends with"
+msgstr "fini par"
+
+msgid "is"
+msgstr "est"
+
+msgid "isn't"
+msgstr "n'est pas"
+
+msgid "move to"
+msgstr "déplacer dans"
+
+msgid "copy to"
+msgstr "copier dans"
+
+msgid "label with"
+msgstr "étiqueter"
+
+msgid "set junk status"
+msgstr "pourriel ?"
+
+msgid "Need an action param"
+msgstr "L'action demande un paramètre"
