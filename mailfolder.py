@@ -58,7 +58,8 @@ class MailFolder(BTreeFolder2):
     mailbox = None
     message_count = 0
     folder_count = 0
-    loose_sync = True
+    loose_sync = False
+    fetch_size = 50
 
     def __init__(self, uid=None, server_name='""'):
         """
@@ -437,7 +438,6 @@ class MailFolder(BTreeFolder2):
         fetched = connector.fetch(server_name, uid, '(BODY.PEEK[%s])' % str(part))
         return fetched
 
-
     def _loadMessageStructureFromServer(self, server_name, uid, msg_flags,
                                         msg_headers, msg_size, msg_object,
                                         connector):
@@ -446,10 +446,13 @@ class MailFolder(BTreeFolder2):
         skip = False
         part_num = 1
         structure = connector.getMessageStructure(server_name, uid)
+        if len(structure) == 1:
+            structure = structure[0]
+
         part_infos =  structure
 
         if part_infos[0] in ('related', 'relative', 'mixed', 'alternative',
-                             'signed'):
+                                    'signed'):
             # we don't want to load attached files
             # we just want to get their names
             if part_infos[0] == 'mixed':
@@ -507,19 +510,20 @@ class MailFolder(BTreeFolder2):
 
         try:
             msg_body = connector.fetch(server_name, uid,
-                                       '(BODY.PEEK[%s])' % part_num)
+                                                        '(BODY.PEEK[%s])' % part_num)
         except ConnectionError:
             skip = True
 
         if not skip:
             msg_object.loadMessage(msg_flags, msg_headers, msg_body,
-                            part_infos)
+                                                  part_infos)
             msg_object.size = msg_size
 
         return skip
 
     def _synchronizeFolder(self, return_log=False, indexStack=[]):
         """ See interfaces.IMailFolder """
+        LOG('sync', INFO, 'synchronizing %s' % self.id)
         self._clearCache()
         sync_states = {}
         log = []
@@ -541,95 +545,127 @@ class MailFolder(BTreeFolder2):
             # deleted form the server
             uids = []
 
-        LOG('synchro', INFO, 'synchronizing %s' % self.server_name)
-        i = 0
-        y = 0
-        len_ = len(uids)
-        for uid in uids:
-            sync_id = '%s.%s' % (self.server_name, uid)
-            msg = self.findMessageByUid(uid)
 
-            if msg is not None and self.loose_sync:
-                sync_states[sync_id] = True
-                continue
+        if self.loose_sync:
+            new_list = []
+            for part in uids:
+                msg = self.findMessageByUid(part)
+                if msg is not None:
+                    sync_id = '%s.%s' % (self.server_name, part)
+                    sync_states[sync_id] = True
+                else:
+                    new_list.append(part)
+            uids = new_list
 
+        # treating n by n
+        if len(uids) <= self.fetch_size:
+            bloc = [uids]
+        else:
+            bloc = []
+            i = 0
+            while i < len(uids):
+                if i + self.fetch_size < len(uids):
+                    i_end = i +self.fetch_size
+                else:
+                    i_end = len(uids)
+
+                bloc.append(uids[i:i_end])
+                i = i_end
+
+        for sub_bloc in bloc:
+            uid_sequence = ','.join(sub_bloc)
             # gets flags, size and headers
             try:
-                fetched = connector.fetch(self.server_name, uid,\
-                    '(FLAGS RFC822.SIZE RFC822.HEADER)')
+                fetched = connector.fetch(self.server_name, uid_sequence,\
+                                           '(FLAGS RFC822.SIZE RFC822.HEADER)')
                 mailfailed = False
             except ConnectionError:
+                fetched = []
                 mailfailed = True
+            # now syncing each message
+            start_time = time.time()
+            i = 0
+            y = 0
+            if len(sub_bloc) == 1:
+                fetched = [fetched]
 
-            msg_flags = fetched[0]
-            msg_size = fetched[1]
-            msg_headers = None
-            digest = None
-
-            if not mailfailed:
-                msg_headers = fetched[2]
-                digest = self._createKey(msg_headers)
-
-            # comparing digest with msg digest
-            if msg is not None:
-                if msg.digest != digest:
-                    # same uid but not same message
-                    digest = msg.digest
-                    mailbox.addMailToCache(msg, digest)
-                    # XXX need to remove for catalogs
-                    self.manage_delObjects([msg.getId()])
-                    msg = None
-                else:
-                    sync_states[sync_id] = True
-                    continue
-            else:
-                msg = mailbox.getMailFromCache(digest, remove=True)
-
-            if msg is None and not mailfailed:
-                msg = self._addMessage(uid, digest, index=False)
-
-                skip = self._loadMessageStructureFromServer(self.server_name,
-                                                            uid, msg_flags,
-                                                            msg_headers,
-                                                            msg_size, msg,
-                                                            connector)
-
-                if not skip:
-                    log.append('adding message %s in %s' % (uid, self.server_name))
-                    # XXX todo : laod filelist
-                    indexStack.append(msg)
-                    self._updateDirectories(msg)
-
-                    # XXX opti might want to call this before
-                    # creating the message
-                    filter_engine.filterMessage(msg)
-                else:
-                    self.manage_delObjects([msg.getId()])
-            else:
-                # Message was in cache, adding it to self
+            for uid in sub_bloc:
+                fetched_mail = fetched[uid]
+                sync_id = '%s.%s' % (self.server_name, uid)
+                msg = self.findMessageByUid(uid)
+                msg_flags = fetched_mail[0]
+                msg_size = fetched_mail[1]
+                msg_headers = None
+                digest = None
                 if not mailfailed:
-                    log.append('moving message %s in %s' % (uid,
-                                                            self.server_name))
-                    self._setObject(msg.getId(), msg)
+                    msg_headers = fetched_mail[2]
+                    subs= ('Date', 'Subject', 'From', 'To', 'Cc', 'Message-ID',
+                                'Mailing-List')
+                    sub_keys = {}
+                    for sub in subs:
+                        if msg_headers.has_key(sub):
+                            sub_keys[sub] = msg_headers[sub]
+                    digest = self._createKey(sub_keys)
+
+                # comparing digest with msg digest
+                if msg is not None:
+                    if msg.digest != digest:
+                        # same uid but not same message
+                        old_digest = msg.digest
+                        mailbox.addMailToCache(msg, old_digest)
+                        # XXX need to remove for catalogs
+                        self.manage_delObjects([msg.getId()])
+                        msg = None
+                    else:
+                        sync_states[sync_id] = True
+                        continue
                 else:
-                    log.append('failed to get message %s in %s' \
-                                % (uid, self.server_name))
+                    msg = mailbox.getMailFromCache(digest, remove=True)
 
-            sync_states[sync_id] = True
-            if msg is not None:
-                self._checkFlags(msg, msg_flags)
-            if i > 299:
-                i = 0
-                get_transaction().commit()  # implicitly usable without import
-                get_transaction().begin()   # implicitly usable without import
-                LOG('synchro', INFO, 'commited %d/%d' % (y, len_))
-            else:
-                i += 1
-            y = y + 1
+                if msg is None and not mailfailed:
+                    msg = self._addMessage(uid, digest, index=False)
+                    skip = self._loadMessageStructureFromServer(self.server_name,
+                                                                                         uid, msg_flags,
+                                                                                         msg_headers,
+                                                                                         msg_size, msg,
+                                                                                         connector)
 
-            #total = time.time() - start
-            #LOG('synchro', INFO, '  %0.2f' % (total))
-            # print '%s.%s' % (str(self.server_name), str(uid))
+                    if not skip:
+                        log.append('adding message %s in %s' % (uid, self.server_name))
+                        # XXX todo : laod filelist
+                        indexStack.append(msg)
+                        #self._updateDirectories(msg)
+
+                        # XXX opti might want to call this before
+                        # creating the message
+                        filter_engine.filterMessage(msg)
+                    else:
+                        self.manage_delObjects([msg.getId()])
+                else:
+                    # Message was in cache, adding it to self
+                    if not mailfailed:
+                        log.append('moving message %s in %s' % (uid,
+                                                                self.server_name))
+                        self._setObject(msg.getId(), msg)
+                    else:
+                        log.append('failed to get message %s in %s' \
+                                    % (uid, self.server_name))
+
+                sync_states[sync_id] = True
+                if msg is not None:
+                    self._checkFlags(msg, msg_flags)
+                if i > 299:
+                    i = 0
+                    get_transaction().commit()  # implicitly usable without import
+                    get_transaction().begin()   # implicitly usable without import
+                    LOG('sync', INFO, '%s %s/%s ' % (self.id,str(y)/str(len(sub_bloc))))
+                else:
+                    i += 1
+
+                y += 1
+            get_transaction().commit()  # implicitly usable without import
+            get_transaction().begin()   # implicitly usable without import
+
         # now clear messages in zodb that appears to be
         # deleted from the directory
         # and put them in the cache
@@ -639,7 +675,6 @@ class MailFolder(BTreeFolder2):
                 mailbox.addMailToCache(message, digest)
                 # XXX need to remove for catalogs
                 self.manage_delObjects([message.getId()])
-
         # used to prevent swapping
         get_transaction().commit()    # implicitly usable without import
         get_transaction().begin()     # implicitly usable without import
