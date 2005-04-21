@@ -136,8 +136,6 @@ class MailRenderer:
                 html = True
             return html, self.render(res, part_type, part_cte)
 
-
-
     def renderBody(self, mail):
         """ Renders the mail given body part
 
