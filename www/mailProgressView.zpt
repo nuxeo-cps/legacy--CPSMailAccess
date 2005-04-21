@@ -1,7 +1,7 @@
 <html metal:use-macro="here/main_template/macros/master"
       tal:define="response request/RESPONSE">
 
-  <metal:block metal:fill-slot="header">
+  <metal:block metal:fill-slot="head_slot">
       <meta http-equiv="refresh" content="1; URL=synchronize.html">
   </metal:block>
   <metal:block metal:fill-slot="main">
