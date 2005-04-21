@@ -232,15 +232,20 @@ class IMAPConnection(BaseConnection):
 
     def extractResult(self, fullquery, query, results):
         """ extracts a result from a block of results """
-        # at ths time it's done "case by case"
+        # at this time it's done "case by case"
         fullquery = fullquery[1:-1]
         fullquery = fullquery.split(' ')
         index = fullquery.index(query)
-        results = results[0]
+        if isinstance(results, tuple):
+            results = list(results)
+        #results = results[0]
 
         if query == 'FLAGS':
             try:
-                raw = results[0]
+                if isinstance(results, list):
+                    raw = results[0]
+                else:
+                    raw =results
             except TypeError:
                 return []
             # todo use regexprs
@@ -254,7 +259,10 @@ class IMAPConnection(BaseConnection):
 
         if query == 'RFC822.SIZE':
             try:
-                raw = results[0]
+                if isinstance(results, list):
+                    raw = results[0]
+                else:
+                    raw =results
             except TypeError:
                 return ''
             # todo use regexpr
@@ -264,7 +272,11 @@ class IMAPConnection(BaseConnection):
             return raw[:out]
 
         if query == 'RFC822.HEADER':
-            raw = results[1]
+            if isinstance(results, list):
+                raw = results[1]
+            else:
+                raw =results
+
             raw_parts = raw.split('\r\n')
             i  = 0
             returned = {}
@@ -292,6 +304,8 @@ class IMAPConnection(BaseConnection):
             # todo
             # parse message
             # XXX should be use by all sub cases
+            if isinstance(results, list):
+                results = results[0]
 
             # extract subpart if needed
             cindexstart = results.find('%s (' % query)
@@ -308,9 +322,12 @@ class IMAPConnection(BaseConnection):
             return result
 
         if query.startswith('BODY.PEEK'):
+            if isinstance(results, list):
+                results = results[0]
             if len(results) < 2:
                 return None
-            return results[1]
+            res = results[1]
+            return res
 
         raise NotImplementedError('%s : %s' % (query, results))
 
@@ -349,7 +366,6 @@ class IMAPConnection(BaseConnection):
             self._connection.select(mailbox)
         except (IMAP4.error, IMAP4_SSL.error):
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
-
         try:
             imap_result =  self._connection.fetch(message_number, message_parts)
         except self._connection.error:
@@ -361,15 +377,34 @@ class IMAPConnection(BaseConnection):
 
         if imap_result[0] == 'OK':
             imap_raw = imap_result[1]
-            results = []
-            i = 0
-            for query in query_list:
-                raw_result = self.extractResult(message_parts, query, imap_raw)
-                results.append(raw_result)
-                i += 1
+            results = {}
+            messages_queried = message_number.split(',')
+            u = 0
+            if len(messages_queried) == 1:
+                imap_raw = [imap_raw]
+            else:
+                fimap_raw = []
+                i = 1
+                while i < len(imap_raw):
+                    fimap_raw.append(list(imap_raw[i-1]))
+                    i += 2
+                imap_raw = fimap_raw
 
-        if len(results) == 1:
-            return results[0]
+            for message in messages_queried:
+                sub_raw = imap_raw[u]
+                sub_result = []
+                i = 0
+                for query in query_list:
+                    raw_result = self.extractResult(message_parts, query, sub_raw)
+                    sub_result.append(raw_result)
+                    i += 1
+                results[message] = sub_result
+                u += 1
+
+        if len(results.keys()) == 1:
+            results = results.values()[0]
+            if isinstance(results, list) and len(results) == 1:
+                results = results[0]
         return results
 
     def search(self, mailbox, charset, *criteria):
