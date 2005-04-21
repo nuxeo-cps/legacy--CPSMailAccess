@@ -75,7 +75,7 @@ class MailMessage(Folder):
         self._setStore(store)
 
     def loadMessage(self, flags=None, headers=None, body='',
-                    structure_infos=None):
+                              structure_infos=None):
 
         self._setStore(Message.Message())
         store = self._getStore()
@@ -255,7 +255,7 @@ class MailMessage(Folder):
                 file.close()
 
             file = {'filename' : file.filename, 'mimetype': mime_type,
-                    'data' : part_file}
+                       'data' : part_file}
 
             files.append(file)
 
