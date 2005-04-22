@@ -1075,6 +1075,7 @@ class MailBoxView(MailFolderView):
         """ synchronizes mailbox """
         # todo : block a new synchronization if it's already
         # XXX inside
+        LOG('synchro', INFO, 'start')
         if isinstance(light, str):
             light = light == '1'
         if not hasattr(self, 'synchronizing'):
@@ -1213,7 +1214,17 @@ class MailBoxFiltersView(BrowserView):
                 self.request.response.redirect(
                     'filters.html?portal_status_message=%s' % psm)
 
+    def moveFilter(self, index, direction):
+        """ moves a filter given a direction
 
+                0 : up
+                1: down
+        """
+        mailbox = self.context
+        filters = mailbox.getFilters()
+        filters.moveFilter(index, direction)
+        if self.request is not None:
+            self.request.response.redirect('filters.html')
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())
