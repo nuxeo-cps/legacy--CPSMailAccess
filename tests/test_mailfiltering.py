@@ -20,7 +20,7 @@ import unittest
 from zope.testing import doctest
 from basetestcase import MailTestCase
 
-from Products.CPSMailAccess.mailfiltering import MailFiltering
+from Products.CPSMailAccess.mailfiltering import MailFiltering, ZODBMailBackEnd
 
 class MailFilteringTestCase(MailTestCase):
 
@@ -187,6 +187,33 @@ class MailFilteringTestCase(MailTestCase):
 
         self.assertEquals(len(tests.objectIds()), 2)
         self.assertEquals(len(ttests.objectIds()), 1)
+
+    def test_moveFilter(self):
+        ob = MailFiltering()
+        ob.addFilter('subjet', 'condition', 'value', 'action', 'action_param')
+        ob.addFilter('subjet', 'condition', 'vaezrlue', 'action2', 'action_param')
+        ob.addFilter('subjet', 'condition', 'valuze', 'action2', 'action_param')
+        self.assertEquals(len(ob._filters), 3)
+
+        self.assertEquals(ob._filters[2]['value'], 'valuze')
+        ob.moveFilter(2,  0)
+        self.assertEquals(ob._filters[1]['value'], 'valuze')
+        ob.moveFilter(1,  0)
+        self.assertEquals(ob._filters[0]['value'], 'valuze')
+
+    def test_moveFilterPersistent(self):
+
+        ob = MailFiltering(ZODBMailBackEnd())
+        ob.addFilter('subjet', 'condition', 'value', 'action', 'action_param')
+        ob.addFilter('subjet', 'condition', 'vaezrlue', 'action2', 'action_param')
+        ob.addFilter('subjet', 'condition', 'valuze', 'action2', 'action_param')
+        self.assertEquals(len(ob._filters), 3)
+
+        self.assertEquals(ob._filters[2]['value'], 'valuze')
+        ob.moveFilter(2,  0)
+        self.assertEquals(ob._filters[1]['value'], 'valuze')
+        ob.moveFilter(1,  0)
+        self.assertEquals(ob._filters[0]['value'], 'valuze')
 
 def test_suite():
     return unittest.TestSuite((

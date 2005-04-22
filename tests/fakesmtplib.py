@@ -20,6 +20,8 @@
 """
 is_fake = 1
 
+class SMTPException(Exception):
+    pass
 
 class SMTP:
     host = ''
