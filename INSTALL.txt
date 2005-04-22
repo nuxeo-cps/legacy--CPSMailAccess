@@ -35,7 +35,7 @@ TextIndexNG2::
 Edit your $INSTANCE/etc/zope.conf to add the following path declarations::
 
   path /opt/ZopeX3-3.0.0/lib/python
-  path /home/zopes/cps.demo.nuxeo.com/Products/CPSMailAccess
+  path $INSTANCE/Products/CPSMailAccess
 
 Then you can restart Zope and add an external method in your CPS instance to
 install CPSMailAccess::
