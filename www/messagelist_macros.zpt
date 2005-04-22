@@ -144,18 +144,22 @@
           </tal:block>
         </table>
         <div class="batcher" tal:condition="python:nbpages &gt; 1">
-          pages :
+          <span tal:replace="page" />/<span tal:replace="nbpages" />
           <tal:block tal:repeat="i python:range(nbpages)">
+            <tal:block tal:define="label python:test(i==0, '<<', str(i+1));
+                                               label python:test(i==nbpages-1, '>>', label);">
+
             <tal:block tal:condition="python:i+1==int(page)">
-              <span tal:replace="python:i+1"/>
+              <span tal:replace="label"/>
             </tal:block>
             <tal:block tal:condition="python:i+1!=int(page)">
 
               <a tal:attributes="href
               python:here.absolute_url()+'/view?page=%s&nb_items=%s&sort_with=%s&sort_asc=%s'
               %(i+1, nb_items, sort_with, sort_asc)">
-                <span tal:replace="python:i+1"/>
+                <span tal:replace="label"/>
               </a>
+            </tal:block>
             </tal:block>
           </tal:block>
         </div>
