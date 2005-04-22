@@ -1,0 +1,48 @@
+$Id$
+
+INSTALLATION NOTES
+==================
+
+To install CPSMailAccess you will need:
+
+- a working Zope2.7.x + CPS 3.3.x (x>3)
+- ZopeX3-3.0.0
+- Five : http://codespeak.net/z3/five/ from the svn repo 
+- TextIndexNG2 : http://www.zope.org/Members/ajung/TextIndexNG/
+- rdflib (used by zemantic included in CPSMailAccess):
+    http://rdflib.net/
+
+Install the python package rdflib on your python installation, ie the one
+Zope2.7 actually use with the usual command::
+
+  $ python setup.py install
+
+Please install ZopeX3-3.0.0 on your system (usually in /opt/ZopeX3-3.0.0) with
+the python version you use for Zope2.7 and CPS, e.g.::
+
+  $ ./configure --prefix /opt/ZopeX3-3.0.0 --with-python /usr/bin/python
+  $ make
+  $ make install
+  $ make check
+
+Put Five, TextIndexNG2 and CPSMailAccess in your $INSTANCE/Products and build
+TextIndexNG2::
+
+  $ cd TextIndexNG2
+  $ python setup.py build
+  $ python setup.py install
+
+Edit your $INSTANCE/etc/zope.conf to add the following path declarations::
+
+  path /opt/ZopeX3-3.0.0/lib/python
+  path /home/zopes/cps.demo.nuxeo.com/Products/CPSMailAccess
+
+Then you can restart Zope and add an external method in your CPS instance to
+install CPSMailAccess::
+
+   Id            : cpsmailaccess_installer
+   Title         : whatever
+   Module Name   : CPSMailAccess.install
+   Function Name : install
+
+And run it.
