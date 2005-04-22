@@ -217,7 +217,6 @@ class IMAPConnection(BaseConnection):
 
         if imap_result[0] == 'OK':
             imap_raw = imap_result[1]
-
             return imap_raw
         return result
 
@@ -242,13 +241,15 @@ class IMAPConnection(BaseConnection):
 
         if query == 'FLAGS':
             try:
-                if isinstance(results, list):
+                if isinstance(results, list) or isinstance(results, tuple):
                     raw = results[0]
                 else:
                     raw =results
             except TypeError:
                 return []
             # todo use regexprs
+            if isinstance(raw, tuple):
+                raw = raw[0]
             index = raw.find('FLAGS (')+7
             if index < 7:
                 return ''
@@ -259,24 +260,25 @@ class IMAPConnection(BaseConnection):
 
         if query == 'RFC822.SIZE':
             try:
-                if isinstance(results, list):
+                if isinstance(results, list) or isinstance(results, tuple) :
                     raw = results[0]
                 else:
                     raw =results
             except TypeError:
                 return ''
             # todo use regexpr
+            if isinstance(raw, tuple):
+                raw = raw[0]
             index = raw.find('RFC822.SIZE ')+12
             raw = raw[index:]
             out = raw.find(' ')
             return raw[:out]
 
         if query == 'RFC822.HEADER':
-            if isinstance(results, list):
+            if isinstance(results, list) or isinstance(results, tuple) :
                 raw = results[1]
             else:
                 raw =results
-
             raw_parts = raw.split('\r\n')
             i  = 0
             returned = {}
@@ -349,6 +351,11 @@ class IMAPConnection(BaseConnection):
     def fetch(self, mailbox, message_number, message_parts):
         """ see interface for doc
         """
+        # fetch works for unique message_number, in integer or string
+        # or with several numbers, like : '1,2,3'
+        if isinstance(message_number, int):
+            message_number = str(message_number)
+
         query_list = self.partQueriedList(message_parts)
         if len(query_list) == 0:
             return {}
@@ -381,7 +388,10 @@ class IMAPConnection(BaseConnection):
             messages_queried = message_number.split(',')
             u = 0
             if len(messages_queried) == 1:
-                imap_raw = [imap_raw]
+                if not isinstance(imap_raw, list):
+                    imap_raw = [imap_raw]
+                else:
+                    imap_raw = [imap_raw[0]]
             else:
                 fimap_raw = []
                 i = 1
@@ -400,7 +410,6 @@ class IMAPConnection(BaseConnection):
                     i += 1
                 results[message] = sub_result
                 u += 1
-
         if len(results.keys()) == 1:
             results = results.values()[0]
             if isinstance(results, list) and len(results) == 1:
