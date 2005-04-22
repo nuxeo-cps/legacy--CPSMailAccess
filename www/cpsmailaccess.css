@@ -466,4 +466,23 @@ input.addFilter {
   background-position: left center;
   cursor: hand;
   border: none;
+  width: 12px;
+}
+
+input.moveFilterDown {
+  background-image: url('cma_down.png');
+  background-repeat: no-repeat;
+  background-position: left center;
+  cursor: hand;
+  border: none;
+  width: 12px;
+}
+
+input.moveFilterUp {
+  background-image: url('cma_up.png');
+  background-repeat: no-repeat;
+  background-position: left center;
+  cursor: hand;
+  border: none;
+  width: 12px;
 }
