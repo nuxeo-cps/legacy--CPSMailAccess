@@ -85,6 +85,24 @@ class NormalBackEnd(UserList):
     def deleteFilter(self, index):
         del self[index]
 
+    def moveFilter(self, index, direction):
+        """ moves a filter given a direction
+
+        Done if possible,
+            0 : up
+            1: down
+        """
+        if direction == 1:
+            if index < self.countFilters() - 1 and index >= 0:
+                switch = self[index+1]
+                self[index+1] = self[index]
+                self[index] = switch
+        else:
+            if index > 0  and index < self.countFilters():
+                switch = self[index-1]
+                self[index-1] = self[index]
+                self[index] = switch
+
 class MailFiltering:
 
     def __init__(self, backend=None):
@@ -253,6 +271,15 @@ class MailFiltering:
                 if self._actionFilter(element, message):
                     break
 
+    def moveFilter(self, index, direction):
+        """ moves a filter given a direction
+
+                0 : up
+                1: down
+        """
+        self._filters.moveFilter(index, direction)
+
+
 #
 # persistent Zope backend
 #
@@ -272,6 +299,24 @@ class ZODBMailBackEnd(PersistentList):
 
     def deleteFilter(self, index):
         del self[index]
+
+    def moveFilter(self, index, direction):
+        """ moves a filter given a direction
+
+        Done if possible,
+            0 : up
+            1: down
+        """
+        if direction == 1:
+            if index < self.countFilters() - 1 and index >= 0:
+                switch = self[index+1]
+                self[index+1] = self[index]
+                self[index] = switch
+        else:
+            if index > 0  and index < self.countFilters():
+                switch = self[index-1]
+                self[index-1] = self[index]
+                self[index] = switch
 
 class ZMailFiltering(MailFiltering, Persistent):
 
