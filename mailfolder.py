@@ -587,7 +587,7 @@ class MailFolder(BTreeFolder2):
             i = 0
             y = 0
             if len(sub_bloc) == 1:
-                fetched = [fetched]
+                fetched = {sub_bloc[0] : fetched}
 
             for uid in sub_bloc:
                 fetched_mail = fetched[uid]
