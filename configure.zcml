@@ -241,6 +241,14 @@
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailbox.MailBoxFiltersView"
+      name="moveFilter.html"
+      attribute="moveFilter"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxFiltersView"
       name="removeFilter.html"
       attribute="removeFilter"
       permission="zope2.View"
