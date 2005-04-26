@@ -583,9 +583,6 @@
       permission="zope2.View"
       />
 
-
-  <include file="cpsdefault.zcml" />
-
   <browser:resource
     file="www/cpsmailaccess.css"
     name="cpsmailaccess.css"
