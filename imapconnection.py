@@ -221,23 +221,13 @@ class IMAPConnection(BaseConnection):
         return result
 
     def partQueriedList(self, message_parts):
-        """ creates a list of part queried
-        """
-        len_mp = len(message_parts)
-        if len_mp <= 2:
-            return []
-        mp = message_parts[1:len_mp-1]
-        return mp.split(' ')
+        """ creates a list of part queried """
+        return self._extractCommands(message_parts)
 
     def extractResult(self, fullquery, query, results):
         """ extracts a result from a block of results """
-        # at this time it's done "case by case"
-        fullquery = fullquery[1:-1]
-        fullquery = fullquery.split(' ')
-        index = fullquery.index(query)
         if isinstance(results, tuple):
             results = list(results)
-        #results = results[0]
 
         if query == 'FLAGS':
             try:
@@ -275,30 +265,12 @@ class IMAPConnection(BaseConnection):
             return raw[:out]
 
         if query == 'RFC822.HEADER':
-            if isinstance(results, list) or isinstance(results, tuple) :
+            if isinstance(results, list) or isinstance(results, tuple):
                 raw = results[1]
             else:
-                raw =results
-            raw_parts = raw.split('\r\n')
-            i  = 0
-            returned = {}
-            for raw_part in raw_parts:
-                raw_part = raw_part.strip()
-                if raw_part == '':
-                    continue
-                first_semicolumn = raw_part.find(':')
-                if first_semicolumn == -1:
-                    first_semicolumn = raw_part.find('=')
-                #raw_parts = raw_part.split(':')
-                if first_semicolumn > -1:
-                    raw_name = raw_part[0:first_semicolumn].strip()
-                    raw_data = raw_part[first_semicolumn+1:].strip()
-                else:
-                    raw_name = raw_part
-                    raw_data = ''
-                returned[raw_name] = raw_data
-                i += 1
-            return returned
+                raw = results
+            return self._extractHeaders(raw)
+
         if query == 'RFC822':
             return results[0]
 
@@ -324,16 +296,24 @@ class IMAPConnection(BaseConnection):
             return result
 
         if query.startswith('BODY.PEEK'):
-            if isinstance(results, list):
-                results = results[0]
-            if len(results) < 2:
-                return None
-            res = results[1]
+            parts = re.match(r'(BODY.PEEK\[)(.*)(\])', query).groups()
+            command = parts[1]
+
+            if command.startswith('HEADER.FIELDS'):
+                res = self._extractHeaders(results[1])
+            else:
+                if isinstance(results, list) and results[1] == ')':
+                    res = results[0][1]
+                else:
+                    if len(results) < 2:
+                        return None
+                    res = results[1]
             return res
 
         raise NotImplementedError('%s : %s' % (query, results))
 
     def _findClosingParenthesis(self, text, start):
+        """ closing-finder pattern """
         opened = 0
         i = start + 1
         while i < len(text):
@@ -361,7 +341,7 @@ class IMAPConnection(BaseConnection):
             return {}
 
         self._respawn()
-        results =  []
+        results = {}
 
         # XXX forcing each time but
         # we should select mailbox once for all
@@ -400,12 +380,16 @@ class IMAPConnection(BaseConnection):
                     i += 2
                 imap_raw = fimap_raw
 
+            if len(messages_queried) != len(imap_raw):
+                raise '%d <-> %d %s' % (len(messages_queried), len(imap_raw), str(imap_raw))
+
             for message in messages_queried:
                 sub_raw = imap_raw[u]
                 sub_result = []
                 i = 0
                 for query in query_list:
-                    raw_result = self.extractResult(message_parts, query, sub_raw)
+                    raw_result = self.extractResult(message_parts, query,
+                                                    sub_raw)
                     sub_result.append(raw_result)
                     i += 1
                 results[message] = sub_result
@@ -608,12 +592,12 @@ class IMAPConnection(BaseConnection):
                 except ValueError:
                     return element.strip()
 
-    def getMessagePart(self, mailbox, message_number, part_number): #xxxxxxxxxxxxxxxxxxxxx
+    def getMessagePart(self, mailbox, message_number, part_number):
         """ retrieves a message part """
         return self.fetch(mailbox, message_number,
                           '(BODY.PEEK[%s])' % part_number)
 
-    def getMessageStructure(self, mailbox, message_number):        #xxxxxxxxxxxxxxxxxxxxx
+    def getMessageStructure(self, mailbox, message_number):
         return self.fetch(mailbox, message_number, '(BODY)')
 
     def _extractInfos(self, infos, part):
@@ -628,6 +612,65 @@ class IMAPConnection(BaseConnection):
         structure = self.getMessageStructure(mailbox, message_number)
         return self._extractInfos(structure, part_number)
 
+    def _extractCommands(self, command_sequence):
+        """ extracts from a sequence commands
+
+        XXX should use regexpr here
+        """
+        command_sequence = command_sequence.strip()
+        if command_sequence == '' or len(command_sequence) <= 2:
+            return []
+
+        if command_sequence[0] == '(' and command_sequence[-1] == ')':
+            command_sequence = command_sequence[1:-1]
+
+        start = stop = i = 0
+        commands = []
+        level = 0
+        current_command = ''
+        added_word = False
+        while i <= len(command_sequence):
+            if i == len(command_sequence):
+                command = command_sequence[start:stop]
+                commands.append(command)
+            else:
+                if command_sequence[i] == ' ':
+                    if level == 0:
+                        command = command_sequence[start:stop]
+                        if command[0] == '(' and command[1] == ')':
+                            command = command[1:-1]
+                        commands.append(command)
+                        current_command = ''
+                        start = stop + 1
+                elif command_sequence[i] == '[': level += 1
+                elif command_sequence[i] == ']': level -= 1
+            stop += 1
+            i += 1
+
+        return commands
+
+    def _extractHeaders(self, raw_headers):
+        """ extracts headers retrieved from server """
+        raw_parts = raw_headers.split('\r\n')
+        i  = 0
+        returned = {}
+        for raw_part in raw_parts:
+            raw_part = raw_part.strip()
+            if raw_part == '':
+                continue
+            first_semicolumn = raw_part.find(':')
+            if first_semicolumn == -1:
+                first_semicolumn = raw_part.find('=')
+            #raw_parts = raw_part.split(':')
+            if first_semicolumn > -1:
+                raw_name = raw_part[0:first_semicolumn].strip()
+                raw_data = raw_part[first_semicolumn+1:].strip()
+            else:
+                raw_name = raw_part
+                raw_data = ''
+            returned[raw_name] = raw_data
+            i += 1
+        return returned
 
 class CachedIMAPConnection(IMAPConnection):
 
