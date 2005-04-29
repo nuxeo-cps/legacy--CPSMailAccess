@@ -112,7 +112,7 @@ def decodeHeader(header, encoding='ISO8859-15'):
     try:
         hu = make_header(cdecoded_header)
         hu = hu.__unicode__()
-    except encoding_exceptions.LookupError:
+    except (encoding_exceptions.LookupError, UnicodeDecodeError):
         # unknown encoding or uninstalled (iso-2022-jp maybe)
         # we'll do iso here
         cdecoded_header = []
