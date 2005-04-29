@@ -138,6 +138,23 @@ class MailMessageView(BaseMailMessageView):
                 if folder is not None:
                     folder.onFlagChanged(mail, 'seen', 1)
                 """
+            if mail.instant_load:
+                # loading mail on-the fly
+                # xxx todo: outsource this
+                folder = mail.getMailFolder()
+                if folder is not None:
+                    server_name = folder.server_name
+                    uid = mail.uid
+                    msg_flags = None
+                    msg_headers = None
+                    msg_size = mail.size
+                    connector = folder._getconnector()
+                    folder._loadMessageStructureFromServer(server_name, uid,
+                                                           None, None, None,
+                                                           mail, connector,
+                                                           afterload=True)
+                    mail.instant_load = True
+
             body = self._bodyRender(mail)
         else:
             body = ''
