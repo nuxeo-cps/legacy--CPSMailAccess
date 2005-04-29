@@ -261,6 +261,17 @@ class IMAPConnectionTestCase(MailTestCase):
         self.assertEquals(res, 37)
         self.assertEquals(text[2:37], 'ui(uoihuoiih(jhhghg(ohouh)  )guo)ig')
 
+    def test_extractCommands(self):
+        box = self._getMailBox()
+        ob = self.makeConnection()
+
+        headers = 'From To Cc Subject Date Message-ID In-Reply-To Content-Type'
+        commands = '(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS(%s)])' % headers
+
+        extracted_commands = ob._extractCommands(commands)
+        self.assertEquals(extracted_commands, ['FLAGS', 'RFC822.SIZE',
+                                               'BODY.PEEK[HEADER.FIELDS(%s)]'
+                                                % headers])
 
 def test_suite():
     return unittest.TestSuite((

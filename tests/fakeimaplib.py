@@ -51,10 +51,14 @@ class IMAP4:
         pass
 
     def fetch(self, message_number, message_part):
-        """ XXX we willuse Data subdirectory later here
+        """ XXX we will use Data subdirectory later here
         """
         message_number = str(message_number)
         if message_number == '1':
+            if message_part.startswith('(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS('):
+
+                return ('OK', [('1 (FLAGS (\\Answered \\Seen) RFC822.SIZE 1766 BODY[HEADER.FIELDS ("From" "To" "Cc" "Subject" "Date" "Message-ID" "In-Reply-To" "Content-Type")] {242}', 'Message-ID: <410F430F.8060308@nuxeo.com>\r\nDate: Tue, 03 Aug 2004 09:47:27 +0200\r\nFrom: Stefane Fermigier <sf@nuxeo.com>\r\nTo: tziade@nuxeo.com\r\nSubject: Test\r\nContent-Type: multipart/mixed;\r\n boundary="------------060003030709020505030207"\r\n\r\n'), ')'])
+
             if message_part == '(FLAGS RFC822.SIZE RFC822.HEADER)':
                 return ('OK', [('1 (FLAGS (\\Seen) RFC822.SIZE 515 RFC822.HEADER {474}', 'Return-Path: <webmaster@zopeur.org>\r\nDelivered-To: webmaster@openconference.org\r\nReceived: (qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000\r\nMessage-ID: <20050101013152.24339.qmail@ns2641.ovh.net>\r\nFrom: webmaster@openconference.org\r\nTo: webmaster@openconference.org\r\nSubject: webmaster@openconference.org\r\nDate: Sat, 01 Jan 2005 02:31:52 +0100\r\nMime-Version: 1.0\r\nContent-Type: text/plain; format=flowed; charset="iso-8859-1"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n'), ')'])
 
@@ -68,7 +72,13 @@ class IMAP4:
                 return ('OK',['2 (BODY ((("text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18)("text" "html" ("charset" "us-ascii") NIL NIL "8bit" 0 0) "alternative")("image" "jpeg" ("name" "wlogo.jpg") NIL NIL "base64" 7226) "mixed"))'])
             if message_part == '(FLAGS)':
                 return ('OK',[('1 (FLAGS (\\Seen)'), ')'])
-        result = ('OK', '(UID 123)')
+
+        if message_number.find(',') != -1:
+            if message_part.startswith('(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS('):
+
+                return ('OK', [('1 (FLAGS (\\Answered \\Seen) RFC822.SIZE 1766 BODY[HEADER.FIELDS ("From" "To" "Cc" "Subject" "Date" "Message-ID" "In-Reply-To" "Content-Type")] {242}', 'Message-ID: <410F430F.8060308@nuxeo.com>\r\nDate: Tue, 03 Aug 2004 09:47:27 +0200\r\nFrom: Stefane Fermigier <sf@nuxeo.com>\r\nTo: tziade@nuxeo.com\r\nSubject: Test\r\nContent-Type: multipart/mixed;\r\n boundary="------------060003030709020505030207"\r\n\r\n'), ')', ('2 (FLAGS (\\Seen) RFC822.SIZE 661181 BODY[HEADER.FIELDS ("From" "To" "Cc" "Subject" "Date" "Message-ID" "In-Reply-To" "Content-Type")] {274}', 'Message-ID: <4110A6E4.5090607@zopeur.org>\r\nDate: Wed, 04 Aug 2004 11:05:40 +0200\r\nFrom: =?ISO-8859-1?Q?Tarek_Ziad=E9?= <webmaster@zopeur.org>\r\nTo: tz@nuxeo.com\r\nSubject: [Fwd: Specs BCEAO]\r\nContent-Type: multipart/mixed;\r\n boundary="------------090103050002020902020908"\r\n\r\n'), ')'])
+        result = ('OK', 'message_number : %s, message_part: %s'
+                        % (str(message_number), str(message_part)))
         return result
 
     def list(self, directory='""', pattern='*'):
