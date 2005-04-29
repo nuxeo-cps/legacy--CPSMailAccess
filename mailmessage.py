@@ -55,6 +55,7 @@ class MailMessage(Folder):
     meta_type = "CPSMailAccess Message"
 
     _store = None
+    instant_load = False
     seen = 0
     answered = 0
     deleted = 0
@@ -75,7 +76,7 @@ class MailMessage(Folder):
         self._setStore(store)
 
     def loadMessage(self, flags=None, headers=None, body='',
-                              structure_infos=None):
+                    structure_infos=None):
 
         self._setStore(Message.Message())
         store = self._getStore()
@@ -117,7 +118,8 @@ class MailMessage(Folder):
 
         store._payload = body
         self._setStore(store)
-        self._parseFlags(flags)
+        if flags is not None:
+            self._parseFlags(flags)
 
     def getHeaders(self):
         """ Get a message headers """

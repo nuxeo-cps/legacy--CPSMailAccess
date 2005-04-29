@@ -58,8 +58,9 @@ class MailFolder(BTreeFolder2):
     mailbox = None
     message_count = 0
     folder_count = 0
-    loose_sync = False
-    fetch_size = 50
+    loose_sync = True
+    fetch_size = 200
+    instant_load = True
 
     def __init__(self, uid=None, server_name='""'):
         """
@@ -440,8 +441,18 @@ class MailFolder(BTreeFolder2):
 
     def _loadMessageStructureFromServer(self, server_name, uid, msg_flags,
                                         msg_headers, msg_size, msg_object,
-                                        connector):
-        """ loads a message from server """
+                                        connector, afterload=False):
+        """ loads a message from server
+
+        XXX might be outsourced into imap
+        """
+        if self.instant_load and not afterload:
+            msg_object.loadMessage(msg_flags, msg_headers, 'instant_load',
+                                   None)
+            msg_object.size = msg_size
+            msg_object.instant_load = self.instant_load
+            return False
+
         msg_body = None
         skip = False
         part_num = 1
@@ -452,7 +463,7 @@ class MailFolder(BTreeFolder2):
         part_infos =  structure
 
         if part_infos[0] in ('related', 'relative', 'mixed', 'alternative',
-                                    'signed'):
+                             'signed'):
             # we don't want to load attached files
             # we just want to get their names
             if part_infos[0] == 'mixed':
@@ -510,14 +521,15 @@ class MailFolder(BTreeFolder2):
 
         try:
             msg_body = connector.fetch(server_name, uid,
-                                                        '(BODY.PEEK[%s])' % part_num)
+                                       '(BODY.PEEK[%s])' % part_num)
         except ConnectionError:
             skip = True
 
         if not skip:
             msg_object.loadMessage(msg_flags, msg_headers, msg_body,
-                                                  part_infos)
+                                   part_infos)
             msg_object.size = msg_size
+            msg_object.instant_load = self.instant_load
 
         return skip
 
@@ -572,16 +584,23 @@ class MailFolder(BTreeFolder2):
                 bloc.append(uids[i:i_end])
                 i = i_end
 
+        # XXX will be in properties later
+        headers = 'From To Cc Subject Date Message-ID In-Reply-To Content-Type'
+        fetch_str = '(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS(%s)])' % headers
         for sub_bloc in bloc:
             uid_sequence = ','.join(sub_bloc)
+            print '%s %s' % (self.id, uid_sequence)
+            start = time.time()
             # gets flags, size and headers
             try:
-                fetched = connector.fetch(self.server_name, uid_sequence,\
-                                           '(FLAGS RFC822.SIZE RFC822.HEADER)')
+
+                fetched = connector.fetch(self.server_name, uid_sequence,
+                                          fetch_str)
                 mailfailed = False
             except ConnectionError:
                 fetched = []
                 mailfailed = True
+            end = time.time() - start
             # now syncing each message
             start_time = time.time()
             i = 0
@@ -600,7 +619,7 @@ class MailFolder(BTreeFolder2):
                 if not mailfailed:
                     msg_headers = fetched_mail[2]
                     subs= ('Date', 'Subject', 'From', 'To', 'Cc', 'Message-ID',
-                                'Mailing-List')
+                           'Mailing-List')
                     sub_keys = {}
                     for sub in subs:
                         if msg_headers.has_key(sub):
@@ -625,14 +644,14 @@ class MailFolder(BTreeFolder2):
                 if msg is None and not mailfailed:
                     msg = self._addMessage(uid, digest, index=False)
                     skip = self._loadMessageStructureFromServer(self.server_name,
-                                                                                         uid, msg_flags,
-                                                                                         msg_headers,
-                                                                                         msg_size, msg,
-                                                                                         connector)
+                                                                uid, msg_flags,
+                                                                msg_headers,
+                                                                msg_size, msg,
+                                                                connector)
 
                     if not skip:
                         log.append('adding message %s in %s' % (uid, self.server_name))
-                        # XXX todo : laod filelist
+                        # XXX todo : load filelist
                         indexStack.append(msg)
                         #self._updateDirectories(msg)
 
@@ -665,6 +684,7 @@ class MailFolder(BTreeFolder2):
                 y += 1
             get_transaction().commit()  # implicitly usable without import
             get_transaction().begin()   # implicitly usable without import
+            end_time = time.time() - start_time
 
         # now clear messages in zodb that appears to be
         # deleted from the directory
