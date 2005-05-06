@@ -1,5 +1,5 @@
 <html metal:use-macro="here/main_template/macros/master"
-      tal:define="response request/RESPONSE">
+           tal:define="response request/RESPONSE">
 
   <metal:block metal:fill-slot="head_slot">
       <meta http-equiv="refresh" content="1; URL=synchronize.html">
@@ -9,9 +9,17 @@
     <div class="message" i18n:translate="cpsma_mailbox_beeing_synchronized">
     Your mailbox is beeing synchronized. Please hold on.
     </div>
-
-    <a href="synchronize.html" i18n:translate="cpsma_mailbox_force_synchronize">
-     If nothing seems to be loading, click here
-    </a>
+    <ul>
+    <li>
+        <a href="synchronize.html" i18n:translate="cpsma_mailbox_force_synchronize">
+        If nothing seems to be loading, click here
+        </a>
+    </li>
+    <li>
+        <a href="view" i18n:translate="cpsma_browse_while_synchro">
+            While the mailbox is beeing synchronized, you still can browse existing mails, but with restricted features.
+        </a>
+    </li>
+    </ul>
   </metal:block>
 </html>
