@@ -300,7 +300,10 @@ class IMAPConnection(BaseConnection):
             command = parts[1]
 
             if command.startswith('HEADER.FIELDS'):
-                res = self._extractHeaders(results[1])
+                try:
+                    res = self._extractHeaders(results[1])
+                except IndexError:
+                    raise str(results)
             else:
                 if isinstance(results, list) and results[1] == ')':
                     res = results[0][1]
@@ -329,8 +332,7 @@ class IMAPConnection(BaseConnection):
         return -1
 
     def fetch(self, mailbox, message_number, message_parts):
-        """ see interface for doc
-        """
+        """ see interface for doc """
         # fetch works for unique message_number, in integer or string
         # or with several numbers, like : '1,2,3'
         if isinstance(message_number, int):
@@ -354,13 +356,16 @@ class IMAPConnection(BaseConnection):
         except (IMAP4.error, IMAP4_SSL.error):
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
         try:
+            original_query = message_number
             imap_result =  self._connection.fetch(message_number, message_parts)
         except self._connection.error:
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
         except IndexError:
-            raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number, mailbox))
+            raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number,
+                                                          mailbox))
         except (AttributeError, IMAP4.error, IMAP4_SSL.error):
-            raise ConnectionError(CANNOT_READ_MESSAGE % (message_number, mailbox))
+            raise ConnectionError(CANNOT_READ_MESSAGE % (message_number,
+                                                          mailbox))
 
         if imap_result[0] == 'OK':
             imap_raw = imap_result[1]
@@ -380,11 +385,8 @@ class IMAPConnection(BaseConnection):
                     i += 2
                 imap_raw = fimap_raw
 
-            if len(messages_queried) != len(imap_raw):
-                raise '%d <-> %d %s' % (len(messages_queried), len(imap_raw), str(imap_raw))
-
-            for message in messages_queried:
-                sub_raw = imap_raw[u]
+            for sub_raw in imap_raw:
+                message = messages_queried[u]
                 sub_result = []
                 i = 0
                 for query in query_list:
