@@ -25,8 +25,12 @@
                           content_managment request/manage_content|nothing;
                           clipboard not:here/clipBoardEmpty;
                           max_folder_size here/getMaxFolderSize;
+                          synchro python:here.getMailBox().isSynchronizing();
                           show_content_toolbar python:content_managment or clipboard">
 
+    <div class="message" tal:condition="synchro" i18n:translate="cps_synchronizing">
+    While the box is beeing synchronized, webmail features are limited to browsing.
+    </div>
     <div tal:condition="edit_name">
      <a href="view"
         class="close_rename_form"
