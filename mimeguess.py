@@ -10,7 +10,7 @@
 
 import re, struct, string
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '$Revision: 1.3 $'[11:-2]
 
 magic = [
 
