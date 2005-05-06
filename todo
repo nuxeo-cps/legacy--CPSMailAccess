@@ -1,14 +1,15 @@
 todos
-
++ protect actions than cannot be done while synchronizing
++ use ZASync to deal with concurrent synchronizations
 + add security
 + translations in english
-+ set some options in mailtool by manager
-  that can't be changed by user
++ set some options in mailtool by manager that can't be changed by user
 + recreate attache part in fwd messages
-+ add a star in front of folder that contains unread messages
++ add a star in front of folder that contains "new" messages
++ make folder that contains "unread" messages
 + define several synchronization strategies depending on users use
-+ use ZSync to deal with concurrent syncrhonizations
 + filesystem storages
++ see why SSL won't work on some servers like bertha
 
 cosmetics
 
