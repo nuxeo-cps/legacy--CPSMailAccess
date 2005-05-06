@@ -430,7 +430,82 @@ class MailFolderTestCase(MailTestCase):
             self.assert_(subject in ('banal subject',
                                           '[COOL] pretty cool subject'))
 
+    def test_rename_weirdo(self):
+        mailbox = self._getMailBox()
+        Todos = mailbox._addFolder('Todos', 'Todos')
+        self.assertEquals(Todos.server_name, 'Todos')
+        self.assertEquals(Todos.title, 'Todos')
 
+        res = Todos.rename('[Todos]')
+        self.assertEquals(Todos.server_name, '[Todos]')
+        self.assertEquals(Todos.title, '[Todos]')
+
+        res = Todos.rename('[Todééé $zéee"r"eé^os]')
+        self.assertEquals(Todos.server_name, '[Todééé $zéee"r"eé^os]')
+        self.assertEquals(Todos.title, '[Todééé $zéee"r"eé^os]')
+
+    def test_createSubBlocs(self):
+        mailbox = self._getMailBox()
+        uids = []
+        for i in range(421):
+            uids.append(str(i))
+
+        blocs = mailbox._createSubBlocs(uids, 200)
+
+        self.assertEquals(len(blocs), 3)
+        self.assertEquals(len(blocs[0]), 200)
+        subs = []
+        for i in range(200):
+            subs.append(str(i))
+        self.assertEquals(blocs[0], subs)
+
+        self.assertEquals(len(blocs[1]), 200)
+        subs = []
+        for i in range(200):
+            subs.append(str(i+200))
+        self.assertEquals(blocs[1], subs)
+
+        self.assertEquals(len(blocs[2]), 21)
+        subs = []
+        for i in range(21):
+            subs.append(str(i+400))
+        self.assertEquals(blocs[2], subs)
+
+    def test_fillVacuum(self):
+        mailbox = self._getMailBox()
+        folder = mailbox._addFolder('MyFolder', 'MyFolder')
+        for i in range(3):
+            key = '.'+str(i)
+            folder._addMessage(key, key)
+
+        self.assertEquals(len(folder.objectIds()), 3)
+        self.assertEquals(list(folder.objectIds()), ['.0', '.1', '.2'])
+
+        # let's delete message 2
+        folder.manage_delObjects(['.1'])
+
+        self.assertEquals(len(folder.objectIds()), 2)
+        self.assertEquals(list(folder.objectIds()), ['.0', '.2'])
+
+        # let's vacuum the index
+        folder._fillVacuum('.1', '1')
+
+        # check the result
+        self.assertEquals(list(folder.objectIds()), ['.0', '.1'])
+
+    def test_nextId(self):
+        mailbox = self._getMailBox()
+        folder = mailbox._addFolder('MyFolder', 'MyFolder')
+        id = mailbox._nextId('.10')
+        self.assertEquals(id, '.11')
+
+    def test_getUidFromId(self):
+        mailbox = self._getMailBox()
+        folder = mailbox._addFolder('MyFolder', 'MyFolder')
+        id = folder.getUidFromId('.2')
+        self.assertEquals(id, '2')
+        id = folder.getUidFromId('.10')
+        self.assertEquals(id, '10')
 
 def test_suite():
     return unittest.TestSuite((
