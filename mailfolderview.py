@@ -243,7 +243,7 @@ class MailFolderView(BaseMailMessageView):
             if element.size is not None:
                 part['Size'] = getHumanReadableSize(element.size)
             else:
-                part['Size'] = 0
+                part['Size'] = (0, 'o')
 
             part['new'] = not element.seen
             returned.append(part)
