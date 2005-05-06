@@ -39,12 +39,15 @@ lock = thread.allocate_lock()
 connector = ConnectionList()
 
 def getConnection():
+    return connector
+    """
     lock.acquire()
     try:
         return connector
     finally:
         lock.release()
     return None
+    """
 
 class MailTool(Folder): # UniqueObject
     """ the portal tool wich holds
