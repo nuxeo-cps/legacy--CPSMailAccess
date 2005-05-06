@@ -153,7 +153,6 @@ class MailMessageView(BaseMailMessageView):
                                                            None, None, None,
                                                            mail, connector,
                                                            afterload=True)
-                    mail.instant_load = True
 
             body = self._bodyRender(mail)
         else:
