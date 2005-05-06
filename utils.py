@@ -224,9 +224,10 @@ def getFolder(mailbox, folder_name):
     path = folder_name.split('.')
     for element in path:
         element = element.strip()
-        if not hasattr(current, element):
+        element_id = makeId(element)
+        if not hasattr(current, element_id):
             return None
-        current = getattr(current, element)
+        current = getattr(current, element_id)
     return current
 
 def getCurrentDateStr():
@@ -375,7 +376,8 @@ def removeHTML(content):
 
 def isValidEmail(mail):
     """ verifies a mail is a mail """
-    re_script = r'.*@.*\..{2,4}'
+    #re_script = r'.*@.*\..{2,4}'
+    re_script = r'.*@.*'    # tarek@localhost works too
     res = re.match(re_script, mail.strip())
     if res is None:
         return False
