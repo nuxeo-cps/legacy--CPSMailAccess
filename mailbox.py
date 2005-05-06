@@ -29,6 +29,7 @@ from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 from OFS.Folder import Folder
 from OFS.ObjectManager import BadRequest
+from ZODB.PersistentMapping import PersistentMapping
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.Five import BrowserView
@@ -55,12 +56,38 @@ from directorypicker import DirectoryPicker
 from baseconnection import has_connection
 from mailfiltering import ZMailFiltering
 
-class MailBoxBaseCaching(MailFolder):
+
+class MailFolderTicking(MailFolder):
+
+    _idle_time = 30
+
+    def __init__(self, uid, server_name, **kw):
+        MailFolder.__init__(self, uid, server_name, **kw)
+        self._tick = PersistentMapping()
+        self._tick['time'] = self._idle_time + 1
+
+    def isSynchronizing(self):
+        """ check if the mailbox is synchronizing
+
+        if the last tick is younger than 30 seconds,
+        we are synchronizing
+        """
+        return time.time() - self._tick['time'] < self._idle_time
+
+    def synchroTick(self):
+        """ ticking """
+        self._tick['time'] = time.time()
+
+    def clearSynchro(self):
+        """ ticking """
+        self._tick['time'] = self._idle_time + 1
+
+class MailBoxBaseCaching(MailFolderTicking):
     """ a mailfolder that implements
         mail box caches
     """
     def __init__(self, uid, server_name, **kw):
-        MailFolder.__init__(self, uid, server_name, **kw)
+        MailFolderTicking.__init__(self, uid, server_name, **kw)
         self._cache = RAMCache()
 
     def addMailToCache(self, msg, key):
@@ -161,7 +188,6 @@ class MailBox(MailBoxBaseCaching):
 
     zcatalog_id = '.zemantic_catalog'
     catalog_id = '.zcatalog'
-    synchronizing = False
 
     def __init__(self, uid=None, server_name='', **kw):
         MailBoxBaseCaching.__init__(self, uid, server_name, **kw)
@@ -197,27 +223,31 @@ class MailBox(MailBoxBaseCaching):
         """ see interface """
         if not has_connection:
             return []
-
+        if self.isSynchronizing():
+            return []
+        self.synchroTick()
         start_time = time.time()
-
         indexStack = []
         # retrieving folder list from server
         connector = self._getconnector()
-
         if light:
             server_directory = [{'Name': 'INBOX'}]
         else:
             server_directory = connector.list()
-
         if no_log:
             returned = self._syncdirs(server_directory, False, indexStack,
-                                      light)
+                                        light)
         else:
             log = self._syncdirs(server_directory, True, indexStack)
             log.insert(0, 'synchronizing mailbox...')
             log.append('... done')
             logtext = '\n'.join(log)
             returned = logtext
+
+        # run filters on INBOX
+        for directory in server_directory:
+            dir_ = getFolder(self, directory['Name'])
+            dir_.runFilters()
 
         # now indexing
         LOG('synchro', INFO, 'half time : %s seconds' % \
@@ -242,6 +272,7 @@ class MailBox(MailBoxBaseCaching):
         self.search_available = True
         endtime = time.time() - start_time
         LOG('synchro', INFO, 'total time : %s seconds' % endtime)
+        self.clearSynchro()
         return returned
 
     def _syncdirs(self, server_directories=[], return_log=False,
@@ -363,7 +394,6 @@ class MailBox(MailBoxBaseCaching):
 
         if connector is None:
             raise ValueError(NO_CONNECTOR)
-
         return connector
 
     def _sendMailMessage(self, msg_from, msg_to, msg):
@@ -923,7 +953,6 @@ class MailBox(MailBoxBaseCaching):
                     new_id = '%s.%s' % (to_id, from_id)
                     from_object.rename(new_id, fullname=True)
                     return old_parent
-
         return None
 
 # Classic Zope 2 interface for class registering
@@ -1078,19 +1107,16 @@ class MailBoxView(MailFolderView):
         LOG('synchro', INFO, 'start')
         if isinstance(light, str):
             light = light == '1'
-        if not hasattr(self, 'synchronizing'):
-            self.synchronizing = False
-        if not self.synchronizing:
-            self.synchronizing = True
+        mailbox = self.context
+
+        if not mailbox.isSynchronizing():
             try:
-                mailbox = self.context
-                try:
-                    mailbox.synchronize(no_log=True, light=light)
-                    psm = 'cpsma_synchronized'
-                except ConnectionError:
-                    psm = 'cpsma_failed_synchro'
-            finally:
-                self.synchronizing = False
+                mailbox.synchronize(no_log=True, light=light)
+                psm = 'cpsma_synchronized'
+            except ConnectionError:
+                psm = 'cpsma_failed_synchro'
+        else:
+            psm = 'cps_already_synchronizing'
 
         if self.request is not None:
             if hasattr(mailbox, 'INBOX'):
