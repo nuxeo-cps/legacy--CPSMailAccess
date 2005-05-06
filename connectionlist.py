@@ -99,22 +99,25 @@ class ConnectionList(UserList):
     def getConnection(self, connection_params):
         """return connection object
         """
+
         result = None
-        self.lock.acquire()
+        """self.lock.acquire()
         try:
-            uid = connection_params['uid']
-            connection_type = connection_params['connection_type']
-            for connection in self:
-                if (connection.uid == uid) and \
-                    (connection.connection_type == connection_type):
-                    result = connection
-                    break
-            if not result:
-                newob = self._getConnectionObject(connection_params)
-                result = newob
-                self.append(newob)
-        finally:
+        """
+        uid = connection_params['uid']
+        connection_type = connection_params['connection_type']
+        for connection in self:
+            if (connection.uid == uid) and \
+                (connection.connection_type == connection_type):
+                result = connection
+                break
+        if not result:
+            newob = self._getConnectionObject(connection_params)
+            result = newob
+            self.append(newob)
+        """finally:
             self.lock.release()
+        """
         return result
 
     def killConnection(self, uid, connection_type):
