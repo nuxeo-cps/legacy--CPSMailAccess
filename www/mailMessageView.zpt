@@ -20,7 +20,12 @@
   </metal:main>
   <metal:block metal:fill-slot="main"
                tal:define="show_folder request/showfolders|python:0;
+                           synchro python:here.getMailBox().isSynchronizing();
                            content_managment request/content_managment|nothing;">
+    <div class="message" tal:condition="synchro" i18n:translate="cps_synchronizing">
+    While the box is beeing synchronized, webmail features are limited to browsing.
+    </div>
+
     <div tal:condition="show_folder"
          tal:define="is_folder python:0">
       <metal:block use-macro="here/messagelist_macros/messagelist"/>
