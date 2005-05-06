@@ -77,10 +77,9 @@ class MailMessage(Folder):
 
     def loadMessage(self, flags=None, headers=None, body='',
                     structure_infos=None):
-
-        self._setStore(Message.Message())
+        if headers is not None:
+            self._setStore(Message.Message())
         store = self._getStore()
-
         # filling headers
         if structure_infos is not None:
             charset = 'ISO8859-15'
@@ -118,6 +117,7 @@ class MailMessage(Folder):
 
         store._payload = body
         self._setStore(store)
+
         if flags is not None:
             self._parseFlags(flags)
 
