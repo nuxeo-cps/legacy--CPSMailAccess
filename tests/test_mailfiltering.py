@@ -60,6 +60,11 @@ class MailFilteringTestCase(MailTestCase):
         self.assert_(not ob._matchCondition('i have a cool usbkey', 3, 'we do'))
         self.assert_(ob._matchCondition('i have a cool usbkey', 3, ' i have'))
 
+        # testing with brackets
+        self.assert_(not ob._matchCondition('[Dev] i have a cool usbkey', 3, '[devel]'))
+        self.assert_(ob._matchCondition('[EuroPython] i have a cool usbkey', 3, '[EuroPython]'))
+
+
         self.assert_(not ob._matchCondition('i have a cool usbkey', 4, 'keys'))
         self.assert_(ob._matchCondition('i have a cool usbkey', 4, 'key '))
 
