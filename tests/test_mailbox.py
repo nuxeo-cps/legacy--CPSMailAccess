@@ -18,16 +18,23 @@
 # 02111-1307, USA.
 #
 # $Id$
-from OFS.Image import File
-from zope.publisher.browser import FileUpload
 import unittest
-from zope.testing import doctest
 import sys
-from Products.CPSMailAccess.interfaces import IMailBox, IMailFolder
-from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView
-from basetestcase import MailTestCase
-from Testing.ZopeTestCase import installProduct
+import time
+
 from OFS.Folder import Folder
+from OFS.Image import File
+from Testing.ZopeTestCase import installProduct
+
+from zope.publisher.browser import FileUpload
+from zope.testing import doctest
+
+from Products.CPSMailAccess.interfaces import IMailBox, IMailFolder
+from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView, \
+                                           MailFolderTicking
+from basetestcase import MailTestCase
+
+
 
 from Products.CPSMailAccess import mailbox
 
@@ -275,12 +282,12 @@ class MailBoxTestCase(MailTestCase):
         # msg_INBOX__950   to_folder_INBOX
         # msg_INBOX.CVS__950   to_folder_INBOX.LOGS
         folder1 =  inbox._addFolder('folder1', 'INBOX.folder1')
-        folder1._addMessage('message1', 'message1')
+        folder1._addMessage('.1', 'message1')
         self.assertEquals(len(folder1.objectIds()), 1)
 
         folder2 =  inbox._addFolder('folder2', 'INBOX.folder2')
 
-        target = mailbox.moveElement('msg_INBOX.folder1__message1',
+        target = mailbox.moveElement('msg_INBOX.folder1__.1',
                                      'to_folder_INBOX.folder2')
 
         self.assertEquals(target, folder1)
@@ -289,7 +296,7 @@ class MailBoxTestCase(MailTestCase):
 
         # make sure a message that moves where it is already
         # does not do anything
-        target = mailbox.moveElement('msg_INBOX.folder2__message1',
+        target = mailbox.moveElement('msg_INBOX.folder2__.1',
                                      'to_folder_INBOX.folder2')
 
         self.assertEquals(target, None)
@@ -323,6 +330,19 @@ class MailBoxTestCase(MailTestCase):
         self.assertEquals(folder2.getMailFolder(), folder1)
         self.assertEquals(folder2.server_name, 'INBOX.folder1.folder2')
 
+
+    def test_ticking(self):
+        folder = MailFolderTicking('ok', 'ok')
+        self.assert_(not folder.isSynchronizing())
+        folder._idle_time = 1
+        folder.synchroTick()
+        self.assert_(folder.isSynchronizing())
+        time.sleep(2)
+        self.assert_(not folder.isSynchronizing())
+        folder.synchroTick()
+        self.assert_(folder.isSynchronizing())
+        folder.clearSynchro()
+        self.assert_(not folder.isSynchronizing())
 
 def test_suite():
     return unittest.TestSuite((
