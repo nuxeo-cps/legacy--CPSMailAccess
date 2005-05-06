@@ -27,12 +27,9 @@ contentClasses = (mailboxtreeview.MailBoxTreeView, )
 contentConstructors = (mailboxtreeview.manage_addMailBoxTreeview, )
 fti = (mailboxtreeview.factory_type_information + ())
 
-
-
 registerDirectory('skins', globals())
 
 def initialize(context):
-
     context.registerClass(
         mailbox.MailBox,
         constructors = (mailbox.manage_addMailBoxForm,
@@ -58,8 +55,7 @@ def initialize(context):
         )
 
     ContentInit('MailBoxTreeView',
-                      content_types = contentClasses,
-                      permission = AddPortalContent,
-                      extra_constructors = contentConstructors,
-                      fti = fti,
-                      ).initialize(context)
+                content_types = contentClasses,
+                permission = AddPortalContent,
+                extra_constructors = contentConstructors,
+                fti = fti).initialize(context)
