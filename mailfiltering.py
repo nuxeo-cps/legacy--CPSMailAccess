@@ -240,7 +240,6 @@ class MailFiltering:
                 if current_folder.server_name != target_folder:
                     mailbox = current_folder.getMailBox()
                     ob_target_folder = getFolder(mailbox, target_folder)
-
                     if ob_target_folder is not None:
                         if action == 1:
                             current_folder.moveMessage(message.uid,
