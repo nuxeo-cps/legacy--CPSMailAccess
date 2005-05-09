@@ -33,7 +33,7 @@ from interfaces import IMailTool
 from connectionlist import registerConnections, ConnectionList
 from smtpmailer import SmtpQueuedMailer
 from mailbox import manage_addMailBox
-from utils import makeId
+from utils import makeId, getMemberById
 
 lock = thread.allocate_lock()
 connector = ConnectionList()
@@ -115,28 +115,28 @@ class MailTool(Folder): # UniqueObject
         self._initializeConnectionList()
 
     def getConnection(self, connection_params):
-        """ see IMailTool
-        """
+        """ see IMailTool """
         return self.getConnectionList().getConnection(connection_params)
 
     def killConnection(self, uid, connection_type):
-        """ kill someone connections
-        """
+        """ kill someone connections """
         self.getConnectionList().killConnection(uid, connection_type)
 
     def killAllConnections(self):
-        """ kill someone connections
-        """
+        """ kill someone connections """
         self.getConnectionList().killAllConnections()
 
     def addMailBox(self, user_id):
         """ creates a mailbox for a given user """
-
         mailbox_name = makeId('box_%s' % user_id)
         if hasattr(self, mailbox_name):
             return getattr(self, mailbox_name)
         else:
-            return manage_addMailBox(self, mailbox_name)
+            box = manage_addMailBox(self, mailbox_name)
+            # make sure the box belongs to the user
+            user = getMemberById(self, user_id)
+            box.changeOwnership(user)
+            return box
 
     def deleteMailBox(self, user_id):
         """ deletes the mailbox for a given user """
