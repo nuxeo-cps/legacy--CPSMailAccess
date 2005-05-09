@@ -202,6 +202,9 @@ class MailActionsView(BaseMailMessageView):
         else:
             return []
 
+        box = container.getMailBox()
+        user_name = box.getConnectionParams()['uid']
+
         configure = {'icon' : base_url + '/cpsma_configure.png',
                      'title' : 'cpsma_configure',
                      'long_title' : 'cpsma_configure',
@@ -209,7 +212,7 @@ class MailActionsView(BaseMailMessageView):
         synchro = {'icon' : base_url + '/cpsma_getmails.png',
                    'title' : 'cpsma_getmessages',
                    'long_title' : 'cpsma_getmessages',
-                   'action' : root + '/syncProgress.html'}
+                   'action' : root + '/syncProgress.html?g_user=' + user_name}
 
         search = {'icon' : base_url + '/cspma_mail_find.png',
                    'title' : 'cpsma_search_messages',
