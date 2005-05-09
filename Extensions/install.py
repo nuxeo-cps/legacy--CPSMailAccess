@@ -22,12 +22,17 @@
 
 """
 from zLOG import LOG, INFO, DEBUG
+from OFS.ObjectManager import BadRequestException
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
+
 from Products.CPSInstaller.CPSInstaller import CPSInstaller
-from OFS.ObjectManager import BadRequestException
+
 from Products.CPSMailAccess.mailtool import manage_addMailTool
+from Products.CPSMailAccess.permissions import permissions
+
 try:
   from Products.CPSSubscriptions.CPSSubscriptionsPermissions import \
      CanNotifyContent
@@ -88,6 +93,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.setupMembersSchemasAndLayouts()
         self.addWMAction()
         self.checkExistingMailBoxes()
+        self.setupPermissions()
         self.setupTranslations()
         self.finalize()
         self.log("End of Install/Update : CPSMailAccess Product")
@@ -540,7 +546,9 @@ class CPSMailAccessInstaller(CPSInstaller):
                 if not box._connection_params.has_key(item):
                     box._connection_params[item] = dp[item]
 
-
+    def setupPermissions(self):
+        """ sets up permission """
+        self.setupPortalPermissions(permissions, self.portal)
 
 def install(self):
     """Installation is done here.
