@@ -22,7 +22,7 @@ from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
 
 from interfaces import IMailMessage, IMailBox, IMailFolder
-from utils import getToolByName
+from utils import getToolByName, makeId
 from mailexceptions import MailContainerError
 
 class BaseMailMessageView(BrowserView):
@@ -280,10 +280,11 @@ class BaseMailMessageView(BrowserView):
         stree = []
         for element in treeview:
             stitle = element['short_title']
+            sort_title = makeId(stitle).lower()
 
             if lotus_style and level == 2:
                 if stitle not in ('Sent', 'Drafts', 'Trash'):
-                    stree.append((stitle, element))
+                    stree.append((sort_title, element))
                 else:
                     if stitle == 'Sent':
                         lotusfolders.append((1, element))
@@ -292,7 +293,7 @@ class BaseMailMessageView(BrowserView):
                     elif stitle == 'Trash':
                         lotusfolders.append((2, element))
                     else:
-                        lotusfolders.append((stitle, element))
+                        lotusfolders.append((sort_title, element))
             else:
                 if stitle == 'Sent':
                     stree.append((1, element))
@@ -301,8 +302,9 @@ class BaseMailMessageView(BrowserView):
                 elif stitle == 'Trash':
                     stree.append((2, element))
                 else:
-                    stree.append((stitle, element))
+                    stree.append((sort_title, element))
         stree.sort()
+
         ntreeview = []
         for element in stree:
             ntreeview.append(element[1])
