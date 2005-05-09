@@ -71,8 +71,8 @@ class MailTool(Folder): # UniqueObject
                                  'HOST' : 'localhost',
                                  'PORT' : 143,
                                  'SSH' :  0,
-                                 'login' : '${members.webmail_login}',
-                                 'password' :'${members.webmail_password}',
+                                 'login' : '',
+                                 'password' :'',
                                  'smtp_host' : 'localhost',
                                  'smtp_port' : 25,
                                  'trash_folder_name' : 'INBOX.Trash',
@@ -169,7 +169,9 @@ class MailToolView(BrowserView):
         if hasattr(mailtool, mailbox_name):
             box = getattr(mailtool, mailbox_name)
             # always synchronize when we get in
-            self.request.response.redirect(box.absolute_url()+'/syncProgress.html')
+            self.request.response.redirect(box.absolute_url()+\
+                                           '/syncProgress.html?g_user='+\
+                                           user_id)
         else:
             box = mailtool.addMailBox(user_id)
             url = '%s/configure.html?first_time=1' % box.absolute_url()
