@@ -2,6 +2,8 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
+  <include file="permissions.zcml" />
+
   <five:traversable class="OFS.Folder.Folder" />
   <five:traversable class=".mailfolder.MailFolder" />
   <five:traversable class=".mailbox.MailBox" />
@@ -23,7 +25,7 @@
         interface="zope.app.container.interfaces.IContentContainer"
         />
     <require
-        permission="zope2.View"
+        permission="cpsmailaccess.ViewMailBox"
         interface=".interfaces.IMailFolder"
         />
   </content>
@@ -49,7 +51,7 @@
         />
 
     <require
-        permission="zope2.View"
+        permission="cpsmailaccess.ViewMailBox"
         interface=".interfaces.IMailMessage"
         />
 
@@ -68,7 +70,7 @@
         interface="zope.app.container.interfaces.IContentContainer"
         />
     <require
-        permission="zope2.View"
+        permission="cpsmailaccess.ViewMailBox"
         interface=".interfaces.IMailBox"
         />
   </content>
@@ -98,7 +100,7 @@
       class=".directorypicker.DirectoryPickerView"
       template="www/mailDirectoryView.zpt"
       name="selectRecipients.html"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -106,7 +108,7 @@
       class=".directorypicker.DirectoryPickerView"
       name="searchUsers.html"
       attribute="searchUsers"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -114,7 +116,7 @@
       class=".directorypicker.DirectoryPickerView"
       name="getEditorContainers"
       attribute="getEditorContainers"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -122,7 +124,7 @@
       class=".mailbox.MailBoxView"
       name="moveElement.html"
       attribute="moveElement"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -130,7 +132,7 @@
       class=".mailbox.MailBoxView"
       name="moveElement.html"
       attribute="moveElement"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -138,7 +140,7 @@
       class=".mailbox.MailBoxView"
       name="moveElement.html"
       attribute="moveElement"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
 
@@ -147,7 +149,7 @@
       class=".adressbook.AddressBookViewer"
       template="www/mailAdressBookView.zpt"
       name="addressBooks.html"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -155,7 +157,7 @@
       class=".basemailview.BaseMailMessageView"
       name="getBaseUrl"
       attribute="getBaseUrl"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -163,7 +165,7 @@
       class=".mailmessageview.MailMessageView"
       template="www/mailMessageView.zpt"
       name="view"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -171,7 +173,7 @@
       class=".mailfolderview.MailFolderView"
       template="www/mailFolderView.zpt"
       name="view"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -179,7 +181,7 @@
       class=".mailfolderview.MailFolderView"
       name="manageContent.html"
       attribute="manageContent"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -187,7 +189,7 @@
       class=".mailfolderview.MailFolderView"
       name="runFilters.html"
       attribute="runFilters"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -203,7 +205,7 @@
       class=".mailmessageview.MailMessageView"
       template="www/mailMessageViewAlone.zpt"
       name="viewAlone.html"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -211,7 +213,7 @@
       class=".mailmessageview.MailMessageView"
       name="viewFile.html"
       attribute="viewFile"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -219,7 +221,7 @@
       class=".mailbox.MailBoxParametersView"
       template="www/mailBoxParametersView.zpt"
       name="configure.html"
-      permission="zope2.View"
+      permission="cpsmailaccess.ConfigureMailBox"
       />
 
   <browser:page
@@ -227,7 +229,7 @@
       class=".mailbox.MailBoxFiltersView"
       template="www/mailBoxFiltersView.zpt"
       name="filters.html"
-      permission="zope2.View"
+      permission="cpsmailaccess.ConfigureMailBox"
       />
 
   <browser:page
@@ -235,7 +237,7 @@
       class=".mailbox.MailBoxFiltersView"
       name="addFilter.html"
       attribute="addFilter"
-      permission="zope2.View"
+      permission="cpsmailaccess.ConfigureMailBox"
       />
 
   <browser:page
@@ -243,7 +245,7 @@
       class=".mailbox.MailBoxFiltersView"
       name="moveFilter.html"
       attribute="moveFilter"
-      permission="zope2.View"
+      permission="cpsmailaccess.ConfigureMailBox"
       />
 
   <browser:page
@@ -251,7 +253,7 @@
       class=".mailbox.MailBoxFiltersView"
       name="removeFilter.html"
       attribute="removeFilter"
-      permission="zope2.View"
+      permission="cpsmailaccess.ConfigureMailBox"
       />
 
   <browser:page
@@ -259,7 +261,7 @@
       class=".mailbox.MailBoxParametersView"
       name="reindexMailCatalog.html"
       attribute="reindexMailCatalog"
-      permission="zope2.View"
+      permission="cpsmailaccess.ConfigureMailBox"
       />
 
   <browser:page
@@ -267,7 +269,7 @@
       class=".mailbox.MailBoxParametersView"
       name="clearMailCatalog.html"
       attribute="clearMailCatalog"
-      permission="zope2.View"
+      permission="cpsmailaccess.ConfigureMailBox"
       />
 
   <browser:page
@@ -275,7 +277,7 @@
       class=".mailbox.MailBoxView"
       name="emptyTrash.html"
       attribute="emptyTrash"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -283,7 +285,7 @@
       class=".mailbox.MailBoxView"
       name="synchronize.html"
       attribute="synchronize"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -291,7 +293,7 @@
       class=".mailbox.MailBoxView"
       name="syncProgress.html"
       template="www/mailProgressView.zpt"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -299,7 +301,7 @@
       class=".mailbox.MailBoxView"
       template="www/mailBoxView.zpt"
       name="view"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -307,7 +309,7 @@
       class=".mailactions.MailActionsView"
       name="actionView.html"
       attribute="renderActions"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -315,7 +317,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="saveMessageForm.html"
       attribute="saveMessageForm"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -323,7 +325,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="addRecipient"
       attribute="addRecipient"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
 
@@ -332,7 +334,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="deleteAttachement.html"
       attribute="detachFile"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -340,7 +342,7 @@
       class=".mailbox.MailBoxParametersView"
       name="editParameters.html"
       attribute="setParameters"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -348,7 +350,7 @@
       class=".mailbox.MailBoxParametersView"
       name="addParameter.html"
       attribute="addParameter"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <!-- need to set this up better -->
@@ -357,14 +359,14 @@
       class=".basemailview.BaseMailMessageView"
       name="treeview.html"
       attribute="renderTreeView"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
   <browser:page
       for=".interfaces.IMailMessage"
       class=".basemailview.BaseMailMessageView"
       name="treeview.html"
       attribute="renderTreeView"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -372,7 +374,7 @@
       class=".mailmessageview.MailMessageView"
       name="mailList.html"
       attribute="renderMailList"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -380,7 +382,7 @@
       class=".mailmessageview.MailFolderView"
       name="getLastMailListSortCache"
       attribute="getLastMailListSortCache"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -388,7 +390,7 @@
       class=".mailmessageview.MailMessageView"
       name="reply.html"
       attribute="reply"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -396,7 +398,7 @@
       class=".mailmessageview.MailMessageView"
       name="replyAll.html"
       attribute="reply_all"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -404,7 +406,7 @@
       class=".mailmessageview.MailMessageView"
       name="forward.html"
       attribute="forward"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -412,7 +414,7 @@
       class=".mailmessageview.MailMessageView"
       name="delete.html"
       attribute="delete"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -420,7 +422,7 @@
       class=".mailmessageview.MailMessageView"
       name="reload.html"
       attribute="reload"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -428,7 +430,7 @@
       class=".mailfolderview.MailFolderView"
       name="delete.html"
       attribute="delete"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -436,7 +438,7 @@
       class=".mailfolderview.MailFolderView"
       name="getMaxFolderSize"
       attribute="getMaxFolderSize"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -444,7 +446,7 @@
       class=".mailfolderview.MailFolderView"
       name="rename.html"
       attribute="rename"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -452,7 +454,7 @@
       class=".mailfolderview.MailFolderView"
       name="addFolder.html"
       attribute="addFolder"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
    <browser:page
@@ -460,7 +462,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="getIdentitites.html"
       attribute="getIdentitites"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -468,7 +470,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="attachFile.html"
       attribute="attachFile"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -476,7 +478,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="attachedFiles.html"
       attribute="attached_files"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -484,7 +486,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="is_editor"
       attribute="is_editor"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -492,7 +494,7 @@
       class=".mailmessageview.MailMessageView"
       name="attachedFiles.html"
       attribute="attached_files"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -500,7 +502,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="editAction.html"
       attribute="editAction"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -508,7 +510,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="removeRecipient.html"
       attribute="removeRecipient"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -516,7 +518,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       template="www/mailEditorView.zpt"
       name="editMessage.html"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -524,7 +526,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="writeTo.html"
       attribute="writeTo"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -532,7 +534,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="saveMessage.html"
       attribute="saveMessage"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -540,7 +542,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="initializeEditor.html"
       attribute="initializeEditor"
-      permission="zope2.View"
+      permission="cpsmailaccess.SendMails"
       />
 
   <browser:page
@@ -548,7 +550,7 @@
       class=".mailsearchview.MailSearchView"
       name="searchMessages"
       attribute="searchMessages"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -556,7 +558,7 @@
       class=".mailsearchview.MailSearchView"
       template="www/mailSearchView.zpt"
       name="searchMessage.html"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -564,7 +566,7 @@
       class=".mailsearchview.MailSearchView"
       name="zemanticSearchMessages"
       attribute="zemanticSearchMessages"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -572,7 +574,7 @@
       class=".mailsearchview.MailSearchView"
       name="zemanticPredicateList"
       attribute="zemanticPredicateList"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:page
@@ -580,7 +582,7 @@
       class=".mailsearchview.MailSearchView"
       template="www/mailZemanticSearchView.zpt"
       name="zemanticSearchMessage.html"
-      permission="zope2.View"
+      permission="cpsmailaccess.ViewMailBox"
       />
 
   <browser:resource
