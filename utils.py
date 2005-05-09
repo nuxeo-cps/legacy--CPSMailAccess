@@ -512,3 +512,11 @@ class AsyncCall(Thread):
             # beware that this is called within the thread
             if self.terminateEvent is not None:
                 self.terminateEvent()
+
+def getMemberById(context, uid):
+    """ exported for z2 dependency """
+    if hasattr(context, 'portal_membership'):
+        return context.portal_membership.getMemberById(uid)
+    else:
+        return None
+
