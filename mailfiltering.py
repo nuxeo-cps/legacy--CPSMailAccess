@@ -155,7 +155,7 @@ class MailFiltering:
             element['action_param'] = action_param
             self._appendFilter(element)
 
-    def delFilter(self, subject, condition, value, action, action_param=None):
+    def delFilter(self, subject, condition, value):
         """ deletes a filter from the list """
         i = self._findElement(subject, condition, value)
         if i != -1:
@@ -319,6 +319,6 @@ class ZODBMailBackEnd(PersistentList):
 
 class ZMailFiltering(MailFiltering, Persistent):
 
-    def __init__(self, backend=None):
+    def __init__(self):
         zodb_list = ZODBMailBackEnd()
         MailFiltering.__init__(self, zodb_list)
