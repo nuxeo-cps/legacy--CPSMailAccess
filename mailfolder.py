@@ -319,8 +319,7 @@ class MailFolder(BTreeFolder2):
         self._indexMessage(msg)
 
         # now we need to reindex ourself
-        self._fillVacuum(origin_id, uid)
-
+        self._fillVacuum(origin_id)
         return msg
 
     def _copyMessage(self, uid, to_mailbox):
@@ -342,7 +341,7 @@ class MailFolder(BTreeFolder2):
             self.manage_delObjects([id])
             self.message_count -=1
             #msg = msg.__of__(None)
-            self._fillVacuum(id, uid)
+            self._fillVacuum(id)
             return True
         return False
 
@@ -575,7 +574,6 @@ class MailFolder(BTreeFolder2):
         log = []
         mailbox = self.getMailBox()
         mailbox.synchroTick()
-        filter_engine = mailbox.getFilters()
         connector = self._getconnector()
         zodb_messages = self.getMailMessages(list_folder=False,
                                              list_messages=True,
@@ -592,7 +590,6 @@ class MailFolder(BTreeFolder2):
             # deleted form the server
             uids = []
 
-        server_uids = uids
         if self.loose_sync:
             new_list = []
             for part in uids:
@@ -623,17 +620,14 @@ class MailFolder(BTreeFolder2):
                 fetched = []
                 mailfailed = True
             end = time.time() - start
+            LOG('sync', INFO, 'fetched in %s seconds' % str(end))
             # now syncing each message
             start_time = time.time()
-            i = 0
-            y = 0
+
             if len(sub_bloc) == 1:
                 fetched = {sub_bloc[0] : fetched}
 
             for uid in sub_bloc:
-                #if not fetched.has_key(uid):
-                #    #sync_states[uid] = True
-                #    continue
                 mailbox.synchroTick()
                 fetched_mail = fetched[uid]
                 found = False
@@ -680,10 +674,6 @@ class MailFolder(BTreeFolder2):
                         # XXX todo : load filelist
                         indexStack.append(msg)
                         #self._updateDirectories(msg)
-
-                        # XXX opti might want to call this before
-                        # creating the message
-                        #filter_engine.filterMessage(msg)
                     else:
                         self.manage_delObjects([msg.getId()])
                 else:
@@ -692,10 +682,7 @@ class MailFolder(BTreeFolder2):
                         if not mailfailed:
                             log.append('moving message %s in %s' % \
                                     (uid, self.server_name))
-                            try:
-                                self._setObject(msg.getId(), msg)
-                            except:
-                                raise 'probleme '+str(msg.title)
+                            self._setObject(msg.getId(), msg)
                         else:
                             log.append('failed to get message %s in %s' \
                                         % (uid, self.server_name))
@@ -705,22 +692,11 @@ class MailFolder(BTreeFolder2):
                     self._checkFlags(msg, msg_flags)
                     sync_id = '%s' % msg.digest
                     sync_states[sync_id] = True
-                if i > 299:
-                    i = 0
-                    # implicitly usable without import
-                    get_transaction().commit()
-                    get_transaction().begin()
 
-                    LOG('sync', INFO, '%s %s/%s ' % \
-                        (self.id,str(y)/str(len(sub_bloc))))
-                else:
-                    i += 1
-
-                y += 1
             get_transaction().commit()  # implicitly usable without import
             get_transaction().begin()   # implicitly usable without import
             end_time = time.time() - start_time
-            LOG('sync', INFO, 'DONE')
+            LOG('sync', INFO, 'synced done in %s seconds' % str(end_time))
 
         # now clear messages in zodb that appears to be
         # deleted from the directory
@@ -992,7 +968,7 @@ class MailFolder(BTreeFolder2):
         next_id = str(int(current_number) + 1)
         return self.getIdFromUid(next_id)
 
-    def _fillVacuum(self, id, uid):
+    def _fillVacuum(self, id):
         """ fill an index vacuum """
         if hasattr(self, id):
             return True
@@ -1010,6 +986,7 @@ class MailFolder(BTreeFolder2):
             msg.uid = self.getUidFromId(msg.id)
             vacuum_id = self._nextId(vacuum_id)
             next_id = self._nextId(next_id)
+        return True
 
 """ classic Zope 2 interface for class registering
 """
