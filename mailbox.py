@@ -198,6 +198,9 @@ class MailBox(MailBoxBaseCaching):
         if self._connection_params == {}:
             portal_webmail = getToolByName(self, 'portal_webmail')
             self._connection_params = portal_webmail.default_connection_params
+        if not self._connection_params.has_key('uid'):
+            uid = self.id.replace('box_', '')
+            self._connection_params['uid'] = uid
         return self._connection_params
 
     def getFilters(self):
@@ -229,6 +232,7 @@ class MailBox(MailBoxBaseCaching):
         start_time = time.time()
         indexStack = []
         # retrieving folder list from server
+        LOG('synchronize', INFO, 'synchro started light = %s' % str(light))
         connector = self._getconnector()
         if light:
             server_directory = [{'Name': 'INBOX'}]
@@ -841,10 +845,6 @@ class MailBox(MailBoxBaseCaching):
 
     def wrapConnectionParams(self, params):
         """ wraps connection params """
-        if not params.has_key('uid'):
-            uid = self.id.replace('box_', '')
-            params['uid'] = uid
-
         # now for each parameter, if it has to be
         # picked in a director, let's do it here
         params_values = map(self._directoryToParam, params.values())
@@ -972,6 +972,10 @@ class MailBoxParametersView(BrowserView):
         """
         ob = self.context
         return ob.getConnectionParams()
+
+    def getUserName(self):
+       """ retrieves user name """
+       return self._getParameters()['uid']
 
     def renderParameters(self):
         """ renders parameters
@@ -1139,7 +1143,6 @@ class MailBoxTraversable(FiveTraversable):
     >>> IMessageTraverser.providedBy(f)
     True
     """
-
     implements(IMessageTraverser)
 
     def traverse(self, path='', request=None):
