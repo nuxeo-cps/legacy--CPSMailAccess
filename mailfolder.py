@@ -570,7 +570,6 @@ class MailFolder(BTreeFolder2):
     def _synchronizeFolder(self, return_log=False, indexStack=[]):
         """ See interfaces.IMailFolder """
         LOG('sync', INFO, 'synchronizing %s' % self.id)
-        print 'synchro %s' % self.id
         self._clearCache()
         sync_states = {}
         log = []
@@ -639,9 +638,6 @@ class MailFolder(BTreeFolder2):
                 fetched_mail = fetched[uid]
                 found = False
                 msg = self.findMessageByUid(uid)
-                if msg is not None:
-                    print 'find message in folder %s' % self.id
-
                 msg_flags = fetched_mail[0]
                 msg_size = fetched_mail[1]
                 msg_headers = None
@@ -660,26 +656,18 @@ class MailFolder(BTreeFolder2):
                 if msg is not None:
                     if msg.digest != digest:
                         # same uid but not same message
-                        print 'same uid but not same message ' +str(msg.title)
                         old_digest = msg.digest
                         mailbox.addMailToCache(msg, old_digest)
                         # XXX need to remove for catalogs
-                        print 'suppressing %s from %s ' %(msg.id, self.id)
-                        print 'avant %s ' % str(list(self.objectIds()))
                         self.manage_delObjects([msg.getId()])
-                        print 'apres %s ' % str(list(self.objectIds()))
                         msg = None
                     else:
                         found = True
                 else:
                     msg = mailbox.getMailFromCache(digest, remove=True)
-                    if msg is not None:
-                        print 'found in cache ' +str(msg.title)
 
                 if msg is None and not mailfailed:
-                    print 'creating message ' + str(uid)
                     msg = self._addMessage(uid, digest, index=False)
-
                     skip = self._loadMessageStructureFromServer(self.server_name,
                                                          uid, msg_flags,
                                                          msg_headers,
@@ -695,12 +683,10 @@ class MailFolder(BTreeFolder2):
 
                         # XXX opti might want to call this before
                         # creating the message
-                        #print 'filtering message'
                         #filter_engine.filterMessage(msg)
                     else:
                         self.manage_delObjects([msg.getId()])
                 else:
-                    print 'message found'
                     # Message was in cache, adding it to self
                     if not found:
                         if not mailfailed:
@@ -742,11 +728,9 @@ class MailFolder(BTreeFolder2):
         for message in zodb_messages:
             if not sync_states['%s' % message.digest]:
                 digest = message.digest
-                print 'removing %s' % message.digest
                 mailbox.addMailToCache(message, digest)
                 # XXX need to remove for catalogs
                 self.manage_delObjects([message.getId()])
-                #print 'XXXXXXXXXXXXX deleting %s.%s' % (mailbox, str(message.getId()))
         # used to prevent swapping
         get_transaction().commit()    # implicitly usable without import
         get_transaction().begin()     # implicitly usable without import
@@ -770,11 +754,9 @@ class MailFolder(BTreeFolder2):
         """
         current = self
         while not IMailBox.providedBy(current) and current is not None:
-            print 'con.'
             current = aq_parent(current)
 
         if current is not None:
-            print 'yup con.'
             return current._getconnector()
         else:
             raise MailContainerError('object is not contained in a mailbox')
