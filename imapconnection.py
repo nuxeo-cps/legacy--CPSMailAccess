@@ -224,7 +224,7 @@ class IMAPConnection(BaseConnection):
         """ creates a list of part queried """
         return self._extractCommands(message_parts)
 
-    def extractResult(self, fullquery, query, results):
+    def _extractResult(self, query, results):
         """ extracts a result from a block of results """
         if isinstance(results, tuple):
             results = list(results)
@@ -356,7 +356,6 @@ class IMAPConnection(BaseConnection):
         except (IMAP4.error, IMAP4_SSL.error):
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
         try:
-            original_query = message_number
             imap_result =  self._connection.fetch(message_number, message_parts)
         except self._connection.error:
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
@@ -390,8 +389,7 @@ class IMAPConnection(BaseConnection):
                 sub_result = []
                 i = 0
                 for query in query_list:
-                    raw_result = self.extractResult(message_parts, query,
-                                                    sub_raw)
+                    raw_result = self._extractResult(query, sub_raw)
                     sub_result.append(raw_result)
                     i += 1
                 results[message] = sub_result
@@ -629,8 +627,6 @@ class IMAPConnection(BaseConnection):
         start = stop = i = 0
         commands = []
         level = 0
-        current_command = ''
-        added_word = False
         while i <= len(command_sequence):
             if i == len(command_sequence):
                 command = command_sequence[start:stop]
@@ -642,7 +638,6 @@ class IMAPConnection(BaseConnection):
                         if command[0] == '(' and command[1] == ')':
                             command = command[1:-1]
                         commands.append(command)
-                        current_command = ''
                         start = stop + 1
                 elif command_sequence[i] == '[': level += 1
                 elif command_sequence[i] == ']': level -= 1
