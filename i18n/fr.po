@@ -338,3 +338,15 @@ msgstr "pourriel ?"
 
 msgid "Need an action param"
 msgstr "L'action demande un paramètre"
+
+msgid "_list_mail_"
+msgstr "Mes mails"
+
+msgid "label_webmail_enabled"
+msgstr "Webmail activé"
+
+msgid "label_address_book"
+msgstr "Carnet d'adresse"
+
+msgid "label_personal_addressbook"
+msgstr "Carnet d'adresse personel"

@@ -339,3 +339,15 @@ msgstr ""
 
 msgid "Need an action param"
 msgstr ""
+
+msgid "_list_mail_"
+msgstr ""
+
+msgid "label_webmail_enabled"
+msgstr ""
+
+msgid "label_address_book"
+msgstr ""
+
+msgid "label_personal_addressbook"
+msgstr ""
