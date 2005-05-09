@@ -1,4 +1,4 @@
-#parameters=
+##parameters=
 #$Id$
 """ return the body onload attribute content
 """

@@ -1,12 +1,4 @@
-## Script (Python) "background_synchro"
-##bind container=container
-##bind context=context
-##bind namespace=
-##bind script=script
-##bind subpath=traverse_subpath
 ##parameters=user,light=True
-##title=
-##
 # $Id$
 """ calls zasync if available or call direct synchro """
 box_name = 'box_%s' % user
