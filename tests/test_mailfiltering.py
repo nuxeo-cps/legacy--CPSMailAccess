@@ -44,9 +44,9 @@ class MailFilteringTestCase(MailTestCase):
     def test_delFilter(self):
         ob = MailFiltering()
         ob.addFilter('subjet', 'condition', 'value', 'action', 'action_param')
-        ob.delFilter('subjet', 'condition', 'value', 'action', 'action_param')
+        ob.delFilter('subjet', 'condition', 'value')
         self.assertEquals(len(ob._filters), 0)
-        ob.delFilter('subjet', 'condition', 'value', 'action', 'action_param')
+        ob.delFilter('subjet', 'condition', 'value')
         self.assertEquals(len(ob._filters), 0)
 
     def test_matchCondition(self):

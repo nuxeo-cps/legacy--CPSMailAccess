@@ -110,19 +110,19 @@ class IMAPConnectionTestCase(MailTestCase):
         ob = self.makeConnection()
         fullquery = '(FLAGS RFC822.SIZE RFC822.HEADER)'
 
-        res = ob.extractResult(fullquery, 'FLAGS',
+        res = ob._extractResult('FLAGS',
         ['1 (FLAGS (\\Seen) RFC822.SIZE 515 RFC822.HEADER {474}', 'Return-Path: <webmaster@zopeur.org>\r\nDelivered-To: webmaster@openconference.org\r\nReceived: (qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000\r\nMessage-ID: <20050101013152.24339.qmail@ns2641.ovh.net>\r\nFrom: webmaster@openconference.org\r\nTo: webmaster@openconference.org\r\nSubject: webmaster@openconference.org\r\nDate: Sat, 01 Jan 2005 02:31:52 +0100\r\nMime-Version: 1.0\r\nContent-Type: text/plain; format=flowed; charset="iso-8859-1"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n'])
         self.assertEquals(res, ['Seen'])
 
-        res = ob.extractResult(fullquery, 'RFC822.SIZE', [('1 (FLAGS (\\Seen) RFC822.SIZE 515 RFC822.HEADER {474}', 'Return-Path: <webmaster@zopeur.org>\r\nDelivered-To: webmaster@openconference.org\r\nReceived: (qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000\r\nMessage-ID: <20050101013152.24339.qmail@ns2641.ovh.net>\r\nFrom: webmaster@openconference.org\r\nTo: webmaster@openconference.org\r\nSubject: webmaster@openconference.org\r\nDate: Sat, 01 Jan 2005 02:31:52 +0100\r\nMime-Version: 1.0\r\nContent-Type: text/plain; format=flowed; charset="iso-8859-1"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n'), ')'])
+        res = ob._extractResult('RFC822.SIZE', [('1 (FLAGS (\\Seen) RFC822.SIZE 515 RFC822.HEADER {474}', 'Return-Path: <webmaster@zopeur.org>\r\nDelivered-To: webmaster@openconference.org\r\nReceived: (qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000\r\nMessage-ID: <20050101013152.24339.qmail@ns2641.ovh.net>\r\nFrom: webmaster@openconference.org\r\nTo: webmaster@openconference.org\r\nSubject: webmaster@openconference.org\r\nDate: Sat, 01 Jan 2005 02:31:52 +0100\r\nMime-Version: 1.0\r\nContent-Type: text/plain; format=flowed; charset="iso-8859-1"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n'), ')'])
         self.assertEquals(res, '515')
 
-        res = ob.extractResult(fullquery, 'RFC822.HEADER', ['1 (FLAGS (\\Seen) RFC822.SIZE 515 RFC822.HEADER {474}', 'Return-Path: <webmaster@zopeur.org>\r\nDelivered-To: webmaster@openconference.org\r\nReceived: (qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000\r\nMessage-ID: <20050101013152.24339.qmail@ns2641.ovh.net>\r\nFrom: webmaster@openconference.org\r\nTo: webmaster@openconference.org\r\nSubject: webmaster@openconference.org\r\nDate: Sat, 01 Jan 2005 02:31:52 +0100\r\nMime-Version: 1.0\r\nContent-Type: text/plain; format=flowed; charset="iso-8859-1"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n'])
+        res = ob._extractResult('RFC822.HEADER', ['1 (FLAGS (\\Seen) RFC822.SIZE 515 RFC822.HEADER {474}', 'Return-Path: <webmaster@zopeur.org>\r\nDelivered-To: webmaster@openconference.org\r\nReceived: (qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000\r\nMessage-ID: <20050101013152.24339.qmail@ns2641.ovh.net>\r\nFrom: webmaster@openconference.org\r\nTo: webmaster@openconference.org\r\nSubject: webmaster@openconference.org\r\nDate: Sat, 01 Jan 2005 02:31:52 +0100\r\nMime-Version: 1.0\r\nContent-Type: text/plain; format=flowed; charset="iso-8859-1"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n'])
 
         self.assertEquals(res, {'Received': '(qmail 28847 invoked by uid 508); 1 Jan 2005 01:31:52 -0000', 'Delivered-To': 'webmaster@openconference.org', 'From': 'webmaster@openconference.org', 'Return-Path': '<webmaster@zopeur.org>', 'Content-Transfer-Encoding': '8bit', 'To': 'webmaster@openconference.org', 'Mime-Version': '1.0', 'Date': 'Sat, 01 Jan 2005 02:31:52 +0100', 'Message-ID': '<20050101013152.24339.qmail@ns2641.ovh.net>', 'Content-Type': 'text/plain; format=flowed; charset="iso-8859-1"', 'Subject': 'webmaster@openconference.org'})
 
-        res = ob.extractResult('(BODY)', 'BODY',
-                               ['1 (BODY ("text" "plain" NIL NIL NIL "8bit" 15 1))'])
+        res = ob._extractResult('BODY',
+                                ['1 (BODY ("text" "plain" NIL NIL NIL "8bit" 15 1))'])
 
         self.assertEquals(res,['text', 'plain', None, None, None, '8bit', 15, 1])
 
@@ -132,17 +132,17 @@ class IMAPConnectionTestCase(MailTestCase):
 
         fullquery = '(BODY)'
 
-        res = ob.extractResult(fullquery, 'BODY', ['2 (BODY ((("text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18)("text" "html" ("charset" "us-ascii") NIL NIL "8bit" 0 0) "alternative")("image" "jpeg" ("name" "wlogo.jpg") NIL NIL "base64" 7226) "mixed"))'])
+        res = ob._extractResult('BODY', ['2 (BODY ((("text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18)("text" "html" ("charset" "us-ascii") NIL NIL "8bit" 0 0) "alternative")("image" "jpeg" ("name" "wlogo.jpg") NIL NIL "base64" 7226) "mixed"))'])
 
         self.assertEquals(res, ['mixed', ['alternative', ['text', 'plain', None, None, '8bit', 738, 18,
              ['charset', 'us-ascii']], ['text', 'html', None, None, '8bit', 0, 0, ['charset', 'us-ascii']]],
             ['image', 'jpeg', None, None, 'base64', 7226, ['name', 'wlogo.jpg']]])
 
 
-        res = ob.extractResult(fullquery, 'BODY', '(BODY ("text" "plain" NIL NIL NIL "8bit" 1997 35))')
+        res = ob._extractResult('BODY', '(BODY ("text" "plain" NIL NIL NIL "8bit" 1997 35))')
         self.assertEquals(res,['text', 'plain', None, None, '8bit', 1997, 35])
 
-        res = ob.extractResult(fullquery, 'BODY', '(BODY (("text" "plain" ("charset" "iso-8859-1") NIL NIL "quoted-printable" 770 18)("text" "html" ("charset" "iso-8859-1") NIL NIL "quoted-printable" 83 2) "alternative"))')
+        res = ob._extractResult('BODY', '(BODY (("text" "plain" ("charset" "iso-8859-1") NIL NIL "quoted-printable" 770 18)("text" "html" ("charset" "iso-8859-1") NIL NIL "quoted-printable" 83 2) "alternative"))')
 
         self.assertEquals(res,['text', 'plain', None, None, 'quoted-printable', 770, 18,
                                ['charset', 'iso-8859-1']],
@@ -154,7 +154,7 @@ class IMAPConnectionTestCase(MailTestCase):
         ob = self.makeConnection()
         fullquery = '(BODY.PEEK[1])'
 
-        res = ob.extractResult(fullquery, 'BODY.PEEK[1]', [('1 (BODY[1] {550}', " \r\n.../...\r\n\r\n> CPS, es-tu l\xe0... :)\r\n\r\nIl \xe9tait l\xe0 o\xf9 on ne l'attendait pas forc\xe9ment...\r\n;o)\r\n\r\nJo\xebl Kermabon\r\nNeptune Internet Services\r\n\r\nLe Jeudi 17 F\xe9vrier 2005 16:07, Damien Wyart avait \xe9crit :\r\n> * Joel Kermabon <J.Kermabon@neptune.fr> [170205 15:56]:\r\n> > Une conscience externe s'est manifest\xe9e avec efficacit\xe9...\r\n>\r\n> CPS, es-tu l\xe0... :)\r\n\r\n_______________________________________________\r\ncps-users-fr \r\nAdresse de la liste : cps-users-fr@lists.nuxeo.com\r\nGestion de l'abonnement : <http://lists.nuxeo.com/mailman/listinfo/cps-users-fr>\r\n"), ')'])
+        res = ob._extractResult('BODY.PEEK[1]', [('1 (BODY[1] {550}', " \r\n.../...\r\n\r\n> CPS, es-tu l\xe0... :)\r\n\r\nIl \xe9tait l\xe0 o\xf9 on ne l'attendait pas forc\xe9ment...\r\n;o)\r\n\r\nJo\xebl Kermabon\r\nNeptune Internet Services\r\n\r\nLe Jeudi 17 F\xe9vrier 2005 16:07, Damien Wyart avait \xe9crit :\r\n> * Joel Kermabon <J.Kermabon@neptune.fr> [170205 15:56]:\r\n> > Une conscience externe s'est manifest\xe9e avec efficacit\xe9...\r\n>\r\n> CPS, es-tu l\xe0... :)\r\n\r\n_______________________________________________\r\ncps-users-fr \r\nAdresse de la liste : cps-users-fr@lists.nuxeo.com\r\nGestion de l'abonnement : <http://lists.nuxeo.com/mailman/listinfo/cps-users-fr>\r\n"), ')'])
 
         self.assertEquals(res," \r\n.../...\r\n\r\n> CPS, es-tu l\xe0... :)\r\n\r\nIl \xe9tait l\xe0 o\xf9 on ne l'attendait pas forc\xe9ment...\r\n;o)\r\n\r\nJo\xebl Kermabon\r\nNeptune Internet Services\r\n\r\nLe Jeudi 17 F\xe9vrier 2005 16:07, Damien Wyart avait \xe9crit :\r\n> * Joel Kermabon <J.Kermabon@neptune.fr> [170205 15:56]:\r\n> > Une conscience externe s'est manifest\xe9e avec efficacit\xe9...\r\n>\r\n> CPS, es-tu l\xe0... :)\r\n\r\n_______________________________________________\r\ncps-users-fr \r\nAdresse de la liste : cps-users-fr@lists.nuxeo.com\r\nGestion de l'abonnement : <http://lists.nuxeo.com/mailman/listinfo/cps-users-fr>\r\n"    )
 
