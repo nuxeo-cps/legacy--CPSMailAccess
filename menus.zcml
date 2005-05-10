@@ -1,0 +1,122 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:five="http://namespaces.zope.org/five"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- mailbox actions ####################################################-->
+  <browser:menuItem
+    menu="object"
+    title="cpsma_configure"
+    for=".interfaces.IMailBox"
+    action="configure.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cpsma_configure.png"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_getmessages"
+    for=".interfaces.IMailBox"
+    action="syncProgress.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cpsma_getmails.png"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_search_messages"
+    for=".interfaces.IMailBox"
+    action="zemanticSearchMessage.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cspma_mail_find.png"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_write_message"
+    for=".interfaces.IMailBox"
+    action="editMessage.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cpsma_writemail.png"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_address_books"
+    for=".interfaces.IMailBox"
+    action="addressBooks.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cpsma_addressbook.png"-->
+  <!-- end mailbox actions ################################################-->
+
+  <!-- mailfolder actions #################################################-->
+  <browser:menuItem
+    menu="object"
+    title="cpsma_configure"
+    for=".interfaces.IMailFolder"
+    action="configure.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cpsma_configure.png"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_getmessages"
+    for=".interfaces.IMailFolder"
+    action="syncProgress.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cpsma_getmails.png"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_search_messages"
+    for=".interfaces.IMailFolder"
+    action="zemanticSearchMessage.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cspma_mail_find.png"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_write_message"
+    for=".interfaces.IMailFolder"
+    action="editMessage.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cpsma_writemail.png"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_address_books"
+    for=".interfaces.IMailFolder"
+    action="addressBooks.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!--icon="cpsma_addressbook.png"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_empty_trash"
+    for=".interfaces.IMailFolder"
+    action="emptyTrash.html"
+    permission="cpsmailaccess.ViewMailBox"
+    />
+    <!-- XXX raises a forbidden attribute ???? filter="python:context==context.getMailBox().getTrashFolder()" -->
+    <!--icon="cpsma_emptytrash.png"-->
+    <!--onclik="return window.confirm('Are you sure?')"-->
+
+  <browser:menuItem
+    menu="object"
+    title="cpsma_add_subfolder"
+    for=".interfaces.IMailFolder"
+    action="view?add_folder=1"
+    permission="cpsmailaccess.ViewMailBox"
+
+    />
+    <!-- filter="context/canCreateSubFolder" -->
+    <!-- action="view?add_folder=1-et-keep_last_sort=1"  is not accepted -->
+
+  <!-- end mailfolder actions #############################################-->
+
+</configure>
