@@ -22,9 +22,9 @@
 
 """
 import re
+import socket
 from time import sleep, time
 from zLOG import LOG,INFO, DEBUG
-
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
 from zope.interface import implements
 from interfaces import IConnection
@@ -82,7 +82,7 @@ class IMAPConnection(BaseConnection):
                 else:
                     self._connection = IMAP4(host, port)
                 connected = True
-            except IMAP4.abort: # (IMAP4.error, IMAP4_SSL.error):
+            except (IMAP4.abort, socket.error):
                 sleep(0.3)
                 failures += 1
 
