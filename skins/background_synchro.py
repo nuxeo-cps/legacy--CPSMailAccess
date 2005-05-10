@@ -2,20 +2,20 @@
 # $Id$
 """ calls zasync if available or call direct synchro """
 box_name = 'box_%s' % user
+req = context.REQUEST
 
 if hasattr(context, 'asynchronous_call_manager'):
     acm = context.asynchronous_call_manager
     light = test(light, 'True', 'False')
+    root = container.portal_url.getPortalPath()
+    root = root.replace('/', '.')
+    if root[0] == '.':
+        root = root[1:]
     acm.putCall('zope_exec', '/', {},
-                'python:home.cps.portal_webmail.background("%s", %s)' \
-                % (box_name, light), {})
+                'python:home.%s.portal_webmail.background("%s", %s)' \
+                % (root, box_name, light), {})
+    if req is not None:
+        root = container.portal_url()
+        req.RESPONSE.redirect('%s/portal_webmail/%s/INBOX/view' % (root, box_name))
 else:
-    box = getattr(container.portal_webmail, box_name, None)
-    box.synchronize(no_log=True, light=light)
-
-req = context.REQUEST
-if req is not None:
-    req.RESPONSE.redirect('portal_webmail/%s/INBOX/view' % box_name)
-    return 'done'
-else:
-    return 'called for %s '  % user
+    container.background(box_name, light)
