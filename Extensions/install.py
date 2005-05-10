@@ -94,6 +94,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.addWMAction()
         self.checkExistingMailBoxes()
         self.setupPermissions()
+        self.linkFiveActionTool()
         self.setupTranslations()
         self.finalize()
         self.log("End of Install/Update : CPSMailAccess Product")
@@ -549,6 +550,19 @@ class CPSMailAccessInstaller(CPSInstaller):
     def setupPermissions(self):
         """ sets up permission """
         self.setupPortalPermissions(permissions, self.portal)
+
+    def linkFiveActionTool(self):
+        """ verify that five action tool is linked """
+        five_actions = 'portal_fiveactions'
+        if not hasattr(self.portal, five_actions):
+            self.portal.manage_addProduct['CMFonFive'].\
+                manage_addTool(type='Five Actions Tool')
+
+        portal_actions = self.portal.portal_actions
+
+        if five_actions not in portal_actions.listActionProviders():
+            portal_actions.addActionProvider(five_actions)
+
 
 def install(self):
     """Installation is done here.
