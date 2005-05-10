@@ -30,7 +30,22 @@ class BaseMailMessageView(BrowserView):
     def getBaseUrl(self):
         """ retrieves baseurl """
         portal_url = getToolByName(self.context, 'portal_url')
-        return portal_url.getPortalPath()     # check if ok behind apache
+        return portal_url()
+
+    def getAbsoluteUrl(self, element):
+        portal_url = getToolByName(self.context, 'portal_url')
+        # XXX need to see why it returns wrong url with five
+        url = portal_url.getRelativeUrl(element)
+        full_url = '%s/%s' % (self.getBaseUrl(), url)
+        splited = full_url.split('/')
+        print splited[-1]
+        print element.id
+        if splited[-1] != element.id:
+            del splited[-1]
+        absolute_url = '/'.join(splited)
+        print str(absolute_url)
+        return absolute_url
+
 
     def getIconName(self, short_title, selected, root):
         """Return icon name
