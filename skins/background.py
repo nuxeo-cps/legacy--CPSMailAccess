@@ -1,4 +1,7 @@
 ##parameters=box_name, light=True
 # $Id$
-box = getattr(container.portal_webmail, box_name, None)
-box.synchronize(no_log=True, light=light)
+root = container.portal_url()
+resp = context.REQUEST.RESPONSE
+light = test(light, '1', '0')
+resp.redirect('%s/portal_webmail/%s/synchronize.html?light=%s' %(root, box_name, light))
+
