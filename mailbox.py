@@ -234,15 +234,18 @@ class MailBox(MailBoxBaseCaching):
         # retrieving folder list from server
         LOG('synchronize', INFO, 'synchro started light = %s' % str(light))
         connector = self._getconnector()
+
         if light:
             server_directory = [{'Name': 'INBOX'}]
         else:
             server_directory = connector.list()
         if no_log:
-            returned = self._syncdirs(server_directory, False, indexStack,
-                                        light)
+            returned = self._syncdirs(server_directories=server_directory,
+                                      return_log=False, indexStack=indexStack,
+                                      light=light)
         else:
-            log = self._syncdirs(server_directory, True, indexStack)
+            log = self._syncdirs(server_directories=server_directory,
+                                 return_log=True, indexStack=indexStack)
             log.insert(0, 'synchronizing mailbox...')
             log.append('... done')
             logtext = '\n'.join(log)
