@@ -70,7 +70,7 @@ class MailTool(Folder): # UniqueObject
     default_connection_params = {'connection_type' : 'IMAP',
                                  'HOST' : 'localhost',
                                  'PORT' : 143,
-                                 'SSH' :  0,
+                                 'SSL' :  0,
                                  'login' : '',
                                  'password' :'',
                                  'smtp_host' : 'localhost',
