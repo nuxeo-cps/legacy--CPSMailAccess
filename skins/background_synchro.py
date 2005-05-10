@@ -16,6 +16,8 @@ if hasattr(context, 'asynchronous_call_manager'):
                 % (root, box_name, light), {})
     if req is not None:
         root = container.portal_url()
-        req.RESPONSE.redirect('%s/portal_webmail/%s/INBOX/view' % (root, box_name))
+        psm = 'cps_synchronizing'
+        req.RESPONSE.redirect('%s/portal_webmail/%s/view?portal_status_message=%s' \
+                               % (root, box_name, psm))
 else:
     container.background(box_name, light)
