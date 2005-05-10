@@ -55,7 +55,6 @@ class MailFolder(BTreeFolder2):
     meta_type = 'CPSMailAccess Folder'
     server_name = ''
     sync_state = False
-    mailbox = None
     message_count = 0
     folder_count = 0
     loose_sync = False
@@ -72,6 +71,7 @@ class MailFolder(BTreeFolder2):
         self.setServerName(server_name)
         self.title = self.simpleFolderName()
         self._cache = RAMCache()
+        self._mailbox = None
 
     def getNextMessageUid(self):
         """ retrieves next id for messages
@@ -111,20 +111,18 @@ class MailFolder(BTreeFolder2):
         return len(self.getKeysSlice(key, key)) == 1
 
     def getMailBox(self):
-        """ See interfaces.IMailFolder """
-        if self.mailbox is None:
-            current = self
-            while current is not None and not IMailBox.providedBy(current):
-                current = aq_inner(aq_parent(current))
+        """ See interfaces.IMailFolder
 
-            if current is None or not IMailBox.providedBy(current):
-                return None
-                #raise MailContainerError('object not contained in a mailbox')
+        XXX should be memoized
+        """
+        current = self
+        while current is not None and not IMailBox.providedBy(current):
+            current = aq_inner(aq_parent(current))
 
-            self.mailbox = current
-            return current
+        if current is None or not IMailBox.providedBy(current):
+            return None
         else:
-            return self.mailbox
+            return current
 
     def getMailFolder(self):
         return self.aq_inner.aq_parent
