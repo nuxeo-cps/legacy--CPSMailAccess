@@ -194,7 +194,7 @@ msgstr ""
 msgid "PORT"
 msgstr ""
 
-msgid "SSH"
+msgid "SSL"
 msgstr ""
 
 msgid "cache_level"

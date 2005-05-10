@@ -194,8 +194,8 @@ msgstr "Hôte"
 msgid "PORT"
 msgstr "Port"
 
-msgid "SSH"
-msgstr "SSH ?"
+msgid "SSL"
+msgstr "SSL ?"
 
 msgid "cache_level"
 msgstr "Niveau de cache"
