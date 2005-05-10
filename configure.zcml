@@ -3,6 +3,7 @@
            xmlns:five="http://namespaces.zope.org/five">
 
   <include file="permissions.zcml" />
+  <include file="menus.zcml" />
 
   <five:traversable class="OFS.Folder.Folder" />
   <five:traversable class=".mailfolder.MailFolder" />
