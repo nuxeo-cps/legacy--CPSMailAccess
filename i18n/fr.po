@@ -350,3 +350,9 @@ msgstr "Carnet d'adresse"
 
 msgid "label_personal_addressbook"
 msgstr "Carnet d'adresse personel"
+
+msgid "cpsma_back_to_folder"
+msgstr "Retour au dossier"
+
+msgid "cpsma_detach"
+msgstr "Détacher"

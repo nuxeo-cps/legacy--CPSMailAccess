@@ -351,3 +351,9 @@ msgstr ""
 
 msgid "label_personal_addressbook"
 msgstr ""
+
+msgid "cpsma_back_to_folder"
+msgstr ""
+
+msgid "cpsma_detach"
+msgstr ""
