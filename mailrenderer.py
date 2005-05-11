@@ -36,7 +36,8 @@ from mimetools import decode
 
 from zope.interface import implements
 
-from utils import decodeHeader, HTMLize, HTMLToText, sanitizeHTML
+from utils import decodeHeader, HTMLize, HTMLToText, sanitizeHTML,\
+                  secureUnicode
 from interfaces import IMailRenderer
 
 
@@ -166,5 +167,5 @@ class MailRenderer:
                 # or when the codec was not installed in python codec
                 # forcing iso-8859-15
                 result = unicode(string, 'ISO-8859-15')
-            return result
-        return string
+            return secureUnicode(result)
+        return secureUnicode(string)
