@@ -457,7 +457,6 @@ class MailBox(MailBoxBaseCaching):
 
     def getTrashFolderName(self):
         """ returns the trash name """
-
         return self.getConnectionParams()['trash_folder_name']
 
     def getTrashFolder(self):
@@ -467,8 +466,8 @@ class MailBox(MailBoxBaseCaching):
         trash = getFolder(self, trash_name)
         if trash is None:
             if not hasattr(self, 'INBOX'):
-                self._addFolder('INBOX', 'INBOX', server=True)
-            inbox = self['INBOX']
+                res = self._addFolder('INBOX', 'INBOX', server=True)
+            inbox = getattr(self, 'INBOX')
             uid = self.simpleFolderName(trash_name)
             trash = inbox._addFolder(uid, trash_name, server=True)
         return trash
@@ -488,7 +487,7 @@ class MailBox(MailBoxBaseCaching):
         if draft is None:
             if not hasattr(self, 'INBOX'):
                 self._addFolder('INBOX', 'INBOX', server=True)
-            inbox = self['INBOX']
+            inbox = getattr(self, 'INBOX')
             uid = self.simpleFolderName(draft_name)
             draft = inbox._addFolder(uid, draft_name, server=True)
         return draft
@@ -506,7 +505,7 @@ class MailBox(MailBoxBaseCaching):
         if sent is None:
             if not hasattr(self, 'INBOX'):
                 self._addFolder('INBOX', 'INBOX', server=True)
-            inbox = self['INBOX']
+            inbox = getattr(self, 'INBOX')
             uid = self.simpleFolderName(sent_name)
             sent = inbox._addFolder(uid, sent_name, server=True)
         return sent
