@@ -175,6 +175,7 @@
              tal:attributes="href python:folder.absolute_url()+'/view';
                              title string:Back to folder">
             <img id="new_page" src="cpsma_back.png"/>
+             <span i18n:translate="cpsma_back_to_folder">Back to folder</span>
           </a>
           <a style="float: right; margin-right: 4px"
              i18n:attributes="title"
@@ -182,6 +183,7 @@
                              title string:In a new page"
              target="_blank">
             <img id="new_page" src="launch.png"/>
+            <span i18n:translate="cpsma_detach">Detach</span>
           </a>
         <tal:block tal:condition="request/showfolders|python:0">
             <a  i18n:attributes="title"
