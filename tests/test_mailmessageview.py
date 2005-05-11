@@ -255,6 +255,13 @@ class MailMessageViewTestCase(MailTestCase):
         self.assertEquals(rendered_to,
             u'xxx <xxx@nuxeo.com>,\n xxxx <xxxx@nuxeo.com>,\n xxxxx <xxxxx@nuxeo.com>')
 
+    def test_charmap_errors(self):
+        mbox =self._getMailBox()
+        ob = self.getMailInstance(43)
+        ob = ob.__of__(mbox)
+        view = MailMessageView(ob, None)
+        rendered_body = view.renderBody()
+        string = str(rendered_body)
 
 def test_suite():
     return unittest.TestSuite((

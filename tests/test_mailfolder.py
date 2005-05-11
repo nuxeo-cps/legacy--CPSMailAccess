@@ -488,7 +488,7 @@ class MailFolderTestCase(MailTestCase):
         self.assertEquals(list(folder.objectIds()), ['.0', '.2'])
 
         # let's vacuum the index
-        folder._fillVacuum('.1', '1')
+        folder._fillVacuum('.1')
 
         # check the result
         self.assertEquals(list(folder.objectIds()), ['.0', '.1'])

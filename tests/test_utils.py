@@ -164,6 +164,10 @@ The CPS Team.
         caller.join()
         self.assertEquals(self.total, 5)
 
+    def test_secureunicode(self):
+        res = secureUnicode(u'лидер в Уеб Хостинг решения ')
+        self.assertEquals(res, u'лидер в Уеб Хостинг решения ')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),

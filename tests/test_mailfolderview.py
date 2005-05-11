@@ -144,9 +144,8 @@ class MailFolderViewTestCase(MailTestCase):
 
         treeview = view.renderTreeView()
 
-        self.assertEquals(len(treeview), 5)
-        first = treeview[0]
-
+        self.assertEquals(len(treeview), 8)
+        first = treeview[3]	
         self.assertEquals(first['object'], first_sub_folder)
 
     def test_TreeViewCache(self):
@@ -169,8 +168,8 @@ class MailFolderViewTestCase(MailTestCase):
 
         treeview = view.renderTreeView()
 
-        self.assertEquals(len(treeview), 5)
-        first = treeview[0]
+        self.assertEquals(len(treeview), 8)
+        first = treeview[3]
 
         self.assertEquals(first['object'], first_sub_folder)
 
