@@ -372,7 +372,7 @@ class MailFolderView(BaseMailMessageView):
                 if action == 'delete':
                     for msg in msg_list:
                         folder, uid = self.getMessageUidAndFolder(msg)
-                        mailfolder.deleteMessage(uid)
+                        folder.deleteMessage(uid)
                         changed = 1
                     if len(msg_list) > 1:
                         psm = 'Messages sent to Trash.'
