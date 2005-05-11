@@ -346,7 +346,9 @@ class MailFolder(BTreeFolder2):
     def _asyncOnFlagChanged(self, server_name, uid, kw, connector):
         """ asynced """
         try:
-            connector.setFlags(server_name, uid, kw)
+            pass
+            # need to call this asynchronously with zasync if available
+            # connector.setFlags(server_name, uid, kw)
         except ConnectionError:
             pass
 
@@ -932,7 +934,7 @@ class MailFolder(BTreeFolder2):
         self._cache.set((page, nb_items, sort_with, sort_asc), 'last_sort')
 
     def getMailListFromCache(self, page, nb_items, sort_with, sort_asc):
-        """ to be extern. in mailfolder """
+        """ xxx to be extern. in mailfolderview """
         if not hasattr(self, '_cache'):
             self._cache = RAMCache()
             return None
@@ -977,13 +979,17 @@ class MailFolder(BTreeFolder2):
 
         # finding msg
         while hasattr(self, next_id):
-            msg = self[next_id]
-            self._setObject(vacuum_id, msg)
-            self._delObject(next_id)
-            #self.manage_renameObject(next_id, vacuum_id)
-            msg.uid = self.getUidFromId(msg.id)
+            # XXX makes a side effect on publisher
+            msg = getattr(self, next_id)
+            self._delOb(next_id)
+            self._setOb(vacuum_id, msg)
+            msg.id = vacuum_id
+            msg.uid = self.getUidFromId(vacuum_id)
             vacuum_id = self._nextId(vacuum_id)
             next_id = self._nextId(next_id)
+
+            self.manage_cleanup()
+
         return True
 
 """ classic Zope 2 interface for class registering
