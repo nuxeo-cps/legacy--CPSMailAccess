@@ -523,5 +523,5 @@ def getMemberById(context, uid):
 def secureUnicode(unicode_content):
     """ make sure given unicode can be safely encoded in iso8859-15
     """
-    string = unicode_content.encode('ISO-8859-15', 'replace')
-    return string.decode('ISO-8859-15')
+    string_ = unicode_content.encode('ISO-8859-15', 'replace')
+    return string_.decode('ISO-8859-15')
