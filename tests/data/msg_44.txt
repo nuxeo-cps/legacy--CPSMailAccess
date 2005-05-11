@@ -1,0 +1,49 @@
+Return-Path: <squid-users-return-55792-tziade=nuxeo.com@squid-cache.org>
+Delivered-To: tziade@nuxeo.com
+Received: (qmail 22374 invoked by uid 1009); 10 May 2005 08:12:15 +0200
+Received: from squid-users-return-55792-tziade=nuxeo.com@squid-cache.org by tamise.nuxeo.com by uid 1008 with qmail-scanner-1.22-st-qms
+ (clamscan: 0.75-1. spamassassin: 3.0.0.  Clear:RC:0(206.168.0.9):SA:0(-2.6/5.0):.
+ Processed in 3.738302 secs); 10 May 2005 06:12:15 -0000
+X-Spam-Status: No, hits=-2.6 required=5.0
+Received: from squid-cache.org (206.168.0.9)
+  by tamise.nuxeo.com with SMTP; 10 May 2005 08:12:11 +0200
+Received: (qmail 83904 invoked by uid 1007); 10 May 2005 06:10:01 -0000
+Mailing-List: contact squid-users-help@squid-cache.org; run by ezmlm
+Precedence: bulk
+List-Post: <mailto:squid-users@squid-cache.org>
+List-Help: <mailto:squid-users-help@squid-cache.org>
+List-Unsubscribe: <mailto:squid-users-unsubscribe@squid-cache.org>
+List-Subscribe: <mailto:squid-users-subscribe@squid-cache.org>
+Delivered-To: mailing list squid-users@squid-cache.org
+Received: (qmail 83892 invoked from network); 10 May 2005 06:10:01 -0000
+Message-ID: <671020243.1115705400133.JavaMail.nobody@app1.ni.bg>
+Date: Tue, 10 May 2005 09:10:00 +0300 (EEST)
+From: Ivan Petrushev <ivanatora1@abv.bg>
+To: squid-users@squid-cache.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="windows-1251"
+Content-Transfer-Encoding: 7bit
+X-Mailer: AbvMail 1.0
+X-Originating-IP: 83.228.41.180
+Subject: [squid-users] Making ACL for an IP range
+
+Hello :-) That's my first mailist posting but I hope I'll get the
+basics soon. Please excuse my poor english.
+The problem I'm trying to solve is how to make ACL responding for a
+range of IPs (not the whole subnet). If I wanted to make the ACL
+responding for the whole subnet I would use CIDR or dotted notation
+like:
+acl mynetwork src 192.168.1.1/255.255.255.0
+or
+acl mynetwork src 192.168.1.1/24
+I want that acl 'mynetwork' to respond only for IPs 192.168.1.30 -
+192.168.1.47 (for example). That is neither a subnetwork and can't be
+done via the upper examples. So can I use (from IP) (to IP) range in
+squid.conf and what is the exact syntaxis? I haven't seen anything
+like that in the online documentation, but that doesn't mean it
+doesn't exist :-)
+
+Greetings, Ivan Petrushev.
+
+-----------------------------------------------------------------
+http://host.GBG.bg - лидер в Уеб Хостинг решения и регистрация на Домейн имена
