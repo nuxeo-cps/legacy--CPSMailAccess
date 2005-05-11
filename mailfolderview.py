@@ -20,17 +20,41 @@
 from math import ceil
 
 from zLOG import LOG, INFO, DEBUG
-from basemailview import BaseMailMessageView
-from utils import decodeHeader, localizeDateString, parseDateString, \
-    isToday, getFolder, getHumanReadableSize, intToSortableStr
-from interfaces import IMailMessage
 
 from zope.app.cache.ram import RAMCache
+from zope.interface import directlyProvides, directlyProvidedBy
+
+from basemailview import BaseMailMessageView
+from interfaces import IMailMessage, ITrashFolder, IDraftFolder, ISentFolder,\
+                       IContainerFolder
+from utils import decodeHeader, localizeDateString, parseDateString, \
+    isToday, getFolder, getHumanReadableSize, intToSortableStr
 
 class MailFolderView(BaseMailMessageView):
 
     def __init__(self, context, request):
         BaseMailMessageView.__init__(self, context, request)
+        # marking folder
+        context = self.context
+        if context is not None:
+            self._setMarkers(context)
+
+    def _setMarkers(self, context):
+        """ setting up markers """
+        box = context.getMailBox()
+        if box is not None:
+            if context == box.getTrashFolder():
+                directlyProvides(context, (ITrashFolder) + \
+                                directlyProvidedBy(context))
+            elif context == box.getDraftFolder():
+                directlyProvides(context, (IDraftFolder) + \
+                                directlyProvidedBy(context))
+            elif context == box.getSentFolder():
+                directlyProvides(context, (ISentFolder) + \
+                                directlyProvidedBy(context))
+            if context.canCreateSubFolder():
+                directlyProvides(context, (IContainerFolder) + \
+                                directlyProvidedBy(context))
 
     def getMaxFolderSize(self):
         mailfolder = self.context
