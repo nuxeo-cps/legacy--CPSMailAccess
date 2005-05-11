@@ -145,7 +145,7 @@ class MailFolderViewTestCase(MailTestCase):
         treeview = view.renderTreeView()
 
         self.assertEquals(len(treeview), 8)
-        first = treeview[3]	
+        first = treeview[3]
         self.assertEquals(first['object'], first_sub_folder)
 
     def test_TreeViewCache(self):
@@ -374,6 +374,41 @@ class MailFolderViewTestCase(MailTestCase):
 
         self.assertEquals(len(ob.objectIds()), 2)
 
+    def test_manageContent_delete_check_ids(self):
+        # test content manipulations
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        ob._addFolder('Trash', 'Trash')
+
+        msg_1 = ob._addMessage('1', '1')
+        msg_2 = ob._addMessage('2', '2')
+        msg_3 = ob._addMessage('3', '3')
+
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+
+        # check the view
+        rendered_list = view.renderMailList()[1]
+        msg2v = rendered_list[1]
+        self.assertEquals(msg2v['folder_id_uid'], 'INBOX__2')
+        self.assertEquals(msg2v['url'], 'nowhere/INBOX/INBOX/.2/view')
+        self.assertEquals(msg2v['object'], msg_2)
+
+        # delete message 2
+        kw = {'msg_2': 'on'}
+        view.manageContent(action='delete', **kw)
+
+        # check the view
+        rendered_list = view.renderMailList()[1]
+        msg1v = rendered_list[0]
+        self.assertEquals(msg1v['object'], msg_1)
+        self.assertEquals(msg1v['folder_id_uid'], 'INBOX__1')
+        self.assertEquals(msg1v['url'], 'nowhere/INBOX/INBOX/.1/view')
+
+        msg2v = rendered_list[1]
+        self.assertEquals(msg2v['object'], msg_3)
+        self.assertEquals(msg2v['folder_id_uid'], 'INBOX__2')
+        self.assertEquals(msg2v['url'], 'nowhere/INBOX/INBOX/.2/view')
 
     def test_getMaxFolderSize(self):
         box = self._getMailBox()

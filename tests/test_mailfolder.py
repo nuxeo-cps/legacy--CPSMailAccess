@@ -474,24 +474,35 @@ class MailFolderTestCase(MailTestCase):
     def test_fillVacuum(self):
         mailbox = self._getMailBox()
         folder = mailbox._addFolder('MyFolder', 'MyFolder')
-        for i in range(3):
+        for i in range(100):
             key = '.'+str(i)
-            folder._addMessage(key, key)
+            msg = folder._addMessage(key, key)
+            msg.setHeader('Subject', str(key))
 
-        self.assertEquals(len(folder.objectIds()), 3)
-        self.assertEquals(list(folder.objectIds()), ['.0', '.1', '.2'])
+        self.assertEquals(len(folder.objectIds()), 100)
 
-        # let's delete message 2
-        folder.manage_delObjects(['.1'])
+        orig_2 = folder['.2']
+        orig_76 = folder['.76']
+        orig_80 = folder['.80']
 
-        self.assertEquals(len(folder.objectIds()), 2)
-        self.assertEquals(list(folder.objectIds()), ['.0', '.2'])
+        # let's delete message 2, 18, 76, 77
+        folder.deleteMessage('2')
+        folder.deleteMessage('18')
+        folder.deleteMessage('76')
+        folder.deleteMessage('77')
 
-        # let's vacuum the index
-        folder._fillVacuum('.1')
+        self.assertEquals(len(folder.objectIds()), 96)
 
-        # check the result
-        self.assertEquals(list(folder.objectIds()), ['.0', '.1'])
+        # no wholes
+        for i in range(96):
+            self.assertNotEquals(folder['.%d' % i], None)
+
+        # now make sure the objects are the right ones
+        self.assertEquals(folder['.76'].uid, '76')
+        self.assertEquals(folder['.76'].getHeader('Subject'), ['.79'])
+
+        self.assertEquals(folder['.2'].getHeader('Subject'), ['.3'])
+        self.assertEquals(folder['.18'].getHeader('Subject'), ['.20'])
 
     def test_nextId(self):
         mailbox = self._getMailBox()
