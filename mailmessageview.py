@@ -132,12 +132,9 @@ class MailMessageView(BaseMailMessageView):
             # sets the read message to 1
             if mail.getFlag('seen') == 0:
                 mail.setFlag('seen', 1)
-                """
                 folder = mail.getMailFolder()
-
                 if folder is not None:
                     folder.onFlagChanged(mail, 'seen', 1)
-                """
             if mail.instant_load:
                 # loading mail on-the fly
                 # xxx todo: outsource this
