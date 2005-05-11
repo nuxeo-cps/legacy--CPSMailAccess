@@ -157,6 +157,8 @@ class MailTestCase(ZopeTestCase):
         mailbox._connection_params['password'] = 'secret'
         mailbox._connection_params['HOST'] = 'localhost'
         mailbox._connection_params['trash_folder_name'] = 'INBOX.Trash'
+        mailbox._connection_params['draft_folder_name'] = 'INBOX.Drafts'
+        mailbox._connection_params['sent_folder_name'] = 'INBOX.Sent'
         mailbox._connection_params['smtp_host'] = 'localhost'
         mailbox._connection_params['smtp_port'] = 25
         mailbox._connection_params['email_adress'] = 'tz@nuxeo.com'
