@@ -183,11 +183,11 @@ class MailMessageView(BaseMailMessageView):
         recipients = []
         msg.origin_message = origin_msg
 
-        # adding from
-        from_ = origin_msg.getHeader('From')[0]
-        msg.addHeader('To', from_)
-
         if not forward:
+            # adding from
+            from_ = origin_msg.getHeader('From')[0]
+            msg.addHeader('To', from_)
+
             msg.answerType = 'reply'
             froms = origin_msg.getHeader('From')
             for element in froms:
