@@ -93,6 +93,21 @@ class IMailFolder(IContainer):
         """ renames the folder
         """
 
+class ITrashFolder(Interface):
+    """ Marker interface for trash folder
+    """
+
+class IDraftFolder(Interface):
+    """ Marker interface for draft folder
+    """
+
+class ISentFolder(Interface):
+    """ Marker interface for sent folder
+    """
+
+class IContainerFolder(Interface):
+    """ Marker interface for folders that allow adding sub folders
+    """
 
 class IMailMessage(IContainer):
     """A mail message.
