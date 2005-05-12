@@ -15,6 +15,9 @@
   <metal:block metal:fill-slot="main"
       tal:define="base_url here/getBaseUrl">
 
+    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
+    <div class="spacer">
+    </div>
     <tal:block define="publics python:here.getEntries()[0];
                        privates python:here.getEntries()[1];">
     <div style="width :100%">

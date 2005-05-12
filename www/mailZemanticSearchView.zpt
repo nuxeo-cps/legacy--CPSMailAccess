@@ -46,9 +46,9 @@
                   numblocs python:range(int(numblocs))">
 
 
-    <h2><img src="cspma_mail_find.png"/>&#160;
-      <span i18n:translate="cpsma_search_message">Search messages</span>
-    </h2>
+    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
+    <div class="spacer">
+    </div>
     <form action="zemanticSearchMessage.html">
       <div class="searchGroup">
       <table border="0">
