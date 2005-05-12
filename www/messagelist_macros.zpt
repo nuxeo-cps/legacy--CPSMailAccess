@@ -1,7 +1,58 @@
 <html>
   <body>
+    <metal:block define-macro="actions_toolbar">
+      <tal:block tal:define="actions here/actionView.html|nothing">
+        <div class="toolbar" tal:condition="actions">
+          <table class="toolbar" summarize="Available actions">
+            <tr class="toolbar">
+              <tal:block tal:repeat="action_pack actions">
+                <tal:block tal:repeat="action action_pack">
+                <td class="selectableButton">
+                  <center>
+                    <a tal:attributes="href action/action;
+                                     target action/target|nothing">
+                    <img i18n:attributes="title alt"
+                        tal:attributes="src action/icon;
+                            title action/long_title;
+                            alt action/long_title;
+                            onclick action/onclick|nothing"/>
+                    <br/>
+                    <span i18n:translate="" class="toolbar"
+                          tal:content="action/title"/>
+                    </a>
+                  </center>
+                </td>
+                </tal:block>
+              </tal:block>
+            </tr>
+          </table>
+        </div>
+      </tal:block>
+    </metal:block>
+
+    <metal:block define-macro="manage_toolbar">
+      <div class="toolbar">
+      <input class="manage_copy" type="submit"
+              name="action_copy" value="copy"
+              i18n:translate="value"/>
+      <input class="manage_cut" type="submit" name="action_cut" value="cut"
+             i18n:translate="value"/>
+      <input class="manage_paste" type="submit" name="action_paste" value="paste"
+             i18n:translate="value"/>
+      <input class="manage_delete" type="submit" name="action_delete" value="delete"
+             i18n:translate="value"/>
+      <input class="manage_selectall" type="button" name="selectall"
+              value="select all" onclick="selectAllMessages(this)"
+              i18n:translate="value"/>
+      <tal:block tal:condition="clipboard">
+          <input class="manage_delete" type="submit" name="action_clear" value="clear"
+             i18n:translate="value"/>
+      </tal:block>
+      </div>
+    </metal:block>
+
     <metal:block define-macro="search_messagelist">
-        <table id="tableMessageList">
+        <table id="tableMessageList" summarize="Search results">
           <tr class="mailHeaders">
             <th class="mailToolBarElement mailToolBarInsideElement">
                   Subject
@@ -55,9 +106,16 @@
 
        <div tal:attributes="class
               python:test(is_folder,'folder_msglist','message_msglist')">
-        <table id="tableMessageList"
+
+        <tal:block tal:condition="not:messages">
+        <div class="emptyFolder" i18n:translate="empty_folder">
+         Empty folder.
+        </div>
+        </tal:block>
+
+        <table id="tableMessageList" tal:condition="messages"
                tal:define="cols here/getMessageListCols"
-               class="messageList">
+               class="messageList" summarize="Message list">
           <tr class="mailHeaders">
             <th tal:condition="content_managment">
             &#160;
@@ -143,6 +201,8 @@
           </tal:block>
           </tal:block>
         </table>
+        <metal:block use-macro="here/messagelist_macros/manage_toolbar"/>
+
         <div class="batcher" tal:condition="python:nbpages &gt; 1">
           <span tal:replace="page" />/<span tal:replace="nbpages" />
           <tal:block tal:repeat="i python:range(nbpages)">
