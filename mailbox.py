@@ -206,6 +206,9 @@ class MailBox(MailBoxBaseCaching):
     def getFilters(self):
         return self._filters
 
+    def hasFilters(self):
+        return self._filters.getFilterCount() > 0
+
     def _getDirectoryPicker(self):
         if self._directory_picker is None:
             # the one and  only one link to portal_directories

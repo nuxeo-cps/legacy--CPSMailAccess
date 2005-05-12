@@ -34,8 +34,6 @@ from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView, \
                                            MailFolderTicking
 from basetestcase import MailTestCase
 
-
-
 from Products.CPSMailAccess import mailbox
 
 
@@ -343,6 +341,13 @@ class MailBoxTestCase(MailTestCase):
         self.assert_(folder.isSynchronizing())
         folder.clearSynchro()
         self.assert_(not folder.isSynchronizing())
+
+    def test_filterapis(self):
+        mailbox = self._getMailBox()
+        filters = mailbox.getFilters()
+        self.assert_(not mailbox.hasFilters())
+        filters.addFilter('do', 're', 'mi', 'fa', 'sol')
+        self.assert_(mailbox.hasFilters())
 
 def test_suite():
     return unittest.TestSuite((
