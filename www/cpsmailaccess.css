@@ -113,7 +113,7 @@ tr.line_selectable_even:hover {
 
 div.folder_msglist {
   /*overflow: scroll;*/
-  height: 800px;
+  min-height: 100px;
 }
 
 div.message_msglist {
@@ -172,10 +172,8 @@ a.close_attach_form {
   float: right;
 }
 
-form.rename_form {
-  margin-bottom: 10px;
-  padding: 10px;
-  border: dotted black 1px;
+form.renameForm {
+
 }
 
 a.close_rename_form {
@@ -203,6 +201,7 @@ div.content_toolbar {
 }
 
 input.manage_copy {
+  margin: 2px;
   border: none;
   padding-left: 23px;
   padding-right: 8px;
@@ -213,13 +212,15 @@ input.manage_copy {
   background-repeat: no-repeat;
   background-position: left center;
   font-weight: bold;
+  background-color: transparent;
 }
 
 input.manage_copy:hover {
-  background-color:  #c0ff75;
+  background-color: white;
 }
 
 input.manage_cut {
+  margin: 2px;
   border: none;
   padding-left: 23px;
   padding-right: 8px;
@@ -230,13 +231,15 @@ input.manage_cut {
   background-repeat: no-repeat;
   background-position: left center;
   font-weight: bold;
+  background-color: transparent;
 }
 
 input.manage_cut:hover {
-  background-color:  #c0ff75;
+  background-color: white;
 }
 
 input.manage_paste {
+  margin: 2px;
   border: none;
   padding-left: 23px;
   padding-right: 8px;
@@ -247,13 +250,15 @@ input.manage_paste {
   background-repeat: no-repeat;
   background-position: left center;
   font-weight: bold;
+  background-color: transparent;
 }
 
 input.manage_paste:hover {
-  background-color:  #c0ff75;
+  background-color: white;
 }
 
 input.manage_delete {
+  margin: 2px;
   border: none;
   padding-left: 23px;
   padding-right: 8px;
@@ -264,13 +269,15 @@ input.manage_delete {
   background-repeat: no-repeat;
   background-position: left center;
   font-weight: bold;
+  background-color: transparent;
 }
 
 input.manage_delete:hover {
-  background-color:  #c0ff75;
+  background-color: white;
 }
 
 input.manage_selectall {
+  margin: 2px;
   border: none;
   padding-left: 23px;
   padding-right: 8px;
@@ -281,10 +288,11 @@ input.manage_selectall {
   background-repeat: no-repeat;
   background-position: left center;
   font-weight: bold;
+  background-color: transparent;
 }
 
 input.manage_selectall:hover {
-  background-color:  #c0ff75;
+  background-color: white;
 }
 
 
@@ -485,4 +493,60 @@ input.moveFilterUp {
   cursor: hand;
   border: none;
   width: 12px;
+}
+
+table.folderTree {
+  margin: 0px;
+  padding: 0px;
+}
+
+tr.folderTreeElement {
+  margin: 0px;
+  padding: 0px;
+}
+
+td.folderTreeElement {
+  margin: 0px;
+  padding: 0px;
+}
+
+div.clipboardContent {
+  float: right;
+  background: yellow;
+  padding: 2px;
+  border: 1px solid black;
+}
+
+span.toolbar {
+ font-size: 10px;
+}
+
+table.toolbar {
+  background: #e7e7e7;
+}
+
+div.toolbar {
+  background: #e7e7e7;
+  width: 100%;
+}
+
+tr.toolbar {
+  background: #e7e7e7;
+}
+
+td.selectableButton {
+  background-color: #e6e7e6;
+  padding: 2px;
+}
+
+td.selectableButton:hover {
+  background-color: white;
+}
+
+div.emptyFolder {
+  padding: 10px;
+}
+
+div.spacer {
+  margin-bottom: 10px;
 }
