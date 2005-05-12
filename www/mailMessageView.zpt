@@ -26,6 +26,7 @@
     While the box is beeing synchronized, webmail features are limited to browsing.
     </div>
 
+    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div tal:condition="show_folder"
          tal:define="is_folder python:0">
       <metal:block use-macro="here/messagelist_macros/messagelist"/>
