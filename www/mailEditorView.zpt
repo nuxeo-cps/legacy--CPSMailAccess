@@ -15,6 +15,7 @@
                            bcc_on python:here.getFlag('bcc_on');
                            attacher_on python:here.getFlag('attacher_on')">
 
+    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
       <noscript>
         <div class="message" i18n:translate="cpsma_js_disabled">
           Javascript is disabled, please activate it for enhanced ergonomy.
