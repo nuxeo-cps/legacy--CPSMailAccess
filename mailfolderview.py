@@ -344,18 +344,24 @@ class MailFolderView(BaseMailMessageView):
         msg = getattr(current, msg_uid)
         return current, msg.uid
 
-    def manageContent(self, action, **kw):
+    def manageContent(self, action=None, **kw):
         """ manage content """
-        mailfolder = self.context
-        changed = 0
-        psm = ''
-
         if self.request is not None:
             if self.request.form is not None:
                 for element in self.request.form.keys():
                     kw[element] = self.request.form[element]
 
-        if action in('copy', 'cut', 'delete', 'clear'):
+        if action is None:
+            for key in kw.keys():
+                if key.startswith('action_'):
+                    action = key[7:]
+                    break
+
+        mailfolder = self.context
+        changed = 0
+        psm = ''
+
+        if action in ('copy', 'cut', 'delete', 'clear'):
             mailbox = mailfolder.getMailBox()
             if action == 'clear':
                 mailbox.clearClipboard()
