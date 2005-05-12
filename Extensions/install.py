@@ -136,6 +136,7 @@ class CPSMailAccessInstaller(CPSInstaller):
                 'display_in_subfolder': 1,
                 'display_only_in_subfolder': 0,
                 },
+            """
             'mailbox_actions': {
                 'type': 'MailBoxTreeView',
                 'title': 'MailBox Actions',
@@ -147,6 +148,7 @@ class CPSMailAccessInstaller(CPSInstaller):
                 'display_in_subfolder': 1,
                 'display_only_in_subfolder': 0,
                 },
+            """
             'mailbox_attachedfiles': {
                 'type': 'MailBoxTreeView',
                 'title': 'MailBox Attached Files',
