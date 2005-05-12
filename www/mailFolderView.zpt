@@ -22,12 +22,24 @@
                           add_folder request/add_folder|nothing;
                           move_folder request/move_folder|nothing;
                           keep_last_sort request/keep_last_sort|python:0;
-                          content_managment request/manage_content|nothing;
+                          content_managment python:1;
                           clipboard not:here/clipBoardEmpty;
                           max_folder_size here/getMaxFolderSize;
                           synchro python:here.getMailBox().isSynchronizing();
                           show_content_toolbar python:content_managment or clipboard">
-
+     <div class="clipboardContent" tal:condition="clipboard"
+        tal:define="count here/clipBoardCount">
+        <tal:block tal:condition="python:count &gt; 1">
+        <span tal:replace="count"/>
+            <span i18n:translate="cpsma_messages_in_clipboard">
+            messages in clipboard</span>
+        </tal:block>
+        <tal:block tal:condition="python:count == 1">
+        1 <span i18n:translate="cpsma_message_in_clipboard">
+        message in clipboard</span>
+        </tal:block>
+    </div>
+    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div class="message" tal:condition="synchro" i18n:translate="cps_synchronizing">
     While the box is beeing synchronized, webmail features are limited to browsing.
     </div>
@@ -75,57 +87,13 @@
 
     <div id="maillist"
          tal:define="is_folder python:1">
-      <tal:block tal:condition="show_content_toolbar">
-        <form action="manageContent.html" method="post">
-          <a href="view"
-            class="close_rename_form"
-            title="close">
-            <img src="cpsma_delete_file.png"/>
-          </a>
-          <div class="rename_form">
-            <div class="form_title"><span i18n:translate="cpsma_make_selection">
-            Make a selection and choose an action</span>
-              <tal:block tal:condition="clipboard">
-                <tal:block tal:define="count here/clipBoardCount">
-                  <tal:block tal:condition="python:count &gt; 1">
-                    (<span tal:replace="count"/>
-                     <span i18n:translate="cpsma_messages_in_clipboard">
-                      messages in clipboard</span>)
-                  </tal:block>
-                  <tal:block tal:condition="python:count == 1">
-                    (1 <span i18n:translate="cpsma_message_in_clipboard">
-                    message in clipboard</span>)
-                  </tal:block>
-                </tal:block>
-              </tal:block>
-            </div>
-
-            <input class="manage_copy" type="submit" name="action" value="copy"
-                i18n:attributes="name"/>
-            <input class="manage_cut" type="submit" name="action" value="cut"
-                i18n:attributes="name"/>
-            <input class="manage_paste" type="submit" name="action" value="paste"
-                i18n:attributes="name"/>
-            <input class="manage_delete" type="submit" name="action" value="delete"
-                i18n:attributes="name"/>
-            <input class="manage_selectall" type="button" name="selectall"
-                   value="select all"
-                   onclick="selectAllMessages(this)" i18n:attributes="name"/>
-            <tal:block tal:condition="clipboard">
-              <input class="manage_delete" type="submit" name="action" value="clear"
-                i18n:attributes="name"/>
-            </tal:block>
-          </div>
-          <metal:block use-macro="here/messagelist_macros/messagelist"/>
-        </form>
-      </tal:block>
-      <tal:block tal:condition="not:show_content_toolbar">
-        <metal:block use-macro="here/messagelist_macros/messagelist"/>
-      </tal:block>
+    <form action="manageContent.html" method="post">
+      <metal:block use-macro="here/messagelist_macros/messagelist"/>
       <script langage="javascript">
         truncateFields(32);
         pd_setupPage();
       </script>
+    </form>
     </div>
   </metal:block>
 </html>
