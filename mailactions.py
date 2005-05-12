@@ -53,15 +53,14 @@ class MailActionsView(BaseMailMessageView):
         base_url = self.getBaseUrl()
 
         if IMailBox.providedBy(container):
-            root = container.absolute_url()
-
+            root = self.getAbsoluteUrl(container)
             # are we in the editor ?
             if self.is_editor():
                 save = {'icon' : base_url + '/cpsma_save.png',
-                     'title' : 'cpsma_save_message',
-                     'long_title' : 'cpsma_save_message',
-                     'onclick' : 'saveMessageDatas()',
-                     'action' : 'saveMessage.html'}
+                        'title' : 'cpsma_save_message',
+                        'long_title' : 'cpsma_save_message',
+                        'onclick' : 'saveMessageDatas()',
+                        'action' : root + '/saveMessage.html'}
 
                 """
                 attach_file = {'icon' : base_url + '/cpsma_attach.png',
@@ -72,10 +71,10 @@ class MailActionsView(BaseMailMessageView):
 
                 """
                 init = {'icon' : base_url + '/cpsma_initeditor.png',
-                     'title' : 'cpsma_init_editor',
-                     'long_title' : 'cpsma_init_editor',
-                     'action' : 'initializeEditor.html',
-                     'onclick' : ''}
+                        'title' : 'cpsma_init_editor',
+                        'long_title' : 'cpsma_init_editor',
+                        'action' : root + '/initializeEditor.html',
+                        'onclick' : ''}
 
                 """
                 send = {'icon' : base_url + '/cpsma_sendmsg.png',
@@ -89,7 +88,7 @@ class MailActionsView(BaseMailMessageView):
 
         elif IMailFolder.providedBy(container):
             mailbox = container.getMailBox()
-            root = mailbox.absolute_url()
+            root = self.getAbsoluteUrl(mailbox)
             candelete = not mailbox.elementIsInTrash(container)
 
             if container == mailbox.getTrashFolder():
@@ -137,21 +136,26 @@ class MailActionsView(BaseMailMessageView):
 
                     actions.extend(list_)
 
-            filter_ = {'icon' : root + '/cpsma_filter_big.png',
-                       'title' : 'cpsma_filter',
-                       'long_title' : 'cpsma_filter',
-                       'action' : 'runFilters.html'}
+            # XXX should test here if there's is filters for this folder
+            if mailbox.hasFilters():
+                filter_ = {'icon' : root + '/cpsma_filter_big.png',
+                        'title' : 'cpsma_filter',
+                        'long_title' : 'cpsma_filter',
+                        'action' : 'runFilters.html'}
+                actions.append(filter_)
 
-
+            """
+            removed (trac #13)
             manage = {'icon' : root + '/cpsma_manage_content.png',
                       'title' : 'cpsma_manage_content',
                       'long_title' : 'cpsma_manage_content',
                       'action' : 'view?manage_content=1&keep_last_sort=1'}
-            actions.extend([filter_, manage])
+            actions.append(manage)
+            """
 
         elif IMailMessage.providedBy(container):
             mailbox = container.getMailBox()
-            root = mailbox.absolute_url()
+            root = self.getAbsoluteUrl(mailbox)
 
             trash_name = mailbox.getTrashFolderName().split('.')[-1]
             draft_name = mailbox.getDraftFolderName().split('.')[-1]
@@ -166,19 +170,19 @@ class MailActionsView(BaseMailMessageView):
 
             if not special_folder:
                 reply = {'icon' : base_url + '/cpsma_reply.png',
-                        'title' : 'cpsma_reply',
-                        'long_title' : 'cpsma_reply',
-                        'action' : 'reply.html'}
+                         'title' : 'cpsma_reply',
+                         'long_title' : 'cpsma_reply',
+                         'action' : 'reply.html'}
 
                 reply_all = {'icon' : base_url + '/cpsma_replyall.png',
-                        'title' : 'cpsma_reply_all',
-                        'long_title' : 'cpsma_reply_all',
-                        'action' : 'replyAll.html'}
+                             'title' : 'cpsma_reply_all',
+                             'long_title' : 'cpsma_reply_all',
+                             'action' : 'replyAll.html'}
 
                 forward = {'icon' : base_url + '/cpsma_forward.png',
-                        'title' : 'cpsma_forward',
-                        'long_title' : 'cpsma_forward',
-                        'action' : 'forward.html'}
+                           'title' : 'cpsma_forward',
+                           'long_title' : 'cpsma_forward',
+                           'action' : 'forward.html'}
 
                 actions.extend([reply, reply_all, forward])
 
@@ -198,7 +202,6 @@ class MailActionsView(BaseMailMessageView):
                         'action' : 'delete.html'}
 
                 actions.append(delete)
-
         else:
             return []
 
@@ -209,6 +212,7 @@ class MailActionsView(BaseMailMessageView):
                      'title' : 'cpsma_configure',
                      'long_title' : 'cpsma_configure',
                      'action' : root + '/configure.html'}
+
         synchro = {'icon' : base_url + '/cpsma_getmails.png',
                    'title' : 'cpsma_getmessages',
                    'long_title' : 'cpsma_getmessages',
@@ -230,7 +234,7 @@ class MailActionsView(BaseMailMessageView):
                         'action' : root + '/addressBooks.html'}
 
 
-        actions = [configure, synchro, search, write, adressbook] + actions
+        actions = actions + [write, search, synchro, adressbook, configure]
         # renders actions 2 by 2
         c_actions = []
         i = 0
