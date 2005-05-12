@@ -14,15 +14,11 @@
  </metal:block>
   <metal:block metal:fill-slot="main"
       tal:define="first_time request/first_time|nothing">
+    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div class="message" tal:condition="first_time">
      Welcome to CPSWebMail this is the first time
       you launched it, blalalalalala (texte à externaliser)
     </div>
-
-    <h2>
-      <img src="cpsma_configure.png"/>&#160;
-       <span i18n:translate="">cpsma_mailbox_configuration</span>
-    </h2>
 
    <h4><span i18n:translate="">Preferences</span></h4>
    <div class="manageGroup">
