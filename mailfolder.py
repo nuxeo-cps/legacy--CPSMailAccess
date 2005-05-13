@@ -987,9 +987,6 @@ class MailFolder(BTreeFolder2):
             msg.uid = self.getUidFromId(vacuum_id)
             vacuum_id = self._nextId(vacuum_id)
             next_id = self._nextId(next_id)
-
-            self.manage_cleanup()
-
         return True
 
 """ classic Zope 2 interface for class registering
