@@ -27,19 +27,7 @@
                           max_folder_size here/getMaxFolderSize;
                           synchro python:here.getMailBox().isSynchronizing();
                           show_content_toolbar python:content_managment or clipboard">
-     <div class="clipboardContent" tal:condition="clipboard"
-        tal:define="count here/clipBoardCount">
-        <tal:block tal:condition="python:count &gt; 1">
-        <span tal:replace="count"/>
-            <span i18n:translate="cpsma_messages_in_clipboard">
-            messages in clipboard</span>
-        </tal:block>
-        <tal:block tal:condition="python:count == 1">
-        1 <span i18n:translate="cpsma_message_in_clipboard">
-        message in clipboard</span>
-        </tal:block>
-    </div>
-    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
+
     <div class="message" tal:condition="synchro" i18n:translate="cps_synchronizing">
     While the box is beeing synchronized, webmail features are limited to browsing.
     </div>
@@ -84,6 +72,8 @@
         <metal:block use-macro="here/boxes_mailaccess/macros/basebox_moveview"/>
       </div>
     </div>
+    <metal:block use-macro="here/messagelist_macros/mailbox_warning"/>
+    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
 
     <div id="maillist"
          tal:define="is_folder python:1">
