@@ -396,9 +396,9 @@ pd_node_setup['cellDest'] = cellDest;
 
 
 /* select all messages in content managment mode */
-function selectAllMessages(object)
+function selectAllMessages(object, select_all_value, deselect_all_value)
 {
-  if (object.value == "select all")
+  if (object.value == select_all_value)
   {
     checkboxes = object.form.elements;
 
@@ -406,7 +406,7 @@ function selectAllMessages(object)
     {
       checkboxes[i].checked = true;
     }
-    object.value = "deselect all";
+    object.value = deselect_all_value;
   }
   else
   {
@@ -416,7 +416,7 @@ function selectAllMessages(object)
     {
       checkboxes[i].checked = false;
     }
-    object.value = "select all";
+    object.value = select_all_value;
   }
 }
 
