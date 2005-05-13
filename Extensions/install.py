@@ -94,7 +94,8 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.addWMAction()
         self.checkExistingMailBoxes()
         self.setupPermissions()
-        self.linkFiveActionTool()
+        # XXX not used yet
+        # self.linkFiveActionTool()
         self.setupTranslations()
         self.finalize()
         self.log("End of Install/Update : CPSMailAccess Product")
@@ -120,11 +121,8 @@ class CPSMailAccessInstaller(CPSInstaller):
             typeinfo_name='CPSMailAccess: MailBoxTreeView')
 
     def setupBoxes(self):
-        """ sets up boxes
-        """
-
+        """ sets up boxes """
         boxes = {
-
             'mailbox_treeview': {
                 'type': 'MailBoxTreeView',
                 'title': 'MailBox TreeView',
@@ -136,19 +134,6 @@ class CPSMailAccessInstaller(CPSInstaller):
                 'display_in_subfolder': 1,
                 'display_only_in_subfolder': 0,
                 },
-            """
-            'mailbox_actions': {
-                'type': 'MailBoxTreeView',
-                'title': 'MailBox Actions',
-                'provider': 'mailaccess',
-                'btype': 'actions',
-                'box_skin': 'here/box_lib/macros/wbox',
-                'slot': 'right',
-                'order': 1,
-                'display_in_subfolder': 1,
-                'display_only_in_subfolder': 0,
-                },
-            """
             'mailbox_attachedfiles': {
                 'type': 'MailBoxTreeView',
                 'title': 'MailBox Attached Files',
