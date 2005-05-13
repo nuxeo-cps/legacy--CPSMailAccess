@@ -39,7 +39,6 @@
       <metal:block use-macro="here/messagelist_macros/messagetoolbar"/>
       <metal:block use-macro="here/messagelist_macros/messageheaders"/>
     </div>
-
     <div id="mailBody">
       <tal:block tal:replace="structure view/renderBody"/>
     </div>

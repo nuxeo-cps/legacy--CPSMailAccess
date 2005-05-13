@@ -29,9 +29,7 @@
       <tal:block tal:define="actions here/actionView.html|nothing">
         <div class="toolbar" tal:condition="actions">
           <table class="toolbar" summarize="Available actions">
-            <tr class="toolbar">
-            <div class="topleftcorner"/>
-            <div class="toprightcorner"/>
+            <tr>
               <tal:block tal:repeat="action_pack actions">
                 <tal:block tal:repeat="action action_pack">
                 <td class="selectableButton">
@@ -53,20 +51,16 @@
               </tal:block>
             </tr>
           </table>
-          <div class="bottomleftcorner"/>
-          <div class="bottomrightcorner"/>
         </div>
-      </tal:block>
+       </tal:block>
     </metal:block>
 
     <metal:block define-macro="manage_toolbar">
     <div class="toolbar">
-      <table class="toolbar" summarize="Managing Content">
-        <tr class="toolbar">
-           <div class="topleftcorner"/>
-           <div class="toprightcorner"/>
+      <table summarize="Managing Content">
+        <tr>
             <div style="float:right">
-            <metal:block use-macro="here/messagelist_macros/macros/batcher"/>
+              <metal:block use-macro="here/messagelist_macros/macros/batcher"/>
             </div>
            <td class="bold" i18n:translate="cpsma_selection">
              Selection:
@@ -88,10 +82,16 @@
              <input class="manage_delete" type="submit" name="action_delete" value="delete"
              i18n:attributes="value"/>
            </td>
-           <td class="selectableButton">
+           <td class="selectableButton"
+               tal:define="cpsmcat nocall:here/Localizer/default;
+                           sall python:cpsmcat('select all');
+                           dsall python:cpsmcat('deselect all');
+                           sall python:'%s%s%s' % (chr(34), sall, chr(34));
+                           dsall python:'%s%s%s'  % (chr(34), dsall, chr(34));
+                           function_call python:'selectAllMessages(this, '+sall+', '+dsall+')'">
             <input class="manage_selectall" type="button" name="selectall"
-              value="select all" onclick="selectAllMessages(this)"
-              i18n:attributes="value"/>
+                    value="select all" tal:attributes="onclick function_call"
+                    i18n:attributes="value"/>
            </td>
            <td class="selectableButton" tal:condition="clipboard">
               <input class="manage_delete" type="submit" name="action_clear" value="clear"
@@ -99,8 +99,6 @@
            </td>
          </tr>
         </table>
-         <div class="bottomleftcorner"/>
-         <div class="bottomrightcorner"/>
       </div>
     </metal:block>
 

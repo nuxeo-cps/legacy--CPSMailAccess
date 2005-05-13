@@ -85,5 +85,6 @@
       </script>
     </form>
     </div>
+    <div style="clear: both">&#160;</div>
   </metal:block>
 </html>

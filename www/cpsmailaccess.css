@@ -2,6 +2,8 @@
 div.mailHeaders {
   background-color: #e7e7e7;
   padding: 7px;
+  -moz-border-radius-topleft: 12px;
+  -moz-border-radius-topright: 12px;
 }
 
 tr.mailHeaders {
@@ -31,6 +33,10 @@ td.mailToolBarInsideElement {
   background-color: white;
   margin-top: 10px;
   padding:8px;
+  -moz-border-radius-topleft: 12px;
+  -moz-border-radius-topright: 12px;
+  -moz-border-radius-bottomleft: 12px;
+  -moz-border-radius-bottomright: 12px;
 }
 
 #imgMailMoreInfos {
@@ -490,16 +496,16 @@ span.toolbar {
 }
 
 table.toolbar {
-  background: #e7e7e7;
+  margin: 4px;
 }
 
 div.toolbar {
-  background: #e7e7e7;
+  background-color: #e7e7e7;
+  -moz-border-radius-topleft: 12px;
+  -moz-border-radius-topright: 12px;
+  -moz-border-radius-bottomleft: 12px;
+  -moz-border-radius-bottomright: 12px;
   width: 100%;
-}
-
-tr.toolbar {
-  background: #e7e7e7;
 }
 
 td.selectableButton {
@@ -523,16 +529,18 @@ div.topleftcorner {
   background-image: url('cma_top_left_grey.png');
   background-repeat: no-repeat;
   background-position: left center;
-
   height: 11px;
+  width: 10px;
+  float: left;
 }
 
 div.toprightcorner {
   background-image: url('cma_top_right_grey.png');
   background-repeat: no-repeat;
   background-position: right center;
-
   height: 11px;
+  width: 10px;
+  float: right;
 }
 
 div.bottomrightcorner {
@@ -540,6 +548,8 @@ div.bottomrightcorner {
   background-repeat: no-repeat;
   background-position: right center;
   height: 11px;
+  width: 10px;
+  float: right;
 }
 
 div.bottomleftcorner {
@@ -547,6 +557,8 @@ div.bottomleftcorner {
   background-repeat: no-repeat;
   background-position: left center;
   height: 11px;
+  width: 10px;
+  float: left;
 }
 
 td.bold {
