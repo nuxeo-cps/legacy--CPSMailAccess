@@ -358,5 +358,5 @@ msgstr ""
 msgid "cpsma_detach"
 msgstr ""
 
-msgid "selectall"
+msgid "select all"
 msgstr ""
