@@ -142,9 +142,6 @@ class MailMessageView(BaseMailMessageView):
                 if folder is not None:
                     server_name = folder.server_name
                     uid = mail.uid
-                    msg_flags = None
-                    msg_headers = None
-                    msg_size = mail.size
                     connector = folder._getconnector()
                     folder._loadMessageStructureFromServer(server_name, uid,
                                                            None, None, None,
@@ -269,7 +266,7 @@ class MailMessageView(BaseMailMessageView):
             psm = 'Message sent to Trash.'
             folder = msg_container.absolute_url()
             self.request.response.\
-                redirect('%s/view?portal_status_message=%s' % (folder, psm))
+                redirect('%s/view?msm=%s' % (folder, psm))
 
     def attached_files(self):
         # todo :scans attached files

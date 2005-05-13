@@ -96,7 +96,7 @@ class MailMessageEdit(BrowserView):
             psm = 'Recipient is required'
             if self.request is not None:
                 # todo : need to be externalized in i18n
-                self.request.response.redirect('editMessage.html?portal_status_message=%s'\
+                self.request.response.redirect('editMessage.html?msm=%s'\
                     % (psm))
             return False, psm
 
@@ -105,7 +105,7 @@ class MailMessageEdit(BrowserView):
             psm = error
             if self.request is not None:
                 # todo : need to be externalized in i18n
-                self.request.response.redirect('editMessage.html?portal_status_message=%s'\
+                self.request.response.redirect('editMessage.html?msm=%s'\
                     % (psm))
             return False, psm
         msg.setHeader('From', msg_from)
@@ -116,7 +116,7 @@ class MailMessageEdit(BrowserView):
             if self.request is not None:
                 # todo : need to be externalized in i18n
                 psm = 'both subject and body are empty'
-                self.request.response.redirect('editMessage.html?portal_status_message=%s'\
+                self.request.response.redirect('editMessage.html?msm=%s'\
                     % (psm))
             return False, psm
 
@@ -148,12 +148,12 @@ class MailMessageEdit(BrowserView):
 
                 # todo : need to be externalized
                 psm = 'Message sent.'
-                self.request.response.redirect('%s/view?portal_status_message=%s'\
+                self.request.response.redirect('%s/view?msm=%s'\
                     % (goto, psm))
             else:
                 goto = mailbox.absolute_url()+'/editMessage.html'
                 psm = error
-                self.request.response.redirect('%s?portal_status_message=%s'\
+                self.request.response.redirect('%s?msm=%s'\
                     % (goto, psm))
         return result, error
 
@@ -385,7 +385,7 @@ class MailMessageEdit(BrowserView):
         if self.request is not None:
             psm = 'Message has been saved in Drafts'
             self.request.response.redirect('editMessage.html\
-                                            ?portal_status_message=%s' % psm)
+                                            ?msm=%s' % psm)
 
     def initializeEditor(self, back_to_front=True):
         """ cleans the editor

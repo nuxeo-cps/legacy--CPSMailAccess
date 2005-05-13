@@ -81,7 +81,7 @@ class MailFolderView(BaseMailMessageView):
                 psm  = '%s already exists' % new_name
                 self.request.response.redirect(
                     mailfolder.absolute_url()+
-                    '/view?edit_name=1&portal_status_message=%s' % psm)
+                    '/view?edit_name=1&msm=%s' % psm)
             return None
 
         # truncates the name in case it's bigger than 20
@@ -112,8 +112,7 @@ class MailFolderView(BaseMailMessageView):
             else:
                 goto = mailbox
             url = goto.absolute_url()
-            self.request.response.redirect(url+'/view?portal_status_message=\
-                                           %s' % psm)
+            self.request.response.redirect(url+'/view?msm=%s' % psm)
 
     def _sortMessages(self, elements, sort_with, sort_asc):
         """ sorts a list of messages """
@@ -413,7 +412,7 @@ class MailFolderView(BaseMailMessageView):
                 self.request.response.redirect(url+'/view')
             else:
                 self.request.response.redirect(url+
-                    '/view?portal_status_message=%s' % psm)
+                    '/view?msm=%s' % psm)
 
     def clipBoardEmpty(self):
         """ tells if the clipboard is empty or not

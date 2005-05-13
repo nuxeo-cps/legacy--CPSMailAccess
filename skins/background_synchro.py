@@ -30,4 +30,4 @@ if req is not None:
     else:
         page = '%s/portal_webmail/%s' %(root, box_name)
 
-    req.RESPONSE.redirect('%s/view?portal_status_message=%s'  % (page, psm))
+    req.RESPONSE.redirect('%s/view?msm=%s'  % (page, psm))

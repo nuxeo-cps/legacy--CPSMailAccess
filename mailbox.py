@@ -1071,7 +1071,7 @@ class MailBoxParametersView(BrowserView):
 
         if self.request is not None:
             psm = 'Catalog cleared.'
-            self.request.response.redirect('configure.html?portal_status_message=%s' % psm)
+            self.request.response.redirect('configure.html?msm=%s' % psm)
 
     def reindexMailCatalog(self):
         """ calls the catalog indexation """
@@ -1080,7 +1080,7 @@ class MailBoxParametersView(BrowserView):
 
         if self.request is not None:
             psm = 'All mails are indexed'
-            self.request.response.redirect('configure.html?portal_status_message=%s' % psm)
+            self.request.response.redirect('configure.html?msm=%s' % psm)
 
 #
 # MailBoxView Views
@@ -1107,7 +1107,7 @@ class MailBoxView(MailFolderView):
         if self.request is not None:
             psm = 'Trash expunged.'
             self.request.response.redirect(trash.absolute_url()+\
-                                           '/view?portal_status_message=%s' % psm)
+                                           '/view?msm=%s' % psm)
 
     def synchronize(self, light=True):
         """ synchronizes mailbox """
@@ -1133,7 +1133,7 @@ class MailBoxView(MailFolderView):
             else:
                 container = mailbox
             self.request.response.redirect(container.absolute_url()+ \
-                '/view?portal_status_message=%s' % psm)
+                '/view?msm=%s' % psm)
 
     def moveElement(self, from_place, to_place):
         """ moves an element """
@@ -1246,7 +1246,7 @@ class MailBoxFiltersView(BrowserView):
                 self.request.response.redirect('filters.html')
             else:
                 self.request.response.redirect(
-                    'filters.html?portal_status_message=%s' % psm)
+                    'filters.html?msm=%s' % psm)
 
     def moveFilter(self, index, direction):
         """ moves a filter given a direction
