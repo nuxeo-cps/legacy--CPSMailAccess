@@ -253,19 +253,19 @@ msgstr "Choisissez un nouveau dossier parent"
 
 # content toolbar action
 msgid "copy"
-msgstr "Copier"
+msgstr "copier"
 
 msgid "cut"
-msgstr "Couper"
+msgstr "couper"
 
 msgid "paste"
-msgstr "Coller"
+msgstr "coller"
 
 msgid "delete"
-msgstr "Supprimer"
+msgstr "supprimer"
 
 msgid "clear"
-msgstr "Effacer"
+msgstr "effacer"
 
 msgid "cpsma_reindex_mail_catalog"
 msgstr "Rédindexation du catalogue"
@@ -357,5 +357,11 @@ msgstr "Retour au dossier"
 msgid "cpsma_detach"
 msgstr "Détacher"
 
-msgid "selectall"
-msgstr "Tout séléctionner"
+msgid "select all"
+msgstr "tout selectionner"
+
+msgid "deselect all"
+msgstr "tout deselectionner"
+
+msgid "cps_synchronizing"
+msgstr "Synchronisation en cours."

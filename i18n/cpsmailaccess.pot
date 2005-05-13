@@ -360,3 +360,9 @@ msgstr ""
 
 msgid "select all"
 msgstr ""
+
+msgid "deselect all"
+msgstr ""
+
+msgid "cps_synchronizing"
+msgstr ""
