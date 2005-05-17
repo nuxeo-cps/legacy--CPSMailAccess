@@ -40,7 +40,8 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.app.cache.ram import RAMCache
 
 from interfaces import IMailMessage, IMailFolder, IMailBox
-from utils import decodeHeader, parseDateString, localizeDateString
+from utils import decodeHeader, parseDateString, localizeDateString,\
+                  secureUnicode
 from mimeguess import mimeGuess
 from mailrenderer import MailRenderer
 from basemailview import BaseMailMessageView
@@ -63,7 +64,8 @@ class MailMessage(Folder):
     forwarded = 0
     draft = 0
     size = 0
-    isjunk = 0
+    junk = 0
+    new = 0
 
     def __init__(self, id=None, uid='', digest='', **kw):
         Folder.__init__(self, id, **kw)
@@ -75,10 +77,27 @@ class MailMessage(Folder):
         store = message_from_string(data)
         self._setStore(store)
 
+    def _setStoreHeader(self, name, value):
+        store = self._getStore()
+        if store.has_key(name):
+            del store[name]
+        store[name] = value
+
     def loadMessage(self, flags=None, headers=None, body='',
                     structure_infos=None):
         if headers is not None:
             self._setStore(Message.Message())
+        else:
+            # this is a instant load,
+            # getting back headers
+            original_store = self._getStore()
+            new_store = Message.Message()
+            old_headers = ('From', 'To', 'Cc', 'Subject', 'Date', 'Message-ID',
+                           'In-Reply-To', 'Content-Type')
+            for old_header in old_headers:
+                new_store[old_header] = original_store[old_header]
+            self._setStore(new_store)
+
         store = self._getStore()
         # filling headers
         if structure_infos is not None:
@@ -91,15 +110,18 @@ class MailMessage(Folder):
             for item in structure_infos:
                 if isinstance(item, list):
                     if item[0] == 'name':
-                        store['name'] = item[1]
+                        self._setStoreHeader('name', item[1])
 
-            store['Content-type'] = '%s/%s' % (structure_infos[0],
-                                               structure_infos[1])
+            content_type = '%s/%s' % (structure_infos[0], structure_infos[1])
+            self._setStoreHeader('Content-type', content_type)
+
             if len(structure_infos) > 5:
-                store['Content-transfer-encoding'] = structure_infos[4]
+                self._setStoreHeader('Content-transfer-encoding',
+                                     structure_infos[4])
             else:
-                store['Content-transfer-encoding'] = ''
-            store['Charset'] = charset
+                self._setStoreHeader('Content-transfer-encoding', '')
+
+            self._setStoreHeader('Charset', charset)
             skip_headers = ('content-type', 'content-transfer-encoding',
                             'charset')
         else:
@@ -109,14 +131,13 @@ class MailMessage(Folder):
             for key in headers.keys():
                 if key.lower() not in skip_headers:
                     if key.lower() == 'subject':
-                        self.title = decodeHeader(headers[key])
-                    store[key] = headers[key]
-
+                        self.title = secureUnicode(decodeHeader(headers[key]))
+                    self._setStoreHeader(key, headers[key])
         if body is None:
             body = ''
 
         store._payload = body
-        self._setStore(store)
+        #self._setStore(store)
 
         if flags is not None:
             self._parseFlags(flags)
@@ -291,6 +312,9 @@ class MailMessage(Folder):
         self.draft = msg.draft
         self.title = msg.title
         self._file_list = msg._file_list
+        self.junk = msg.junk
+        self.size = msg.size
+        self.new = msg.new
 
     def getRawMessage(self):
         """ returns a raw message

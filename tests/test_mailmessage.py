@@ -199,6 +199,16 @@ class MailMessageTestCase(MailTestCase):
         ob2.copyFrom(ob)
         self.assertEquals(ob2.getHeader('Subject') , ob.getHeader('Subject'))
 
+    def test_copyFromVerifyValues(self):
+        ob = self.getMailInstance(6)
+        ob.junk = 1
+        ob.size = 13
+        ob2 = MailMessage('uid2', 'uid2')
+        ob2.copyFrom(ob)
+        self.assertNotEquals(ob.uid, ob2.uid)
+        self.assertEquals(ob.seen, ob2.seen)
+        self.assertEquals(ob2.junk, 1)
+        self.assertEquals(ob2.size, 13)
 
     def test_attachPart(self):
         ob = self.getMailInstance(2)
