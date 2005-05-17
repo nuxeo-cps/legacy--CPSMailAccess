@@ -16,11 +16,13 @@
                            attacher_on python:here.getFlag('attacher_on')">
 
     <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
+    <div class="spacer"></div>
       <noscript>
         <div class="message" i18n:translate="cpsma_js_disabled">
           Javascript is disabled, please activate it for enhanced ergonomy.
         </div>
       </noscript>
+
       <div id="attacher"
        tal:attributes="style python:test(attacher_on==0,'visibility: hidden','visibility: visible');class python:test(attacher_on==0,'hidden_part','')">
         <form class="attach_form"
@@ -58,7 +60,7 @@
               (from_indentities[0]['fullname'],from_indentities[0]['email'])"
              name="msg_from"/>
 
-      <table width="100%" class="editor_header">
+      <table width="100%" class="editorHeader">
         <tr tal:condition="python:len(from_indentities) &gt; 1">
           <td class="tr_title">
            From
