@@ -139,7 +139,7 @@ class MailFilteringTestCase(MailTestCase):
         msg = self.getMailInstance(0)
         element = {}
 
-        self.assertEquals(msg.isjunk, 0)
+        self.assertEquals(msg.junk, 0)
 
         # if subject contains test it's a junk
         element['subject'] = 'Subject'
@@ -149,7 +149,7 @@ class MailFilteringTestCase(MailTestCase):
         element['action_param'] = 1
 
         ob._actionFilter(element, msg)
-        self.assertEquals(msg.isjunk, 1)
+        self.assertEquals(msg.junk, 1)
 
         # if subject contains test it's a junk
         # we append the label'TEST'

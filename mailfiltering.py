@@ -256,7 +256,7 @@ class MailFiltering:
             message.setHeader('Subject', new_subject)
             return True
         elif action == 4:
-            message.isjunk = element['action_param']
+            message.junk = element['action_param']
             return True
         else:
             pass
