@@ -21,8 +21,16 @@
             </tal:block>
             <img tal:attributes="src element/icon_name"/>
               <a tal:attributes="href element/url">
+                <tal:block tal:condition="not:unreads">
                 <span tal:replace="element/short_title"/>
-              </a><tal:block tal:condition="unreads">&#160;(<span tal:replace="unreads"/>)      </tal:block>
+                </tal:block>
+                <tal:block tal:condition="unreads">
+                  <strong>
+                    <span tal:content="element/short_title"/>
+                    (<span tal:replace="unreads"/>)
+                  </strong>
+                </tal:block>
+              </a>
           </div>
         </div>
         <div style="display: block" tal:attributes="id element/short_title_id">
