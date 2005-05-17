@@ -476,7 +476,7 @@ class MailBox(MailBoxBaseCaching):
         trash = getFolder(self, trash_name)
         if trash is None:
             if not hasattr(self, 'INBOX'):
-                res = self._addFolder('INBOX', 'INBOX', server=True)
+                self._addFolder('INBOX', 'INBOX', server=True)
             inbox = getattr(self, 'INBOX')
             uid = self.simpleFolderName(trash_name)
             trash = inbox._addFolder(uid, trash_name, server=True)
