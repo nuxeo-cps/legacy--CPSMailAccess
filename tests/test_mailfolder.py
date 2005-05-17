@@ -83,6 +83,17 @@ class MailFolderTestCase(MailTestCase):
 
         self.assertEquals(len(no_type), 0)
 
+    def test_getMailMessages2(self):
+        mailbox = self._getMailBox()
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
+        folder1 = inbox._addFolder('folder1', 'INBOX.folder1')
+        folder2 = inbox._addFolder('folder2', 'INBOX.folder2')
+
+        sub_folders = mailbox.getMailMessages(list_folder=True,
+                                              list_messages=False,
+                                              recursive=True)
+        self.assertEquals(len(sub_folders), 3)
+
     def test_getMailMessagesCount(self):
         # testing getMailMessagesCount with all combos
         mailbox = self._getMailBox()
@@ -236,16 +247,17 @@ class MailFolderTestCase(MailTestCase):
 
     def test_folder_deleting(self):
         mailbox = self._getMailBox()
-        Trash = mailbox._addFolder('Trash', 'Trash')
-        Todos = mailbox._addFolder('Todosez', 'Todosez')
+        inbox = mailbox._addFolder('INBOX', 'Trash')
+        Trash = inbox._addFolder('Trash', 'INBOX.Trash')
+        Todos = inbox._addFolder('Todosez', 'INBOX.Todosez')
         res = Todos.delete()
         self.assertEquals(Todos.server_name, 'INBOX.Trash.Todosez')
-        self.assert_(hasattr(mailbox.Trash, 'Todosez'))
-        self.assertEquals(mailbox.Trash.Todosez.getMailFolder().id, 'Trash')
+        self.assert_(inbox.Trash.has_key('Todosez'))
+        self.assertEquals(inbox.Trash.Todosez.getMailFolder().id, 'Trash')
         Todos = mailbox._addFolder('Todosez', 'Todosez')
         res = Todos.delete()
         self.assertEquals(Todos.server_name, 'INBOX.Trash.Todosez_1')
-        self.assert_(hasattr(mailbox.Trash, 'Todosez_1'))
+        self.assert_(inbox.Trash.has_key('Todosez_1'))
 
     def test_delete_whole_branch(self):
         mailbox = self._getMailBox()
@@ -517,6 +529,55 @@ class MailFolderTestCase(MailTestCase):
         self.assertEquals(id, '2')
         id = folder.getUidFromId('.10')
         self.assertEquals(id, '10')
+
+    def test_getFlaggedMessageList(self):
+        mailbox = self._getMailBox()
+        folder = mailbox._addFolder('MyFolder', 'MyFolder')
+
+        for i in range(50):
+            key = '.'+str(i)
+            msg = folder._addMessage(key, key)
+            if i > 25:
+                msg.seen = 0
+            else:
+                msg.seen = 1
+            if i < 10:
+                msg.junk = 1
+            else:
+                msg.junk = 0
+
+        res = folder.getFlaggedMessageCount(['seendzdz', 'junk'])
+        self.assertEquals(res, 0)
+
+        res = folder.getFlaggedMessageCount(['seen', 'junk'])
+        self.assertEquals(res, 10)
+
+        res = folder.getFlaggedMessageCount(['seen'])
+        self.assertEquals(res, 26)
+
+        res = folder.getFlaggedMessageCount(['-seen'])
+        self.assertEquals(res, 24)
+
+        res = folder.getFlaggedMessageCount(['junk'])
+        self.assertEquals(res, 10)
+
+        res = folder.getFlaggedMessageCount(['-seen', 'junk'])
+        self.assertEquals(res, 0)
+
+    def test_add_and_del(self):
+        # check that deletemessage works
+        mailbox = self._getMailBox()
+        mailbox._addMessage('.1', 'xxx')
+        mailbox._deleteMessage('.1')
+        mailbox._addMessage('.1', 'xxx')
+
+    def test_rename_with_spaces(self):
+        mailbox = self._getMailBox()
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
+        folder1 = inbox._addFolder('with space', 'INBOX.with space')
+        folder2 = inbox._addFolder('folder2', 'INBOX.folder2')
+        folder2.rename('INBOX.with space.folder2', True)
+        self.assertEquals(folder1['folder2'], folder2)
 
 def test_suite():
     return unittest.TestSuite((

@@ -108,7 +108,7 @@ class MailFolderViewTestCase(MailTestCase):
         rendered_list = view.renderMailList()[1]
 
         self.assertEquals(rendered_list[len(rendered_list)-1]['url'],
-                          '.msg_130/view')
+                          '.130/view')
 
         # testing a message
         msg_entry = rendered_list[0]
@@ -208,7 +208,8 @@ class MailFolderViewTestCase(MailTestCase):
 
     def test_rename(self):
         box = self._getMailBox()
-        ob = box._addFolder('INBOX', 'INBOX.ok')
+        inbox = box._addFolder('INBOX', 'INBOX')
+        ob = inbox._addFolder('ok', 'INBOX.ok')
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
@@ -218,7 +219,8 @@ class MailFolderViewTestCase(MailTestCase):
 
     def test_renametwice(self):
         box = self._getMailBox()
-        ob = box._addFolder('INBOX', 'INBOX.ok')
+        inbox = box._addFolder('INBOX', 'INBOX')
+        ob = inbox._addFolder('ok', 'INBOX.ok')
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
@@ -235,7 +237,8 @@ class MailFolderViewTestCase(MailTestCase):
 
     def test_renamemaxsize(self):
         box = self._getMailBox()
-        ob = box._addFolder('INBOX', 'INBOX.ok')
+        inbox = box._addFolder('INBOX', 'INBOX')
+        ob = inbox._addFolder('ok', 'INBOX.ok')
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
@@ -245,7 +248,8 @@ class MailFolderViewTestCase(MailTestCase):
 
     def test_rename2times(self):
         box = self._getMailBox()
-        ob = box._addFolder('INBOX', 'INBOX.ok')
+        inbox = box._addFolder('INBOX', 'INBOX')
+        ob = inbox._addFolder('ok', 'INBOX.ok')
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
@@ -336,7 +340,9 @@ class MailFolderViewTestCase(MailTestCase):
         view2 = view2.__of__(ob2)
 
         ob = box._addFolder('INBOX', 'INBOX')
-        ob._addMessage('1', '1')
+        msg1 = ob._addMessage('1', '1')
+        msg1.size = 12
+
         ob._addMessage('2', '2')
         ob._addMessage('3', '3')
 
@@ -354,6 +360,45 @@ class MailFolderViewTestCase(MailTestCase):
         self.assertEquals(len(ob2.objectIds()), 2)
         self.assertEquals(len(ob.objectIds()), 3)
 
+        # checking msg
+        self.assertEquals(ob2['.2'].size, ob['.1'].size)
+
+    def test_manageContent_copy_paste_a_message_2_times(self):
+        # test content manipulations
+        box = self._getMailBox()
+
+        ob2 = box._addFolder('INBOX2', 'INBOX2')
+        view2 = MailFolderView(ob2, self.request)
+        view2 = view2.__of__(ob2)
+
+        ob3 = box._addFolder('INBOX3', 'INBOX3')
+        view3 = MailFolderView(ob3, self.request)
+        view3 = view3.__of__(ob3)
+
+        ob = box._addFolder('INBOX', 'INBOX')
+        msg1 = ob._addMessage('1', '1')
+        msg1.size = 12
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+
+        # copy from INBOX1
+        kw = {'msg_1': 'on'}
+        view.manageContent(action='copy', **kw)
+        self.assertEquals(box.getClipboard(),('copy', ['INBOX.1']))
+
+        # paste to INBOX2
+        view2.manageContent(action='paste', **kw)
+
+        # copy from INBOX2
+        kw = {'msg_1': 'on'}
+        view2.manageContent(action='copy', **kw)
+        self.assertEquals(box.getClipboard(),('copy', ['INBOX2.1']))
+
+        # paste to INBOX 3
+        view3.manageContent(action='paste', **kw)
+        # checking msg
+        self.assertEquals(ob2['.1'].size, ob['.1'].size)
+        self.assertEquals(ob3['.1'].size, ob['.1'].size)
 
     def test_manageContent_delete(self):
         # test content manipulations
@@ -440,7 +485,7 @@ class MailFolderViewTestCase(MailTestCase):
         view = MailFolderView(ob, self.request)
         view = view.__of__(ob)
 
-        message = box._addMessage('msg', 'msg')
+        message = ob._addMessage('msg', 'INBOX.msg')
 
         res = view.getMessageUidAndFolder('INBOX.msg')
         self.assertEquals(res, (ob, 'msg'))
@@ -450,6 +495,21 @@ class MailFolderViewTestCase(MailTestCase):
 
         res = view.getMessageUidAndFolder('INadzadzBOX.mdzsg')
         self.assertEquals(res, (None, None))
+
+    def test_bad_charmaps(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        msg = self.getMailInstance(44)
+        ob._setObject('.1', msg)
+        msg.id = '.1'
+
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+        rendered_mail = view.renderMailList()[1][0]
+        unicode_ = rendered_mail['Subject']
+        # verify that we can display it in iso8859
+        # if not this will raise an error
+        string_ = unicode_.encode('ISO-8859-15')
 
 def test_suite():
     return unittest.TestSuite((

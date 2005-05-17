@@ -231,8 +231,10 @@ class MailBoxTestCase(MailTestCase):
 
     def test_elementIsInTrash(self):
         mailbox = self._getMailBox()
-        Trash = mailbox._addFolder('Trash', 'INBOX.Trash')
-        Todos = mailbox._addFolder('Todosez', 'INBOX.Todosez')
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
+        Trash = inbox._addFolder('Trash', 'INBOX.Trash')
+        Todos = inbox._addFolder('Todosez', 'INBOX.Todosez')
+
         self.assert_(not mailbox.elementIsInTrash(Todos))
 
         res = Todos.delete()
@@ -246,6 +248,7 @@ class MailBoxTestCase(MailTestCase):
     def test_checkIndexStack(self):
         # checks that index stack gets filled
         mailbox = self._getMailBox()
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
         indexStack = []
         mailbox._syncdirs([{'Name' : 'INBOX'}], True, indexStack)
         self.assertEquals(len(indexStack), 1)
@@ -281,7 +284,8 @@ class MailBoxTestCase(MailTestCase):
         # msg_INBOX.CVS__950   to_folder_INBOX.LOGS
         folder1 =  inbox._addFolder('folder1', 'INBOX.folder1')
         folder1._addMessage('.1', 'message1')
-        self.assertEquals(len(folder1.objectIds()), 1)
+
+        self.assertEquals(list(folder1.objectIds()), ['.1'])
 
         folder2 =  inbox._addFolder('folder2', 'INBOX.folder2')
 

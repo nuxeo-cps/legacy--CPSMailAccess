@@ -132,7 +132,7 @@ class MailTestCase(ZopeTestCase):
         ZopeTestCase.__init__(self, methodName)
 
     def msgKeyGen(self):
-        result = 'msg_' + str(self.msg_key)
+        result = str(self.msg_key)
         self.msg_key += 1
         return result
 

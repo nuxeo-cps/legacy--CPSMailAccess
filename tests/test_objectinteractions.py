@@ -77,12 +77,13 @@ class ObjectInteractionTest(MailTestCase):
     def test_synchronize(self):
         # testing synchronize calls
         mailbox = self._getMailBox()
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
 
         for i in range(10):
-            ob = mailbox._addFolder()
+            ob = inbox._addFolder('folder_%d' % i, 'INBOX.folder_%d' % i)
 
             for i in range(10):
-                ob._addFolder()
+                ob._addFolder(str(i), 'INBOX.%d' % i)
 
             for i in range(123):
                 key = self.msgKeyGen()

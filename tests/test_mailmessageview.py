@@ -245,7 +245,7 @@ class MailMessageViewTestCase(MailTestCase):
         self.assertEquals(ed_msg.getHeader('To'), ob.getHeader('From'))
 
     def test_multipleTos(self):
-        mbox =self._getMailBox()
+        mbox = self._getMailBox()
         ob = self.getMailInstance(42)
         ob = ob.__of__(mbox)
 
@@ -256,12 +256,21 @@ class MailMessageViewTestCase(MailTestCase):
             u'xxx <xxx@nuxeo.com>,\n xxxx <xxxx@nuxeo.com>,\n xxxxx <xxxxx@nuxeo.com>')
 
     def test_charmap_errors(self):
-        mbox =self._getMailBox()
-        ob = self.getMailInstance(43)
-        ob = ob.__of__(mbox)
-        view = MailMessageView(ob, None)
-        rendered_body = view.renderBody()
-        string = str(rendered_body)
+        mbox = self._getMailBox()
+        for mail_index in (43, 44):
+            ob = self.getMailInstance(mail_index)
+            ob = ob.__of__(mbox)
+            view = MailMessageView(ob, None)
+
+            # will raise errors if not viewable in iso
+            rendered_body = view.renderBody()
+            string_ = rendered_body.encode('ISO-8859-15')
+
+            rendered_subject = view.renderSubject()
+            string_ = rendered_subject.encode('ISO-8859-15')
+
+            render_from_list = view.renderFromList()
+            string_ = render_from_list.encode('ISO-8859-15')
 
 def test_suite():
     return unittest.TestSuite((
