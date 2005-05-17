@@ -225,7 +225,7 @@ class MailBox(MailBoxBaseCaching):
             self._getconnector()
             self.synchronize()
 
-    def synchronize(self, no_log=False, light=True):
+    def synchronize(self, no_log=False, light=1):
         """ see interface """
         if not has_connection:
             return []
@@ -238,17 +238,21 @@ class MailBox(MailBoxBaseCaching):
         LOG('synchronize', INFO, 'synchro started light = %s' % str(light))
         connector = self._getconnector()
 
-        if light:
+        if light == 1:
             server_directory = [{'Name': 'INBOX'}]
         else:
             server_directory = connector.list()
+            LOG('synchronize', INFO, 'synchro list %s'% str(server_directory))
+
         if no_log:
             returned = self._syncdirs(server_directories=server_directory,
                                       return_log=False, indexStack=indexStack,
                                       light=light)
         else:
             log = self._syncdirs(server_directories=server_directory,
-                                 return_log=True, indexStack=indexStack)
+                                 return_log=True, indexStack=indexStack,
+                                 light=light)
+
             log.insert(0, 'synchronizing mailbox...')
             log.append('... done')
             logtext = '\n'.join(log)
@@ -286,12 +290,10 @@ class MailBox(MailBoxBaseCaching):
         return returned
 
     def _syncdirs(self, server_directories=[], return_log=False,
-                  indexStack=[], light=True):
+                  indexStack=[], light=0):
         """ syncing dirs """
         log = []
-
         self.setSyncState(state=False, recursive=True)
-
         for directory in server_directories:
             # servers directory are delimited by dots
             dirname = directory['Name']
@@ -303,12 +305,10 @@ class MailBox(MailBoxBaseCaching):
             relative_name = ''
 
             for part in dir_fullpath :
-
                 if relative_name == '':
                     relative_name = part
                 else:
                     relative_name = relative_name + '.' + part
-
                 # if path does not exists
                 # let's create it
                 # server_name is the key, not Id
@@ -337,29 +337,36 @@ class MailBox(MailBoxBaseCaching):
         self.setSyncState(state=True)
 
         # cheking for orphan folders
-        if not light:
-            folders = self.getMailMessages(list_folder=True, list_messages=False, recursive=True)
+        if light == 0:
+            folders = self.getMailMessages(list_folder=True,
+                                           list_messages=False, recursive=True)
+            LOG('synchro', INFO, 'no light')
         else:
             folders = []
+            LOG('synchro', INFO, 'light')
 
         # let's order folder : leaves at first
-        for folder in folders:
-            if not folder.sync_state:
-                # before deleting message that this folder hold,
-                # we want to put them in orphan list
-                for id, item in folder.objectItems():
-                    if IMailMessage.providedBy(item):
-                        digest = item.digest
-                        self.addMailToCache(item, digest)
+        LOG('synchro', INFO, 'working msg in folders %s from %s' % (str(folders), self.id))
+        # removing orphan folders
+        if light == 0:
+            for folder in folders:
+                if not folder.sync_state:
+                    # before deleting message that this folder hold,
+                    # we want to put them in orphan list
+                    for id, item in folder.objectItems():
+                        if IMailMessage.providedBy(item):
+                            digest = item.digest
+                            self.addMailToCache(item, digest)
 
-                # delete the folder (see for order problem later here)
-                parent_folder = folder.aq_inner.aq_parent
-                parent_folder.manage_delObjects([folder.getId()])
+                    # delete the folder (see for order problem later here)
+                    LOG('synchro', INFO, 'removing folder %s' % (folder.id))
+                    parent_folder = folder.aq_inner.aq_parent
+                    parent_folder.manage_delObjects([folder.getId()])
 
         # now syncronizing messages
         # this is done after to be able
         # to retrieve orphan message thus accelerate the work
-        if not light:
+        if light == 0:
             folders = self.getMailMessages(list_folder=True,
                                            list_messages=False, recursive=True)
         else:
@@ -513,7 +520,7 @@ class MailBox(MailBoxBaseCaching):
             sent = inbox._addFolder(uid, sent_name, server=True)
         return sent
 
-    def _serverEmptyTrashElement(self, element):
+    def _serverEmptyTrashElement(self, element, folders_to_delete):
         """ empty trash element
 
         If the element is a folder, need to recursively
@@ -530,25 +537,44 @@ class MailBox(MailBoxBaseCaching):
 
         if IMailFolder.providedBy(element):
             # recursively calling
+            if element not in folders_to_delete:
+                folders_to_delete.append(element)
             sub_items = [ob for id, ob in element.objectItems()]
-            map(self._serverEmptyTrashElement, sub_items)
-
-            connector.deleteMailBox(element.server_name)
+            for sitem in sub_items:
+                self._serverEmptyTrashElement(sitem, folders_to_delete)
         else:
             folder = element.getMailFolder()
             connector.setFlags(folder.server_name,
-                               element.uid, {'Deleted': 1})
-
+                                element.uid, {'Deleted': 1})
 
     def emptyTrashFolder(self):
         """ empty the trash """
         trash = self.getTrashFolder()
         trash._clearCache()
         ids = []
+        folders = []
         for id, ob in trash.objectItems():
             ids.append(id)
-            self._serverEmptyTrashElement(ob)
+            self._serverEmptyTrashElement(ob, folders)
 
+        # delete folder from server at last
+        connector = self._getconnector()
+
+        # sorting, deepest first
+        sorter = []
+        for folder in folders:
+            name = folder.server_name
+            folder_deep = len(name.split('.'))
+            sorter.append((folder_deep, name))
+
+        sorter.sort()
+        sorter.reverse()
+
+        for folder in sorter:
+            LOG('emptyTrashFolder', INFO, 'removing folder %s' % str(folder[1]))
+            connector.deleteMailBox(folder[1])
+
+        # low-level deletion
         trash.manage_delObjects(ids)
         trash.message_count = 0
         trash.folder_count = 0
@@ -560,6 +586,7 @@ class MailBox(MailBoxBaseCaching):
     def validateChanges(self):
         """ call expunger """
         if has_connection:
+            LOG('validateChanges', INFO, 'expunging')
             connector = self._getconnector()
             connector.expunge()
 
@@ -928,16 +955,27 @@ class MailBox(MailBoxBaseCaching):
 
         # translating name to object
         from_object = self
+        i = 0
         for element in from_place:
+            # make sure we deal with ids
+            if i < len(from_place) - 1 or not message_to_folder:
+                element = makeId(element)
             from_object = getattr(from_object, element, None)
             if from_object is None:
+                raise element + ' not found'
                 break
+            i += 1
 
         to_object = self
-        for element in to_place:
-            to_object = getattr(to_object, element, None)
-            if to_object is None:
-                break
+        if from_object is not None:
+            i = 0
+            for element in to_place:
+                element = makeId(element)
+                to_object = getattr(to_object, element, None)
+                if to_object is None:
+                    raise element + ' not found'
+                    break
+                i += 1
 
         if from_object is not None and to_object is not None:
             if message_to_folder:
@@ -1109,13 +1147,11 @@ class MailBoxView(MailFolderView):
             self.request.response.redirect(trash.absolute_url()+\
                                            '/view?msm=%s' % psm)
 
-    def synchronize(self, light=True):
+    def synchronize(self, light=1):
         """ synchronizes mailbox """
         # todo : block a new synchronization if it's already
         # XXX inside
-        LOG('synchro', INFO, 'start')
-        if isinstance(light, str):
-            light = light == '1'
+        LOG('synchro', INFO, 'start light:%s' % str(light))
         mailbox = self.context
 
         if not mailbox.isSynchronizing():
