@@ -215,6 +215,7 @@ class ZemanticMailCatalog(TripleStore):
         self.addTriples(message.threeTuples())
 
     def unIndexMessage(self, message):
-        raise NotImplementedError
+        pass
+        #raise NotImplementedError
 
 InitializeClass(ZemanticMailCatalog)
