@@ -26,6 +26,7 @@
                           clipboard not:here/clipBoardEmpty;
                           max_folder_size here/getMaxFolderSize;
                           synchro python:here.getMailBox().isSynchronizing();
+                          is_folder python:1;
                           show_content_toolbar python:content_managment or clipboard">
 
     <div class="message" tal:condition="synchro" i18n:translate="cps_synchronizing">
