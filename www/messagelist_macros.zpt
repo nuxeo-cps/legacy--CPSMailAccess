@@ -2,10 +2,10 @@
   <body>
     <metal:block define-macro="mailbox_warning">
       <metal:block tal:define="msm request/msm|nothing;
-                                clipboard clipboard|nothing">
+                                clipboard clipboard|nothing;">
        <div class="clipboardContent" tal:condition="python:clipboard or msm">
-          <metal:block tal:condition="clipboard"
-                      tal:define="count here/clipBoardCount">
+          <metal:block tal:condition="clipboard">
+            <tal:block tal:define="count here/clipBoardCount">
             <tal:block tal:condition="python:count &gt; 1">
             <span tal:replace="count"/>
                 <span i18n:translate="cpsma_messages_in_clipboard">
@@ -14,6 +14,7 @@
             <tal:block tal:condition="python:count == 1">
             1 <span i18n:translate="cpsma_message_in_clipboard">
             message in clipboard</span>
+            </tal:block>
             </tal:block>
           </metal:block>
           <metal:block tal:condition="python:msm and clipboard"> | </metal:block>
@@ -28,30 +29,35 @@
     <metal:block define-macro="actions_toolbar">
       <tal:block tal:define="actions here/actionView.html|nothing">
         <div class="toolbar" tal:condition="actions">
-          <table class="toolbar" summarize="Available actions">
-            <tr>
-              <tal:block tal:repeat="action_pack actions">
-                <tal:block tal:repeat="action action_pack">
-                <td class="selectableButton">
-                  <center>
-                    <a tal:attributes="href action/action;
-                                     target action/target|nothing">
-                    <img i18n:attributes="title alt"
-                        tal:attributes="src action/icon;
-                            title action/long_title;
-                            alt action/long_title;
-                            onclick action/onclick|nothing"/>
-                    <br/>
-                    <span i18n:translate="" class="toolbar"
-                          tal:content="action/title"/>
-                    </a>
-                  </center>
-                </td>
+          <table width="100%" summarize="Toolbar">
+            <td>
+            <table class="toolbar" summarize="Available actions">
+                <tr>
+                <tal:block tal:repeat="action_pack actions">
+                    <tal:block tal:repeat="action action_pack">
+                    <td class="selectableButton">
+                    <center>
+                        <a tal:attributes="href action/action;
+                                        target action/target|nothing">
+                        <img i18n:attributes="title alt"
+                            tal:attributes="src action/icon;
+                                title action/long_title;
+                                alt action/long_title;
+                                onclick action/onclick|nothing"/>
+                        </a>
+                    </center>
+                    </td>
+                    </tal:block>
                 </tal:block>
-              </tal:block>
-            </tr>
+                </tr>
+            </table>
+            </td>
+            <td align="right" tal:condition="is_folder|nothing">
+              <metal:block use-macro="here/messagelist_macros/macros/manage_toolbar"/>
+            </td>
           </table>
         </div>
+
        </tal:block>
     </metal:block>
 
@@ -59,7 +65,7 @@
     <div class="toolbar">
       <table summarize="Managing Content">
         <tr>
-            <div style="float:right">
+            <div style="float:right" tal:condition="nbpages|nothing">
               <metal:block use-macro="here/messagelist_macros/macros/batcher"/>
             </div>
            <td class="bold" i18n:translate="cpsma_selection">
@@ -93,7 +99,7 @@
                     value="select all" tal:attributes="onclick function_call"
                     i18n:attributes="value"/>
            </td>
-           <td class="selectableButton" tal:condition="clipboard">
+           <td class="selectableButton" tal:condition="clipboard|nothing">
               <input class="manage_delete" type="submit" name="action_clear" value="clear"
                       i18n:attributes="value"/>
            </td>
