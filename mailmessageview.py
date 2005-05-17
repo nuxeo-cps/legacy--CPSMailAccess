@@ -51,11 +51,11 @@ class MailMessageView(BaseMailMessageView):
         if context is not None: # and IMailPart.providedBy(context):
             date = self.context.getHeader('Date')
             if date == []:
-                date = '?'
+                date = u'?'
             else:
                 date = decodeHeader(date[0])
         else:
-            date = '?'
+            date = u'?'
         date = localizeDateString(date)
         return date
 
@@ -65,11 +65,11 @@ class MailMessageView(BaseMailMessageView):
         if context is not None: # and IMailPart.providedBy(context):
             date = self.context.getHeader('Date')
             if date == []:
-                date = '?'
+                date = u'?'
             else:
                 date = decodeHeader(date[0])
         else:
-            date = '?'
+            date = u'?'
         date = localizeDateString(date, 3)
         return date
 
@@ -117,7 +117,7 @@ class MailMessageView(BaseMailMessageView):
                 for header in headers:
                     header = decodeHeader(header)
                     decoded.append(header)
-                return u' '.join(decoded)
+                return secureUnicode(u' '.join(decoded))
         else:
             return u'?'
 
