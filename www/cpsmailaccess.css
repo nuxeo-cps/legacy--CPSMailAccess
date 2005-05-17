@@ -132,10 +132,14 @@ td.selectable:hover {
 
 }
 
-table.editor_header {
+table.editorHeader {
   margin-bottom: 10px;
   padding: 8px;
   background-color: #e7e7e7;
+  -moz-border-radius-topleft: 12px;
+  -moz-border-radius-topright: 12px;
+  -moz-border-radius-bottomleft: 12px;
+  -moz-border-radius-bottomright: 12px;
 }
 
 input.message_edit_input:hover {
