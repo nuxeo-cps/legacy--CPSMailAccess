@@ -234,32 +234,36 @@ class MailFolder(BTreeFolder2):
             return count
 
     def getFlaggedMessageList(self, flags=[]):
-        """ returns a list according to given flags """
+        """ returns a list according to given flags
+
+        if a flag is prefixed by - it will check
+        it negation : -seen, seen, -junk, etc
+        """
         flags = map(self._loweritem, flags)
-
         msgs = self.getMailMessages(list_folder=False,
-            list_messages=True, recursive=False)
-
+                                    list_messages=True, recursive=False)
         msg_list = []
-
-        # opti : 'seen' is the most common call
-        if len(flags) == 1 and flags[0] == 'unseen':
-            for msg in msgs:
-                if msg.seen == 0:
-                    msg_list.append(msg)
-            return msg_list
-
         for msg in msgs:
-            cond1 = 'seen' in flags and msg.seen
-            cond2 = 'answered' in flags and msg.answered
-            cond3 = 'deleted' in flags and msg.deleted
-            cond4 = 'flagged' in flags and msg.flagged
-            cond5 = 'forwarded' in flags and msg.forwarded
-            cond6 = 'unseen' in flags and not msg.seen
-            if cond1 and cond2 and cond3 and cond4 and cond5 and cond6:
-                msg_list.append(msg)
-        return msg_list
+            selected = True
+            for flag in flags:
+                if flag[0] == '-':
+                    c_flag = flag[1:]
+                    condition = 0
+                else:
+                    c_flag = flag
+                    condition = 1
 
+                if not hasattr(msg, c_flag):
+                    selected = False
+                    break
+                elif getattr(msg, c_flag) != condition:
+                    selected = False
+                    break
+
+            if selected:
+                msg_list.append(msg)
+
+        return msg_list
 
     def getServerName(self):
         """See interfaces.IMailFolder
@@ -292,32 +296,29 @@ class MailFolder(BTreeFolder2):
 
     def _moveMessage(self, uid, to_mailbox):
         """ moves the message to another mailbox """
-        self._clearCache()
-        self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
         origin_id = id
-        if not hasattr(self, id):
-            return None
         msg = self[id]
+
         # detach message
-        self._delObject(id)
-        self.message_count -= 1
+        self._deleteMessage(uid)
+
         # get its new id and uid
         uid = to_mailbox.getNextMessageUid()
         id = to_mailbox.getIdFromUid(uid)
-        # free the object from its aquisition
         msg = aq_base(msg)
         msg.uid = uid
         msg.id = id
-        #link it to the newmailbox
+
+        # link it to the newmailbox
         to_mailbox._setObject(id, msg)
         to_mailbox.message_count += 1
         to_mailbox._clearCache()
-        msg = getattr(to_mailbox, id)
+        msg = to_mailbox[id]
+        msg = msg.__of__(to_mailbox)
+
         self._indexMessage(msg)
 
-        # now we need to reindex ourself
-        self._fillVacuum(origin_id)
         return msg
 
     def _copyMessage(self, uid, to_mailbox):
@@ -333,14 +334,17 @@ class MailFolder(BTreeFolder2):
         self._clearCache()
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
-        if hasattr(self, id):
+        if self.has_key(id):
+            LOG('_deleteMessage', INFO, 'deleting %s in %s' % (id, self.id))
             msg = self[id]
             self._unIndexMessage(msg)
-            self.manage_delObjects([id])
-            self.message_count -=1
-            #msg = msg.__of__(None)
+            self._delOb(id)
+            self.message_count -= 1
             self._fillVacuum(id)
             return True
+        else:
+            LOG('_deleteMessage', INFO, 'no %s in %s' % (id, self.id))
+
         return False
 
     def _asyncOnFlagChanged(self, server_name, uid, kw, connector):
@@ -371,6 +375,9 @@ class MailFolder(BTreeFolder2):
         self.clearMailBoxTreeViewCache()
         self.message_count +=1
         id = self.getIdFromUid(uid)
+        if self.has_key(id):
+            raise Exception('The id %s is invalid in %s - it\'s in use' \
+                %(id, self.id))
         msg = MailMessage(id, uid, digest)
         self._setObject(id, msg)
         msg.parent_folder = self
@@ -525,12 +532,12 @@ class MailFolder(BTreeFolder2):
             else:
                 part_infos = part_infos[1]
                 part_num = '%s.1' % part_num
-
         elif part_infos[0] == 'relative':
             part_infos = part_infos[1]
             part_num = '%s.1' % part_num
         else:
             part_num = str(part_num)
+
 
         try:
             msg_body = connector.fetch(server_name, uid,
@@ -638,8 +645,7 @@ class MailFolder(BTreeFolder2):
                 digest = None
                 if not mailfailed:
                     msg_headers = fetched_mail[2]
-                    subs= ('Date', 'Subject', 'From', 'To', 'Cc', 'Message-ID',
-                           'Mailing-List')
+                    subs= ('Date', 'Subject', 'From', 'To', 'Cc', 'Message-ID')
                     sub_keys = {}
                     for sub in subs:
                         if msg_headers.has_key(sub):
@@ -652,8 +658,7 @@ class MailFolder(BTreeFolder2):
                         # same uid but not same message
                         old_digest = msg.digest
                         mailbox.addMailToCache(msg, old_digest)
-                        # XXX need to remove for catalogs
-                        self.manage_delObjects([msg.getId()])
+                        self._deleteMessage(msg.uid)
                         msg = None
                     else:
                         found = True
@@ -675,7 +680,7 @@ class MailFolder(BTreeFolder2):
                         indexStack.append(msg)
                         #self._updateDirectories(msg)
                     else:
-                        self.manage_delObjects([msg.getId()])
+                        self._deleteMessage(msg.uid)
                 else:
                     # Message was in cache, adding it to self
                     if not found:
@@ -706,7 +711,7 @@ class MailFolder(BTreeFolder2):
                 digest = message.digest
                 mailbox.addMailToCache(message, digest)
                 # XXX need to remove for catalogs
-                self.manage_delObjects([message.getId()])
+                self._deleteMessage(message.uid)
         # used to prevent swapping
         get_transaction().commit()    # implicitly usable without import
         get_transaction().begin()     # implicitly usable without import
@@ -772,7 +777,7 @@ class MailFolder(BTreeFolder2):
 
         #XX detach from parent
         parent = self.getMailFolder()
-        parent._delObject(self.id)
+        parent._delOb(self.id)
         parent.folder_count -= 1
 
         gparent = parent.getMailFolder()
@@ -791,7 +796,8 @@ class MailFolder(BTreeFolder2):
 
         current = self.getMailBox()
         for node in path:
-            current = getattr(current, node)
+            node = makeId(node)
+            current = current[node]
 
         # make the folder free
         self = aq_base(self)
@@ -805,7 +811,7 @@ class MailFolder(BTreeFolder2):
             parent.folder_count += 1
             parent = parent.getMailFolder()
 
-        self = getattr(current, self.id)
+        self = current[self.id]
 
         # recreating server name
         if fullname==0:
@@ -846,8 +852,7 @@ class MailFolder(BTreeFolder2):
         return prefix[len(prefix)-1]
 
     def copy(self, copy_name):
-        """ copy a mailbox into another one
-        """
+        """ copy a mailbox into another one """
         # TODO
         raise NotImplementedError
 
@@ -869,6 +874,10 @@ class MailFolder(BTreeFolder2):
 
     def copyMessage(self, uid, to_mailbox):
         """ make a copy """
+        # cannot copy within the same dir, that's insane
+        if to_mailbox == self:
+            return False
+
         if has_connection:
             connector = self._getconnector()
             res = connector.copy(self.server_name, to_mailbox.server_name, uid)
@@ -970,21 +979,27 @@ class MailFolder(BTreeFolder2):
 
     def _fillVacuum(self, id):
         """ fill an index vacuum """
-        if hasattr(self, id):
-            return True
+        LOG('_fillVacuum', INFO, id)
+        if self.has_key(id):
+            raise Exception('%s exists' % id)
 
         # finding next id
         vacuum_id = id
         next_id = self._nextId(id)
 
+        if not self.has_key(next_id):
+            LOG('_fillVacuum', INFO, 'doesnt exists %s !' % next_id)
+
         # finding msg
-        while hasattr(self, next_id):
+        while self.has_key(next_id):
+            LOG('_fillVacuum', INFO, 'found '+next_id)
             # XXX makes a side effect on publisher
-            msg = getattr(self, next_id)
+            msg = self[next_id]
             self._delOb(next_id)
             self._setOb(vacuum_id, msg)
             msg.id = vacuum_id
             msg.uid = self.getUidFromId(vacuum_id)
+            LOG('_fillVacuum', INFO, 'becomes ' + vacuum_id)
             vacuum_id = self._nextId(vacuum_id)
             next_id = self._nextId(next_id)
         return True
