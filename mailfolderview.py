@@ -27,8 +27,7 @@ from zope.interface import directlyProvides, directlyProvidedBy
 from basemailview import BaseMailMessageView
 from interfaces import IMailMessage, ITrashFolder, IDraftFolder, ISentFolder,\
                        IContainerFolder
-from utils import decodeHeader, localizeDateString, parseDateString, \
-    isToday, getFolder, getHumanReadableSize, intToSortableStr
+from utils import *
 
 class MailFolderView(BaseMailMessageView):
 
@@ -145,7 +144,8 @@ class MailFolderView(BaseMailMessageView):
             elif sort_with == 'From':
                 element_from = element.getHeader('From')
                 if element_from is None or element_from == []:
-                    element_from = '?'
+                    element_from = u'?'
+
                 sorter = decodeHeader(element_from[0])
             elif sort_with == 'Date':
                 element_date = element.getHeader('Date')
@@ -238,22 +238,23 @@ class MailFolderView(BaseMailMessageView):
                 subject = element.getHeader('Subject')
                 if subject != []:
                     translated_title = decodeHeader(subject[0])
-                    mail_title = translated_title
+                    mail_title = secureUnicode(translated_title)
                 else:
-                    mail_title = '?'
+                    mail_title = u'?'
             else:
                 ob_title = self.createShortTitle(element)
                 if ob_title is None or ob_title == '':
-                    mail_title = '?'
+                    mail_title = u'?'
                 else:
-                    mail_title = ob_title
+                    mail_title = secureUnicode(ob_title)
 
             part['Subject'] = mail_title
 
             element_from = element.getHeader('From')
             if element_from is None or element_from == []:
-                element_from = '?'
-            part['From'] = decodeHeader(element_from[0])
+                element_from = u'?'
+            part['From'] = secureUnicode(decodeHeader(element_from[0]))
+
             element_date = element.getHeader('Date')
             if element_date is None or element_date == []:
                 element_date = '?'
@@ -266,7 +267,7 @@ class MailFolderView(BaseMailMessageView):
             if element.size is not None:
                 part['Size'] = getHumanReadableSize(element.size)
             else:
-                part['Size'] = (0, 'o')
+                part['Size'] = getHumanReadableSize(-1)
 
             part['new'] = not element.seen
             returned.append(part)
@@ -338,9 +339,9 @@ class MailFolderView(BaseMailMessageView):
 
         msg_uid = current.getIdFromUid(msg_id)
 
-        if not hasattr(current, msg_uid):
+        if not current.has_key(msg_uid):
             return current, None
-        msg = getattr(current, msg_uid)
+        msg = current[msg_uid]
         return current, msg.uid
 
     def manageContent(self, action=None, **kw):
