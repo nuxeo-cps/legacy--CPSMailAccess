@@ -138,9 +138,16 @@ class BaseMailMessageView(BrowserView):
                 childview.context = child
                 element = self._createTreeViewElement(child, firstfolder,
                     index, length, level, parent_index, parent_length, base_url)
-                unreads, element['childs'] = childview._renderTreeView(firstfolder, level+1,
-                    parent_index, parent_length, base_url, flags, lotusfolders)
-                element['unreads'] = unreads
+                child_unreads, element['childs'] = \
+                  childview._renderTreeView(firstfolder, level+1,
+                                            parent_index, parent_length,
+                                            base_url, flags, lotusfolders)
+                if IMailFolder.providedBy(element['object']):
+                    unreads = element['object'].getFlaggedMessageCount(['-seen'])
+                else:
+                    unreads = 0
+
+                element['unreads'] = unreads + child_unreads
                 treeview.append(element)
                 index += 1
 
@@ -279,11 +286,10 @@ class BaseMailMessageView(BrowserView):
             element = self._createTreeViewElement(child, current, index,
                                                   length, level, parent_index,
                                                   parent_length, root)
-            """ time consuming, cut at this time
             if IMailFolder.providedBy(element['object']):
-                count = element['object'].getFlaggedMessageCount(['unseen'])
-                unreads += count
-            """
+                unreads = element['object'].getFlaggedMessageCount(['-seen'])
+            else:
+                unreads = 0
 
             child_unreads, element['childs'] = childview._renderTreeView(current, level+1,
                 index, length, root, flags)
