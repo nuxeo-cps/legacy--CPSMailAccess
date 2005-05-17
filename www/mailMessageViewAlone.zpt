@@ -7,7 +7,7 @@
       src="++resource++cpsmailaccess.js">
     </script>
   </head>
-  <body>
+  <body tal:define="is_message python:1;">
     <div id="folder" tal:condition="request/showfolders|python:0">
     todo : show folder content
     </div>
