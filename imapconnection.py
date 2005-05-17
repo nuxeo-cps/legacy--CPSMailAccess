@@ -123,7 +123,8 @@ class IMAPConnection(BaseConnection):
         self._respawn()
         try:
             typ, dat = self._connection.login(user, password)
-        except IMAP4.error:
+        except IMAP4.error, e:
+            raise str(e)
             raise ConnectionError(LOGIN_FAILED + ' for user %s' % user)
 
         # _connection state is AUTH if login succeeded
@@ -134,6 +135,13 @@ class IMAPConnection(BaseConnection):
         else:
             return False
 
+    def _relog(self):
+        """ relogs """
+        user = self.user
+        password = self.password
+        if self.logout():
+            self.login(user, password)
+
     def logout(self):
         """ see interface for doc
         """
@@ -143,6 +151,9 @@ class IMAPConnection(BaseConnection):
         if typ == 'BYE' :
             self.user = None
             self.password = None
+            return True
+        else:
+            return False
 
     def getState(self):
         self._respawn()
@@ -335,6 +346,9 @@ class IMAPConnection(BaseConnection):
         """ see interface for doc """
         # fetch works for unique message_number, in integer or string
         # or with several numbers, like : '1,2,3'
+        LOG('fetching', INFO, 'mailbox: %s, message_number %s, message_parts %s'\
+          %(mailbox, str(message_number), str(message_parts)))
+
         if isinstance(message_number, int):
             message_number = str(message_number)
 
@@ -512,26 +526,23 @@ class IMAPConnection(BaseConnection):
         self._connection.store(message_number, 'FLAGS', _flags)
 
     def expunge(self):
-        """ expunge
-        """
+        """ expunge and instantly relog """
         self._respawn()
         self._connection.expunge()
+        #self._relog()
 
     def select(self, mailbox):
-        """ expunge
-        """
+        """ select """
         self._respawn()
         self._connection.select(mailbox)
 
     def deleteMailBox(self, mailbox):
-        """ delete mailbox
-        """
+        """ delete mailbox """
         self._respawn()
         self._connection.delete(mailbox)
 
     def _parseIMAPMessage(self, message):
         """ parses an imap message """
-
         message = message.lower()
         message = message.strip()
         start = 1
