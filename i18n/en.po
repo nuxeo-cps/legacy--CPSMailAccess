@@ -1,0 +1,373 @@
+# translation of fr.po to francais
+# Gettext Message File for default.
+# Your Name <your@email>, Year
+# emmanuel <tziade@nuxeo.com>, 2004.
+msgid ""
+msgstr ""
+"Project-Id-Version: en\n"
+"POT-Creation-Date: 2005-03-26 17:25default\n"
+"PO-Revision-Date: 2005-03-26 17:26+0200\n"
+"Last-Translator: tarek <tziade@nuxeo.com>\n"
+"Language-Team: francais <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-code: LL\n"
+"Language-name: Language\n"
+"Preferred-encodings: utf-8 latin1\n"
+"Domain: default\n"
+"X-Generator: KBabel 1.3.1\n"
+
+msgid "cpsma_personal_address_book"
+msgstr "Personal address book"
+
+msgid "cpsma_global_address_book"
+msgstr "Public address book"
+
+msgid "cpsma_send_a_message"
+msgstr "Send a message"
+
+msgid "cpsma_mailbox_configuration"
+msgstr "Configure"
+
+msgid "cpsma_mailbox_parameters"
+msgstr "Mailbox parameters"
+
+msgid "cpsma_mailbox_managment_tasks"
+msgstr "Administration"
+
+msgid "cpsma_address_book"
+msgstr "Address book"
+
+msgid "cpsma_configure_mailbox"
+msgstr "Configure mailbox"
+
+msgid "cpsma_search_message"
+msgstr "Search messages"
+
+msgid "cpsma_write_message"
+msgstr "Compose"
+
+msgid "cpsma_synchronize_mailbox"
+msgstr "Synchronize with server"
+
+msgid "cpsma_js_disabled"
+msgstr "Javascript is not activated, you will loose ergonomics."
+
+msgid "cpsma_attach_file"
+msgstr "Attach a file"
+
+msgid "cpsma_make_selection"
+msgstr "Make a selection"
+
+msgid "cpsma_messages_in_clipboard"
+msgstr "messages in clipboard"
+
+msgid "cpsma_message_in_clipboard"
+msgstr "message in clipboard"
+
+msgid "cpsma_subject"
+msgstr "Subject"
+
+msgid "cpsma_to"
+msgstr "To"
+
+msgid "cpsma_from"
+msgstr "From"
+
+msgid "cpsma_mailbox_beeing_synchronized"
+msgstr "Mailox is beeing synchronized"
+
+msgid "cpsma_mailbox_force_synchronize"
+msgstr "If nothing seems to happen, force synchronization by this link."
+
+msgid "cpsma_found"
+msgstr "Found"
+
+msgid "cpsma_results"
+msgstr "results"
+
+msgid "cpsma_no_results"
+msgstr "No result."
+
+msgid "cpsma_search_message_subject"
+msgstr "Subject"
+
+msgid "cpsma_search_message_from"
+msgstr "Author"
+
+msgid "cpsma_search_message_cc"
+msgstr "Cc"
+
+msgid "cpsma_search_message_contains"
+msgstr "Body"
+
+msgid "cpsma_search_message_date"
+msgstr "Date"
+
+msgid "cpsma_search_message_intersection"
+msgstr "Intersection"
+
+msgid "cpsma_results_in"
+msgstr "results in"
+
+msgid "cpsma_seconds"
+msgstr "seconds"
+
+msgid "cpsma_date"
+msgstr "Date"
+
+msgid "cpsma_cc"
+msgstr "Cc"
+
+msgid "cpsma_save_message"
+msgstr "Save"
+
+msgid "cpsma_init_editor"
+msgstr "Cancel"
+
+msgid "cpsma_empty_trash"
+msgstr "Empty trash"
+
+msgid "cpsma_add_subfolder"
+msgstr "Add a sub folder"
+
+msgid "cpsma_move_folder"
+msgstr "Move folder"
+
+msgid "cpsma_rename_folder"
+msgstr "Rename folder"
+
+msgid "cpsma_delete_folder"
+msgstr "Delete folder"
+
+msgid "cpsma_manage_content"
+msgstr "Manage content"
+
+msgid "cpsma_reply"
+msgstr "Reply"
+
+msgid "cpsma_reply_all"
+msgstr "Reply all"
+
+msgid "cpsma_forward"
+msgstr "Forward"
+
+msgid "cpsma_load_message"
+msgstr "Load message"
+
+msgid "cpsma_delete_message"
+msgstr "Delete message"
+
+msgid "cpsma_configure"
+msgstr "Configure"
+
+msgid "cpsma_getmessages"
+msgstr "Get messages"
+
+msgid "cpsma_search_messages"
+msgstr "Search"
+
+msgid "cpsma_write_message"
+msgstr "Compose"
+
+msgid "cpsma_address_books"
+msgstr "Address book"
+
+msgid "cpsma_all_entries"
+msgstr "All entries"
+
+msgid "cpsma_send_a_message"
+msgstr "Send a message"
+
+msgid "cpsma_to"
+msgstr "To"
+
+msgid "cpsma_bcc"
+msgstr "Bcc"
+
+# named parameters
+msgid "HOST"
+msgstr "Host"
+
+msgid "PORT"
+msgstr "Port"
+
+msgid "SSL"
+msgstr "SSL ?"
+
+msgid "cache_level"
+msgstr "Cache level"
+
+msgid "connection_type"
+msgstr "Connection type"
+
+msgid "draft_folder_name"
+msgstr "Draft folder name"
+
+msgid "login"
+msgstr "Login"
+
+msgid "max_folder_depth"
+msgstr "Maximum depth in folder creation"
+
+msgid "max_folder_size"
+msgstr "Maximum length for folder names"
+
+msgid "message_list_cols"
+msgstr "Displayed columns"
+
+msgid "password"
+msgstr "Password"
+
+msgid "sent_folder_name"
+msgstr "Sent folder name"
+
+msgid "smtp_host"
+msgstr "SMTP Host"
+
+msgid "smtp_port"
+msgstr "SMTP Port"
+
+msgid "trash_folder_name"
+msgstr "Trash folder name"
+
+msgid "treeview_style"
+msgstr "Treeview style"
+
+msgid "cpsma_synchronized"
+msgstr "Synchronized"
+
+msgid "cpsma_failed_synchro"
+msgstr "Could not synchronize mailbox. Check your parameters."
+
+msgid "cpsma_add"
+msgstr "Add"
+
+msgid "cpsma_change"
+msgstr "Change"
+
+msgid "cpsma_choose_new_folder"
+msgstr "Pick up a new folder name"
+
+# content toolbar action
+msgid "copy"
+msgstr "coppy"
+
+msgid "cut"
+msgstr "cut"
+
+msgid "paste"
+msgstr "paste"
+
+msgid "delete"
+msgstr "delete"
+
+msgid "clear"
+msgstr "clear"
+
+msgid "cpsma_reindex_mail_catalog"
+msgstr "Reindex mail catalog"
+
+msgid "cpsma_objects"
+msgstr "Indexed messages"
+
+msgid "cpsma_filter"
+msgstr "Filter"
+
+msgid "Filters for incoming messages"
+msgstr "Filters forincoming messages"
+
+msgid "Element"
+msgstr "Elements"
+
+msgid "Condition"
+msgstr "Condition"
+
+msgid "Value"
+msgstr "Value"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Action param"
+msgstr "Parameter"
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "Sender"
+msgstr "Sender"
+
+msgid "To"
+msgstr "A"
+
+msgid "Cc"
+msgstr "Cc"
+
+msgid "contains"
+msgstr "contains"
+
+msgid "does not contains"
+msgstr "does not contains"
+
+msgid "begins with"
+msgstr "begins with"
+
+msgid "ends with"
+msgstr "ends with"
+
+msgid "is"
+msgstr "is"
+
+msgid "isn't"
+msgstr "isn't"
+
+msgid "move to"
+msgstr "move to"
+
+msgid "copy to"
+msgstr "copy to"
+
+msgid "label with"
+msgstr "label with"
+
+msgid "set junk status"
+msgstr "junk ?"
+
+msgid "Need an action param"
+msgstr "This action need a parameter"
+
+msgid "_list_mail_"
+msgstr "My mails"
+
+msgid "label_webmail_enabled"
+msgstr "Webmail activated"
+
+msgid "label_address_book"
+msgstr "Address book"
+
+msgid "label_personal_addressbook"
+msgstr "Personnal address book"
+
+msgid "cpsma_back_to_folder"
+msgstr "Back to folder"
+
+msgid "cpsma_detach"
+msgstr "Detach"
+
+msgid "select all"
+msgstr "select all"
+
+msgid "deselect all"
+msgstr "deselect all"
+
+msgid "cps_synchronizing"
+msgstr "Synchronizing."
+
+msgid "cpsma_clear_mail_catalog"
+msgstr "Clear mail catalog"
+
+msgid "cpsma_resync_all"
+msgstr "Synchronize the whole box."
