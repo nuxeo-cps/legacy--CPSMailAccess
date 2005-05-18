@@ -313,7 +313,7 @@ msgstr ""
 msgid "does not contains"
 msgstr ""
 
-msgid "begin with"
+msgid "begins with"
 msgstr ""
 
 msgid "ends with"
@@ -367,3 +367,8 @@ msgstr ""
 msgid "cps_synchronizing"
 msgstr ""
 
+msgid "cpsma_clear_mail_catalog"
+msgstr ""
+
+msgid "cpsma_resync_all"
+msgstr ""

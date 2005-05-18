@@ -365,3 +365,9 @@ msgstr "tout deselectionner"
 
 msgid "cps_synchronizing"
 msgstr "Synchronisation en cours."
+
+msgid "cpsma_clear_mail_catalog"
+msgstr "Vider le catalogue"
+
+msgid "cpsma_resync_all"
+msgstr "Resynchroniser toute la boîte"
