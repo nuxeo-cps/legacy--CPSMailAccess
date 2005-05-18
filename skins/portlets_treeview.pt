@@ -1,0 +1,4 @@
+<tal:block tal:define="context nocall:options/context_obj|here;
+                        here context">
+  <metal:block use-macro="context/boxes_mailaccess/macros/portlet_treeview"/>
+</tal:block>
