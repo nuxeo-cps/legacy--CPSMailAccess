@@ -10,12 +10,15 @@
         Filters for incoming messages
       </span>
     </h2>
-    <h3>
+    <h3 tal:replace="nothing">
       <span i18n:translate="">
         Automatic filters
       </span>
     </h3>
-    <div class="manageGroup">
+    <div class="manageGroup" tal:replace="nothing">
+
+    not activated yet
+
         <input class="standalone" type="submit" name="activate_antispam"
                    onclick="alert('not implemented yet');"
                    value="Activate adaptive anti-spam"/>
