@@ -994,7 +994,7 @@ class MailFolder(BTreeFolder2):
         while self.has_key(next_id):
             LOG('_fillVacuum', INFO, 'found '+next_id)
             # XXX makes a side effect on publisher
-            msg = self[next_id]
+            msg = aq_base(self._getOb(next_id))
             self._delOb(next_id)
             self._setOb(vacuum_id, msg)
             msg.id = vacuum_id
