@@ -329,21 +329,24 @@ class MailFolder(BTreeFolder2):
         msg_copy = to_mailbox._addMessage(new_uid, msg.digest)
         msg_copy.copyFrom(msg)
 
-    def _deleteMessage(self, uid):
-        """ see interfaces ImailFolder """
+    def _deleteMessage(self, uid, no_vacuum=False):
+        """ deletes a message
+
+        if no_vacuum is true, the freed id gets filled
+        with a reindexation of all messages
+        """
         self._clearCache()
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
+
         if self.has_key(id):
-            LOG('_deleteMessage', INFO, 'deleting %s in %s' % (id, self.id))
-            msg = self[id]
+            msg = aq_base(self._getOb(id))
             self._unIndexMessage(msg)
             self._delOb(id)
             self.message_count -= 1
-            self._fillVacuum(id)
+            if not no_vacuum:
+                self._fillVacuum(id)
             return True
-        else:
-            LOG('_deleteMessage', INFO, 'no %s in %s' % (id, self.id))
 
         return False
 
@@ -471,6 +474,9 @@ class MailFolder(BTreeFolder2):
                                    None)
             msg_object.size = msg_size
             msg_object.instant_load = self.instant_load
+            # we need to check if the message has attached files
+            # XXX how to do this without loading the structure
+            # ie : without making the webmail very slow
             return False
 
         msg_body = None
@@ -499,8 +505,11 @@ class MailFolder(BTreeFolder2):
                                     break
                         if have_file:
                             file = {}
-                            file['mimetype'] = '%s/%s' % (part[0],
-                                                          part[1])
+                            if part[0] == 'unknown':
+                                file['mimetype'] = ''
+                            else:
+                                file['mimetype'] = '%s/%s' % (part[0],
+                                                              part[1])
                             file['content-transfer-encoding'] = part[4]
                             file['size'] = part[5]
                             # we don't want to load the file
@@ -548,7 +557,8 @@ class MailFolder(BTreeFolder2):
         if not skip:
             msg_object.loadMessage(msg_flags, msg_headers, msg_body,
                                    part_infos)
-            msg_object.size = msg_size
+            if msg_size is not None:
+                msg_object.size = msg_size
             if not afterload:
                 msg_object.instant_load = self.instant_load
             else:
@@ -575,7 +585,7 @@ class MailFolder(BTreeFolder2):
 
     def _synchronizeFolder(self, return_log=False, indexStack=[]):
         """ See interfaces.IMailFolder """
-        LOG('sync', INFO, 'synchronizing %s' % self.id)
+        LOG('sync', DEBUG, 'synchronizing %s' % self.id)
         self._clearCache()
         sync_states = {}
         log = []
@@ -616,7 +626,7 @@ class MailFolder(BTreeFolder2):
         fetch_str = '(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS(%s)])' % headers
         for sub_bloc in bloc:
             uid_sequence = ','.join(sub_bloc)
-            LOG('sync', INFO, 'synchronizing %s' % str(uid_sequence))
+            LOG('sync', DEBUG, 'synchronizing %s' % str(uid_sequence))
             start = time.time()
             # gets flags, size and headers
             try:
@@ -627,7 +637,7 @@ class MailFolder(BTreeFolder2):
                 fetched = []
                 mailfailed = True
             end = time.time() - start
-            LOG('sync', INFO, 'fetched in %s seconds' % str(end))
+            LOG('sync', DEBUG, 'fetched in %s seconds' % str(end))
             # now syncing each message
             start_time = time.time()
 
@@ -658,7 +668,7 @@ class MailFolder(BTreeFolder2):
                         # same uid but not same message
                         old_digest = msg.digest
                         mailbox.addMailToCache(msg, old_digest)
-                        self._deleteMessage(msg.uid)
+                        self._deleteMessage(msg.uid, no_vacuum=True)
                         msg = None
                     else:
                         found = True
@@ -680,7 +690,8 @@ class MailFolder(BTreeFolder2):
                         indexStack.append(msg)
                         #self._updateDirectories(msg)
                     else:
-                        self._deleteMessage(msg.uid)
+                        self._deleteMessage(msg.uid, no_vacuum=True)
+                        msg = None
                 else:
                     # Message was in cache, adding it to self
                     if not found:
@@ -701,7 +712,6 @@ class MailFolder(BTreeFolder2):
             get_transaction().commit()  # implicitly usable without import
             get_transaction().begin()   # implicitly usable without import
             end_time = time.time() - start_time
-            LOG('sync', INFO, 'synced done in %s seconds' % str(end_time))
 
         # now clear messages in zodb that appears to be
         # deleted from the directory
@@ -711,7 +721,7 @@ class MailFolder(BTreeFolder2):
                 digest = message.digest
                 mailbox.addMailToCache(message, digest)
                 # XXX need to remove for catalogs
-                self._deleteMessage(message.uid)
+                self._deleteMessage(message.uid, no_vacuum=True)
         # used to prevent swapping
         get_transaction().commit()    # implicitly usable without import
         get_transaction().begin()     # implicitly usable without import
@@ -979,7 +989,6 @@ class MailFolder(BTreeFolder2):
 
     def _fillVacuum(self, id):
         """ fill an index vacuum """
-        LOG('_fillVacuum', INFO, id)
         if self.has_key(id):
             raise Exception('%s exists' % id)
 
@@ -987,21 +996,17 @@ class MailFolder(BTreeFolder2):
         vacuum_id = id
         next_id = self._nextId(id)
 
-        if not self.has_key(next_id):
-            LOG('_fillVacuum', INFO, 'doesnt exists %s !' % next_id)
-
         # finding msg
         while self.has_key(next_id):
-            LOG('_fillVacuum', INFO, 'found '+next_id)
             # XXX makes a side effect on publisher
             msg = aq_base(self._getOb(next_id))
             self._delOb(next_id)
             self._setOb(vacuum_id, msg)
             msg.id = vacuum_id
             msg.uid = self.getUidFromId(vacuum_id)
-            LOG('_fillVacuum', INFO, 'becomes ' + vacuum_id)
             vacuum_id = self._nextId(vacuum_id)
             next_id = self._nextId(next_id)
+
         return True
 
 """ classic Zope 2 interface for class registering
