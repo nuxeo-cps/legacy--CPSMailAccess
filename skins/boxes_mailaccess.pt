@@ -183,3 +183,61 @@
     </tal:block>
   </tal:block>
 </metal:block>
+
+<metal:block define-macro="portlet_treeview">
+  <tal:block tal:define="treeview here/treeview.html|nothing">
+    <tal:block tal:condition="treeview">
+      <div>
+        <tal:block tal:repeat="element treeview">
+            <metal:block use-macro="here/boxes_mailaccess/macros/node"/>
+        </tal:block>
+        <script langage="javascript">
+            controlStates();
+        </script>
+      </div>
+    </tal:block>
+  </tal:block>
+  <div class="dragBox" id="drag-feedback-box"></div>
+</metal:block>
+
+<metal:block define-macro="portlet_attached_files">
+ <tal:block tal:define="attached_files here/attachedFiles.html|nothing;
+                        mailedit here/is_editor|nothing">
+   <tal:block tal:condition="attached_files">
+      <div>
+        <table width="100%">
+            <tal:block tal:repeat="attached_file_pack attached_files">
+            <tr>
+                <tal:block tal:repeat="attached_file attached_file_pack">
+                <td class="selectable">
+                    <div style="float:right" tal:condition="mailedit">
+                    <a onclick="return window.confirm('Are you sure?');"
+                        tal:attributes="href attached_file/delete_url">
+                        <img src="cpsma_delete_file.png"/>
+                    </a>
+                    </div>
+                    <a tal:attributes="href attached_file/url">
+                    <center>
+                        <img tal:attributes="src attached_file/icon;
+                                title attached_file/fulltitle;
+                                alt attached_file/fulltitle;
+                                onclick attached_file/onclick|nothing"/>
+                        <br/>
+                        <span class="truncable" i18n:translate=""
+                        tal:content="attached_file/title"/>
+                    </center>
+                    </a>
+                </td>
+                </tal:block>
+            </tr>
+            </tal:block>
+            <tal:block tal:condition="python:len(attached_files) &gt; 0">
+                <script langage="javascript">
+                truncateFields(15);
+                </script>
+            </tal:block>
+        </table>
+      </div>
+    </tal:block>
+  </tal:block>
+</metal:block>
