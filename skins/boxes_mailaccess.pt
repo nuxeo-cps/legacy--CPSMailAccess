@@ -156,7 +156,7 @@
                          <img src="cpsma_delete_file.png"/>
                        </a>
                       </div>
-                     <a tal:attributes="href attached_file/url">
+                     <a tal:attributes="href attached_file/url" target="_blank">
                        <center>
                          <img tal:attributes="src attached_file/icon;
                                     title attached_file/fulltitle;
@@ -216,7 +216,7 @@
                         <img src="cpsma_delete_file.png"/>
                     </a>
                     </div>
-                    <a tal:attributes="href attached_file/url">
+                    <a tal:attributes="href attached_file/url"  target="_blank">
                     <center>
                         <img tal:attributes="src attached_file/icon;
                                 title attached_file/fulltitle;
