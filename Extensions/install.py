@@ -556,17 +556,15 @@ class CPSMailAccessInstaller(CPSInstaller):
         """ installing portlets """
         portlets = ({'type': 'Custom Portlet',
                      'slot': 'left',
-                     'visibility_range': [0, 1],
                      'order': 0,
                      'render_method': 'portlets_treeview',
-                      'Title': 'Webmail navigation',
+                     'Title': 'Webmail navigation',
                     },
                     {'type': 'Custom Portlet',
                      'slot': 'right',
-                     'visibility_range': [0, 1],
                      'order': 0,
                      'render_method': 'portlets_attached_files',
-                      'Title': 'Attached Files',
+                     'Title': 'Attached Files',
                     },
                     )
 
