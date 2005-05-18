@@ -109,7 +109,7 @@
     </metal:block>
 
     <metal:block define-macro="search_messagelist">
-        <table id="tableMessageList" summarize="Search results">
+        <table id="tableMessageList" summarize="Search results" width="100%">
           <tr class="mailHeaders">
             <th class="mailToolBarElement mailToolBarInsideElement">
                   Subject
@@ -270,7 +270,7 @@
            tal:define="folder python:here.getMailFolder()">
           <a tal:condition="folder" style="float: right; margin-right: 4px"
              i18n:attributes="title"
-             tal:attributes="href python:folder.absolute_url()+'/view';
+             tal:attributes="href python:folder.absolute_url()+'/view?keep_last_sort=1';
                              title string:Back to folder">
             <img id="new_page" src="cpsma_back.png"/>
              <span i18n:translate="cpsma_back_to_folder">Back to folder</span>
