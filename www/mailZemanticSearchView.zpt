@@ -85,7 +85,7 @@
             <input class="fullwidth" type="text" name="value_2" tal:attributes="value value_2"/>
           </td>
         </tr>
-        <tr>
+        <tr tal:replace="nothing">
           <td align="right">
             <div class="dlabel" i18n:translate="cpsma_search_message_contains">
             Message Contains :
