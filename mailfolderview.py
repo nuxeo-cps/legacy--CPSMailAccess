@@ -154,7 +154,10 @@ class MailFolderView(BaseMailMessageView):
                 stDate = decodeHeader(element_date[0])
                 sorter = parseDateString(stDate)
             elif sort_with == 'Size':
-                sorter = int(element.size)
+                if element.size is not None:
+                    sorter = int(element.size)
+                else:
+                    sorter = -1
             elif sort_with == 'Icon':
                 sorter = self.getMsgIconName(element)
             else:
