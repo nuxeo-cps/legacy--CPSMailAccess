@@ -183,9 +183,6 @@ class MailBox(MailBoxBaseCaching):
 
     implements(IMailBox)
 
-    _directory_picker = None
-    _connection_params = {}
-
     zcatalog_id = '.zemantic_catalog'
     catalog_id = '.zcatalog'
 
@@ -193,6 +190,8 @@ class MailBox(MailBoxBaseCaching):
         MailBoxBaseCaching.__init__(self, uid, server_name, **kw)
         self.search_available = True
         self._filters = ZMailFiltering()
+        self._directory_picker = None
+        self._connection_params = {}
 
     def getConnectionParams(self):
         if self._connection_params == {}:
