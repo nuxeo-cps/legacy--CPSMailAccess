@@ -88,7 +88,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.verifySkins(SKINS)
         self.setupPortalWebMail()
         self.setupTypes()
-        self.setupBoxes()
+        self.setupBoxesorPortlets()
         self.setupDefaultAddressBooks()
         self.setupMembersSchemasAndLayouts()
         self.addWMAction()
@@ -531,6 +531,8 @@ class CPSMailAccessInstaller(CPSInstaller):
         dp = wm.default_connection_params
         for id, box in wm.objectItems():
             for item in dp.keys():
+                if not hasattr(box, '_connection_params'):
+                    setattr(box, '_connection_params', {})
                 if not box._connection_params.has_key(item):
                     box._connection_params[item] = dp[item]
 
@@ -550,6 +552,32 @@ class CPSMailAccessInstaller(CPSInstaller):
         if five_actions not in portal_actions.listActionProviders():
             portal_actions.addActionProvider(five_actions)
 
+    def setupPortlets(self):
+        """ installing portlets """
+        portlets = ({'type': 'Custom Portlet',
+                     'slot': 'left',
+                     'visibility_range': [0, 1],
+                     'order': 0,
+                     'render_method': 'portlets_treeview',
+                      'Title': 'Webmail navigation',
+                    },
+                    {'type': 'Custom Portlet',
+                     'slot': 'right',
+                     'visibility_range': [0, 1],
+                     'order': 0,
+                     'render_method': 'portlets_attached_files',
+                      'Title': 'Attached Files',
+                    },
+                    )
+
+        self.verifyPortlets(portlets, self.portal.portal_webmail)
+
+    def setupBoxesorPortlets(self):
+        """ sets attached file and treeview boxes """
+        if hasattr(self.portal, 'portal_cpsportlets'):
+            self.setupPortlets()
+        else:
+            self.setupBoxes()
 
 def install(self):
     """Installation is done here.
