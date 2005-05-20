@@ -52,4 +52,52 @@ And run it.
 CONFIGURATION
 =============
 
+1. Enable the webmail
+
+Go to your preferences, and change "webmail activated" to "yes". After you have validated
+ this choice, you will see a new entry in your actions, called "My mails".
+
+2. Configure your box
+
+The first time you click on "My mails" will bring you to the configuration screen.
+There you will need to provied a few informations:
+
+to quickly set your box, you need to provide these parameters :
+
+    host: the name of the imap mail server (for example: mail.mycompany.com)
+    port: the port (default is 143 for IMAP, 993 for IMAP through SSL)
+    SSL ?: if set to "1", tells the webmail to use SSL
+    Login: mail server login name
+    Password : mail server password
+    SMTP Host: smtp host
+    SMTP Port: smtp port
+
+submit your changes with the "submit" button
+
+3. First synchronization
+
+the first synchronization takes a big while: all mails from server are fetched to create a
+browsing structure into zope. For big boxes (>20 0000 mails) it can take 15 minutes.
+But this needs to be done juste once.
+
+In the Administration panel, click on the "Synchronize the whole box" button. This will launch
+the work. If your system is configured to work with zasync, you can start to work immediatly
+with mails while the work is beeing done in the background. (this is explained in zasync_settings.txt)
+
+When the box is synchronized, you will be taken in your INBOX and will be able to start to use
+ the webmail.
+
+4. Every day synchronization
+
+For now on, everytime you will click on "My Mails" the box will get synchronized.
+This should not last more than a few seconds. You can do a synchronization manually with
+the "get messages" button.
+
+5. How to use the webmail
+
+please refer to the user manual
+
+
+
+
 
