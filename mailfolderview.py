@@ -390,23 +390,21 @@ class MailFolderView(BaseMailMessageView):
         if action == 'paste':
             mailbox = mailfolder.getMailBox()
             past_action, ids = mailbox.getClipboard()
-            try:
-                if past_action == 'cut':
-                    # it's a cut'n'paste
-                    for id in ids:
-                        folder, uid = self.getMessageUidAndFolder(id)
-                        folder.moveMessage(uid, mailfolder)
-                else:
-                    # it's a copy
-                    for id in ids:
-                        folder, uid = self.getMessageUidAndFolder(id)
-                        folder.copyMessage(uid, mailfolder)
-                changed = 1
-            finally:
-                mailbox.clearClipboard()
-
-        if changed == 1:
-            mailbox.validateChanges()
+            if ids is not None:
+                try:
+                    if past_action == 'cut':
+                        # it's a cut'n'paste
+                        for id in ids:
+                            folder, uid = self.getMessageUidAndFolder(id)
+                            folder.moveMessage(uid, mailfolder)
+                    else:
+                        # it's a copy
+                        for id in ids:
+                            folder, uid = self.getMessageUidAndFolder(id)
+                            folder.copyMessage(uid, mailfolder)
+                    changed = 1
+                finally:
+                    mailbox.clearClipboard()
 
         if self.request is not None:
             # let's go to the mailbox
