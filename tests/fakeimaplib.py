@@ -120,7 +120,11 @@ class IMAP4:
         return ('OK', '')
 
     def uid(self, command, *args):
-        return ('OK', '')
+        if hasattr(self, command):
+            command = getattr(self, command)
+            return command(*args)
+        else:
+            return self.fetch('OK', '')
 
     def create(self, mailbox):
         return ('OK', '')
@@ -140,7 +144,8 @@ class IMAP4:
     def socket(self):
         return FakeSocket()
 
-
+    def response(self, command):
+        return (command, [None])
 
 class IMAP4_SSL(IMAP4):
     pass
