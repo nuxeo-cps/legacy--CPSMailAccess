@@ -361,7 +361,6 @@ class MailFolderView(BaseMailMessageView):
                     break
 
         mailfolder = self.context
-        changed = 0
         psm = ''
 
         if action in ('copy', 'cut', 'delete', 'clear'):
@@ -382,7 +381,6 @@ class MailFolderView(BaseMailMessageView):
                     for msg in msg_list:
                         folder, uid = self.getMessageUidAndFolder(msg)
                         folder.deleteMessage(uid)
-                        changed = 1
                     if len(msg_list) > 1:
                         psm = 'Messages sent to Trash.'
                     else:
@@ -402,7 +400,6 @@ class MailFolderView(BaseMailMessageView):
                         for id in ids:
                             folder, uid = self.getMessageUidAndFolder(id)
                             folder.copyMessage(uid, mailfolder)
-                    changed = 1
                 finally:
                     mailbox.clearClipboard()
 
