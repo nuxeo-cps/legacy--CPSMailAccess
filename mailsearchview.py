@@ -113,13 +113,14 @@ class MailSearchView(BrowserView):
         i = 0
         found = True
         queries = []
-
-        while found:
+        # maximum parameters == kw length / 2
+        while i < len(kw.keys()) / 2:
             rrelation = 'relation_%d' %  i
             rvalue = 'value_%d' %  i
+            # increment here because of continue statement
+            i += 1
             if kw.has_key(rrelation) and kw.has_key(rvalue):
-                i +=1        # increment here because of continue
-                value = kw[rvalue]
+                value = kw[rvalue].lower()
 
                 if value.strip() == '':    # we skip empty value
                     continue
@@ -137,8 +138,6 @@ class MailSearchView(BrowserView):
                         value = value.strip().decode('ISO-8859-15')
                     query = Query(Any, u'<%s>' % relation, u'"%s"' % value)
                 queries.append(query)
-            else:
-                found = False
 
         cat = mailbox._getZemanticCatalog()
 
