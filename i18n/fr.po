@@ -371,3 +371,7 @@ msgstr "Vider le catalogue"
 
 msgid "cpsma_resync_all"
 msgstr "Resynchroniser toute la boîte"
+
+msgid "cpsma_could_not_send"
+msgstr "Envoi impossible, vérifiez vos paramètres SMTP"
+

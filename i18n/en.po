@@ -77,7 +77,7 @@ msgid "cpsma_from"
 msgstr "From"
 
 msgid "cpsma_mailbox_beeing_synchronized"
-msgstr "Mailox is beeing synchronized"
+msgstr "Mailbox is beeing synchronized"
 
 msgid "cpsma_mailbox_force_synchronize"
 msgstr "If nothing seems to happen, force synchronization by this link."
@@ -253,7 +253,7 @@ msgstr "Pick up a new folder name"
 
 # content toolbar action
 msgid "copy"
-msgstr "coppy"
+msgstr "copy"
 
 msgid "cut"
 msgstr "cut"
@@ -277,7 +277,7 @@ msgid "cpsma_filter"
 msgstr "Filter"
 
 msgid "Filters for incoming messages"
-msgstr "Filters forincoming messages"
+msgstr "Filters for incoming messages"
 
 msgid "Element"
 msgstr "Elements"
@@ -371,3 +371,6 @@ msgstr "Clear mail catalog"
 
 msgid "cpsma_resync_all"
 msgstr "Synchronize the whole box."
+
+msgid "cpsma_could_not_send"
+msgstr "Could not send the message, please check your SMTP configuration"

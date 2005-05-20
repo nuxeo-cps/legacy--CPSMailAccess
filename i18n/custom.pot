@@ -372,3 +372,6 @@ msgstr ""
 
 msgid "cpsma_resync_all"
 msgstr ""
+
+msgid "cpsma_could_not_send"
+msgstr ""
