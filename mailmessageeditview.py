@@ -122,6 +122,7 @@ class MailMessageEdit(BrowserView):
 
         # using the message instance that might have attached files already
         result, error = self.context.sendEditorsMessage()
+
         if self.request is not None:
             if result:
                 # need to set the answered or forwarded flag
@@ -130,10 +131,10 @@ class MailMessageEdit(BrowserView):
                     folder = origin.getMailFolder()
                     if msg.answerType == 'reply':
                         origin.setFlag('answered', 1)
-                        folder.onFlagChanged(origin, 'answered', 1)
+                        folder.changeMessageFlags(origin, 'answered', 1)
                     else:
                         origin.setFlag('forwarded', 1)
-                        folder.onFlagChanged(origin, 'forwarded', 1)
+                        folder.changeMessageFlags(origin, 'forwarded', 1)
 
                 # clear the editor
                 self.initializeEditor(False)

@@ -175,8 +175,6 @@ class MailMessage(Folder):
         if hasattr(self, flag):
             if getattr(self, flag) != value:
                 setattr(self, flag, value)
-                # call the event trigger
-                self.onFlagChanged(self, flag, value)
 
     def getHeader(self, name):
         """ Get a message header. """
@@ -228,10 +226,6 @@ class MailMessage(Folder):
                 self.setFlag(flag, 1)
             else:
                 self.setFlag(flag, 0)
-
-    def onFlagChanged(self, msg, flag, value):
-        """ can be used for event triggers """
-        pass
 
     def getDirectBody(self):
         """ gets direct body """
@@ -315,6 +309,7 @@ class MailMessage(Folder):
         self.junk = msg.junk
         self.size = msg.size
         self.new = msg.new
+        self.instant_load = msg.instant_load
 
     def getRawMessage(self):
         """ returns a raw message

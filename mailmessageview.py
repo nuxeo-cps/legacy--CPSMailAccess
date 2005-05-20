@@ -44,6 +44,27 @@ class MailMessageView(BaseMailMessageView):
     _RenderEngine = MailRenderer()
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        # we're viewing a mail, let's check its state
+        if context.instant_load:
+            self._loadMessage()
+
+    def _loadMessage(self):
+        """ loads mail on-the fly """
+        mail = self.context
+        folder = mail.getMailFolder()
+        if folder is not None:
+            server_name = folder.server_name
+            uid = mail.uid
+            connector = folder._getconnector()
+            folder._loadMessageStructureFromServer(server_name, uid,
+                                                    None, None, None,
+                                                    mail, connector,
+                                                    afterload=True)
+            # let's sets the seen flag to 1
+            if mail.getFlag('seen') == 0:
+                mail.setFlag('seen', 1)
+                folder.changeMessageFlags(mail, 'seen', 1)
+                LOG('renderBody', INFO, 'flagged')
 
     def renderDate(self):
         """ renders the mail date """
@@ -128,26 +149,6 @@ class MailMessageView(BaseMailMessageView):
         """ renders the mail body """
         if self.context is not None:
             mail = self.context
-            # the user reads the messge, let's
-            # sets the read message to 1
-            if mail.getFlag('seen') == 0:
-                mail.setFlag('seen', 1)
-                folder = mail.getMailFolder()
-                if folder is not None:
-                    folder.onFlagChanged(mail, 'seen', 1)
-            if mail.instant_load:
-                # loading mail on-the fly
-                # xxx todo: outsource this
-                folder = mail.getMailFolder()
-                if folder is not None:
-                    server_name = folder.server_name
-                    uid = mail.uid
-                    connector = folder._getconnector()
-                    folder._loadMessageStructureFromServer(server_name, uid,
-                                                           None, None, None,
-                                                           mail, connector,
-                                                           afterload=True)
-
             body = self._bodyRender(mail)
         else:
             body = ''
@@ -260,7 +261,7 @@ class MailMessageView(BaseMailMessageView):
         # need to do the same on server
         msg.setFlag('deleted', 1)
         if msg_container is not None:
-            msg_container.onFlagChanged(msg, 'deleted', 1)
+            msg_container.changeMessageFlags(msg, 'deleted', 1)
 
         if self.request is not None:
             psm = 'Message sent to Trash.'
@@ -281,6 +282,7 @@ class MailMessageView(BaseMailMessageView):
         list_files = []
 
         for file in files:
+            LOG('file infos', INFO, str(file))
             file['url'] = '%s/viewFile.html?filename=%s' \
                     %(prefix, str(file['filename']))
             file['icon'] =  mimetype_to_icon_name(file['mimetype'])
@@ -380,5 +382,3 @@ class MailMessageView(BaseMailMessageView):
         """ returns mail folder """
         message = self.context
         return message.getMailFolder()
-
-
