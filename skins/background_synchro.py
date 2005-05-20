@@ -14,6 +14,7 @@ res = True
 
 if hasattr(context, 'asynchronous_call_manager'):
     # XXX need to get feedback in case of failures
+    bckgrd = True
     acm = context.asynchronous_call_manager
     root = container.portal_url.getPortalPath()
     root = root.replace('/', '.')
@@ -23,6 +24,7 @@ if hasattr(context, 'asynchronous_call_manager'):
                 'python:home.%s.portal_webmail.background("%s", %s)' \
                 % (root, box_name, str(light)), {})
 else:
+    bckgrd = False
     try:
         container.background(box_name, light)
     # except ConnectionError: this will be available when code is put in
@@ -33,7 +35,10 @@ else:
 if req is not None:
     root = container.portal_url()
     if res:
-        psm = 'cps_synchronizing'
+        if bckgrd:
+            psm = 'cps_synchronizing'
+        else:
+            psm = None
     else:
         psm = 'cpsma_failed_synchro'
 
@@ -43,4 +48,7 @@ if req is not None:
     else:
         page = '%s/portal_webmail/%s' %(root, box_name)
 
-    req.RESPONSE.redirect('%s/view?msm=%s'  % (page, psm))
+    if psm is not None:
+        req.RESPONSE.redirect('%s/view?msm=%s'  % (page, psm))
+    else:
+        req.RESPONSE.redirect('%s/view'  % page)
