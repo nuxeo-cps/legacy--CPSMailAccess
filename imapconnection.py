@@ -40,8 +40,6 @@ from baseconnection import CANNOT_SEARCH_MAILBOX, MAILBOX_INDEX_ERROR, \
     CANNOT_READ_MESSAGE, SOCKET_ERROR
 from utils import AsyncCall
 
-
-
 def patch_open(self, host = '', port = IMAP4_SSL_PORT):
     self.host = host
     self.port = port
@@ -105,7 +103,8 @@ class IMAPConnection(BaseConnection):
         if not connected:
             raise ConnectionError(SOCKET_ERROR)
         else:
-            self._connection.socket().settimeout(self.timeout)
+            if not is_ssl:
+                self._connection.socket().settimeout(self.timeout)
     #
     # Internal methods
     #
