@@ -1,0 +1,100 @@
+Return-Path: <z3lab-bounces@lists.nuxeo.com>
+Delivered-To: tziade@nuxeo.com
+Received: (qmail 804 invoked by uid 1009); 18 May 2005 13:08:46 +0200
+Received: from z3lab-bounces@lists.nuxeo.com by tamise.nuxeo.com by uid 1008 with qmail-scanner-1.22-st-qms
+ (clamscan: 0.75-1. spamassassin: 3.0.0.  Clear:RC:0(212.43.238.115):SA:0(-2.6/5.0):.
+ Processed in 4.048458 secs); 18 May 2005 11:08:46 -0000
+X-Spam-Status: No, hits=-2.6 required=5.0
+Received: from unknown (HELO seine.nuxeo.com) (212.43.238.115)
+  by tamise.nuxeo.com with SMTP; 18 May 2005 13:08:42 +0200
+Received: from seine.nuxeo.com (localhost [127.0.0.1])
+        by seine.nuxeo.com (Postfix) with ESMTP id B52401BDBD;
+        Wed, 18 May 2005 13:08:41 +0200 (CEST)
+X-Original-To: z3lab@lists.nuxeo.com
+Delivered-To: z3lab@lists.nuxeo.com
+Received: from ap1net15.smics.com (unknown [210.22.154.51])
+        by seine.nuxeo.com (Postfix) with ESMTP id F2F131BDB9
+        for <z3lab@lists.nuxeo.com>; Wed, 18 May 2005 13:08:39 +0200 (CEST)
+Received: from ncsmg2.smics.com ([10.224.144.35])
+        by ap1net15.smics.com (8.12.10/8.12.11) with ESMTP id j4IB8H8m019205;
+        Wed, 18 May 2005 19:08:17 +0800 (CST)
+Received: from ex111.smic-sh.com (ex111.smic-sh.com [10.224.6.150])
+        by ncsmg2.smics.com (8.12.10/8.12.10) with ESMTP id j4IB816Y021108;
+        Wed, 18 May 2005 19:08:01 +0800 (CST)
+Received: from EX109.smic-sh.com ([10.224.6.43]) by ex111.smic-sh.com with
+        Microsoft SMTPSVC(5.0.2195.6713); Wed, 18 May 2005 19:07:59 +0800
+X-MimeOLE: Produced By Microsoft Exchange V6.0.6603.0
+content-class: urn:content-classes:message
+MIME-Version: 1.0
+Date: Wed, 18 May 2005 19:07:59 +0800
+Message-ID: <4346A951E6EAE4479A220F915A40515107EBF8@ex109.smic-sh.com>
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Thread-Topic: [Z3lab] more exciting name needed.
+Thread-Index: AcVblGDtnGEvbEkNRDSRTEXISRov6QAAtC3A
+From: "Liming_Do" <Liming_Do@smics.com>
+To: "Martijn Faassen" <faassen@infrae.com>, <z3lab@lists.nuxeo.com>
+X-OriginalArrivalTime: 18 May 2005 11:07:59.0587 (UTC)
+        FILETIME=[DA05E330:01C55B99]
+Subject: [Z3lab] more exciting name
+X-BeenThere: z3lab@lists.nuxeo.com
+X-Mailman-Version: 2.1.5
+Precedence: list
+List-Id: Zope3 ECM architecture discussions <z3lab.lists.nuxeo.com>
+List-Unsubscribe: <http://lists.nuxeo.com/mailman/listinfo/z3lab>,
+        <mailto:z3lab-request@lists.nuxeo.com?subject=unsubscribe>
+List-Archive: <http://lists.nuxeo.com/pipermail/z3lab>
+List-Post: <mailto:z3lab@lists.nuxeo.com>
+List-Help: <mailto:z3lab-request@lists.nuxeo.com?subject=help>
+List-Subscribe: <http://lists.nuxeo.com/mailman/listinfo/z3lab>,
+        <mailto:z3lab-request@lists.nuxeo.com?subject=subscribe>
+Content-Type: multipart/mixed; boundary="===============0987646036=="
+X-Qmail-Scanner-1.22-st-qms: renamed duplicate MIME headers
+X-Qmail-Scanner-Renamed-Mime-version: 1.0
+Sender: z3lab-bounces@lists.nuxeo.com
+Errors-To: z3lab-bounces@lists.nuxeo.com
+
+--===============0987646036==
+content-class: urn:content-classes:message
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: base64
+
+RXhjdXNlIG1lLkkgaGF2ZSBzb21lIGNvbmNlcHRzOmlmIHlvdSB3aWxsIGJ1aWxkIGVycCxjcm0s
+YnBtIGV0LiBpbiB0aGUgZnV0dXJlLg0KSXQgbW9zdGx5IGxpa2UgYSBvcGVuIHNvdXJjZSBjb21t
+dW5pdHkuDQpEbyB5b3UgbGlrZSB3d3cuaW5mdWxhLm9yZyA/DQpJIHdhbnQgdG8gam9pbiBpbmZy
+YWUgYW5kIG51eGVvLGkgZm91bmQgaW5mdWxhIGluIGRpY3Rpb25hcnkgYXQgcmFuZG9tDQphbmQg
+aXQgaGFzIG5vdCBiZWVuIHJlZ2lzdGVyZWQgeWV0IGJ5IG5vdy4NCkp1c3QgYSBsaXR0bGUgY29t
+bWVudCA6LSkgSWYgeW91IHRoaW5rIGl0IGlzIG5vdCBzdWl0YWJsZSxpZ25vcmUgaXQuDQoNCi0t
+LS0t5Y6f5aeL6YKu5Lu2LS0tLS0NCuWPkeS7tuS6ujogejNsYWItYm91bmNlc0BsaXN0cy5udXhl
+by5jb20gW21haWx0bzp6M2xhYi1ib3VuY2VzQGxpc3RzLm51eGVvLmNvbV3ku6PooaggTWFydGlq
+biBGYWFzc2VuDQrlj5HpgIHml7bpl7Q6IDIwMDXlubQ15pyIMTjml6UgMTg6MjgNCuaUtuS7tuS6
+ujogU2ViYXN0aWVuIERvdWNoZQ0K5oqE6YCBOiB6M2xhYkBsaXN0cy5udXhlby5jb20NCuS4u+mi
+mDogUmU6IFtaM2xhYl0gbW9yZSBleGNpdGluZyBuYW1lIG5lZWRlZC4NCg0KDQpTZWJhc3RpZW4g
+RG91Y2hlIHdyb3RlOg0KPiBPbiA1LzE4LzA1LCBMZW5uYXJ0IFJlZ2Vicm8gPHJlZ2Vicm9AbnV4
+ZW8uY29tPiB3cm90ZToNCj4gDQo+Pj56M2xhYiA/IGVjbSA/DQo+Pj4NCj4+PkNvbWUgb24uLi4N
+Cj4+DQo+PkkgYWdyZWUuIERvIHlvdSBoYXZlIGFueSBzdWdnZXN0aW9ucz8NCj4+RG8geW91IG90
+aGVycyBhZ3JlZSwgb3IgZG8geW91IGxpa2UgejNlY20/DQo+IA0KPiANCj4gRm9yIGFuIGFwcGxp
+Y2F0aW9uLCBJIGFncmVlIHRoYXQgYSBhdHRyYWN0aXZlIG5hbWUgaXMgYmV0dGVyIChsaWtlDQo+
+IFBsb25lLCBXZWJzcGhlcmUsIERvbWlubyBvciB3aGF0ZXZlcikuIEJ1dCBmb3IgYSB0ZWNobm9s
+b2d5IHdvcmQsDQo+ICJjb21wdXRlciBjZW50cmljIiB0ZXJtcyBhcmUgaW1obyB1c2VmdWwgKENN
+RiwgRUNNLCAuLi4pIDogc2hvcnQgJg0KPiBzaW1wbGUuDQoNClRoYXQncyBhIGdvb2QgcG9pbnQ7
+IHdlIGludGVuZCB0byBidWlsZCBvdXIgQ29vbGx5IE5hbWVkIFRoaW5naWVzIG9uIHRvcCANCm9m
+IEVDTSBhZnRlciBhbGwuIFRoZW4gYWdhaW4sIGEgY29vbCBuYW1lIGZvciB0aGUgcHJvamVjdCBj
+b3VsZCB3b3JrIA0KbmljZWx5IGFzIHdlbGwuLi4NCg0KUmVnYXJkcywNCg0KTWFydGlqbg0KDQoN
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQpaM2xhYiBt
+YWlsaW5nIGxpc3QNClozbGFiQGxpc3RzLm51eGVvLmNvbQ0KaHR0cDovL2xpc3RzLm51eGVvLmNv
+bS9tYWlsbWFuL2xpc3RpbmZvL3ozbGFiDQo=
+
+--===============0987646036==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Z3lab mailing list
+Z3lab@lists.nuxeo.com
+http://lists.nuxeo.com/mailman/listinfo/z3lab
+
+--===============0987646036==--

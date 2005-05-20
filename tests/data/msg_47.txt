@@ -1,0 +1,108 @@
+Return-Path: <zope-dev-bounces@zope.org>
+Delivered-To: tziade@nuxeo.com
+Received: (qmail 28383 invoked by uid 1009); 19 May 2005 20:48:27 +0200
+Received: from zope-dev-bounces@zope.org by tamise.nuxeo.com by uid 1008 with qmail-scanner-1.22-st-qms 
+ (clamscan: 0.75-1. spamassassin: 3.0.0.  Clear:RC:0(63.240.213.173):SA:0(-2.6/5.0):. 
+ Processed in 3.288286 secs); 19 May 2005 18:48:27 -0000
+X-Spam-Status: No, hits=-2.6 required=5.0
+Received: from cvs.zope.org (HELO mail.zope.org) (63.240.213.173)
+  by tamise.nuxeo.com with SMTP; 19 May 2005 20:48:24 +0200
+Received: from cvs.zope.org (localhost.localdomain [127.0.0.1])
+	by mail.zope.org (Postfix) with ESMTP
+	id D341E203342; Thu, 19 May 2005 14:53:14 -0400 (EDT)
+X-Original-To: zope-dev@zope.org
+Delivered-To: zope-dev@zope.org
+Received: from service-web.de (p15093784.pureserver.info [217.160.106.224])
+	by mail.zope.org (Postfix) with ESMTP
+	id 3355D2032DA; Thu, 19 May 2005 14:53:13 -0400 (EDT)
+Received: from [192.168.0.2] (pD901680B.dip.t-dialin.net [217.1.104.11])
+	by service-web.de (Postfix) with ESMTP id 35912200038;
+	Thu, 19 May 2005 20:48:16 +0200 (CEST)
+Date: Thu, 19 May 2005 20:48:12 +0200
+From: Andreas Jung <lists@andreas-jung.com>
+To: Dieter Maurer <dieter@handshake.de>,
+	Andreas Jung <lists@andreas-jung.com>
+Subject: Re: [Zope-dev] Upcoming Zope 2.8 release
+Message-ID: <C2DACBAED302CA756415F062@[192.168.0.2]>
+In-Reply-To: <17036.54283.364508.916763@gargle.gargle.HOWL>
+References: <78FD675A0738D2C871E6BEDA@[10.19.128.101]>
+	<17036.54283.364508.916763@gargle.gargle.HOWL>
+X-Mailer: Mulberry/3.1.6 (Mac OS X)
+MIME-Version: 1.0
+Cc: zope-coders@zope.org, zope-dev@zope.org
+X-BeenThere: zope-dev@zope.org
+X-Mailman-Version: 2.1.5
+Precedence: list
+Reply-To: Andreas Jung <lists@andreas-jung.com>
+List-Id: Developers of the Z Object Publishing Environment <zope-dev.zope.org>
+List-Unsubscribe: <http://mail.zope.org/mailman/listinfo/zope-dev>,
+	<mailto:zope-dev-request@zope.org?subject=unsubscribe>
+List-Archive: <http://mail.zope.org/pipermail/zope-dev>
+List-Post: <mailto:zope-dev@zope.org>
+List-Help: <mailto:zope-dev-request@zope.org?subject=help>
+List-Subscribe: <http://mail.zope.org/mailman/listinfo/zope-dev>,
+	<mailto:zope-dev-request@zope.org?subject=subscribe>
+Content-Type: multipart/mixed; boundary="===============1822477406=="
+Sender: zope-dev-bounces@zope.org
+Errors-To: zope-dev-bounces@zope.org
+
+--===============1822477406==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="==========B816E8C1439664A2F14C=========="
+
+--==========B816E8C1439664A2F14C==========
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+
+
+--On Donnerstag, 19. Mai 2005 19:59 Uhr +0200 Dieter Maurer=20
+<dieter@handshake.de> wrote:
+
+> Andreas Jung wrote at 2005-5-19 13:43 +0200:
+>> after resolving all outstanding problems with Zope 2.8 under Windows the
+>> next
+>> releases will be Zope 2.8 b2 (this weekend) and Zope 2.8.0 final
+>> (scheduled  for
+>> 2005/06/11).
+>
+> What about the ZClasses?
+
+Jim fixed them (hopefully :-))
+
+-aj
+
+
+--==========B816E8C1439664A2F14C==========
+Content-Type: application/pgp-signature
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.1 (Darwin)
+
+iD8DBQFCjN9uCJIWIbr9KYwRAgGbAKDrm3U/kPuFKCu1bmnEEekSgfcfJQCg5ROv
+6Fk1KbXyTqUxNjhSD3tLixk=
+=JqhB
+-----END PGP SIGNATURE-----
+
+--==========B816E8C1439664A2F14C==========--
+
+
+--===============1822477406==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Zope-Dev maillist  -  Zope-Dev@zope.org
+http://mail.zope.org/mailman/listinfo/zope-dev
+**  No cross posts or HTML encoding!  **
+(Related lists - 
+ http://mail.zope.org/mailman/listinfo/zope-announce
+ http://mail.zope.org/mailman/listinfo/zope )
+
+--===============1822477406==--
+
