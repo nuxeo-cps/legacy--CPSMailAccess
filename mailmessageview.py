@@ -45,8 +45,9 @@ class MailMessageView(BaseMailMessageView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         # we're viewing a mail, let's check its state
-        if context.instant_load:
-            self._loadMessage()
+        if context is not None:
+            if context.instant_load:
+                self._loadMessage()
 
     def _loadMessage(self):
         """ loads mail on-the fly """
