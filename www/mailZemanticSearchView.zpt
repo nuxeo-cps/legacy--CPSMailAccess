@@ -49,7 +49,9 @@
     <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div class="spacer">
     </div>
-    <form action="zemanticSearchMessage.html">
+    <form action="zemanticSearchMessage.html" method="get"
+           enctype="multipart/form-data">
+      <input type="hidden" name="intersection" value="1"/>
       <div class="searchGroup">
       <table border="0">
         <tr>
@@ -122,17 +124,6 @@
             </script>
           </td>
         </tr>
-        <tr>
-          <td align="right">
-            <div class="dlabel" i18n:translate="cpsma_search_message_intersection">
-            Intersection :
-            </div>
-          </td>
-          <td >
-            <input type="checkbox" name="intersection"
-                tal:attributes="checked intersection"/>
-          </td>
-        </tr>
       </table>
       </div>
       <!--
@@ -165,8 +156,7 @@
                   <span i18n:translate="cpsma_results_in">results in</span>
                 <tal:block tal:replace="time"/>
                 <span i18n:translate="cpsma_seconds">seconds</span>
-                 (<span tal:replace="nbitems"/>
-                 <span i18n:translate="cpsma_objects">objects</span>) :
+                 :
               </div>
               <div class="message" tal:condition="python:num_results==20">
                   <span i18n:translate="cpsma_max_reached">
