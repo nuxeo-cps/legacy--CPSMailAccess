@@ -52,9 +52,6 @@
                 </tr>
             </table>
             </td>
-            <!--td align="right" tal:condition="is_folder|nothing">
-              <metal:block use-macro="here/messagelist_macros/macros/manage_toolbar"/>
-            </td-->
           </table>
         </div>
 
@@ -65,9 +62,6 @@
     <div class="toolbar">
       <table summarize="Managing Content">
         <tr>
-            <div style="float:right" tal:condition="nbpages|nothing">
-              <metal:block use-macro="here/messagelist_macros/macros/batcher"/>
-            </div>
            <td class="bold" i18n:translate="cpsma_selection">
              Selection:
            </td>
@@ -105,6 +99,9 @@
            </td>
          </tr>
         </table>
+      </div>
+      <div tal:condition="nbpages|nothing" style="float:right">
+        <metal:block use-macro="here/messagelist_macros/macros/batcher"/>
       </div>
     </metal:block>
 
