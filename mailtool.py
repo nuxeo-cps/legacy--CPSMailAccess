@@ -78,7 +78,6 @@ class MailTool(Folder): # UniqueObject
                                  'trash_folder_name' : 'INBOX.Trash',
                                  'draft_folder_name' : 'INBOX.Drafts',
                                  'sent_folder_name' : 'INBOX.Sent',
-                                 'cache_level' :  2,
                                  'max_folder_size' : 20,
                                  'max_folder_depth' : 2,
                                  'treeview_style' : 'lotus',
