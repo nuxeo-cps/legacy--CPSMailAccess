@@ -14,7 +14,7 @@
                            cc_on python:here.getFlag('cc_on');
                            bcc_on python:here.getFlag('bcc_on');
                            attacher_on python:here.getFlag('attacher_on')">
-
+    <metal:block use-macro="here/messagelist_macros/mailbox_warning"/>
     <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div class="spacer"></div>
       <noscript>
