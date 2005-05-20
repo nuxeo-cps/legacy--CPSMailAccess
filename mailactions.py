@@ -83,8 +83,12 @@ class MailActionsView(BaseMailMessageView):
                                  'action' : 'editMessage.html',
                                  'onclick' : 'saveMessageDatas();alert("click below");'}
                 """
+                configure = {'icon' : base_url + '/cpsma_configure.png',
+                             'title' : 'cpsma_configure',
+                             'long_title' : 'cpsma_configure',
+                             'action' : root + '/configure.html'}
 
-                return [[save, init]]
+                return [[save, init, configure]]
 
         elif IMailFolder.providedBy(container):
             mailbox = container.getMailBox()
