@@ -40,7 +40,7 @@ from mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder,\
                   AsyncCall
-from baseconnection import ConnectionError, has_connection
+import baseconnection
 
 class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
@@ -57,7 +57,7 @@ class MailFolder(BTreeFolder2):
     sync_state = False
     message_count = 0
     folder_count = 0
-    loose_sync = False
+    loose_sync = True   # xxx this should be always true now
     fetch_size = 200
     instant_load = True
 
@@ -73,19 +73,25 @@ class MailFolder(BTreeFolder2):
         self._cache = RAMCache()
         self._mailbox = None
 
-    def getNextMessageUid(self):
-        """ retrieves next id for messages
-
-        XXX todo : do not calculate it each time
-        """
+    def _localGetNextMessageUid(self):
+        """ retrieves next id based on local calculation """
         msgs = self.getMailMessages(list_folder=False, list_messages=True,
-            recursive=False)
+                                        recursive=False)
         highest_id = 0
         for msg in msgs:
             uid = int(msg.uid)
             if uid > highest_id:
                 highest_id = uid
         return str(highest_id + 1)
+
+    def getNextMessageUid(self):
+        """ retrieves next id for messages """
+        if baseconnection.has_connection == 1:
+            connector = self._getconnector()
+            return connector.getNextUid(self.server_name)
+        else:
+            return self._localGetNextMessageUid()
+
 
     def clearMailBoxTreeViewCache(self):
         """ clears mailbox cache in case of change """
@@ -294,33 +300,6 @@ class MailFolder(BTreeFolder2):
             id = id[1:]
         return id
 
-    def _moveMessage(self, uid, to_mailbox):
-        """ moves the message to another mailbox """
-        id = self.getIdFromUid(uid)
-        origin_id = id
-        msg = self[id]
-
-        # detach message
-        self._deleteMessage(uid)
-
-        # get its new id and uid
-        uid = to_mailbox.getNextMessageUid()
-        id = to_mailbox.getIdFromUid(uid)
-        msg = aq_base(msg)
-        msg.uid = uid
-        msg.id = id
-
-        # link it to the newmailbox
-        to_mailbox._setObject(id, msg)
-        to_mailbox.message_count += 1
-        to_mailbox._clearCache()
-        msg = to_mailbox[id]
-        msg = msg.__of__(to_mailbox)
-
-        self._indexMessage(msg)
-
-        return msg
-
     def _copyMessage(self, uid, to_mailbox):
         """ copies a message """
         id = self.getIdFromUid(uid)
@@ -329,12 +308,8 @@ class MailFolder(BTreeFolder2):
         msg_copy = to_mailbox._addMessage(new_uid, msg.digest)
         msg_copy.copyFrom(msg)
 
-    def _deleteMessage(self, uid, no_vacuum=False):
-        """ deletes a message
-
-        if no_vacuum is true, the freed id gets filled
-        with a reindexation of all messages
-        """
+    def _deleteMessage(self, uid):
+        """ deletes a message """
         self._clearCache()
         self.clearMailBoxTreeViewCache()
         id = self.getIdFromUid(uid)
@@ -344,30 +319,19 @@ class MailFolder(BTreeFolder2):
             self._unIndexMessage(msg)
             self._delOb(id)
             self.message_count -= 1
-            if not no_vacuum:
-                self._fillVacuum(id)
             return True
 
         return False
 
-    def _asyncOnFlagChanged(self, server_name, uid, kw, connector):
-        """ asynced """
-        try:
-            pass
-            # need to call this asynchronously with zasync if available
-            # connector.setFlags(server_name, uid, kw)
-        except ConnectionError:
-            pass
-
-    def onFlagChanged(self, msg, flag, value):
+    def changeMessageFlags(self, msg, flag, value):
         """ event triggered when a message flag changes """
         # has to be desynced......
-        if has_connection:
+        if baseconnection.has_connection:
             connector = self._getconnector()
             flag = flag.capitalize()
             kw = {flag: value}
             connector.setFlags(self.server_name,
-                             msg.uid, kw)
+                               msg.uid, kw)
 
         # invalidate cache
         self._clearCache()
@@ -415,7 +379,7 @@ class MailFolder(BTreeFolder2):
         self._setObject(new_id, new_folder)
         new_folder = self[new_id]
 
-        if server and has_connection:
+        if server and baseconnection.has_connection:
             connector = self._getconnector()
             # todo : look at the result
             connector.create(new_folder.server_name)
@@ -547,11 +511,10 @@ class MailFolder(BTreeFolder2):
         else:
             part_num = str(part_num)
 
-
         try:
             msg_body = connector.fetch(server_name, uid,
                                        '(BODY.PEEK[%s])' % part_num)
-        except ConnectionError:
+        except baseconnection.ConnectionError:
             skip = True
 
         if not skip:
@@ -585,7 +548,6 @@ class MailFolder(BTreeFolder2):
 
     def _synchronizeFolder(self, return_log=False, indexStack=[]):
         """ See interfaces.IMailFolder """
-        LOG('sync', DEBUG, 'synchronizing %s' % self.id)
         self._clearCache()
         sync_states = {}
         log = []
@@ -601,7 +563,7 @@ class MailFolder(BTreeFolder2):
 
         try:
             uids = connector.search(self.server_name, None, 'ALL')
-        except ConnectionError:
+        except baseconnection.ConnectionError:
             # XXX should be a more specific exception (no such dir)
             # this will happen if the directory has been
             # deleted form the server
@@ -626,18 +588,17 @@ class MailFolder(BTreeFolder2):
         fetch_str = '(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS(%s)])' % headers
         for sub_bloc in bloc:
             uid_sequence = ','.join(sub_bloc)
-            LOG('sync', DEBUG, 'synchronizing %s' % str(uid_sequence))
             start = time.time()
             # gets flags, size and headers
             try:
                 fetched = connector.fetch(self.server_name, uid_sequence,
                                           fetch_str)
                 mailfailed = False
-            except ConnectionError:
+            except baseconnection.ConnectionError:
                 fetched = []
                 mailfailed = True
             end = time.time() - start
-            LOG('sync', DEBUG, 'fetched in %s seconds' % str(end))
+
             # now syncing each message
             start_time = time.time()
 
@@ -668,7 +629,7 @@ class MailFolder(BTreeFolder2):
                         # same uid but not same message
                         old_digest = msg.digest
                         mailbox.addMailToCache(msg, old_digest)
-                        self._deleteMessage(msg.uid, no_vacuum=True)
+                        self._deleteMessage(msg.uid)
                         msg = None
                     else:
                         found = True
@@ -690,7 +651,7 @@ class MailFolder(BTreeFolder2):
                         indexStack.append(msg)
                         #self._updateDirectories(msg)
                     else:
-                        self._deleteMessage(msg.uid, no_vacuum=True)
+                        self._deleteMessage(msg.uid)
                         msg = None
                 else:
                     # Message was in cache, adding it to self
@@ -721,7 +682,7 @@ class MailFolder(BTreeFolder2):
                 digest = message.digest
                 mailbox.addMailToCache(message, digest)
                 # XXX need to remove for catalogs
-                self._deleteMessage(message.uid, no_vacuum=True)
+                self._deleteMessage(message.uid)
         # used to prevent swapping
         get_transaction().commit()    # implicitly usable without import
         get_transaction().begin()     # implicitly usable without import
@@ -774,7 +735,7 @@ class MailFolder(BTreeFolder2):
         else:
             newmailbox = new_name
 
-        if has_connection:
+        if baseconnection.has_connection:
             connector = self._getconnector()
             server_rename = connector.rename(oldmailbox, newmailbox)
             if not server_rename:
@@ -871,16 +832,49 @@ class MailFolder(BTreeFolder2):
             then on the zodb (no sync)
         """
         mailbox = self.getMailBox()
-        if has_connection:
+        id = self.getIdFromUid(uid)
+        origin_id = id
+        msg = self[id]
+
+        # detach message
+        self._deleteMessage(uid)
+
+        # get its new id and uid
+        new_uid = new_mailbox.getNextMessageUid()
+
+        new_id = new_mailbox.getIdFromUid(new_uid)
+        msg = aq_base(msg)
+        msg.uid = new_uid
+        msg.id = new_id
+
+        # link it to the newmailbox
+        new_mailbox._setObject(new_id, msg)
+        new_mailbox.message_count += 1
+        new_mailbox._clearCache()
+        msg = new_mailbox[new_id]
+        msg = msg.__of__(new_mailbox)
+        self._indexMessage(msg)
+
+        res = msg is not None
+
+        if baseconnection.has_connection:
             connector = self._getconnector()
             res = connector.copy(self.server_name, new_mailbox.server_name,
                                  uid)
             connector.setFlags(self.server_name, uid, {'Deleted': 1})
-            mailbox.validateChanges()
             if not res:
                 return False
-        # XXX todo : check if is the same msg uid
-        return self._moveMessage(uid, new_mailbox) is not None
+
+        self.validateChanges()
+        new_mailbox.validateChanges()   # this will provide new id
+        return res
+
+    def validateChanges(self):
+        """ call expunger """
+        if baseconnection.has_connection:
+            connector = self._getconnector()
+            connector.select(self.server_name)
+            connector.expunge()
 
     def copyMessage(self, uid, to_mailbox):
         """ make a copy """
@@ -888,7 +882,7 @@ class MailFolder(BTreeFolder2):
         if to_mailbox == self:
             return False
 
-        if has_connection:
+        if baseconnection.has_connection:
             connector = self._getconnector()
             res = connector.copy(self.server_name, to_mailbox.server_name, uid)
             if not res:
@@ -901,22 +895,8 @@ class MailFolder(BTreeFolder2):
             then on the zodb (no sync)
         """
         mailbox = self.getMailBox()
-
-        trash_name = mailbox.getTrashFolderName()
-        if has_connection:
-            connector = self._getconnector()
-            res = connector.copy(self.server_name, trash_name, uid)
-            connector.setFlags(self.server_name, uid, {'Deleted': 1})
-            if not res:
-                return False
-        # XXX todo : check if is the same msg uid
         trash = mailbox.getTrashFolder()
-        msg = self._moveMessage(uid, trash)
-        if msg:
-            msg.deleted = 1
-            return True
-        else:
-            return False
+        return self.moveMessage(uid, trash)
 
     def _updateDirectories(self, message):
         """ update a directory given a message """
@@ -986,28 +966,6 @@ class MailFolder(BTreeFolder2):
         current_number = self.getUidFromId(id)
         next_id = str(int(current_number) + 1)
         return self.getIdFromUid(next_id)
-
-    def _fillVacuum(self, id):
-        """ fill an index vacuum """
-        if self.has_key(id):
-            raise Exception('%s exists' % id)
-
-        # finding next id
-        vacuum_id = id
-        next_id = self._nextId(id)
-
-        # finding msg
-        while self.has_key(next_id):
-            # XXX makes a side effect on publisher
-            msg = aq_base(self._getOb(next_id))
-            self._delOb(next_id)
-            self._setOb(vacuum_id, msg)
-            msg.id = vacuum_id
-            msg.uid = self.getUidFromId(vacuum_id)
-            vacuum_id = self._nextId(vacuum_id)
-            next_id = self._nextId(next_id)
-
-        return True
 
 """ classic Zope 2 interface for class registering
 """

@@ -24,9 +24,13 @@
 import re
 import socket
 from time import sleep, time
-from zLOG import LOG,INFO, DEBUG
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
+
+from zLOG import LOG,INFO, DEBUG
+
 from zope.interface import implements
+from zope.app.cache.ram import RAMCache
+
 from interfaces import IConnection
 from baseconnection import BaseConnection
 from baseconnection import LOGIN_FAILED
@@ -34,8 +38,17 @@ from baseconnection import ConnectionError
 from baseconnection import ConnectionParamsError
 from baseconnection import CANNOT_SEARCH_MAILBOX, MAILBOX_INDEX_ERROR, \
     CANNOT_READ_MESSAGE, SOCKET_ERROR
+from utils import AsyncCall
 
-from zope.app.cache.ram import RAMCache
+
+
+def patch_open(self, host = '', port = IMAP4_SSL_PORT):
+    self.host = host
+    self.port = port
+    self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    self.sock.settimeout(None)
+    self.sock.connect((host, port))
+    self.sslobj = socket.ssl(self.sock, self.keyfile, self.certfile)
 
 class IMAPConnection(BaseConnection):
     """ IMAP4 v1 implementation for Connection
@@ -75,14 +88,17 @@ class IMAPConnection(BaseConnection):
         failures = 0
         connected = False
 
+        if is_ssl:
+            self._patch_imap()
+
         while not connected and failures < 5:
             try:
                 if is_ssl:
-                    self._connection = IMAP4_SSL(host, port)
+                   self._connection = IMAP4_SSL(host, port)
                 else:
                     self._connection = IMAP4(host, port)
                 connected = True
-            except (IMAP4.abort, socket.error):
+            except:#(IMAP4.abort, socket.error):
                 sleep(0.3)
                 failures += 1
 
@@ -93,7 +109,6 @@ class IMAPConnection(BaseConnection):
     #
     # Internal methods
     #
-
     def _isSSL(self):
         """
         >>> f = IMAPConnection({'HOST': 'my.host', 'connection_type': 'IMAP'})
@@ -107,6 +122,11 @@ class IMAPConnection(BaseConnection):
             if isinstance(self._connection, IMAP4_SSL):
                 return True
         return False
+
+    def _selectMailBox(self, mailbox):
+        if not self._selected_mailbox == mailbox:
+            self._connection.select(mailbox)
+            self._selected_mailbox = mailbox
 
     #
     # Overriden methods
@@ -208,26 +228,6 @@ class IMAPConnection(BaseConnection):
                 current['what'] = acls_parts[2].strip('"')
 
                 result.append(current)
-        return result
-
-    def fetchPartial(self, mailbox, message_number, message_part, start, length):
-        """ see interface for doc
-        """
-        result = ''
-        self._respawn()
-        self._connection.select(mailbox)
-
-        try:
-            imap_result =  self._connection.partial(message_number, \
-                message_part, start, length)
-        except self._connection.error:
-            raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
-        except IndexError:
-            raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number, mailbox))
-
-        if imap_result[0] == 'OK':
-            imap_raw = imap_result[1]
-            return imap_raw
         return result
 
     def partQueriedList(self, message_parts):
@@ -345,9 +345,6 @@ class IMAPConnection(BaseConnection):
         """ see interface for doc """
         # fetch works for unique message_number, in integer or string
         # or with several numbers, like : '1,2,3'
-        LOG('fetching', INFO, 'mailbox: %s, message_number %s, message_parts %s'\
-          %(mailbox, str(message_number), str(message_parts)))
-
         if isinstance(message_number, int):
             message_number = str(message_number)
 
@@ -358,26 +355,21 @@ class IMAPConnection(BaseConnection):
         self._respawn()
         results = {}
 
-        # XXX forcing each time but
-        # we should select mailbox once for all
-        # like in the commented code
-        #if self._selected_mailbox <> mailbox:
-        #    self._connection.select(mailbox)
-        #    self._selected_mailbox = mailbox
         try:
-            self._connection.select(mailbox)
+            self._selectMailBox(mailbox)
         except (IMAP4.error, IMAP4_SSL.error):
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
         try:
-            imap_result =  self._connection.fetch(message_number, message_parts)
+            #imap_result =  self._connection.fetch(message_number, message_parts)
+            imap_result =  self._connection.uid('fetch', message_number, message_parts)
         except self._connection.error:
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
         except IndexError:
             raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number,
-                                                          mailbox))
+                                                        mailbox))
         except (AttributeError, IMAP4.error, IMAP4_SSL.error):
             raise ConnectionError(CANNOT_READ_MESSAGE % (message_number,
-                                                          mailbox))
+                                                        mailbox))
 
         if imap_result[0] == 'OK':
             imap_raw = imap_result[1]
@@ -414,21 +406,12 @@ class IMAPConnection(BaseConnection):
         return results
 
     def search(self, mailbox, charset, *criteria):
-        """See interface for doc.
-        """
+        """See interface for doc. """
         self._respawn()
         results = []
-
-        # XXX forcing each time but
-        # we should select mailbox once for all
-        # like in the commented code
-        #if self._selected_mailbox <> mailbox:
-        #    self._connection.select(mailbox)
-        #    self._selected_mailbox = mailbox
-        self._connection.select(mailbox)
-
+        self._selectMailBox(mailbox)
         try:
-            imap_result =  self._connection.search(charset, *criteria)
+            imap_result =  self._connection.uid('search', charset, *criteria)
         except self._connection.error:
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
 
@@ -452,8 +435,7 @@ class IMAPConnection(BaseConnection):
         self._connection.noop()
 
     def writeMessage(self, mailbox, raw_message):
-        """ writes a message
-        """
+        """ writes a message """
         self._respawn()
         res = self._connection.append(mailbox, None , None, raw_message)
         try:
@@ -477,8 +459,8 @@ class IMAPConnection(BaseConnection):
         """ copy a message from a folder to another
         """
         self._respawn()
-        self._connection.select(from_mailbox)
-        res = self._connection.copy(message_number, '"'+to_mailbox+'"')
+        self._selectMailBox(from_mailbox)
+        res = self._connection.uid('copy', message_number, '"'+to_mailbox+'"')
         try:
             if res[1][0] == 'Over quota':
                 raise ConnectionError('folder quota exceeded')
@@ -495,8 +477,8 @@ class IMAPConnection(BaseConnection):
     def getFlags(self, mailbox, message_number):
         """ return flags of a message """
         self._respawn()
-        self._connection.select(mailbox)
-        rep = self._connection.fetch(message_number,'(FLAGS)')
+        self._selectMailBox(mailbox)
+        rep = self._connection.uid('fetch', message_number,'(FLAGS)')
 
         val = rep[-1][0]
         if val is None:
@@ -509,8 +491,7 @@ class IMAPConnection(BaseConnection):
     def setFlags(self, mailbox, message_number, flags):
         """ set flag of a message """
         self._respawn()
-        self._connection.select(mailbox)
-
+        self._selectMailBox(mailbox)
         _flags = []
         for flag in flags.keys():
             if flags[flag] == 1:
@@ -522,7 +503,9 @@ class IMAPConnection(BaseConnection):
                 _flags.append(_flag)
 
         _flags = '(%s)' % ' '.join(_flags)
-        self._connection.store(message_number, 'FLAGS', _flags)
+
+        # we want to do this asynced
+        self._connection.uid('store', message_number, 'FLAGS', _flags)
 
     def expunge(self):
         """ expunge and instantly relog """
@@ -533,7 +516,7 @@ class IMAPConnection(BaseConnection):
     def select(self, mailbox):
         """ select """
         self._respawn()
-        self._connection.select(mailbox)
+        self._selectMailBox(mailbox)
 
     def deleteMailBox(self, mailbox):
         """ delete mailbox """
@@ -679,6 +662,39 @@ class IMAPConnection(BaseConnection):
             i += 1
         return returned
 
+    def _patch_imap(self):
+        IMAP4_SSL.open = patch_open
+
+    def getNextUid(self, mailbox):
+        """ getnext uid from server
+
+        if the server does not have UIDNEXT capability,
+        we need to calculate it
+        XXX see if it's notrisky, if we can lock it
+        """
+        self._respawn()
+        self._selectMailBox(mailbox)
+        res = self._connection.response('UIDNEXT')
+        next_uid = res[1][0]
+        if next_uid is not None:
+            return next_uid
+        else:
+            res = self._connection.uid('search', None, 'ALL')
+            if res[0] != 'OK':
+                raise ConnectionError('could not list folder %s' % mailbox)
+            else:
+                uids = res[1][0]
+                if uids == '':
+                    return '1'
+
+                uids = uids.split(' ')
+                max_ = -1
+                for uid in uids:
+                    uid = int(uid)
+                    if uid > max_:
+                        max_ = uid
+                return str(max_+1)
+
 class CachedIMAPConnection(IMAPConnection):
 
     def _addCache(self, key, data):
@@ -704,7 +720,6 @@ class CachedIMAPConnection(IMAPConnection):
                                                        message_number)
             self._addCache(key, value)
         return value
-
 
 connection_type = 'IMAP'
 
