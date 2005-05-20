@@ -191,7 +191,7 @@ class MailBox(MailBoxBaseCaching):
         self.search_available = True
         self._filters = ZMailFiltering()
         self._directory_picker = None
-        self._connection_params = {}
+        self._connection_params = PersistentMapping()
 
     def getConnectionParams(self):
         if self._connection_params == {}:
@@ -216,9 +216,9 @@ class MailBox(MailBoxBaseCaching):
         return self._directory_picker
 
     def setParameters(self, connection_params=None, resync=True):
-        """ sets the parameters
-        """
-        self._connection_params = connection_params
+        """ sets the parameters """
+        for key in connection_params.keys():
+            self._connection_params[key] = connection_params[key]
 
         if resync is True:
             self._getconnector()
@@ -241,7 +241,6 @@ class MailBox(MailBoxBaseCaching):
             server_directory = [{'Name': 'INBOX'}]
         else:
             server_directory = connector.list()
-            LOG('synchronize', INFO, 'synchro list %s'% str(server_directory))
 
         if no_log:
             returned = self._syncdirs(server_directories=server_directory,
@@ -339,13 +338,10 @@ class MailBox(MailBoxBaseCaching):
         if light == 0:
             folders = self.getMailMessages(list_folder=True,
                                            list_messages=False, recursive=True)
-            LOG('synchro', INFO, 'no light')
         else:
             folders = []
-            LOG('synchro', INFO, 'light')
 
         # let's order folder : leaves at first
-        LOG('synchro', INFO, 'working msg in folders %s from %s' % (str(folders), self.id))
         # removing orphan folders
         if light == 0:
             for folder in folders:
@@ -358,7 +354,6 @@ class MailBox(MailBoxBaseCaching):
                             self.addMailToCache(item, digest)
 
                     # delete the folder (see for order problem later here)
-                    LOG('synchro', INFO, 'removing folder %s' % (folder.id))
                     parent_folder = folder.aq_inner.aq_parent
                     parent_folder.manage_delObjects([folder.getId()])
 
@@ -435,7 +430,6 @@ class MailBox(MailBoxBaseCaching):
 
     def sendEditorsMessage(self):
         """ sends the cached message """
-
         msg = self.getCurrentEditorMessage()
         if msg is None:
             return False
@@ -448,7 +442,7 @@ class MailBox(MailBoxBaseCaching):
             connector = self._getconnector()
             connector.writeMessage('INBOX.Sent', msg.getRawMessage())
 
-            # b) on the zodb, by synchronizing INBOX.Sent folder
+            # on the zodb, by synchronizing INBOX.Sent folder
             if hasattr(self, 'INBOX'):
                 if hasattr(self.INBOX, 'Sent'):
                     self.INBOX.Sent._synchronizeFolder(return_log=False)
@@ -458,6 +452,8 @@ class MailBox(MailBoxBaseCaching):
             else:
                 self._syncdirs()
                 self._synchronizeFolder(return_log=False)
+
+            self.clearSynchro()
             self.clearEditorMessage()
             return True, ''
         else:
@@ -570,7 +566,6 @@ class MailBox(MailBoxBaseCaching):
         sorter.reverse()
 
         for folder in sorter:
-            LOG('emptyTrashFolder', INFO, 'removing folder %s' % str(folder[1]))
             connector.deleteMailBox(folder[1])
 
         # low-level deletion
@@ -579,15 +574,8 @@ class MailBox(MailBoxBaseCaching):
         trash.folder_count = 0
 
         # calls expunge
-        self.validateChanges()
+        trash.validateChanges()
         self.clearMailBoxTreeViewCache()
-
-    def validateChanges(self):
-        """ call expunger """
-        if has_connection:
-            LOG('validateChanges', INFO, 'expunging')
-            connector = self._getconnector()
-            connector.expunge()
 
     def _getCatalog(self):
         """ returns the catalog """
@@ -662,6 +650,13 @@ class MailBox(MailBoxBaseCaching):
     def saveEditorMessage(self):
         """ makes a copy of editor message into Drafts """
         # TODO: add a TO section
+        if has_connection:
+            connector = self._getconnector()
+            # need to create the message on server side
+            new_uid = connector.writeMessage(drafts.server_name, msg_copy.getRawMessage())
+        else:
+            new_uid = drafts.getNextMessageUid()
+
         msg = self.getCurrentEditorMessage()
         subjects = msg.getHeader('Subject')
         if subjects != []:
@@ -669,17 +664,11 @@ class MailBox(MailBoxBaseCaching):
             msg.title = decodeHeader(subject)
 
         drafts = self.getDraftFolder()
-        new_uid = drafts.getNextMessageUid()
 
         msg_copy = drafts._addMessage(new_uid, msg.digest, index=False)
         msg_copy.copyFrom(msg)
         # todo check flag on server's side
         msg_copy.draft = 1
-
-        if has_connection:
-            connector = self._getconnector()
-            # need to create the message on server side
-            connector.writeMessage(drafts.server_name, msg_copy.getRawMessage())
 
     def getIdentitites(self):
         """ returns identities """
@@ -1066,7 +1055,7 @@ class MailBoxParametersView(BrowserView):
         params = self._getParameters()
         rendered_params = []
 
-        for param in params:
+        for param in params.keys():
             value = params[param]
             rendered_param = {}
             rendered_param['name'] = param
