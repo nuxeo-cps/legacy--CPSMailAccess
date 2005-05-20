@@ -67,6 +67,8 @@ to quickly set your box, you need to provide these parameters :
     host: the name of the imap mail server (for example: mail.mycompany.com)
     port: the port (default is 143 for IMAP, 993 for IMAP through SSL)
     SSL ?: if set to "1", tells the webmail to use SSL
+           please read ssl_notes.txt
+
     Login: mail server login name
     Password : mail server password
     SMTP Host: smtp host
