@@ -32,6 +32,18 @@ from Products.CPSMailAccess.mailbox import MailBox
 from Products.CPSMailAccess.interfaces import IMailFolder, IMailMessage
 from basetestcase import MailTestCase
 
+def testGetNextMessageUid(self):
+    msgs = self.getMailMessages(False, True, False)
+    highest_id = 0
+    for msg in msgs:
+        uid = int(msg.uid)
+        if uid > highest_id:
+            highest_id = uid
+    return str(highest_id + 1)
+
+from mailbox import MailBox
+MailFolder.getNextMessageUid = testGetNextMessageUid
+
 installProduct('TextIndexNG2')
 
 class MailFolderViewTestCase(MailTestCase):
@@ -452,8 +464,8 @@ class MailFolderViewTestCase(MailTestCase):
 
         msg2v = rendered_list[1]
         self.assertEquals(msg2v['object'], msg_3)
-        self.assertEquals(msg2v['folder_id_uid'], 'INBOX__2')
-        self.assertEquals(msg2v['url'], 'nowhere/INBOX/INBOX/.2/view')
+        self.assertEquals(msg2v['folder_id_uid'], 'INBOX__3')
+        self.assertEquals(msg2v['url'], 'nowhere/INBOX/INBOX/.3/view')
 
     def test_getMaxFolderSize(self):
         box = self._getMailBox()

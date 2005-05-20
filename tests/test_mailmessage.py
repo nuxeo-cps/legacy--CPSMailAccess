@@ -287,25 +287,6 @@ class MailMessageTestCase(MailTestCase):
         ob.setFlag('seen', 1)
         self.assert_(ob.getFlag('seen') == 1)
 
-        # try out event triggering
-        ob.onFlagChanged = self._onFlagChanged
-        self._called = 0
-        ob.setFlag('seen', 0)
-        # test continues in _onFlagChanged
-        # checks that _onFlagChanged has been called
-        self.assertEquals(self._called, 1)
-
-        # if no changes, it's not called
-        self._called = 0
-        ob.setFlag('seen', 0)
-        self.assertEquals(self._called, 0)
-
-    def _onFlagChanged(self, msg, flag, value):
-        self.assert_(flag == 'seen')
-        self.assert_(value == 0)
-        self.assert_(msg.getFlag('seen') ==  0)
-        self._called = 1
-
     def test_getDirectBody(self):
         ob = self.getMailInstance(35)
         body = ob.getDirectBody()

@@ -275,7 +275,6 @@ class MailBoxTestCase(MailTestCase):
         self.assertEquals(len(results), 2)
 
     def test_moveElement(self):
-
         mailbox = self._getMailBox()
         inbox = mailbox._addFolder('INBOX', 'INBOX')
 
@@ -293,8 +292,8 @@ class MailBoxTestCase(MailTestCase):
                                      'to_folder_INBOX.folder2')
 
         self.assertEquals(target, folder1)
-        self.assertEquals(len(folder1.objectIds()), 0)
-        self.assertEquals(len(folder2.objectIds()), 1)
+        self.assertEquals(list(folder1.objectIds()), [])
+        self.assertEquals(list(folder2.objectIds()), ['.1'])
 
         # make sure a message that moves where it is already
         # does not do anything
@@ -331,7 +330,6 @@ class MailBoxTestCase(MailTestCase):
         folder2 = getattr(folder1, 'folder2')
         self.assertEquals(folder2.getMailFolder(), folder1)
         self.assertEquals(folder2.server_name, 'INBOX.folder1.folder2')
-
 
     def test_ticking(self):
         folder = MailFolderTicking('ok', 'ok')

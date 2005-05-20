@@ -82,7 +82,7 @@ class MailRendererTestCase(MailTestCase):
     def test_allRendering(self):
         # testing all mails with MIME engine
         ob = MailRenderer()
-        for i in range(37):
+        for i in range(47):
             mail = self.getMailInstance(i)
             # need soem acquisition here
             container = self._getMailBox()
@@ -115,6 +115,7 @@ class MailRendererTestCase(MailTestCase):
         rd = MailRenderer()
         types = rd.extractPartTypes('multipart/mixed;')
         self.assertEquals(types, {'type' : 'multipart/mixed'})
+
 
 def test_suite():
     return unittest.TestSuite((

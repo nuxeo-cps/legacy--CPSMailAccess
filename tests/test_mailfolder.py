@@ -37,6 +37,19 @@ def openfile(filename, mode='r'):
 
 installProduct('TextIndexNG2')
 
+def testGetNextMessageUid(self):
+    msgs = self.getMailMessages(False, True, False)
+    highest_id = 0
+    for msg in msgs:
+        uid = int(msg.uid)
+        if uid > highest_id:
+            highest_id = uid
+    return str(highest_id + 1)
+
+from mailbox import MailBox
+MailFolder.getNextMessageUid = testGetNextMessageUid
+
+
 class MailFolderTestCase(MailTestCase):
 
     def test_getMailBox(self):
@@ -280,27 +293,26 @@ class MailFolderTestCase(MailTestCase):
         self.assertEquals(msg1.getMailFolder(), mailbox)
         # setting up the trash
         Trash = mailbox._addFolder('Trash')
-        msg1 = mailbox._moveMessage(msg1.uid, Trash)
-        self.assertNotEquals(getattr(Trash, '.1', None), None)
-        self.assertEquals(getattr(mailbox, '.1', None), None)
-
-        self.assertEquals(msg1.getMailFolder(), Trash)
+        msg1 = mailbox.moveMessage(msg1.uid, Trash)
+        self.assert_('.1' in list(Trash.objectIds()))
+        self.assert_('.1' not in list(mailbox.objectIds()))
 
     def test_message_moving_with_IMAP(self):
         mailbox = self._getMailBox()
         msg1 = mailbox._addMessage('1', '1234567TCFGVYBH')
         self.assertEquals(msg1.getMailFolder(), mailbox)
-        # setting up the trash
         Trash = mailbox._addFolder('Trash')
+        self.assertEquals(list(Trash.objectIds()), [])
+        self.assertEquals(list(mailbox.objectIds()), ['.1', 'Trash'])
         mailbox.moveMessage(msg1.uid, Trash)
-        self.assertNotEquals(getattr(Trash, '.1', None), None)
-        self.assertEquals(getattr(mailbox, '.1', None), None)
+        self.assertEquals(list(mailbox.objectIds()), ['Trash'])
+        self.assertEquals(list(Trash.objectIds()), ['.1'])
 
     def test_id_generator(self):
         mailbox = self._getMailBox()
-        msg1 = mailbox._addMessage('1', '1234567TCFGVYBH')
-        msg2 = mailbox._addMessage('2', '1234567TCFGVZDdYBH')
-        msg3 = mailbox._addMessage('3', '1234567TCFDZGVYBH')
+        msg1 = mailbox._addMessage('1', '1')
+        msg2 = mailbox._addMessage('2', '2')
+        msg3 = mailbox._addMessage('3', '3')
         id = mailbox.getNextMessageUid()
         self.assertEquals(id, '4')
 
@@ -482,39 +494,6 @@ class MailFolderTestCase(MailTestCase):
         for i in range(21):
             subs.append(str(i+400))
         self.assertEquals(blocs[2], subs)
-
-    def test_fillVacuum(self):
-        mailbox = self._getMailBox()
-        folder = mailbox._addFolder('MyFolder', 'MyFolder')
-        for i in range(100):
-            key = '.'+str(i)
-            msg = folder._addMessage(key, key)
-            msg.setHeader('Subject', str(key))
-
-        self.assertEquals(len(folder.objectIds()), 100)
-
-        orig_2 = folder['.2']
-        orig_76 = folder['.76']
-        orig_80 = folder['.80']
-
-        # let's delete message 2, 18, 76, 77
-        folder.deleteMessage('2')
-        folder.deleteMessage('18')
-        folder.deleteMessage('76')
-        folder.deleteMessage('77')
-
-        self.assertEquals(len(folder.objectIds()), 96)
-
-        # no wholes
-        for i in range(96):
-            self.assertNotEquals(folder['.%d' % i], None)
-
-        # now make sure the objects are the right ones
-        self.assertEquals(folder['.76'].uid, '76')
-        self.assertEquals(folder['.76'].getHeader('Subject'), ['.79'])
-
-        self.assertEquals(folder['.2'].getHeader('Subject'), ['.3'])
-        self.assertEquals(folder['.18'].getHeader('Subject'), ['.20'])
 
     def test_nextId(self):
         mailbox = self._getMailBox()

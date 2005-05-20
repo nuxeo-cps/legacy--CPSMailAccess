@@ -126,7 +126,7 @@ class IMAPConnectionTestCase(MailTestCase):
 
         self.assertEquals(res,['text', 'plain', None, None, None, '8bit', 15, 1])
 
-    def ctest_bodyExtraction(self):
+    def test_bodyExtraction(self):
         box = self._getMailBox()
         ob = self.makeConnection()
 
@@ -134,20 +134,16 @@ class IMAPConnectionTestCase(MailTestCase):
 
         res = ob._extractResult('BODY', ['2 (BODY ((("text" "plain" ("charset" "us-ascii") NIL NIL "8bit" 738 18)("text" "html" ("charset" "us-ascii") NIL NIL "8bit" 0 0) "alternative")("image" "jpeg" ("name" "wlogo.jpg") NIL NIL "base64" 7226) "mixed"))'])
 
-        self.assertEquals(res, ['mixed', ['alternative', ['text', 'plain', None, None, '8bit', 738, 18,
-             ['charset', 'us-ascii']], ['text', 'html', None, None, '8bit', 0, 0, ['charset', 'us-ascii']]],
-            ['image', 'jpeg', None, None, 'base64', 7226, ['name', 'wlogo.jpg']]])
+        self.assertEquals(res, ['mixed', ['alternative',
+                               ['text', 'plain', None, None, '8bit', 738, 18,
+                               ['charset', 'us-ascii']], ['text', 'html', None,
+                                None, '8bit', 0, 0, ['charset', 'us-ascii']]],
+                               ['image', 'jpeg', None, None, 'base64', 7226,
+                               ['name', 'wlogo.jpg']]])
 
 
         res = ob._extractResult('BODY', '(BODY ("text" "plain" NIL NIL NIL "8bit" 1997 35))')
-        self.assertEquals(res,['text', 'plain', None, None, '8bit', 1997, 35])
-
-        res = ob._extractResult('BODY', '(BODY (("text" "plain" ("charset" "iso-8859-1") NIL NIL "quoted-printable" 770 18)("text" "html" ("charset" "iso-8859-1") NIL NIL "quoted-printable" 83 2) "alternative"))')
-
-        self.assertEquals(res,['text', 'plain', None, None, 'quoted-printable', 770, 18,
-                               ['charset', 'iso-8859-1']],
-                               ['text', 'html', None, None, 'quoted-printable', 83, 2,
-                               ['charset', 'iso-8859-1']])
+        self.assertEquals(res, ['text', 'plain', None, None, None, '8bit', 1997, 35])
 
     def test_bodyPEEK(self):
         box = self._getMailBox()
@@ -195,7 +191,6 @@ class IMAPConnectionTestCase(MailTestCase):
         box = self._getMailBox()
         ob = self.makeConnection()
         results = ob.fetch(box, 1, '(FLAGS RFC822.SIZE RFC822.HEADER)')
-
         self.assertEquals(results[0], ['Seen'])
         self.assertEquals(results[1], '515')
 
@@ -272,6 +267,13 @@ class IMAPConnectionTestCase(MailTestCase):
         self.assertEquals(extracted_commands, ['FLAGS', 'RFC822.SIZE',
                                                'BODY.PEEK[HEADER.FIELDS(%s)]'
                                                 % headers])
+
+    def test_patching(self):
+
+        box = self._getMailBox()
+        ob = self.makeConnection()
+
+        ob._patch_imap()
 
 def test_suite():
     return unittest.TestSuite((
