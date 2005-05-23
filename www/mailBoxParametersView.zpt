@@ -106,6 +106,18 @@
           </form>
         </td>
       <tr>
+      <tr>
+        <td>
+          <div>
+            <form action="reconnect.html">
+              <input type="submit" name="reconnect"
+                     class="standalone"
+                     value="cpsma_reconnect"
+                     i18n:attributes="value"/>
+            </form>
+          </div>
+        </td>
+      </tr>
     </table>
     </div>
     <br/>

@@ -986,6 +986,12 @@ class MailBox(MailBoxBaseCaching):
                     return old_parent
         return None
 
+    def reconnect(self):
+        """ relogs the box """
+        connector = self._getconnector()
+        connector.relog()
+
+
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
 
@@ -1107,6 +1113,16 @@ class MailBoxParametersView(BrowserView):
         if self.request is not None:
             psm = 'All mails are indexed'
             self.request.response.redirect('configure.html?msm=%s' % psm)
+
+    def reconnect(self):
+        """ calls the box relog """
+        box = self.context
+        box.reconnect()
+
+        if self.request is not None:
+            psm = 'cpsma_relogged'
+            self.request.response.redirect('configure.html?msm=%s' % psm)
+
 
 #
 # MailBoxView Views
