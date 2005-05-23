@@ -72,14 +72,12 @@ class ConnectionWatcher(Thread):
                 connection_list = self.parent
                 for connection in connection_list:
                     connection.idle_time += self.sleep_time
-
                     # connection is sleeping for too long
                     # closing and cleaning it
                     if connection.idle_time >= self.idle_time:
-                        connection.logout()
-                        #connection.close()
-                        connection_list.remove(connection)
-                        del connection
+                        uid = connection.uid
+                        type_ = connection.connection_type
+                        connection_list.killConnection(uid, type_)
 
             sleep(self.sleep_time)
 
