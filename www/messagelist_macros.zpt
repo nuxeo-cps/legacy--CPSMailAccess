@@ -146,13 +146,13 @@
                              sort_asc request/sort_asc|python:0;"
                            >
     <tal:block tal:define="messagesl python:test(keep_last_sort,
-                                                 view.renderMailList(keep_last_sort=1),
-                                                 view.renderMailList(int(page), int(nb_items),
+                                                 here.renderMailList(keep_last_sort=1),
+                                                 here.renderMailList(int(page), int(nb_items),
                                                                      sort_with, int(sort_asc),
                                                                      keep_last_sort));
                            messages python:messagesl[1];
                            nbpages python:messagesl[0];
-                           last_sort python:view.getLastMailListSortCache();
+                           last_sort python:here.getLastMailListSortCache();
                            page python:test(last_sort, last_sort[0], page);
                            nb_items python:test(last_sort, last_sort[1], nb_items);
                            sort_with python:test(last_sort, last_sort[2], sort_with);
@@ -230,7 +230,7 @@
                                   onclick onclickurl;
                                   onmouseover onmouseover">
 
-              <a tal:attributes="href python:message['url']">
+              <a tal:attributes="href python:#">
 
                 <tal:block tal:condition="python:col=='Attachments'">
                   <img src="cpsma_attach_mini.png" tal:condition="python:message[col]==1"/>
@@ -300,7 +300,7 @@
           <div id="mailSubject">
             <b>
               <tal:block i18n:translate="cpsma_subject">Subject :</tal:block>
-              <tal:block tal:replace="structure view/renderSubject" />
+              <tal:block tal:replace="structure here/renderSubject" />
             </b>
           </div>
         </div>
@@ -309,30 +309,30 @@
           <div id="mailDate">
             <b>
               <tal:block i18n:translate="cpsma_date">Date :</tal:block>
-              <tal:block tal:replace="view/renderDate" />
+              <tal:block tal:replace="here/renderDate" />
             </b>
           </div>
-          <div id="mailFrom" tal:condition="python:view.fromCount()>0">
+          <div id="mailFrom" tal:condition="python:here.fromCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_from">From :</tal:block>
               <a tal:attributes="href python:'view#'">
-                <tal:block tal:replace="view/renderFromList" />
+                <tal:block tal:replace="here/renderFromList" />
               </a>
             </b>
           </div>
-          <div id="mailTo" tal:condition="python:view.toCount()>0">
+          <div id="mailTo" tal:condition="python:here.toCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_to">To :</tal:block>
               <a tal:attributes="href python:'view#'">
-                <tal:block tal:replace="view/renderToList" />
+                <tal:block tal:replace="here/renderToList" />
               </a>
             </b>
           </div>
-          <div id="mailCc" tal:condition="python:view.ccCount()>0">
+          <div id="mailCc" tal:condition="python:here.ccCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_cc">Cc :</tal:block>
               <a tal:attributes="href python:'view#'">
-                <tal:block tal:replace="view/renderCcList" />
+                <tal:block tal:replace="here/renderCcList" />
               </a>
             </b>
           </div>
