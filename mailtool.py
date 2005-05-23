@@ -63,7 +63,8 @@ class MailTool(Folder): # UniqueObject
     meta_type = "CPSMailAccess Tool"
     id = 'portal_webmail'
     connection_list = getConnection()
-    initialized = 0
+    _initialized = 0
+
     # to be externalized
     maildeliverer = SmtpQueuedMailer()
 
@@ -91,30 +92,32 @@ class MailTool(Folder): # UniqueObject
         self._initializeConnectionList()
 
     def getConnectionList(self):
-        """ connection list getter
-        """
-        #if self.initialized <> 1:
+        """ connection list getter """
         self._initializeConnectionList()
         return self.connection_list
 
     def _initializeConnectionList(self):
-        """ registers all access plugins
-        """
-        registerConnections(self.connection_list)
-        self.initialized = 1
+        """ registers all access plugins """
+        if self._initialized == 0:
+            registerConnections(self.connection_list)
+            self._initialized = 1
 
     def listConnectionTypes(self):
-        """ see IMailTool
-        """
+        """ see IMailTool """
         return self.getConnectionList().listConnectionTypes()
 
     def reloadPlugins(self):
-        """ see IMailTool
-        """
+        """ see IMailTool """
+        self._initialized = 0
         self._initializeConnectionList()
 
     def getConnection(self, connection_params):
         """ see IMailTool """
+        try:
+            res = self.getConnectionList().getConnection(connection_params)
+            return res
+        except ValueError:
+            self.reloadPlugins()
         return self.getConnectionList().getConnection(connection_params)
 
     def killConnection(self, uid, connection_type):
@@ -139,17 +142,14 @@ class MailTool(Folder): # UniqueObject
 
     def deleteMailBox(self, user_id):
         """ deletes the mailbox for a given user """
-
         mailbox_name = makeId('box_%s' % user_id)
         if hasattr(self, mailbox_name):
             self.manage_delObjects([mailbox_name])
 
     def hasMailBox(self, user_id):
         """ creates a mailbox for a given user """
-
         mailbox_name = makeId('box_%s' % user_id)
         return hasattr(self, mailbox_name)
-
 
 """ classic Zope 2 interface for class registering
 """
@@ -176,6 +176,14 @@ class MailToolView(BrowserView):
             url = '%s/configure.html?first_time=1' % box.absolute_url()
             self.request.response.redirect(url)
 
+    def reloadPlugins(self):
+        """ reload plugins"""
+        mailtool = self.context
+        mailtool.reloadPlugins()
+        rendered = ['plugins:']
+        rendered.extend(mailtool.listConnectionTypes())
+        rendered.append('end of list.')
+        return '\n'.join(rendered)
 
 manage_addMailToolForm = PageTemplateFile(
     "www/zmi_addmailtool", globals())
