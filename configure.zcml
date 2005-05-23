@@ -267,6 +267,14 @@
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailbox.MailBoxParametersView"
+      name="reconnect.html"
+      attribute="reconnect"
+      permission="cpsmailaccess.ConfigureMailBox"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxParametersView"
       name="clearMailCatalog.html"
       attribute="clearMailCatalog"
       permission="cpsmailaccess.ConfigureMailBox"
