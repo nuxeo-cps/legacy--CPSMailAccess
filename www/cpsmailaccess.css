@@ -343,13 +343,21 @@ div.privateBook {
   padding: 8px;
   float:left;
   width :45%;
+  -moz-border-radius-topleft: 12px;
+  -moz-border-radius-topright: 12px;
+  -moz-border-radius-bottomleft: 12px;
+  -moz-border-radius-bottomright: 12px;
 }
 
 div.publicBook {
   border: 1px solid #848284;
   padding: 8px;
   float:right;
-  width :45%
+  width :45%;
+  -moz-border-radius-topleft: 12px;
+  -moz-border-radius-topright: 12px;
+  -moz-border-radius-bottomleft: 12px;
+  -moz-border-radius-bottomright: 12px;
 }
 
 div.manageGroup {
