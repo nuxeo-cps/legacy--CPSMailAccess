@@ -351,6 +351,17 @@ class MailBoxTestCase(MailTestCase):
         filters.addFilter('do', 're', 'mi', 'fa', 'sol')
         self.assert_(mailbox.hasFilters())
 
+    def test_clearMailBodies(self):
+        mailbox = self._getMailBox()
+        folder1 =  mailbox._addFolder('folder1', 'INBOX.folder1')
+        mail = mailbox._addMessage('.1', 'message1')
+        mail._getStore()._payload = 'go'
+        mail._file_list = ['ok']
+        mailbox.clearMailBodies()
+        self.assertEquals(mail._getStore()._payload, '')
+        self.assertEquals(mail._file_list, [])
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),

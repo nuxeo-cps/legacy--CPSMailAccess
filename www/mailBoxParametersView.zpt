@@ -96,6 +96,18 @@
       </tr>
       <tr>
         <td>
+          <div>
+            <form action="clearMailBodies.html">
+              <input type="submit" name="clear"
+                 class="standalone"
+                 value="cpsma_clear_mail_bodies"
+                 i18n:attributes="value"/>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
           <form action="background_synchro">
             <input type="hidden" name="light:int" value="0"/>
             <input type="hidden" name="user" tal:attributes="value here/getUserName"/>

@@ -991,6 +991,14 @@ class MailBox(MailBoxBaseCaching):
         connector = self._getconnector()
         connector.relog()
 
+    def clearMailBodies(self):
+        """ remove bodies """
+        mails = self.getMailMessages(list_folder=False, list_messages=True,
+                                     recursive=True)
+        for mail in mails:
+            mail.instant_load = True
+            mail._getStore()._payload = ''
+            mail._file_list = []
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
@@ -1123,6 +1131,14 @@ class MailBoxParametersView(BrowserView):
             psm = 'cpsma_relogged'
             self.request.response.redirect('configure.html?msm=%s' % psm)
 
+    def clearMailBodies(self):
+        """ calls the box clearer """
+        box = self.context
+        box.clearMailBodies()
+
+        if self.request is not None:
+            psm = 'cpsma_cleared'
+            self.request.response.redirect('configure.html?msm=%s' % psm)
 
 #
 # MailBoxView Views

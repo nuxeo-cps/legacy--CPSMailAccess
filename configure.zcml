@@ -11,6 +11,12 @@
   <five:traversable class=".connectionwatcher.ConnectionWatcher" />
   <five:traversable class=".baseconnection.BaseConnection" />
 
+  <adapter
+    for=".interfaces.IMailMessage"
+    factory=".mailmessageview.MailTraverser"
+    provides="zope.app.traversing.interfaces.ITraversable" />
+
+
   <interface
       interface=".interfaces.IMailFolder"
       type="zope.app.content.interfaces.IContentType"
@@ -201,6 +207,15 @@
       />
 
   <browser:page
+      for=".interfaces.IMailTool"
+      class=".mailtool.MailToolView"
+      name="reloadPlugins.html"
+      attribute="reloadPlugins"
+      permission="cpsmailaccess.ManageMailTool"
+      />
+
+
+  <browser:page
       for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
       template="www/mailMessageViewAlone.zpt"
@@ -277,6 +292,14 @@
       class=".mailbox.MailBoxParametersView"
       name="clearMailCatalog.html"
       attribute="clearMailCatalog"
+      permission="cpsmailaccess.ConfigureMailBox"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxParametersView"
+      name="clearMailBodies.html"
+      attribute="clearMailBodies"
       permission="cpsmailaccess.ConfigureMailBox"
       />
 
