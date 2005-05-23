@@ -409,6 +409,27 @@ class MailMessage(Folder):
             return None
         return self.aq_inner.aq_parent
 
+    def _loadMessage(self):
+        """ loads mail on-the fly """
+        folder = self.getMailFolder()
+
+        if folder is not None:
+            server_name = folder.server_name
+            uid = self.uid
+            connector = folder._getconnector()
+            folder._loadMessageStructureFromServer(server_name, uid,
+                                                   None, None, None,
+                                                   self, connector,
+                                                   afterload=True)
+            # let's sets the seen flag to 1
+            if self.getFlag('seen') == 0:
+                self.setFlag('seen', 1)
+                folder.changeMessageFlags(self, 'seen', 1)
+
+    def _p_resolveConflict(self, old_state, saved_state, new_state):
+        """ returns latest state """
+        return new_state
+
 InitializeClass(MailMessage)
 
 manage_addMailMessageForm = PageTemplateFile(
