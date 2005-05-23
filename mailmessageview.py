@@ -19,10 +19,12 @@
 # $Id$
 from email import message_from_string
 from email import base64MIME
+import thread
 
 from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 from Products.Five import BrowserView
+from Products.Five.traversable import FiveTraversable
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
@@ -38,36 +40,31 @@ from mailfolderview import MailFolderView
 from mailexceptions import MailPartError
 from utils import *
 
+traverser_locker = thread.allocate_lock()
+
+class MailTraverser(FiveTraversable):
+    """ this is used to load message body when any
+        view is called, because code that
+        changes message in ZODB can't be called
+        within a view, that might lead to conflict error
+    """
+    def traverse(self, name, furtherPath):
+        """ taverser """
+        mail = self._subject
+        if mail.instant_load and name == 'view':
+            traverser_locker.acquire()
+            try:
+                mail._loadMessage()
+            finally:
+                traverser_locker.release()
+        return FiveTraversable.traverse(self, name, furtherPath)
 
 class MailMessageView(BaseMailMessageView):
 
     _RenderEngine = MailRenderer()
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        # we're viewing a mail, let's check its state
-        if context is not None:
-            if context.instant_load:
-                self._loadMessage()
 
-    def _loadMessage(self):
-        """ loads mail on-the fly """
-        mail = self.context
-        folder = mail.getMailFolder()
-        if folder is not None:
-            server_name = folder.server_name
-            uid = mail.uid
-            connector = folder._getconnector()
-            folder._loadMessageStructureFromServer(server_name, uid,
-                                                    None, None, None,
-                                                    mail, connector,
-                                                    afterload=True)
-            # let's sets the seen flag to 1
-            """
-            if mail.getFlag('seen') == 0:
-                mail.setFlag('seen', 1)
-                folder.changeMessageFlags(mail, 'seen', 1)
-                LOG('renderBody', INFO, 'flagged')
-            """
     def renderDate(self):
         """ renders the mail date """
         context = self.context
@@ -123,7 +120,6 @@ class MailMessageView(BaseMailMessageView):
     def fromCount(self):
         """ returns number of From recipients """
         return self.headerCount('From')
-
 
     def _removeNone(self, item):
         """ removes None """
@@ -290,9 +286,8 @@ class MailMessageView(BaseMailMessageView):
         list_files = []
 
         for file in files:
-            LOG('file infos', INFO, str(file))
             file['url'] = '%s/viewFile.html?filename=%s' \
-                    %(prefix, str(file['filename']))
+                           % (prefix, str(file['filename']))
             file['icon'] =  mimetype_to_icon_name(file['mimetype'])
             file['fulltitle'] = file['filename']
             file['title'] = file['filename']
