@@ -57,8 +57,7 @@ class IMAPConnection(BaseConnection):
     """
     implements(IConnection)
     _connection = None
-    _selected_mailbox = None
-    timeout = 10.0
+    timeout = 5.0
 
     def __init__(self, connection_params= {}):
         """
@@ -96,7 +95,7 @@ class IMAPConnection(BaseConnection):
                 else:
                     self._connection = IMAP4(host, port)
                 connected = True
-            except:#(IMAP4.abort, socket.error):
+            except (IMAP4.abort, socket.error):
                 sleep(0.3)
                 failures += 1
 
@@ -123,9 +122,7 @@ class IMAPConnection(BaseConnection):
         return False
 
     def _selectMailBox(self, mailbox):
-        if not self._selected_mailbox == mailbox:
-            self._connection.select(mailbox)
-            self._selected_mailbox = mailbox
+        self._connection.select(mailbox)
 
     #
     # Overriden methods
@@ -360,7 +357,6 @@ class IMAPConnection(BaseConnection):
         except (IMAP4.error, IMAP4_SSL.error):
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
         try:
-            #imap_result =  self._connection.fetch(message_number, message_parts)
             imap_result =  self._connection.uid('fetch', message_number, message_parts)
         except self._connection.error:
             raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
