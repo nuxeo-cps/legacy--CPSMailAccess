@@ -62,11 +62,12 @@ class MailMessageView(BaseMailMessageView):
                                                     mail, connector,
                                                     afterload=True)
             # let's sets the seen flag to 1
+            """
             if mail.getFlag('seen') == 0:
                 mail.setFlag('seen', 1)
                 folder.changeMessageFlags(mail, 'seen', 1)
                 LOG('renderBody', INFO, 'flagged')
-
+            """
     def renderDate(self):
         """ renders the mail date """
         context = self.context
@@ -123,9 +124,15 @@ class MailMessageView(BaseMailMessageView):
         """ returns number of From recipients """
         return self.headerCount('From')
 
+
+    def _removeNone(self, item):
+        """ removes None """
+        return item is not None
+
     def headerCount(self, name):
         """ tells the number of elements of a header """
-        return len(self.context.getHeader(name))
+        list_ = filter(self._removeNone, self.context.getHeader(name))
+        return len(list_)
 
     def renderHeaderList(self, name):
         """ renders the mail list """

@@ -272,6 +272,14 @@ class MailMessageViewTestCase(MailTestCase):
             render_from_list = view.renderFromList()
             string_ = render_from_list.encode('ISO-8859-15')
 
+    def test_headerCount(self):
+        mbox = self._getMailBox()
+        ob = self.getMailInstance(43)
+        ob = ob.__of__(mbox)
+        view = MailMessageView(ob, None)
+        Ccs = view.headerCount('Cc')
+        self.assertEquals(Ccs, 0)
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageViewTestCase),
