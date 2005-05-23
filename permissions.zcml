@@ -17,4 +17,8 @@
    title="Configure mailbox"
     />
 
+  <permission
+   id="cpsmailaccess.ManageMailTool"
+   title="Manage MailTool"
+    />
 </configure>

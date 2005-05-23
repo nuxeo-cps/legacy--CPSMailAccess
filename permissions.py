@@ -23,7 +23,8 @@ from Products.CMFCore.CMFCorePermissions import setDefaultRoles
 permissions = {
     'View mailbox': ['Owner', 'Manager'],
     'Send mails': ['Owner', 'Manager'],
-    'Configure mailbox': ['Owner', 'Manager']
+    'Configure mailbox': ['Owner', 'Manager'],
+    'Manage MailTool': ['Owner', 'Manager']
     }
 
 for permission, roles in permissions.items():
