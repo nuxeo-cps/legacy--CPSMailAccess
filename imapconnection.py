@@ -153,8 +153,9 @@ class IMAPConnection(BaseConnection):
         else:
             return False
 
-    def _relog(self):
+    def relog(self):
         """ relogs """
+        self._respawn()
         user = self.user
         password = self.password
         if self.logout():

@@ -296,6 +296,10 @@ class IConnection(Interface):
         """ deletes a mailbox
         """
 
+    def relog():
+        """ relogs
+        """
+
 class IConnectionList(Interface):
 
     def listConnectionTypes():

@@ -136,3 +136,6 @@ class BaseConnection:
 
     def deleteMailBox(self, mailbox):
         raise NotImplementedError
+
+    def relog(self):
+        raise NotImplementedError
