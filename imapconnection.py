@@ -289,12 +289,18 @@ class IMAPConnection(BaseConnection):
                 results = results[0]
 
             # extract subpart if needed
-            cindexstart = results.find('%s (' % query)
-            #cindexstart = cindexstart + len('%s (' % query)
-            cindexstop = self._findClosingParenthesis(results, cindexstart)
-            result = results[cindexstart:cindexstop]
+            cindexstart = results.find('BODYSTRUCTURE (')
+            if cindexstart == -1:
+                cindexstart = results.find('BODY (')
+
+            if cindexstart != -1:
+                cindexstop = self._findClosingParenthesis(results, cindexstart)
+                result = results[cindexstart:cindexstop]
+            else:
+                result = results
+
             result = self._parseIMAPMessage(result)
-            #result = result[0]
+
             # body structure
             if len(result) > 1:
                 result = result[1]
