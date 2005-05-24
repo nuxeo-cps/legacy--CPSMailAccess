@@ -424,7 +424,6 @@ class MailBox(MailBoxBaseCaching):
 
         smtp_host = params['smtp_host']
         smtp_port = params['smtp_port']
-
         return maildeliverer.send(msg_from, msg_to, msg_content,
                                   smtp_host, smtp_port, None, None)
 
@@ -434,7 +433,7 @@ class MailBox(MailBoxBaseCaching):
         if msg is None:
             return False
         msg_from = msg.getHeader('From')
-        msg_to = msg.getHeader('To')
+        msg_to = msg.getHeader('To') + msg.getHeader('Cc') + msg.getHeader('BCc')
 
         result, error = self._sendMailMessage(msg_from, msg_to, msg)
         if result:
