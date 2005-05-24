@@ -136,7 +136,7 @@ class MailFilteringTestCase(MailTestCase):
 
     def test_actionFilter(self):
         ob = MailFiltering()
-        msg = self.getMailInstance(0)
+        msg = self.getMailInstanceT(0)
         element = {}
 
         self.assertEquals(msg.junk, 0)

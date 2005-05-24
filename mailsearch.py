@@ -40,6 +40,8 @@ from interfaces import IMailCatalog
 
 from zemantic.triplestore import TripleStore
 from zemantic.interfaces import IRDFThreeTuples
+from zemantic.public import *
+from zemantic.query import Query
 
 from rdflib.URIRef import URIRef
 from rdflib.Literal import Literal
@@ -152,7 +154,7 @@ class ZemanticMessageAdapter:
         message = self.context
         default_charset = self.default_charset
 
-        ob_uri = URIRef(u'%s' % message.absolute_url())    # zope 2 dependant
+        ob_uri = URIRef(unicode(message.absolute_url()))    # zope 2 dependant
 
         triples = []
         if self.full_indexation:
@@ -211,11 +213,21 @@ class ZemanticMailCatalog(TripleStore):
     implements(IMailCatalog)
 
     def indexMessage(self, message, full_indexation=False):
-        message = ZemanticMessageAdapter(message, full_indexation)
-        self.addTriples(message.threeTuples())
+        """ index message """
+        zmessage = ZemanticMessageAdapter(message, full_indexation)
+        tuples = zmessage.threeTuples()
+        self.addTriples(tuples)
 
     def unIndexMessage(self, message):
-        pass
-        #raise NotImplementedError
+        """ unindex message """
+        # undindexing is removing all triples where message is the subject
+        zmessage = ZemanticMessageAdapter(message, False)
+        tuples = zmessage.threeTuples()
+        for tuple_ in tuples:
+            try:
+                self.remove(tuple_)
+            except KeyError:
+                pass
+
 
 InitializeClass(ZemanticMailCatalog)

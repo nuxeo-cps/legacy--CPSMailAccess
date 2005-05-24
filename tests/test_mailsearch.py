@@ -27,7 +27,12 @@ from Products.CPSMailAccess.mailsearch \
 from Testing.ZopeTestCase import installProduct
 from basetestcase import MailTestCase
 from Testing.ZopeTestCase import installProduct
+from mailmessage import MailMessage
 
+from zemantic.public import *
+from zemantic.query import Query
+from rdflib.URIRef import URIRef
+from rdflib.Literal import Literal
 
 installProduct('TextIndexNG2')
 
@@ -35,7 +40,7 @@ class MailSearchTestCase(MailTestCase):
 
     count = 0
     def fakeGetPhysicalPath(self):
-        self.count +=1
+        self.count += 1
         return ('', 'nowere/my_message_' + str(self.count))
 
     def sameGetPhysicalPath(self):
@@ -253,22 +258,27 @@ class MailSearchTestCase(MailTestCase):
         self.assertEquals(len(res), 0)
 
     def test_ZemanticInstanciation(self):
+
         ob = ZemanticMailCatalog()
-
-        from rdflib.URIRef import URIRef
-
         ob.add((URIRef(u'Tarek'), URIRef(u'likes'), URIRef(u'Pizza')))
-        from zemantic.public import *
-
         res = ob.query(Query(Any, u'<likes>', Any))
         res = list(res)
         self.assertEquals(len(res), 1)
-
         result = res[0]
         self.assertEquals(result.triple(), (u'Tarek', u'likes', u'Pizza'))
 
-    def test_ZemanticMessageAdapter(self):
+    def test_ZemanticSubject(self):
+        ob = ZemanticMailCatalog()
+        msg1_ref = URIRef(u'msgs/message1')
 
+        ob.add((msg1_ref, URIRef(u'subject'), Literal(u'Pizza')))
+        ob.add((msg1_ref, URIRef(u'body'), Literal(u'Pizzaaaa')))
+
+        res = ob.query(Query(msg1_ref, Any, Any))
+        res = list(res)
+        self.assertEquals(len(res), 2)
+
+    def test_ZemanticMessageAdapter(self):
         for i in range(37):
             message = self.getMailInstance(i)
             message = message.__of__(self.portal)
@@ -276,6 +286,49 @@ class MailSearchTestCase(MailTestCase):
 
             adapted_message = ZemanticMessageAdapter(message)
             tuple_ = adapted_message.threeTuples()
+
+    def test_ZemanticMessageAdapterThreeTuples(self):
+
+        message = self.getMailInstance(23)
+        message = message.__of__(self.portal)
+        message.getPhysicalPath = self.fakeGetPhysicalPath
+        adapted_message = ZemanticMessageAdapter(message)
+        tuples = adapted_message.threeTuples()
+        self.assertEquals(len(tuples), 3)
+        self.assertEquals(tuples[0], (u'nowere/my_message_1',
+                                      u'from', u'bperson@dom.ain'))
+        self.assertEquals(tuples[1], (u'nowere/my_message_1',
+                                      u'to', u'aperson@dom.ain'))
+        self.assertEquals(tuples[2], (u'nowere/my_message_1',
+                                      u'subject', u'A subject'))
+
+
+    def test_ZemanticMessageAdapterIndexerUnindexer(self):
+
+        ob = ZemanticMailCatalog()
+        messages = []
+        for i in range(10):
+            message = self.getMailInstanceT(i)
+            message = message.__of__(self.portal)
+            ob.indexMessage(message)
+            messages.append(message)
+
+        res = ob.query(Query(Any, Any, Any))
+        self.assertEquals(len(list(res)),  41)
+
+        subjects_ = list(ob.subjects())
+        c_subjects_ = []
+        for s_ in subjects_:
+            if s_ not in c_subjects_:
+                c_subjects_.append(s_)
+
+        self.assertEquals(len(c_subjects_), 10)
+
+        for message in messages:
+            ob.unIndexMessage(message)
+
+        res = ob.query(Query(Any, Any, Any))
+        self.assertEquals(len(list(res)),  0)
 
 def test_suite():
     return unittest.TestSuite((

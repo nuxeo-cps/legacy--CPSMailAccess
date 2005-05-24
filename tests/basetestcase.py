@@ -55,6 +55,10 @@ def menuItem(self, menu_id, interface, action, title,
 
 GlobalBrowserMenuService.menuItem = menuItem
 
+class MailMessageT(MailMessage):
+    def getPhysicalPath(self):
+        return str(id(self))
+
 installProduct('Five')
 #installProduct('TextIndexNG2')
 
@@ -183,6 +187,18 @@ class MailTestCase(ZopeTestCase):
 
     def getMailInstance(self, number):
         ob = MailMessage()
+        if number < 9:
+            data = self._msgobj('msg_0'+str(number+1)+'.txt')
+        else:
+            data = self._msgobj('msg_'+str(number+1)+'.txt')
+        ob.loadMessageFromRaw(data)
+        store = ob._getStore()
+        while isinstance(store._payload, list):
+            store._payload = store._payload[0]._payload
+        return ob
+
+    def getMailInstanceT(self, number):
+        ob = MailMessageT()
         if number < 9:
             data = self._msgobj('msg_0'+str(number+1)+'.txt')
         else:
