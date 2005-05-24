@@ -505,7 +505,7 @@ class MailFolder(BTreeFolder2):
             else:
                 part_infos = part_infos[1]
                 part_num = '%s.1' % part_num
-        elif part_infos[0] == 'relative':
+        elif part_infos[0] in ('relative', 'signed'):
             part_infos = part_infos[1]
             part_num = '%s.1' % part_num
         else:
@@ -548,6 +548,7 @@ class MailFolder(BTreeFolder2):
 
     def _synchronizeFolder(self, return_log=False, indexStack=[]):
         """ See interfaces.IMailFolder """
+        LOG('_synchronizeFolder', INFO, self.id)
         self._clearCache()
         sync_states = {}
         log = []

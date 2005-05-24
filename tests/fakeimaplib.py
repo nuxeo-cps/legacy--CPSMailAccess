@@ -54,6 +54,10 @@ class IMAP4:
         """ XXX we will use Data subdirectory later here
         """
         message_number = str(message_number)
+
+        if message_number == '37809' and message_part == '(BODY)':
+            return ('OK', ['1250 (UID 37809 BODYSTRUCTURE ((("text" "plain" ("charset" "us-ascii" "format" "flowed") NIL NIL "quoted-printable" 539 16 NIL ("inline" NIL) NIL)("application" "pgp-signature" NIL NIL NIL "7bit" 193 NIL NIL NIL) "signed" ("micalg" "pgp-sha1" "protocol" "application/pgp-signature" "boundary" "==========76E8B402BF692A9541DA==========") NIL NIL)("text" "plain" ("charset" "us-ascii") NIL NIL "7bit" 300 7 NIL ("inline" NIL) NIL) "mixed" ("boundary" "===============2046136533==") NIL NIL))'])
+
         if message_number == '1':
             if message_part.startswith('(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS('):
 
@@ -77,8 +81,9 @@ class IMAP4:
             if message_part.startswith('(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS('):
 
                 return ('OK', [('1 (FLAGS (\\Answered \\Seen) RFC822.SIZE 1766 BODY[HEADER.FIELDS ("From" "To" "Cc" "Subject" "Date" "Message-ID" "In-Reply-To" "Content-Type")] {242}', 'Message-ID: <410F430F.8060308@nuxeo.com>\r\nDate: Tue, 03 Aug 2004 09:47:27 +0200\r\nFrom: Stefane Fermigier <sf@nuxeo.com>\r\nTo: tziade@nuxeo.com\r\nSubject: Test\r\nContent-Type: multipart/mixed;\r\n boundary="------------060003030709020505030207"\r\n\r\n'), ')', ('2 (FLAGS (\\Seen) RFC822.SIZE 661181 BODY[HEADER.FIELDS ("From" "To" "Cc" "Subject" "Date" "Message-ID" "In-Reply-To" "Content-Type")] {274}', 'Message-ID: <4110A6E4.5090607@zopeur.org>\r\nDate: Wed, 04 Aug 2004 11:05:40 +0200\r\nFrom: =?ISO-8859-1?Q?Tarek_Ziad=E9?= <webmaster@zopeur.org>\r\nTo: tz@nuxeo.com\r\nSubject: [Fwd: Specs BCEAO]\r\nContent-Type: multipart/mixed;\r\n boundary="------------090103050002020902020908"\r\n\r\n'), ')'])
-        result = ('OK', 'message_number : %s, message_part: %s'
-                        % (str(message_number), str(message_part)))
+
+
+        raise 'could not fake msg number "%s" part "%s"' %(message_number, message_part)
         return result
 
     def list(self, directory='""', pattern='*'):
