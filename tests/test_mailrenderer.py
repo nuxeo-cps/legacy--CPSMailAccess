@@ -116,19 +116,6 @@ class MailRendererTestCase(MailTestCase):
         types = rd.extractPartTypes('multipart/mixed;')
         self.assertEquals(types, {'type' : 'multipart/mixed'})
 
-
-    def test_mailrenderer(self):
-        mbox = self._getMailBox()
-        inbox = mbox._addFolder('INBOX', 'INBOX')
-        mail = inbox._addMessage('37809', '37809')
-        mail.uid = '37809'
-        mail.id = '.37809'
-        mail._loadMessage()
-
-        rd = MailRenderer()
-        rendered = re.renderBody(mail)
-        self.assertEquals(rendered, '')
-
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailRendererTestCase),
