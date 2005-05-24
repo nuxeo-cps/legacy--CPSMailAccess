@@ -186,7 +186,7 @@ class MailSearchView(BrowserView):
             # if object is None, it means
             # that the catalog holds deprecated entries
             # we don't want to see here
-            if object is not None:
+            if object is not None or kw.has_key('lazy_search'):
                 current = {}
                 current['path'] = result
                 current['object'] = object
@@ -196,11 +196,14 @@ class MailSearchView(BrowserView):
                 current['Subject'] = msg_viewer.renderSubject()
                 current['Date'] = msg_viewer.renderDate()
                 # always sorting by date
-                element_date = object.getHeader('Date')
-                if element_date is None or element_date == []:
-                    element_date = '?'
-                stDate = decodeHeader(element_date[0])
-                sorter = parseDateString(stDate)
+                if object is not None:
+                    element_date = object.getHeader('Date')
+                    if element_date is None or element_date == []:
+                        element_date = '?'
+                    stDate = decodeHeader(element_date[0])
+                    sorter = parseDateString(stDate)
+                else:
+                    sorter = 0
                 results.append((sorter, current))
 
         results.sort()
