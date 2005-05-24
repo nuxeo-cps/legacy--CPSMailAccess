@@ -1070,6 +1070,8 @@ class MailBoxParametersView(BrowserView):
         rendered_params = []
 
         for param in params.keys():
+            if param == 'uid':
+                continue
             value = params[param]
             rendered_param = {}
             rendered_param['name'] = param
