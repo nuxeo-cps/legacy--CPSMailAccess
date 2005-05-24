@@ -39,7 +39,7 @@
          ° date
          ° To
          ° Cc
-         ° To or CC
+         ° To or Cc
 
     conditions :
 
