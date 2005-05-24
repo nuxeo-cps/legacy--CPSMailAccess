@@ -83,7 +83,7 @@ class IMAP4:
                 return ('OK', [('1 (FLAGS (\\Answered \\Seen) RFC822.SIZE 1766 BODY[HEADER.FIELDS ("From" "To" "Cc" "Subject" "Date" "Message-ID" "In-Reply-To" "Content-Type")] {242}', 'Message-ID: <410F430F.8060308@nuxeo.com>\r\nDate: Tue, 03 Aug 2004 09:47:27 +0200\r\nFrom: Stefane Fermigier <sf@nuxeo.com>\r\nTo: tziade@nuxeo.com\r\nSubject: Test\r\nContent-Type: multipart/mixed;\r\n boundary="------------060003030709020505030207"\r\n\r\n'), ')', ('2 (FLAGS (\\Seen) RFC822.SIZE 661181 BODY[HEADER.FIELDS ("From" "To" "Cc" "Subject" "Date" "Message-ID" "In-Reply-To" "Content-Type")] {274}', 'Message-ID: <4110A6E4.5090607@zopeur.org>\r\nDate: Wed, 04 Aug 2004 11:05:40 +0200\r\nFrom: =?ISO-8859-1?Q?Tarek_Ziad=E9?= <webmaster@zopeur.org>\r\nTo: tz@nuxeo.com\r\nSubject: [Fwd: Specs BCEAO]\r\nContent-Type: multipart/mixed;\r\n boundary="------------090103050002020902020908"\r\n\r\n'), ')'])
 
 
-        raise 'could not fake msg number "%s" part "%s"' %(message_number, message_part)
+        return ('OK',[('1 (FLAGS (\\Seen)'), ')'])
         return result
 
     def list(self, directory='""', pattern='*'):
