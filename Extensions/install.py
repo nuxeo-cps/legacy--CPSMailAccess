@@ -454,7 +454,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         pmd = portal.portal_memberdata
 
         fields = [('webmail_enabled', 'CPS Int Field', 'boolean',
-                   'Boolean Widget', 'python:1'),]
+                   'Boolean Widget', 'python:0'),]
 
         for field in fields:
             if not 'f__%s' % field[0] in existing_fields:
@@ -512,7 +512,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         if CPSSubscriptions == 0:
             return
 
-        ptypes = "('Portal', 'CPSMailAccess Message', 'CPSMailAccess Box',  'CPSMailAccess Folder')"
+        ptypes = "('Portal', 'CPSMailAccess Message', 'CPSMailAccess Box', 'CPSMailAccess Folder')"
         condition = "object.portal_type not in %s" % ptypes
 
         action = {'id' : 'notify_content',
