@@ -374,3 +374,12 @@ msgstr "Synchronize the whole box."
 
 msgid "cpsma_could_not_send"
 msgstr "Could not send the message, please check your SMTP configuration"
+
+msgid "cpsma_structure_unknown"
+msgstr "Unknown message structure"
+
+msgid "cpsma_reconnect"
+msgstr "Reconnect to mail server"
+
+msgid "cpsma_clear_mail_bodies"
+msgstr "Removed cached mail bodies"

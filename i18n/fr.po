@@ -375,3 +375,11 @@ msgstr "Resynchroniser toute la boîte"
 msgid "cpsma_could_not_send"
 msgstr "Envoi impossible, vérifiez vos paramètres SMTP"
 
+msgid "cpsma_structure_unknown"
+msgstr "Structure de message inconnue"
+
+msgid "cpsma_reconnect"
+msgstr "Reconnecter au serveur de messagerie"
+
+msgid "cpsma_clear_mail_bodies"
+msgstr "Supprimer les corps de messages emmagasinés"

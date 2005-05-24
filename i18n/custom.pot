@@ -375,3 +375,12 @@ msgstr ""
 
 msgid "cpsma_could_not_send"
 msgstr ""
+
+msgid "cpsma_structure_unknown"
+msgstr ""
+
+msgid "cpsma_reconnect"
+msgstr ""
+
+msgid "cpsma_clear_mail_bodies"
+msgstr ""
