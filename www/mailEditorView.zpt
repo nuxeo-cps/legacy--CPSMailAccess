@@ -108,10 +108,12 @@
                     tal:attributes="style python:test(bcc_on==0 and len(Bcs)==0,
                                                       'visibility: hidden',
                                                       'visibility: visible');
-                                    class python:test(bcc_on==0 and len(Bcs)==0,'hidden_part','')"
+                                    class python:test(bcc_on==0 and
+                                    len(Bcs)==0,'hidden_part','')"
                     tal:define="elements Bcs;
                                         elements python:'\r\n'.join(elements)">
-                <div class="recipient_header"><span i18n:translate="cpsma_bcc">BCc</span>:</div>
+                <div class="recipient_header"><span
+                 i18n:translate="cpsma_bcc">BCc</span>:</div>
                 <div  class="recipient">
                 <textarea name="msg_bcc" id="msg_bcc"
                             class="recipients" tal:content="elements"></textarea>
