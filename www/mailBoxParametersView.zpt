@@ -49,13 +49,15 @@
             </td>
             <td width="50%" align="left">
                   <input tal:condition="python:type!='list'"
-                     tal:attributes="type type;
-                                     name name;
-                                     value value;"/>
-              <textarea tal:condition="python:type=='list'"
-                        tal:content="value"
-                        tal:attributes="type type;
-                                        name name;">
+                          style="width: 100%"
+                          tal:attributes="type type;
+                                          name name;
+                                          value value;"/>
+              <textarea rows="10" style="width: 100%"
+                         tal:condition="python:type=='list'"
+                         tal:content="value"
+                         tal:attributes="type type;
+                                         name name;">
 
               </textarea>
             </td>
