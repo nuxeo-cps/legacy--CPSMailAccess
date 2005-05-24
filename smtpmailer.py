@@ -33,9 +33,7 @@ class MultiSMTPMailer(SMTPMailer):
 
     def send(self, fromaddr, toaddrs, message, hostname='localhost', port=25,
              username=None, password=None):
-        """ sets SMTP infos then sends the mail
-        """
-
+        """ sets SMTP infos then sends the mail """
         self.hostname = hostname
         self.port = port
         self.username = username
@@ -50,7 +48,6 @@ class SmtpQueuedMailer(object):
     def send(self, fromaddr, toaddrs, message, hostname='localhost', port=25,
              username=None, password=None):
         """ sends mails """
-
         try:
             self.mailer.send(fromaddr, toaddrs, message, hostname, port,
                          username, password, )
