@@ -353,8 +353,11 @@ class MailMessage(Folder):
                 # generate id XXXX need to be more precise here
                 # by including user name
                 folder = self.getMailFolder()
-                if folder is None or folder.server_name=='':
-                    key = '<%s>' % (self.uid)
+                if folder is None or folder.server_name == '':
+                    if self.uid.strip() != '':
+                        key = '<%s>' % (self.uid)
+                    else:
+                        key = '<%d.%d>' % (id(self), id(self))
                 else:
                     key = '<%s.%s>' % (self.uid, folder.server_name)
                 message['Message-ID'] = key

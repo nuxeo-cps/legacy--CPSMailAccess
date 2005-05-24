@@ -294,6 +294,16 @@ class MailMessageTestCase(MailTestCase):
         ob.setDirectBody('okay')
         self.assertEquals(ob.getDirectBody(), 'okay')
 
+    def test_messageIdGen(self):
+        ob = self.getMailInstance(35)
+        ob.setHeader('Message-ID', '')
+        self.assertEquals(ob.getHeader('Message-ID'), [''])
+        msg = ob.getRawMessage()
+        self.assertNotEquals(ob.getHeader('Message-ID')[0], '<>')
+        self.assertNotEquals(ob.getHeader('Message-ID')[0], '<%d.%d>' % (id(ob), id(ob)))
+        ob.uid = '876576'
+        msg = ob.getRawMessage()
+        self.assertNotEquals(ob.getHeader('Message-ID')[0], '<876576>')
 
 def test_suite():
     return unittest.TestSuite((
