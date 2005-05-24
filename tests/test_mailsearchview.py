@@ -47,8 +47,8 @@ class MailSearchViewTestCase(MailTestCase):
         zcat = box._getZemanticCatalog()
 
         for i in range(38):
-            ob = self.getMailInstance(i)
-            ob.getPhysicalPath = self.fakeGetPhysicalPath
+            ob = self.getMailInstanceT(i)
+            #ob.getPhysicalPath = self.fakeGetPhysicalPath
             ob = ob.__of__(self.portal)
             cat.indexMessage(ob)
             zcat.indexMessage(ob, full_indexation)
@@ -111,6 +111,7 @@ class MailSearchViewTestCase(MailTestCase):
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = '*'    # all
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
         # results order won't be known
@@ -119,6 +120,7 @@ class MailSearchViewTestCase(MailTestCase):
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = 'ccc*'
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
         self.assertEquals(len(results), 1)
@@ -128,6 +130,7 @@ class MailSearchViewTestCase(MailTestCase):
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = 'ccc*'
         query['intersection'] = 'store is open'
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
         self.assertEquals(len(results), 1)
@@ -139,12 +142,14 @@ class MailSearchViewTestCase(MailTestCase):
         query['relation_1'] = 'subject'        # relations keys are normalized (lower)
         query['value_1'] = 'test'
         query['intersection'] = 'store is open'
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
-        self.assertEquals(len(results), 3)
+        self.assertEquals(len(results), 9)
 
         query = {}
         query['intersection'] = 'store is open'
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
         self.assertEquals(len(results), 0)
 
@@ -157,6 +162,7 @@ class MailSearchViewTestCase(MailTestCase):
         self.assertEquals(box._getCatalog(), cat)
         query = {}
         query['searchable_text'] = u'Lovers'
+        query['lazy_search'] = 1
 
         res = cat.search(query_request=query)
         direct_search = []
@@ -185,6 +191,7 @@ class MailSearchViewTestCase(MailTestCase):
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = '*'    # all
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
         # results order won't be known
@@ -193,6 +200,7 @@ class MailSearchViewTestCase(MailTestCase):
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = 'ccc*'
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
         self.assertEquals(len(results), 1)
@@ -202,6 +210,7 @@ class MailSearchViewTestCase(MailTestCase):
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = 'ccc*'
         query['intersection'] = 'store is open'
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
         self.assertEquals(len(results), 1)
@@ -213,12 +222,14 @@ class MailSearchViewTestCase(MailTestCase):
         query['relation_1'] = 'subject'        # relations keys are normalized (lower)
         query['value_1'] = 'test'
         query['intersection'] = 'store is open'
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
-        self.assertEquals(len(results), 3)
+        self.assertEquals(len(results), 9)
 
         query = {}
         query['intersection'] = 'store is open'
+        query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
         self.assertEquals(len(results), 0)
 

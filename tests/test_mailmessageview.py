@@ -280,6 +280,7 @@ class MailMessageViewTestCase(MailTestCase):
         Ccs = view.headerCount('Cc')
         self.assertEquals(Ccs, 0)
 
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageViewTestCase),
