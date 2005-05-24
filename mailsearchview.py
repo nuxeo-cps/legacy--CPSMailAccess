@@ -21,7 +21,7 @@ import os
 import time
 
 from Products.Five import BrowserView
-from utils import getToolByName
+from utils import getToolByName, parseDateString, decodeHeader
 from mailexceptions import MailCatalogError
 from mailmessageview import MailMessageView
 
@@ -182,18 +182,31 @@ class MailSearchView(BrowserView):
         results = []
         msg_viewer = MailMessageView(None, self.request)
         for result in raw_results:
-            current = {}
-            current['path'] = result
-            object = self.traverseToObject(current['path'])
-            current['object'] = object
+            object = self.traverseToObject(result)
+            # if object is None, it means
+            # that the catalog holds deprecated entries
+            # we don't want to see here
+            if object is not None:
+                current = {}
+                current['path'] = result
+                current['object'] = object
+                # see if this can be done more quickly
+                msg_viewer.context = object
+                current['From'] = msg_viewer.renderFromList()
+                current['Subject'] = msg_viewer.renderSubject()
+                current['Date'] = msg_viewer.renderDate()
+                # always sorting by date
+                element_date = object.getHeader('Date')
+                if element_date is None or element_date == []:
+                    element_date = '?'
+                stDate = decodeHeader(element_date[0])
+                sorter = parseDateString(stDate)
+                results.append((sorter, current))
 
-            # see if this can be done more quickly
-            msg_viewer.context = object
-            current['From'] = msg_viewer.renderFromList()
-            current['Subject'] = msg_viewer.renderSubject()
-            current['Date'] = msg_viewer.renderDate()
+        results.sort()
+        results.reverse()
 
-            results.append(current)
+        sorted_results = [result[1] for result in results]
 
         dtime = time.time() - start
-        return (results, dtime, len(cat))
+        return (sorted_results, dtime, len(cat))
