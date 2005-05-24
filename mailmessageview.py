@@ -153,7 +153,10 @@ class MailMessageView(BaseMailMessageView):
         """ renders the mail body """
         if self.context is not None:
             mail = self.context
-            body = self._bodyRender(mail)
+            try:
+                body = self._bodyRender(mail)
+            except NotImplementedError:
+                body = 'cpsma_structure_unknown'
         else:
             body = ''
         return body
@@ -190,6 +193,8 @@ class MailMessageView(BaseMailMessageView):
             msg.answerType = 'reply'
             froms = origin_msg.getHeader('From')
             for element in froms:
+                if element is None:
+                    continue
                 if element not in recipients:
                     recipients.append(element)
         else:
@@ -207,6 +212,8 @@ class MailMessageView(BaseMailMessageView):
             ccs.extend(tos)
 
             for element in ccs:
+                if element is None:
+                    continue
                 msg.addHeader('Cc', element)
 
         if not reply_all and forward:
