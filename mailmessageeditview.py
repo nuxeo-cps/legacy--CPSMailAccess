@@ -311,8 +311,7 @@ class MailMessageEdit(BrowserView):
         return
 
     def removeRecipient(self, value, type, redirect=''):
-        """ removes a recipient
-        """
+        """ removes a recipient """
         content = value.strip()
         if content == '':
             return
