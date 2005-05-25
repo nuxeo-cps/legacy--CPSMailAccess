@@ -89,6 +89,12 @@ class FakePortalUrl:
     def getPortalPath(self):
         return 'cps'
 
+    def getRelativeUrl(self, element):
+        return 'http://xxx/' + element.absolute_url()
+
+    def __call__(self):
+        return 'http://xxx/'
+
 class FakePortal(Folder):
 
     portal_directories = FakeDirectories('portal_directories')

@@ -315,25 +315,19 @@
           <div id="mailFrom" tal:condition="python:here.fromCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_from">From :</tal:block>
-              <a tal:attributes="href python:'view#'">
-                <tal:block tal:replace="here/renderFromList" />
-              </a>
+              <tal:block tal:replace="structure here/renderFromList" />
             </b>
           </div>
           <div id="mailTo" tal:condition="python:here.toCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_to">To :</tal:block>
-              <a tal:attributes="href python:'view#'">
-                <tal:block tal:replace="here/renderToList" />
-              </a>
+              <tal:block tal:replace="structure here/renderToList" />
             </b>
           </div>
           <div id="mailCc" tal:condition="python:here.ccCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_cc">Cc :</tal:block>
-              <a tal:attributes="href python:'view#'">
-                <tal:block tal:replace="here/renderCcList" />
-              </a>
+              <tal:block tal:replace="structure here/renderCcList" />
             </b>
           </div>
         </div>

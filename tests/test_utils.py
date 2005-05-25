@@ -168,8 +168,27 @@ The CPS Team.
         res = secureUnicode(u'лидер в Уеб Хостинг решения ')
         self.assertEquals(res, u'лидер в Уеб Хостинг решения ')
 
+    def test_linkifyMailBody(self):
+        body = 'ezlkhezl tz@nuxeo.com efzoihefzouh https://google.com zdfz'
+        result = linkifyMailBody(body)
+        res = 'ezlkhezl <a href="mailto:tz@nuxeo.com">tz@nuxeo.com</a> efzoihefzouh <a href="https://google.com" target="_blank">https://google.com</a> zdfz'
+
+        self.assertEquals(result, res)
+
+        body = ' ftygu tz@nuxeo.com uig'
+        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=\1">\1</a>')
+        res = ' ftygu <a href="http://xxx/sendmail?mail=tz@nuxeo.com">tz@nuxeo.com</a> uig'
+        self.assertEquals(result, res)
+
+        # try with sticked tag
+        body = ' <br>ftygu http://gyuhji</br>'
+        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=\1">\1</a>')
+        res = ' <br>ftygu <a href="http://gyuhji" target="_blank">http://gyuhji</a></br>'
+        self.assertEquals(result, res)
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),
         doctest.DocTestSuite('Products.CPSMailAccess.utils'),
         ))
+

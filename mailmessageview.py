@@ -97,17 +97,31 @@ class MailMessageView(BaseMailMessageView):
         """ renders the mail subject """
         return self.renderHeaderList('Subject')
 
+    def _renderLinkedHeaderList(self, name):
+        list_ = self.renderHeaderList(name, True)
+        root = self._getBoxRootUrl()
+        final = []
+        for mail in list_:
+            dmail = mail.replace('<', '&lt;')
+            dmail = dmail.replace('>', '&gt;')
+
+            hmail = '<a href="%s/writeTo.html?msg_to=%s">%s</a>' %(root,
+                                                                   mail, dmail)
+            final.append(hmail)
+
+        return secureUnicode(u' '.join(final))
+
     def renderFromList(self):
         """ renders the mail From """
-        return self.renderHeaderList('From')
+        return self._renderLinkedHeaderList('From')
 
     def renderToList(self):
         """ renders the mail list """
-        return self.renderHeaderList('To')
+        return self._renderLinkedHeaderList('To')
 
     def renderCcList(self):
         """ renders the mail list """
-        return self.renderHeaderList('Cc')
+        return self._renderLinkedHeaderList('Cc')
 
     def toCount(self):
         """ returns number of To recipients """
@@ -130,7 +144,7 @@ class MailMessageView(BaseMailMessageView):
         list_ = filter(self._removeNone, self.context.getHeader(name))
         return len(list_)
 
-    def renderHeaderList(self, name):
+    def renderHeaderList(self, name, list_=False):
         """ renders the mail list """
         context = self.context
         if context is not None:# and IMailPart.providedBy(context):
@@ -142,19 +156,41 @@ class MailMessageView(BaseMailMessageView):
                 for header in headers:
                     header = decodeHeader(header)
                     decoded.append(header)
-                return secureUnicode(u' '.join(decoded))
+                if not list_:
+                    return secureUnicode(u' '.join(decoded))
+                else:
+                    return decoded
         else:
             return u'?'
 
     def _bodyRender(self, mail):
         return self._RenderEngine.renderBody(mail)
 
+    def _getBoxRootUrl(self):
+        if self.context is not None:
+            mail = self.context
+            folder = mail.getMailFolder()
+            if folder is None or not IMailFolder.providedBy(folder):
+                root = ''
+            else:
+                box = folder.getMailBox()
+                if box is None:
+                    root = self.getAbsoluteUrl(folder)
+                else:
+                    root = self.getAbsoluteUrl(box)
+            return root
+        else:
+            return ''
+
     def renderBody(self):
         """ renders the mail body """
         if self.context is not None:
             mail = self.context
             try:
+                root = self._getBoxRootUrl()
                 body = self._bodyRender(mail)
+                mail_sub = r'<a href="%s/writeTo.html?msg_to=\1">\1</a>' % root
+                body = linkifyMailBody(body, mail_sub)
             except NotImplementedError:
                 body = 'cpsma_structure_unknown'
         else:

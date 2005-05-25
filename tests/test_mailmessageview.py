@@ -66,15 +66,17 @@ class MailMessageViewTestCase(MailTestCase):
         view = MailMessageView(ob, None)
 
         self.assertEquals(view.renderFromList(),
-            'Barry <barry@digicool.com>')
+            '<a href="/writeTo.html?msg_to=Barry <barry@digicool.com>">Barry &lt;barry@digicool.com&gt;</a>')
 
         self.assertEquals(view.renderToList(),
-            'Dingus Lovers <cravindogs@cravindogs.com>')
+            '<a href="/writeTo.html?msg_to=Dingus Lovers <cravindogs@cravindogs.com>">Dingus Lovers &lt;cravindogs@cravindogs.com&gt;</a>')
 
         ob = MailMessage()
         view = MailMessageView(ob, None)
-        self.assertEquals(view.renderFromList(), '?')
-        self.assertEquals(view.renderToList(), '?')
+        self.assertEquals(view.renderFromList(),
+                          u'<a href="/writeTo.html?msg_to=?">?</a>')
+        self.assertEquals(view.renderToList(),
+                          u'<a href="/writeTo.html?msg_to=?">?</a>')
 
     def test_MailMessageparts(self):
         # testing message parts
@@ -252,8 +254,7 @@ class MailMessageViewTestCase(MailTestCase):
         # need to set up context and request object here
         view = MailMessageView(ob, None)
         rendered_to = view.renderToList()
-        self.assertEquals(rendered_to,
-            u'xxx <xxx@nuxeo.com>,\n xxxx <xxxx@nuxeo.com>,\n xxxxx <xxxxx@nuxeo.com>')
+        self.assertEquals(len(rendered_to.split(',\n')), 5)
 
     def test_charmap_errors(self):
         mbox = self._getMailBox()

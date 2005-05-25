@@ -528,3 +528,17 @@ def secureUnicode(unicode_content):
     """
     string_ = unicode_content.encode('ISO-8859-15', 'replace')
     return string_.decode('ISO-8859-15')
+
+def linkifyMailBody(body, email_sub=r'<a href="mailto:\1">\1</a>'):
+    """ replace mails and urls by links
+
+    if mail_sub is given, it's used for replacement,
+    so it can be set tolink to an internal mail editor
+    """
+    # links
+    # pretty loose, but it's ok
+    http_re = r'(https|ftp|http)(://\S*)(\<|\s)'
+    http_sub = r'<a href="\1\2" target="_blank">\1\2</a>\3'
+    body = re.sub(http_re, http_sub, body)
+    email_re = r'([\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4})'
+    return re.sub(email_re, email_sub, body)
