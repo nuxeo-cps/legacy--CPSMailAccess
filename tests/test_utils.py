@@ -205,7 +205,6 @@ The CPS Team.
         res = answerSubject('Fwd: ytfuygiujoipok', True)
         self.assertEquals(res, 'Fwd: ytfuygiujoipok')
 
-
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),

@@ -20,6 +20,7 @@
 from email import message_from_string
 from email import base64MIME
 import thread
+from urllib import quote
 
 from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
@@ -106,7 +107,8 @@ class MailMessageView(BaseMailMessageView):
             dmail = dmail.replace('>', '&gt;')
 
             hmail = '<a href="%s/writeTo.html?msg_to=%s">%s</a>' %(root,
-                                                                   mail, dmail)
+                                                                   quote(mail),
+                                                                   dmail)
             final.append(hmail)
 
         return secureUnicode(u' '.join(final))

@@ -66,17 +66,17 @@ class MailMessageViewTestCase(MailTestCase):
         view = MailMessageView(ob, None)
 
         self.assertEquals(view.renderFromList(),
-            '<a href="/writeTo.html?msg_to=Barry <barry@digicool.com>">Barry &lt;barry@digicool.com&gt;</a>')
+            '<a href="/writeTo.html?msg_to=Barry%20%3Cbarry%40digicool.com%3E">Barry &lt;barry@digicool.com&gt;</a>')
 
         self.assertEquals(view.renderToList(),
-            '<a href="/writeTo.html?msg_to=Dingus Lovers <cravindogs@cravindogs.com>">Dingus Lovers &lt;cravindogs@cravindogs.com&gt;</a>')
+            '<a href="/writeTo.html?msg_to=Dingus%20Lovers%20%3Ccravindogs%40cravindogs.com%3E">Dingus Lovers &lt;cravindogs@cravindogs.com&gt;</a>')
 
         ob = MailMessage()
         view = MailMessageView(ob, None)
         self.assertEquals(view.renderFromList(),
-                          u'<a href="/writeTo.html?msg_to=?">?</a>')
+                          u'<a href="/writeTo.html?msg_to=%3F">?</a>')
         self.assertEquals(view.renderToList(),
-                          u'<a href="/writeTo.html?msg_to=?">?</a>')
+                          u'<a href="/writeTo.html?msg_to=%3F">?</a>')
 
     def test_MailMessageparts(self):
         # testing message parts
@@ -254,7 +254,7 @@ class MailMessageViewTestCase(MailTestCase):
         # need to set up context and request object here
         view = MailMessageView(ob, None)
         rendered_to = view.renderToList()
-        self.assertEquals(len(rendered_to.split(',\n')), 5)
+        self.assertEquals(len(rendered_to.split(',\n')), 3)
 
     def test_charmap_errors(self):
         mbox = self._getMailBox()
@@ -281,6 +281,14 @@ class MailMessageViewTestCase(MailTestCase):
         Ccs = view.headerCount('Cc')
         self.assertEquals(Ccs, 0)
 
+    def test_quotebraker(self):
+        # quotes would brake linking
+        mbox = self._getMailBox()
+        ob = self.getMailInstance(43)
+        ob.setHeader('From', '"Tarek" <tz@nuxeo.com>')
+        view = MailMessageView(ob, None)
+        res = view.renderFromList()
+        self.assertEquals(res, u'<a href="/writeTo.html?msg_to=%22Tarek%22%20%3Ctz%40nuxeo.com%3E">"Tarek" &lt;tz@nuxeo.com&gt;</a>')
 
 def test_suite():
     return unittest.TestSuite((
