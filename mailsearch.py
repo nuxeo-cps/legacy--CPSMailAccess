@@ -19,7 +19,7 @@
 """
   mailsearch holds all mail searches
 """
-import os, time
+import os, time, sre_constants
 from encodings import exceptions as encoding_exceptions
 
 from zLOG import LOG, INFO, DEBUG
@@ -154,6 +154,9 @@ class ZemanticMessageAdapter:
         message = self.context
         default_charset = self.default_charset
 
+        if message.absolute_url() == '':
+            return []
+
         ob_uri = URIRef(unicode(message.absolute_url()))    # zope 2 dependant
 
         triples = []
@@ -226,7 +229,7 @@ class ZemanticMailCatalog(TripleStore):
         for tuple_ in tuples:
             try:
                 self.remove(tuple_)
-            except KeyError:
+            except (KeyError, sre_constants.error):
                 pass
 
 

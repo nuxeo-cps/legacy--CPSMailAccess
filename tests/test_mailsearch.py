@@ -295,11 +295,11 @@ class MailSearchTestCase(MailTestCase):
         adapted_message = ZemanticMessageAdapter(message)
         tuples = adapted_message.threeTuples()
         self.assertEquals(len(tuples), 3)
-        self.assertEquals(tuples[0], (u'nowere/my_message_1',
+        self.assertEquals(tuples[0], (u'nowere/my_message_2',
                                       u'from', u'bperson@dom.ain'))
-        self.assertEquals(tuples[1], (u'nowere/my_message_1',
+        self.assertEquals(tuples[1], (u'nowere/my_message_2',
                                       u'to', u'aperson@dom.ain'))
-        self.assertEquals(tuples[2], (u'nowere/my_message_1',
+        self.assertEquals(tuples[2], (u'nowere/my_message_2',
                                       u'subject', u'A subject'))
 
 

@@ -315,8 +315,9 @@ class MailFolder(BTreeFolder2):
         id = self.getIdFromUid(uid)
 
         if self.has_key(id):
+            # unindexing before unwrapping
+            self._unIndexMessage(self._getOb(id))
             msg = aq_base(self._getOb(id))
-            self._unIndexMessage(msg)
             self._delOb(id)
             self.message_count -= 1
             return True
@@ -599,10 +600,8 @@ class MailFolder(BTreeFolder2):
                 fetched = []
                 mailfailed = True
             #end = time.time() - start
-
             # now syncing each message
             # start_time = time.time()
-
             if len(sub_bloc) == 1:
                 fetched = {sub_bloc[0] : fetched}
 
@@ -617,7 +616,7 @@ class MailFolder(BTreeFolder2):
                 digest = None
                 if not mailfailed:
                     msg_headers = fetched_mail[2]
-                    subs= ('Date', 'Subject', 'From', 'To', 'Cc', 'Message-ID')
+                    subs = ('Date', 'Subject', 'From', 'To', 'Cc', 'Message-ID')
                     sub_keys = {}
                     for sub in subs:
                         if msg_headers.has_key(sub):
