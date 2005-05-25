@@ -238,7 +238,7 @@ class MailActionsView(BaseMailMessageView):
                         'action' : root + '/addressBooks.html'}
 
 
-        actions = actions + [write, search, synchro, adressbook, configure]
+        actions = [synchro, write, adressbook, search] + actions + [configure]
         # renders actions 2 by 2
         c_actions = []
         i = 0
