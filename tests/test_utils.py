@@ -53,6 +53,23 @@ class UtilsTestCase(MailTestCase):
         result = replyToBody(from_, body)
         self.assertEquals(result, u'> m\xe9 wrote\r\n> voici\r\n> un petit mes\xe9\xe9\xe9\xe9\xe9\xe9\xe9sage')
 
+    def test_removeHTML(self):
+        body = u'voici un petit message avec <b>html</b> <a href="#">a</a>'
+        result = removeHTML(body)
+        self.assertEquals(result, u'voici un petit message avec html a')
+
+    def test_replyToBodyClean(self):
+        body = 'voici\r\nun petit message avec <b>html</b> <a href="#">a</a>'
+        from_ = 'me'
+        result = replyToBody(from_, body)
+        self.assertEquals(result, u'> me wrote\r\n> voici\r\n> un petit message avec html a')
+
+    def test_replyToBodyClean2(self):
+        body = 'voici\r\nun petit message avec <b>html</b> <a href="#">a</a>'
+        from_ = '<a href="mailto">tz@nuxeo.com</a>'
+        result = replyToBody(from_, body)
+        self.assertEquals(result, u'> tz@nuxeo.com wrote\r\n> voici\r\n> un petit message avec html a')
+
     def test_verifyBody(self):
         msg = self.getMailInstance(2)
         verifyBody(msg)
@@ -67,7 +84,7 @@ class UtilsTestCase(MailTestCase):
 
         result = result.split('\r\n')
 
-        self.assertEqual(result[0], u'> Tarek Ziad\xe9 <tz@nuxeo.com> wrote')
+        self.assertEqual(result[0], u'> Tarek Ziad\xe9 wrote')
         self.assertEqual(result[1], u'> Welcome to your cps webmail, webmailtest4 !')
         self.assertEqual(result[2], u'> ')
         self.assertEqual(result[3], u'> The CPS Team.')
@@ -77,7 +94,7 @@ class UtilsTestCase(MailTestCase):
 
         result = result.split('<br/>')
 
-        self.assertEqual(result[0], u'&gt; Tarek Ziad\xe9 &lt;tz@nuxeo.com&gt; wrote')
+        self.assertEqual(result[0], u'&gt; Tarek Ziad\xe9 wrote')
         self.assertEqual(result[1], u'&gt; Welcome to your cps webmail, webmailtest4 !')
         self.assertEqual(result[2], u'&gt; ')
         self.assertEqual(result[3], u'&gt; The CPS Team.')
@@ -100,17 +117,22 @@ ezezf<br>
         res = sanitizeHTML(html)
         self.assertEquals(res, 'ezezf<br>')
 
-    def test_HTMLToText(self):
+    def test_removeHTML2(self):
         html = 'ezezf<br><span>ezezf</span><br>'
-        res = HTMLToText(html)
-        self.assertEquals(res, 'ezezf\r\nezezf')
+        res = removeHTML(html)
+        self.assertEquals(res, 'ezezf\r\nezezf\r\n')
+
+    def test_removeHTML3(self):
+        result = replyToBody('<tz@nuxeo.com>', '')
+
+        self.assertEquals(result, u'> tz@nuxeo.com wrote\r\n> ')
 
     def oldtest_HTMLToTextNoEffect(self):
         html = """Welcome to your cps webmail, webmailtest4 !
 
 The CPS Team.
 """
-        res = HTMLToText(html)
+        res = removeHTML(html)
         self.assertEquals(res, """Welcome to your cps webmail, webmailtest4 !
 
 The CPS Team.

@@ -37,7 +37,6 @@ from Acquisition import aq_get
 
 from zope.app.datetimeutils import DateTimeParser, \
     SyntaxError as ZSyntaxError, DateTimeError
-from html2text import HTML2Text
 from Products.CPSUtil.html import HTMLSanitizer
 
 _translation_table = string.maketrans(
@@ -260,9 +259,21 @@ def replyToBody(from_value, body, line_header='> '):
     if not isinstance(from_value, unicode):
         from_value = from_value.decode('ISO-8859-15')
 
-    reply_content = [line_header + from_value + u' wrote']
+    # remove all html tags and check body
+    # special case
+    from_value_res = removeHTML(from_value).strip()
+    if from_value_res == '':
+        from_value_res = extractMailParts(from_value)
+        if len(from_value_res) == 1:
+            from_value = from_value_res[0]
+    else:
+        from_value = from_value_res
+
     body = verifyBody(body)
+    body = removeHTML(body)
     body_lines = body.split('\r\n')
+
+    reply_content = [line_header + from_value + u' wrote']
     for line in body_lines:
         reply_content.append(line_header+line)
     return '\r\n'.join(reply_content)
@@ -289,23 +300,6 @@ def HTMLize(content):
     content = content.replace('>', '&gt;')
     content = content.replace('\r\n', '<br/>')
     return content
-
-class HTMLMail(HTML2Text):
-
-    def clear(self):
-        self.lines = []
-
-    def generate(self):
-        HTML2Text.generate(self)
-        return self.result
-
-def HTMLToText(content):
-    #todo : make a thread safe queue and use one
-    # instance of html engine
-    html_engine = HTMLMail()
-    #html_engine.clear()
-    html_engine.feed(content)
-    return '\r\n'.join([line[0] for num, line in html_engine.lines])
 
 def cleanUploadedFileName(filename):
     """ cleans filename from its path
@@ -354,7 +348,7 @@ def sanitizeHTML(content):
     return ''.join(parser.result)
 
 class HTMLExtraction(HTMLSanitizer):
-    tags_to_keep = ()
+    tags_to_keep = ('br', )
     attributes_to_keep = ()
 
 def removeHTML(content):
@@ -363,7 +357,8 @@ def removeHTML(content):
     work = work.replace('&gt;', '>')
     # thunderbid's html has \n instead of \r\n
     work = fix_eols(work)
-    work = work.replace('\r\n', '')    # nothing to care about in HTML
+    # in case there are line feeds, we replace them with brs
+    work = work.replace('\r\n', '<br>')
 
     parser = HTMLExtraction()
     try:
@@ -372,7 +367,9 @@ def removeHTML(content):
         return content
     parser.close()
     parser.cleanup()
-    return ''.join(parser.result)
+    result = ''.join(parser.result)
+    result = result.replace('<br>', '\r\n')
+    return result
 
 def isValidEmail(mail):
     """ verifies a mail is a mail """

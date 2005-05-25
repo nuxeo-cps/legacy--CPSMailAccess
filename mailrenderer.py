@@ -36,7 +36,7 @@ from mimetools import decode
 
 from zope.interface import implements
 
-from utils import decodeHeader, HTMLize, HTMLToText, sanitizeHTML,\
+from utils import decodeHeader, HTMLize, sanitizeHTML,\
                   secureUnicode
 from interfaces import IMailRenderer
 
