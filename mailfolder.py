@@ -589,7 +589,7 @@ class MailFolder(BTreeFolder2):
         fetch_str = '(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS(%s)])' % headers
         for sub_bloc in bloc:
             uid_sequence = ','.join(sub_bloc)
-            start = time.time()
+            #start = time.time()
             # gets flags, size and headers
             try:
                 fetched = connector.fetch(self.server_name, uid_sequence,
@@ -598,10 +598,10 @@ class MailFolder(BTreeFolder2):
             except baseconnection.ConnectionError:
                 fetched = []
                 mailfailed = True
-            end = time.time() - start
+            #end = time.time() - start
 
             # now syncing each message
-            start_time = time.time()
+            # start_time = time.time()
 
             if len(sub_bloc) == 1:
                 fetched = {sub_bloc[0] : fetched}
@@ -673,7 +673,7 @@ class MailFolder(BTreeFolder2):
 
             get_transaction().commit()  # implicitly usable without import
             get_transaction().begin()   # implicitly usable without import
-            end_time = time.time() - start_time
+            #end_time = time.time() - start_time
 
         # now clear messages in zodb that appears to be
         # deleted from the directory
@@ -832,9 +832,7 @@ class MailFolder(BTreeFolder2):
         """ moves the message on the server,
             then on the zodb (no sync)
         """
-        mailbox = self.getMailBox()
         id = self.getIdFromUid(uid)
-        origin_id = id
         msg = self[id]
 
         # detach message

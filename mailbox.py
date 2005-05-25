@@ -648,27 +648,27 @@ class MailBox(MailBoxBaseCaching):
     def saveEditorMessage(self):
         """ makes a copy of editor message into Drafts """
         # TODO: add a TO section
-        if has_connection:
-            connector = self._getconnector()
-            # need to create the message on server side
-            new_uid = connector.writeMessage(drafts.server_name,
-                                             msg_copy.getRawMessage())
-        else:
-            new_uid = drafts.getNextMessageUid()
-
         msg = self.getCurrentEditorMessage()
         subjects = msg.getHeader('Subject')
         if subjects != []:
             subject = subjects[0]
             msg.title = decodeHeader(subject)
 
+        # copy it to draft folder
         drafts = self.getDraftFolder()
-
+        new_uid = drafts.getNextMessageUid()
         msg_copy = drafts._addMessage(new_uid, msg.digest, index=False)
         msg_copy.copyFrom(msg)
-        # todo check flag on server's side
         msg_copy.draft = 1
+        msg_copy.seen = 1
+        msg_copy.setHeader('Date', formatdate())
 
+        # and to server
+        if has_connection:
+            connector = self._getconnector()
+            # need to create the message on server side
+            new_uid = connector.writeMessage(drafts.server_name,
+                                             msg_copy.getRawMessage())
 
     def getIdentitites(self):
         """ returns identities """
