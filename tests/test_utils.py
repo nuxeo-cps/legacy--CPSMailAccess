@@ -186,6 +186,11 @@ The CPS Team.
         res = ' <br>ftygu <a href="http://gyuhji" target="_blank">http://gyuhji</a></br>'
         self.assertEquals(result, res)
 
+        body = 'http://nuxeo.com/<br>Nuxeo Collaborative Portal Server'
+        res = '<a href="http://nuxeo.com/" target="_blank">http://nuxeo.com/</a><br>Nuxeo Collaborative Portal Server'
+        result = linkifyMailBody(body)
+        self.assertEquals(result, res)
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),

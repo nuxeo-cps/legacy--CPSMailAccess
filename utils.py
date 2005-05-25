@@ -537,8 +537,8 @@ def linkifyMailBody(body, email_sub=r'<a href="mailto:\1">\1</a>'):
     """
     # links
     # pretty loose, but it's ok
-    http_re = r'(https|ftp|http)(://\S*)(\<|\s)'
-    http_sub = r'<a href="\1\2" target="_blank">\1\2</a>\3'
-    body = re.sub(http_re, http_sub, body)
+    http_re = r'(https|ftp|http)(://)([^ \t\n\r\f\v\<]*)'
+    http_sub = r'<a href="\1\2\3" target="_blank">\1\2\3</a>'
+    body = re.sub(http_re, http_sub, body, re.I)
     email_re = r'([\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4})'
     return re.sub(email_re, email_sub, body)
