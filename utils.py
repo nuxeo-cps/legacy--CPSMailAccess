@@ -542,3 +542,16 @@ def linkifyMailBody(body, email_sub=r'<a href="mailto:\1">\1</a>'):
     body = re.sub(http_re, http_sub, body, re.I)
     email_re = r'([\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4})'
     return re.sub(email_re, email_sub, body)
+
+def answerSubject(subject, fwd=False):
+    """ prepare reply subject """
+    if not fwd:
+        if subject.lower().startswith('re:'):
+            return subject
+        else:
+            return 'Re: %s' % subject
+    else:
+        if subject.lower().startswith('fwd:'):
+            return subject
+        else:
+            return 'Fwd: %s' % subject

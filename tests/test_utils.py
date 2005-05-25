@@ -191,6 +191,21 @@ The CPS Team.
         result = linkifyMailBody(body)
         self.assertEquals(result, res)
 
+    def test_answerSubject(self):
+
+        res = answerSubject('Re: ytfuygiujoipok')
+        self.assertEquals(res, 'Re: ytfuygiujoipok')
+        res = answerSubject('ytfuygiujoipok')
+        self.assertEquals(res, 'Re: ytfuygiujoipok')
+
+        res = answerSubject('Re: ytfuygiujoipok', True)
+        self.assertEquals(res, 'Fwd: Re: ytfuygiujoipok')
+        res = answerSubject('ytfuygiujoipok', True)
+        self.assertEquals(res, 'Fwd: ytfuygiujoipok')
+        res = answerSubject('Fwd: ytfuygiujoipok', True)
+        self.assertEquals(res, 'Fwd: ytfuygiujoipok')
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),

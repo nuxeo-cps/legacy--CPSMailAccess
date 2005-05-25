@@ -272,10 +272,7 @@ class MailMessageView(BaseMailMessageView):
         else:
             subject = subjects[0]
 
-        if not forward:
-            msg.addHeader('Subject', 'Re: ' + subject)
-        else:
-            msg.addHeader('Subject', 'Fwd: '+ subject)
+        msg.addHeader('Subject', answerSubject(subject, forward))
 
         if self.request is not None:
             came_from = origin_msg.absolute_url()
