@@ -93,7 +93,7 @@ class MailMessage(Folder):
             original_store = self._getStore()
             new_store = Message.Message()
             old_headers = ('From', 'To', 'Cc', 'Subject', 'Date', 'Message-ID',
-                           'In-Reply-To', 'Content-Type')
+                           'In-Reply-To', 'Content-Type', 'References')
             for old_header in old_headers:
                 new_store[old_header] = original_store[old_header]
             self._setStore(new_store)
@@ -316,12 +316,14 @@ class MailMessage(Folder):
 
         contains the store and eventually attached files
         """
+        # make sure the message has an ID
+        self._generateMessageId()
         # XXX need to attach files in self._file_list
         store = self._getStore()
         if store is None:
             return ''
         else:
-            # creating a mutlipart message
+            # creating a multipart message
             copy = message_from_string(store.as_string())   # making a copy
             copy['content-type'] = 'text/plain; charset=iso-8859-1'
             copy['content-transfer-encoding'] = '7bits'
@@ -332,7 +334,7 @@ class MailMessage(Folder):
                 message = Message.Message()
                 for gheader in ('From', 'To', 'Cc', 'BCc', 'Subject', 'Date',
                                 'Return-Path', 'Received', 'Delivered-To',
-                                'Message-ID'):
+                                'Message-ID', 'References'):
                     if copy[gheader] is not None:
                         message[gheader] = copy[gheader]
                         del copy[gheader]
@@ -349,19 +351,25 @@ class MailMessage(Folder):
                         message._payload.append(file['data'])
 
             message['User-Agent'] = 'Nuxeo CPSMailAccess'
-            if message['Message-ID'] is None:
-                # generate id XXXX need to be more precise here
-                # by including user name
-                folder = self.getMailFolder()
-                if folder is None or folder.server_name == '':
-                    if self.uid.strip() != '':
-                        key = '<%s>' % (self.uid)
-                    else:
-                        key = '<%d.%d>' % (id(self), id(self))
-                else:
-                    key = '<%s.%s>' % (self.uid, folder.server_name)
-                message['Message-ID'] = key
+
             return message.as_string()
+
+    def _generateMessageId(self):
+        """ generates ID """
+        message =self._getStore()
+
+        if message['Message-ID'] is None:
+            # generate id XXXX need to be more precise here
+            # by including user name
+            folder = self.getMailFolder()
+            if folder is None or folder.server_name == '':
+                if self.uid.strip() != '':
+                    key = '<%s>' % (self.uid)
+                else:
+                    key = '<%d.%d>' % (id(self), id(self))
+            else:
+                key = '<%s.%s>' % (self.uid, folder.server_name)
+            message['Message-ID'] = key
 
     def getParams(self):
         """ See interfaces.IMailMessage """

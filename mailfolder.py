@@ -585,7 +585,7 @@ class MailFolder(BTreeFolder2):
         bloc = self._createSubBlocs(uids, self.fetch_size)
 
         # XXX will be in properties later
-        headers = 'From To Cc Subject Date Message-ID In-Reply-To Content-Type'
+        headers = 'From To Cc Subject Date Message-ID In-Reply-To Content-Type References'
         fetch_str = '(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS(%s)])' % headers
         for sub_bloc in bloc:
             uid_sequence = ','.join(sub_bloc)

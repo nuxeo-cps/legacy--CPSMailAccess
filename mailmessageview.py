@@ -210,6 +210,22 @@ class MailMessageView(BaseMailMessageView):
         mailfolder_view = MailFolderView(mailfolder, self.request)
         return mailfolder_view.renderMailList()
 
+    def _setThreadHeader(self, message, origin):
+        """ sets headers """
+        message._generateMessageId()   # XXX to be outsourced
+        if origin is not None:
+            origin_id = origin.getHeader('Message-ID')
+            if origin_id is not None and origin_id != []:
+                message.addHeader('References', origin_id[0])
+                message.setHeader('In-Reply-To', origin_id[0])
+
+            references = origin.getHeader('References')
+            if references is not None:
+                hrefs = message.getHeader('References')
+                for ref in references:
+                    if ref not in hrefs:
+                        message.addHeader('References', ref)
+
     def prepareReplyRecipient(self, reply_all=0, forward=0):
         """ prepare msg recipient """
         origin_msg = self.context
@@ -222,6 +238,9 @@ class MailMessageView(BaseMailMessageView):
         msg.setDirectBody(reply_content)
         recipients = []
         msg.origin_message = origin_msg
+
+        # adding thread headers
+        self._setThreadHeader(msg, origin_msg)
 
         if not forward:
             # adding from

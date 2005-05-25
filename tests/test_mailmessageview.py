@@ -290,6 +290,27 @@ class MailMessageViewTestCase(MailTestCase):
         res = view.renderFromList()
         self.assertEquals(res, u'<a href="/writeTo.html?msg_to=%22Tarek%22%20%3Ctz%40nuxeo.com%3E">"Tarek" &lt;tz@nuxeo.com&gt;</a>')
 
+    def test_setThreadHeader(self):
+        mbox = self._getMailBox()
+
+        origin = self.getMailInstance(44)
+        self.assertEquals(origin.getHeader('References'), [])
+        origin.setHeader('References', '<Ref1>')
+
+        message = self.getMailInstance(43)
+
+        view = MailMessageView(message, None)
+
+        view._setThreadHeader(message, origin)
+        # now checks mail integrity
+        msg = message.getRawMessage()
+
+        refs = message.getHeader('References')
+
+        self.assert_('<15893651.1105277510670.JavaMail.nobody@hr_01_rev_b>' in refs)
+        self.assert_('<Ref1>' in refs)
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageViewTestCase),

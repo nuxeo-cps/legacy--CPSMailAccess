@@ -158,7 +158,11 @@ class MailBoxTestCase(MailTestCase):
         mailbox.setCurrentEditorMessage(msg)
         cached = mailbox.getCurrentEditorMessage()
         cached.uid = msg.uid    # uid is not copied
+        self.assertEquals(cached.getHeader('Message-ID'),
+                          msg.getHeader('Message-ID'))
+
         self.assertEquals(cached.getRawMessage(), msg.getRawMessage())
+
         mailbox.clearEditorMessage()
         # getCurrentEditorMessage creates a message if it does not exists
         cached = mailbox.getCurrentEditorMessage()
