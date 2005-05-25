@@ -119,7 +119,7 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_(view)
 
         date = view.renderDate()
-        self.assertEquals(date, 'Fri 20/04/01 19:35')
+        self.assertEquals(date, 'Sat 21/04/01 01:35')
 
     def test_attachedfiles(self):
         ob = self.getMailInstance(6)

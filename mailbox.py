@@ -23,7 +23,7 @@ A MailBox is the root MailFolder for a given mail account
 """
 import re
 import time
-from email.Utils import parseaddr
+from email.Utils import parseaddr, formatdate
 
 from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
@@ -42,8 +42,7 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.publisher.browser import FileUpload
 from zope.app.cache.ram import RAMCache
 
-from utils import getToolByName, getCurrentDateStr, \
-    decodeHeader, uniqueId, makeId, getFolder
+from utils import getToolByName, decodeHeader, uniqueId, makeId, getFolder
 from interfaces import IMailBox, IMailMessage, IMailFolder, IMessageTraverser
 from mailfolder import MailFolder, manage_addMailFolder
 from maileditormessage import MailEditorMessage
@@ -123,7 +122,7 @@ class MailBoxBaseCaching(MailFolderTicking):
             msg = MailEditorMessage()
             # hack to identify it , need to do this better
             msg.editor_msg = 1
-            msg.setHeader('Date', getCurrentDateStr())
+            msg.setHeader('Date', formatdate())
             msg.seen = 1
             self._cache.set(msg, 'maileditor')
             editor = msg
@@ -652,7 +651,8 @@ class MailBox(MailBoxBaseCaching):
         if has_connection:
             connector = self._getconnector()
             # need to create the message on server side
-            new_uid = connector.writeMessage(drafts.server_name, msg_copy.getRawMessage())
+            new_uid = connector.writeMessage(drafts.server_name,
+                                             msg_copy.getRawMessage())
         else:
             new_uid = drafts.getNextMessageUid()
 
@@ -668,6 +668,7 @@ class MailBox(MailBoxBaseCaching):
         msg_copy.copyFrom(msg)
         # todo check flag on server's side
         msg_copy.draft = 1
+
 
     def getIdentitites(self):
         """ returns identities """

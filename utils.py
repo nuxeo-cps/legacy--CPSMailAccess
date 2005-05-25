@@ -19,16 +19,17 @@
 # $Id$
 """ a few utilities
 """
-import os
+import os, time
 import string, re, md5
 from sgmllib import SGMLParseError
 from threading import Thread
 from email.Header import decode_header, make_header
 from exceptions import UnicodeDecodeError
 from datetime import datetime
-from time import strftime
+from time import strftime, localtime, mktime
 from random import randrange
-from email.Utils import fix_eols
+from email.Utils import fix_eols, parsedate_tz, mktime_tz
+from email.Utils import parsedate
 from encodings import exceptions as encoding_exceptions
 
 from zLOG import LOG, INFO
@@ -123,46 +124,29 @@ def decodeHeader(header, encoding='ISO8859-15'):
 
 
 def parseDateString(date_string):
-    """ parses a string to render a date
-        if no result, renders 1 jan 70
-    >>> parseDateString('Wed, 29 Dec 2004 21:42:19 +0100')
-    datetime.datetime(2004, 12, 29, 21, 42, 19)
-    >>> parseDateString('Wed, 29 Dec 2004')
-    datetime.datetime(2004, 12, 29, 0, 0)
-    >>> parseDateString('hahahaha')
-    datetime.datetime(1970, 1, 1, 0, 0)
-    >>> parseDateString('Tue,  5 Apr 2005 11:33:39 +0200 (CEST)')
-    datetime.datetime(2005, 4, 5, 11, 33, 39)
-    """
-    elements = date_string.split(' ')
-    while len(elements) > 6:
-        del elements[6]
-    date_string = ' '.join(elements)
+    """ parses a string to render a localized date """
+    tm = parsedate_tz(date_string)
+    if tm is not None:
+        tm = mktime_tz(tm)
+        localized = localtime(tm)
+    else:
+        tm = parsedate(date_string)
+        if tm is not None:
+            tm = mktime(tm)
+        else:
+            # the time does not follow RFC 2822
+            # let's try to guess it with z3 DateTimeParser
+            try:
+                localized = DateTimeParser().parse(date_string)
+            except (ZSyntaxError, DateTimeError):
+                localized = (1970, 1, 1, 0, 0, 0)
 
-    parser = DateTimeParser()
-    try:
-        result = parser.parse(date_string)
-        result = datetime(result[0], result[1], result[2],
-                          result[3], result[4], result[5])
-    except (ZSyntaxError, DateTimeError):
-        result = datetime(1970, 1, 1)
-
-    return result
+    return datetime(localized[0], localized[1], localized[2],
+                     localized[3], localized[4], localized[5])
 
 
 def localizeDateString(date_string, format=0):
     """ normalizes renders a localized date string
-    XXXtodo : localize
-    >>> localizeDateString('Wed, 29 Dec 2004 21:42:19 +0100')
-    'Wed 29/12/04 21:42'
-    >>> localizeDateString('Wed, 29 Dec 2004 21:42:19 +0100', 1)
-    '21:42'
-    >>> localizeDateString('Wed, 29 Dec 2004 21:42:19 +0100', 2)
-    '29/12'
-    >>> localizeDateString('Wed, 29 Dec 2004 21:42:19 +0100', 3)
-    '29/12/04'
-    >>> localizeDateString('Tue,  5 Apr 2005 11:33:39 +0200 (CEST)', 3)
-    '05/04/05'
     """
     date = parseDateString(date_string)
     if format == 1:
@@ -228,13 +212,6 @@ def getFolder(mailbox, folder_name):
             return None
         current = getattr(current, element_id)
     return current
-
-def getCurrentDateStr():
-    """ gets current date """
-    date = datetime(1970, 1, 1)
-    now = date.now()
-    # english style
-    return now.strftime('%a %m/%d/%y %H:%M')
 
 _marker = object()
 def getToolByName(obj, name, default=_marker):

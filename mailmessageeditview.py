@@ -21,8 +21,8 @@ from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
 import sys
 from smtplib import SMTP
-from utils import getToolByName, getCurrentDateStr, decodeHeader, verifyBody,\
-    cleanUploadedFileName
+from utils import getToolByName, decodeHeader, verifyBody,\
+                  cleanUploadedFileName
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder

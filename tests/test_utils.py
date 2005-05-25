@@ -150,10 +150,6 @@ The CPS Team.
         self.assertEquals(type(res), unicode)
         self.assertEquals(res, u'8\u5343\u4e07\u5186\u306e\u7372\u5f97\u65b9\u6cd5\u30fb\u30e1\u30eb\u30de\u30ac\u30b8\u30f3<delivery@hosyou-r01.mine.nu>')
 
-    def test_getCurrentDateStr(self):
-        date = getCurrentDateStr()
-
-
     def test_isValidEmail(self):
         self.assert_(isValidEmail('tz@nuxeo.com'))
         self.assert_(isValidEmail('tarek@nuxeo.comfmm'))
@@ -164,12 +160,15 @@ The CPS Team.
 
     def test_parseDateStringWeirdCases(self):
         date = parseDateString('Sat, 04 Dec 2004 20:03:34 +0190')
-        self.assertEquals(date, datetime(2004, 12, 4, 20, 3, 34))
+        self.assertEquals(date, datetime(2004, 12, 4, 18, 33, 34))
 
         # sometime the last part is not ok,
         # those are hard to guess so we return 1 jan 70
         date = parseDateString('Sat, 04 Dec 2004 20:03:34 01900')
-        self.assertEquals(date, datetime(1970, 1, 1, 0, 0))
+        self.assertEquals(date, datetime(2004, 12, 4, 2, 3, 34))
+
+        date = parseDateString('Mon 04/04/05 13:29')
+        self.assertEquals(date, datetime(2005, 4, 4, 13, 29, 0))
 
     def test_asynCall(self):
         caller = AsyncCall(self.method, 1, 3)
