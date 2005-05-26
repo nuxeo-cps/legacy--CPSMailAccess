@@ -140,7 +140,6 @@ function saveMessageDatas()
   {
     cc_on = "0";
   }
-
   try
   {
     BCc = document.getElementById('BCc');
@@ -185,16 +184,17 @@ function saveMessageDatas()
   {
     // XMLHttpRequest not supported
   }
+
   if (xml)
   {
     url = "saveMessageForm.html";
     status = 503;
-    msg_body = escape(msg_body);
-    msg_subject = escape(msg_subject);
-    msg_to = escape(msg_to);
-    msg_cc = escape(msg_cc);
-    msg_bcc = escape(msg_bcc);
-    var body = "attacher_on="+attacher_on+"&cc_on="+cc_on+"&bcc_on="+bcc_on+"&msg_subject="+msg_subject+"&msg_body="+msg_body+"&msg_to="+msg_to+"&msg_cc="+msg_cc+"&msg_bcc="+msg_bcc
+    and = escape("&");
+    body = "attacher_on=" + attacher_on + and + "cc_on="+ cc_on + and + "bcc_on=" + bcc_on
+    body = body + and + "msg_subject="+ msg_subject + and + "msg_body="
+    body = body + msg_body + and + "msg_to=" + msg_to
+    body = body + and + "msg_cc="+ msg_cc + and + "msg_bcc=" + msg_bcc;
+
     i = 0;
     while ((status == 503) && (i<10))
     {
@@ -241,6 +241,7 @@ var parent_window;
 function popupRecipientPicker()
  {
     saveMessageDatas();
+
     var args;
     url = "selectRecipients.html";
     popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=500, height=450');
