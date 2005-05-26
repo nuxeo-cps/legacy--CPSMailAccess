@@ -127,7 +127,7 @@
             </td>
             <td>
               <a tal:attributes="href python:result['path']+'/view'">
-                <span class="truncable" tal:content="result/From|string:?"/>
+                <span class="truncable" tal:content="structure result/From|string:?"/>
               </a>
             </td>
             <td>
