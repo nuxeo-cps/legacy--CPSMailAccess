@@ -166,9 +166,6 @@
               <div id="searchResults">
                 <metal:block metal:use-macro="here/messagelist_macros/search_messagelist"/>
               </div>
-              <script langage="javascript">
-                truncateFields(32);
-              </script>
             </tal:block>
             <tal:block tal:condition="python:num_results==0">
               <div class="dlabel" i18n:translate="cpsma_no_results">No results where found.</div>
