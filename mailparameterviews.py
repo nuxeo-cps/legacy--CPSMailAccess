@@ -179,7 +179,7 @@ class MailBoxParametersView(MailParametersView):
 
     def getUserName(self):
        """ retrieves user name """
-       return self._getParameters()['uid']
+       return self._getParameters()['uid'][0]
 
     def clearMailCatalog(self):
         """ clear catalog """
