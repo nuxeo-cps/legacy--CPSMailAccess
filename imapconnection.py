@@ -41,9 +41,20 @@ from baseconnection import CANNOT_SEARCH_MAILBOX, MAILBOX_INDEX_ERROR, \
 from utils import AsyncCall
 
 def patch_open(self, host = '', port = IMAP4_SSL_PORT):
+    """ protects webmails from:
+          o timeoutsocket patching
+          o Python SSL+timeout failure
+    """
     self.host = host
     self.port = port
-    self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # testing if timeoutsocket has patched socket
+    if hasattr(socket, "_no_timeoutsocket"):
+        self.sock = socket._no_timeoutsocket(socket.AF_INET,
+                                             socket.SOCK_STREAM)
+    else:
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     self.sock.settimeout(None)
     self.sock.connect((host, port))
     self.sslobj = socket.ssl(self.sock, self.keyfile, self.certfile)
