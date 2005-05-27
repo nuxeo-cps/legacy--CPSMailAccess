@@ -26,7 +26,7 @@
             <td/>
             <td>
               <div class="dlabel">
-                <span i18n:translate="">portal wide</span>
+                <span i18n:translate="cpsma_portal_wide">portal wide</span>
               </div>
             </td>
           </tr>
