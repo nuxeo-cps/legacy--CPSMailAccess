@@ -65,7 +65,7 @@
         </table>
       </div>
       <input type="submit" class="standalone"
-             name="submit" value="submit" i18n:translate="sumbit_mailbox_params"/>
+             name="submit" value="submit" i18n:translate="value"/>
    </form>
    <br/>
     <h4><span i18n:translate="">cpsma_mailbox_managment_tasks</span></h4>
