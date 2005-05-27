@@ -4,6 +4,7 @@
       tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
   </metal:block>
   <metal:block metal:fill-slot="main">
+    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <h2>
       <img src="cpsma_filter_big.png"/>&#160;
       <span i18n:translate="">
