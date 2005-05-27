@@ -523,6 +523,19 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.deleteActions({'portal_actions': ['webmail',]})
         self.verifyAction('portal_actions', **action)
 
+        redir = '${portal_url}/portal_webmail/configure.html'
+        action = {
+                'id': 'webmail_global',
+                'name': 'cpsma_configure_mailtool',
+                'action': 'string:%s' % redir,
+                'condition': 'member',
+                'permission': 'Manage MailTool',
+                'category': 'global',
+                }
+
+        self.deleteActions({'portal_actions': ['webmail_global',]})
+        self.verifyAction('portal_actions', **action)
+
         # we don't want to see notify_content in the webmail
         if CPSSubscriptions == 0:
             return
