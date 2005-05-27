@@ -386,3 +386,10 @@ msgstr "Removed cached mail bodies"
 
 msgid "cpsma_failed_send"
 msgstr "Could not send the message"
+
+msgid "cpsma_first_time"
+msgstr ""
+"It's the first time you launched the webmail. "
+"Please set your parameters.<br/>"
+"On any doubts, please refer to the documentation."
+

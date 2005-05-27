@@ -387,3 +387,6 @@ msgstr ""
 
 msgid "cpsma_failed_send"
 msgstr ""
+
+msgid "cpsma_first_time"
+msgstr ""

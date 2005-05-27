@@ -387,3 +387,9 @@ msgstr "Supprimer les corps de messages emmagasinés"
 msgid "cpsma_failed_send"
 msgstr "Impossible d'envoyer le message"
 
+msgid "cpsma_first_time"
+msgstr ""
+"C'est la première fois que vous lancez le webmail. "
+"Veuillez configurer vos paramètres de connexions.<br/>"
+"En cas de doute, référez vous à la documentation."
+

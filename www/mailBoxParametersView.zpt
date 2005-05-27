@@ -16,8 +16,7 @@
       tal:define="first_time request/first_time|nothing">
     <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div class="message" tal:condition="first_time">
-     Welcome to CPSWebMail this is the first time
-      you launched it, blalalalalala (texte à externaliser)
+      <p i18n:translate="cpsma_first_time">First connection</p>
     </div>
 
    <h4><span i18n:translate="">Preferences</span></h4>
