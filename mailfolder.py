@@ -913,7 +913,6 @@ class MailFolder(BTreeFolder2):
         """ tells if a sub folder can be created, given a max depth """
         mailbox = self.getMailBox()
         max_depth = mailbox.getConnectionParams()['max_folder_depth']
-
         if max_depth == 0:
             return True
 

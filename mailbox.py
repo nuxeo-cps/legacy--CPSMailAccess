@@ -192,14 +192,31 @@ class MailBox(MailBoxBaseCaching):
         self._directory_picker = None
         self._connection_params = PersistentMapping()
 
-    def getConnectionParams(self):
+    def getConnectionParams(self, remove_security=True):
+        """ retrieve connexion params """
+        portal_webmail = getToolByName(self, 'portal_webmail')
+        defaults = portal_webmail.default_connection_params
         if self._connection_params == {}:
-            portal_webmail = getToolByName(self, 'portal_webmail')
-            self._connection_params = portal_webmail.default_connection_params
+            self._connection_params = defaults
+        else:
+            # updating
+            for key in defaults.keys():
+                value = defaults[key]
+                portalwide = value[1] == 1
+                if portalwide or not self._connection_params.has_key(key):
+                    self._connection_params[key] = value
         if not self._connection_params.has_key('uid'):
             uid = self.id.replace('box_', '')
-            self._connection_params['uid'] = uid
-        return self._connection_params
+            self._connection_params['uid'] = (uid, 0)
+
+        params = {}
+        if remove_security:
+            for key in self._connection_params.keys():
+                params[key] = self._connection_params[key][0]
+        else:
+            for key in self._connection_params.keys():
+                params[key] = self._connection_params[key]
+        return params
 
     def getFilters(self):
         return self._filters
@@ -1014,142 +1031,6 @@ InitializeClass(MailBox)
 #
 # MailBox Views
 #
-class MailBoxParametersView(BrowserView):
-
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-
-
-    def _getParameters(self):
-        """ returns a list of parameters
-        """
-        ob = self.context
-        return ob.getConnectionParams()
-
-    def getUserName(self):
-       """ retrieves user name """
-       return self._getParameters()['uid']
-
-    def renderParameters(self):
-        """ renders parameters
-        """
-        params = self._getParameters()
-        form = '<dl>'
-        for param in params.keys():
-            form += '<dt>%s</dt><dd>%s</dd>' %(param, params[param])
-        form += '</dl>'
-        return form
-
-    def addParameter(self, name):
-        """ sets given parameters
-        """
-        self._getParameters()[name] = ''
-        if self.request is not None:
-            self.request.response.redirect('configure.html')
-
-    def setParameters(self, params={}):
-        """ sets given parameters
-        """
-        if self.request is not None and hasattr(self.request, 'form'):
-            form = self.request.form
-            for element in form.keys():
-                params[element] = form[element]
-
-        if params.has_key('submit'):
-            del params['submit']
-
-        # XXX need to check each parameters
-        # to avoid resync if not needed
-        self.context.setParameters(params, False)
-
-        if self.request is not None:
-            self.request.response.redirect('configure.html')
-
-    def renderParametersForm(self):
-        """ returns a form with parameters
-
-        XXXX see for zope 3 schema/widget use here
-        """
-        if self.request is not None:
-            if self.request.has_key('submit'):
-                self.setParameters(self.request)
-
-        params = self._getParameters()
-        rendered_params = []
-
-        for param in params.keys():
-            if param == 'uid':
-                continue
-            value = params[param]
-            rendered_param = {}
-            rendered_param['name'] = param
-            rendered_param['value'] = value
-            if param == 'password' and not params[param].startswith('${'):
-                rendered_param['type'] = 'password'
-            elif param == 'signature':
-                rendered_param['type'] = 'list'
-            else:
-                rendered_param['type'] = 'text'
-
-            if isinstance(value, int):
-                rendered_param['ptype'] = 'int'
-            elif isinstance(value, list):
-                rendered_param['ptype'] = 'list'
-                value = ','.join(value)
-            else:
-                rendered_param['ptype'] = 'string'
-
-            rendered_params.append(rendered_param)
-
-        rendered_params.sort()
-        return rendered_params
-
-    def renderAddParamForm(self):
-        """ returns a form with parameters
-            XXXX see for zope 3 form use here
-        """
-        rendered_param = {}
-        rendered_param['name'] = 'name'
-        rendered_param['value'] = ''
-        rendered_param['type'] = 'text'
-        return [rendered_param]
-
-    def clearMailCatalog(self):
-        """ clear catalog """
-        box = self.context
-        box.clearMailCatalog()
-
-        if self.request is not None:
-            psm = 'Catalog cleared.'
-            self.request.response.redirect('configure.html?msm=%s' % psm)
-
-    def reindexMailCatalog(self):
-        """ calls the catalog indexation """
-        box = self.context
-        box.reindexMailCatalog()
-
-        if self.request is not None:
-            psm = 'All mails are indexed'
-            self.request.response.redirect('configure.html?msm=%s' % psm)
-
-    def reconnect(self):
-        """ calls the box relog """
-        box = self.context
-        box.reconnect()
-
-        if self.request is not None:
-            psm = 'cpsma_relogged'
-            self.request.response.redirect('configure.html?msm=%s' % psm)
-
-    def clearMailBodies(self):
-        """ calls the box clearer """
-        box = self.context
-        box.clearMailBodies()
-
-        if self.request is not None:
-            psm = 'cpsma_cleared'
-            self.request.response.redirect('configure.html?msm=%s' % psm)
-
 #
 # MailBoxView Views
 #
@@ -1227,105 +1108,6 @@ class MailBoxTraversable(FiveTraversable):
             return msg
         # let the regular traverser do the job
         return FiveTraversable.traverse(self, path, '')
-
-class MailBoxFiltersView(BrowserView):
-
-    def getFilterCount(self):
-        mailbox = self.context
-        filters = mailbox.getFilters()
-        return len(filters.getFilters())
-
-    def _render(self, item):
-        render_item = {}
-
-        if item['subject'] == 'From':
-            render_item['subject'] = 'Sender'
-        else:
-            render_item['subject'] = item['subject']
-
-        render_item['action_param'] = item['action_param']
-        render_item['value'] = item['value']
-
-        cond = item['condition']
-
-        if cond == 1:
-            render_item['condition']  = 'contains'
-        elif cond == 2:
-            render_item['condition']  = 'does not contains'
-        elif cond == 3:
-            render_item['condition']  = 'begins with'
-        elif cond == 4:
-            render_item['condition']  = 'ends with'
-        elif cond == 5:
-            render_item['condition']  = 'is'
-        elif cond == 6:
-            render_item['condition']  = 'is not'
-        else:
-            render_item['condition'] = '? : %s' % str(cond)
-
-        action = item['action']
-
-        if action == 1:
-            render_item['action']  = 'move to'
-        elif action == 2:
-            render_item['action']  = 'copy to'
-        elif action == 3:
-            render_item['action']  = 'label with'
-        elif action == 4:
-            render_item['action']  = 'set junk status'
-        else:
-            render_item['action'] = '? : %s' % str(action)
-
-        return render_item
-
-    def renderFilters(self):
-        """ renders filter list
-
-        Replaces values by human readable values
-        """
-        mailbox = self.context
-        filters = mailbox.getFilters().getFilters()
-        return map(self._render, filters)
-
-    def removeFilter(self, index):
-        """ removes a filter given its index"""
-        mailbox = self.context
-        filters = mailbox.getFilters()
-        filters.deleteFilter(index)
-
-        if self.request is not None:
-            self.request.response.redirect('filters.html')
-
-    def addFilter(self, subject, condition, value, action, action_param=None):
-        """ adds a filter given its values """
-        mailbox = self.context
-        filters = mailbox.getFilters()
-
-        # controling input
-        if action != 4 and action_param.strip() == '':
-            psm = 'Need an action param'
-        else:
-            filters.addFilter(subject, condition, value, action, action_param)
-            psm = None
-
-        if self.request is not None:
-            if psm is None:
-                self.request.response.redirect('filters.html')
-            else:
-                self.request.response.redirect(
-                    'filters.html?msm=%s' % psm)
-
-    def moveFilter(self, index, direction):
-        """ moves a filter given a direction
-
-                0 : up
-                1: down
-        """
-        mailbox = self.context
-        filters = mailbox.getFilters()
-        filters.moveFilter(index, direction)
-        if self.request is not None:
-            self.request.response.redirect('filters.html')
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())

@@ -30,8 +30,7 @@ from zope.publisher.browser import FileUpload
 from zope.testing import doctest
 
 from Products.CPSMailAccess.interfaces import IMailBox, IMailFolder
-from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView, \
-                                           MailFolderTicking
+from Products.CPSMailAccess.mailbox import MailBox, MailFolderTicking
 from basetestcase import MailTestCase
 
 from Products.CPSMailAccess import mailbox
@@ -79,25 +78,6 @@ class MailBoxTestCase(MailTestCase):
         ob = ob.__of__(self.portal)
 
         self.assertEquals(self.portal.INBOX, ob)
-
-    def test_MailBoxParametersView(self):
-        # testing MailBoxParametersView generators
-        mailbox = self._getMailBox()
-        view = MailBoxParametersView(mailbox, None)
-        self.assertNotEquals(view, None)
-
-        params = view._getParameters()
-        self.assertNotEquals(params, [])
-
-        params = view.renderParameters()
-        self.assertNotEquals(params, '')
-
-        params = view.renderParametersForm()
-        self.assertNotEquals(params, '')
-
-        params = view.renderAddParamForm()
-        self.assertNotEquals(params, '')
-
 
     def test_clipboard(self):
         # test clipboard

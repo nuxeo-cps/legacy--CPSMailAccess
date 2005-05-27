@@ -374,6 +374,12 @@ class MailFolderTestCase(MailTestCase):
         folder11 = folder1._addFolder('folder11', 'folder1.folder11')
         folder111 = folder11._addFolder('folder111', 'folder1.folder11.folder111')
 
+        self.assertEquals(mailbox._connection_params['max_folder_depth'],
+                          (0, 0))
+
+        self.assertEquals(mailbox.getConnectionParams()['max_folder_depth'], 0)
+
+
         self.assertEquals(folder1.depth(), 1)
         self.assertEquals(folder11.depth(), 2)
         self.assertEquals(folder111.depth(), 3)
@@ -382,7 +388,7 @@ class MailFolderTestCase(MailTestCase):
         self.assert_(folder11.canCreateSubFolder())
         self.assert_(folder111.canCreateSubFolder())
 
-        mailbox._connection_params['max_folder_depth'] = 3
+        mailbox._connection_params['max_folder_depth'] = (3, 0)
 
         self.assert_(folder1.canCreateSubFolder())
         self.assert_(folder11.canCreateSubFolder())

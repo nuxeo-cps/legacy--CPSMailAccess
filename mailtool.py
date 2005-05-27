@@ -23,6 +23,7 @@
 import thread
 
 from OFS.Folder import Folder
+from ZODB.PersistentMapping import PersistentMapping
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Globals import InitializeClass
 from Products.Five import BrowserView
@@ -68,28 +69,42 @@ class MailTool(Folder): # UniqueObject
     # to be externalized
     maildeliverer = SmtpQueuedMailer()
 
-    default_connection_params = {'connection_type' : 'IMAP',
-                                 'HOST' : 'localhost',
-                                 'PORT' : 143,
-                                 'SSL' :  0,
-                                 'login' : '',
-                                 'password' :'',
-                                 'smtp_host' : 'localhost',
-                                 'smtp_port' : 25,
-                                 'trash_folder_name' : 'INBOX.Trash',
-                                 'draft_folder_name' : 'INBOX.Drafts',
-                                 'sent_folder_name' : 'INBOX.Sent',
-                                 'max_folder_size' : 20,
-                                 'max_folder_depth' : 2,
-                                 'treeview_style' : 'lotus',
-                                 'message_list_cols' :
-                                   'Attachments, Icon, From, Date, Subject, Size',
-                                 'signature' : '',
-                                }
-
     def __init__(self):
         Folder.__init__(self)
+        self.default_connection_params = PersistentMapping()
+        self._initializeParameters()
         self._initializeConnectionList()
+
+    def _initializeParameters(self):
+        """ XXX might want to externalize it """
+        default = {'connection_type' : ('IMAP', 1),
+                    'HOST' : ('localhost', 1),
+                    'PORT' : (143, 1),
+                    'SSL' :  (0, 1),
+                    'login' : ('', 0),
+                    'password' :('', 0),
+                    'smtp_host' : ('localhost', 1),
+                    'smtp_port' : (25, 1),
+                    'trash_folder_name' : ('INBOX.Trash', 1),
+                    'draft_folder_name' : ('INBOX.Drafts', 1),
+                    'sent_folder_name' : ('INBOX.Sent', 1),
+                    'max_folder_size' : (20, 1),
+                    'max_folder_depth' : (2, 1),
+                    'treeview_style' : ('lotus', 1),
+                    'message_list_cols' :
+                    ('Attachments, Icon, From, Date, Subject, Size', 1),
+                    'signature' : ('', 1)
+                   }
+        for key in default:
+            self.default_connection_params[key] = default[key]
+
+    def getConnectionParams(self):
+        return self.default_connection_params
+
+    def setParameters(self, connection_params=None, resync=True):
+        """ sets the parameters """
+        for key in connection_params.keys():
+            self.default_connection_params[key] = connection_params[key]
 
     def getConnectionList(self):
         """ connection list getter """

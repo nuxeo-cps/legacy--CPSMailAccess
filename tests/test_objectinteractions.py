@@ -32,7 +32,7 @@ import fakesmtplib
 if sys.modules.has_key('smtplib'):
     del sys.modules['smtplib']
 sys.modules['smtplib'] = fakesmtplib
-from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView
+from Products.CPSMailAccess.mailparameterviews import MailBoxParametersView
 from basetestcase import MailTestCase
 
 
@@ -152,16 +152,6 @@ class ObjectInteractionTest(MailTestCase):
         inbox = mailbox.INBOX
 
         inbox._synchronizeFolder()
-
-
-    def test_MailBoxParametersInterface(self):
-        # testing MailBoxParametersView parameters interface
-        mailbox = self._getMailBox()
-        view = MailBoxParametersView(mailbox, None)
-        params = {'connection_type' : 'DUMMY',
-            'uid' : 'tarek', 'ok': '12', 'submit' : 'ok'}
-        view.setParameters(params)
-        self.assertEquals(mailbox.getConnectionParams()['ok'], '12')
 
     def oldtest_sendMessage(self):
         # sendMessage

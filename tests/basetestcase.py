@@ -100,6 +100,23 @@ class FakePortal(Folder):
     portal_directories = FakeDirectories('portal_directories')
     portal_url = FakePortalUrl()
     portal_webmail = MailTool()
+    # no portal wide parameter
+    portal_webmail.default_connection_params['max_folder_size'] = (20,0)
+    portal_webmail.default_connection_params['uid'] = ('tziade',0)
+    portal_webmail.default_connection_params['connection_type'] = ('IMAP',0)
+    portal_webmail.default_connection_params['login'] = ('tziade',0)
+    portal_webmail.default_connection_params['password'] = ('secret',0)
+    portal_webmail.default_connection_params['HOST'] = ('localhost',0)
+    portal_webmail.default_connection_params['trash_folder_name'] = ('INBOX.Trash',0)
+    portal_webmail.default_connection_params['draft_folder_name'] = ('INBOX.Drafts',0)
+    portal_webmail.default_connection_params['sent_folder_name'] = ('INBOX.Sent',0)
+    portal_webmail.default_connection_params['smtp_host'] = ('localhost',0)
+    portal_webmail.default_connection_params['smtp_port'] = (25,0)
+    portal_webmail.default_connection_params['email_adress'] = ('tz@nuxeo.com',0)
+    portal_webmail.default_connection_params['max_folder_depth'] = (0,0)
+    portal_webmail.default_connection_params['treeview_style'] = ('lotus',0)
+    portal_webmail.default_connection_params['message_list_cols'] = (('From', 'Date',
+                                                            'Subject', 'Size'),0)
 
     def getPhysicalPath(self):
         return ('', 'nowhere')
@@ -160,22 +177,22 @@ class MailTestCase(ZopeTestCase):
         mailbox = MailBox('INBOX')
         container._setObject('INBOX', mailbox)
         mailbox = container.INBOX
-        mailbox._connection_params['max_folder_size'] = 20
-        mailbox._connection_params['uid'] = 'tziade'
-        mailbox._connection_params['connection_type'] = 'IMAP'
-        mailbox._connection_params['login'] = 'tziade'
-        mailbox._connection_params['password'] = 'secret'
-        mailbox._connection_params['HOST'] = 'localhost'
-        mailbox._connection_params['trash_folder_name'] = 'INBOX.Trash'
-        mailbox._connection_params['draft_folder_name'] = 'INBOX.Drafts'
-        mailbox._connection_params['sent_folder_name'] = 'INBOX.Sent'
-        mailbox._connection_params['smtp_host'] = 'localhost'
-        mailbox._connection_params['smtp_port'] = 25
-        mailbox._connection_params['email_adress'] = 'tz@nuxeo.com'
-        mailbox._connection_params['max_folder_depth'] = 0
-        mailbox._connection_params['treeview_style'] = 'lotus'
-        mailbox._connection_params['message_list_cols'] = ('From', 'Date',
-                                                           'Subject', 'Size')
+        mailbox._connection_params['max_folder_size'] = (20,0)
+        mailbox._connection_params['uid'] = ('tziade',0)
+        mailbox._connection_params['connection_type'] = ('IMAP',0)
+        mailbox._connection_params['login'] = ('tziade',0)
+        mailbox._connection_params['password'] = ('secret',0)
+        mailbox._connection_params['HOST'] = ('localhost',0)
+        mailbox._connection_params['trash_folder_name'] = ('INBOX.Trash',0)
+        mailbox._connection_params['draft_folder_name'] = ('INBOX.Drafts',0)
+        mailbox._connection_params['sent_folder_name'] = ('INBOX.Sent',0)
+        mailbox._connection_params['smtp_host'] = ('localhost',0)
+        mailbox._connection_params['smtp_port'] = (25,0)
+        mailbox._connection_params['email_adress'] = ('tz@nuxeo.com',0)
+        mailbox._connection_params['max_folder_depth'] = (0,0)
+        mailbox._connection_params['treeview_style'] = ('lotus',0)
+        mailbox._connection_params['message_list_cols'] = (('From', 'Date',
+                                                            'Subject', 'Size'),0)
         return mailbox
 
     def _msgobj(self, filename):

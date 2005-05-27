@@ -6,10 +6,34 @@
 
   <five:traversable class="OFS.Folder.Folder" />
   <five:traversable class=".mailfolder.MailFolder" />
+  <five:defaultViewable class=".mailfolder.MailFolder" />
   <five:traversable class=".mailbox.MailBox" />
+  <five:defaultViewable class=".mailbox.MailBox" />
+  <five:traversable class=".mailmessage.MailMessage" />
+  <five:defaultViewable class=".mailmessage.MailMessage" />
   <five:traversable class=".connectionlist.ConnectionList" />
   <five:traversable class=".connectionwatcher.ConnectionWatcher" />
   <five:traversable class=".baseconnection.BaseConnection" />
+
+  <browser:defaultView
+    for=".interfaces.IMailFolder"
+    name="view"
+  />
+
+  <browser:defaultView
+    for=".interfaces.IMailMessage"
+    name="view"
+  />
+
+  <browser:defaultView
+    for=".interfaces.IMailBox"
+    name="view"
+  />
+
+  <browser:defaultView
+    for=".interfaces.IMailTool"
+    name="configure.html"
+  />
 
   <adapter
     for=".interfaces.IMailMessage"
@@ -208,6 +232,22 @@
 
   <browser:page
       for=".interfaces.IMailTool"
+      class=".mailparameterviews.MailToolParametersView"
+      template="www/mailToolParametersView.zpt"
+      name="configure.html"
+      permission="cpsmailaccess.ManageMailTool"
+      />
+
+  <browser:page
+      for=".interfaces.IMailTool"
+      class=".mailparameterviews.MailToolParametersView"
+      name="editParameters.html"
+      attribute="setParameters"
+      permission="cpsmailaccess.ManageMailTool"
+      />
+
+  <browser:page
+      for=".interfaces.IMailTool"
       class=".mailtool.MailToolView"
       name="reloadPlugins.html"
       attribute="reloadPlugins"
@@ -233,7 +273,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxParametersView"
+      class=".mailparameterviews.MailBoxParametersView"
       template="www/mailBoxParametersView.zpt"
       name="configure.html"
       permission="cpsmailaccess.ConfigureMailBox"
@@ -241,7 +281,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxFiltersView"
+      class=".mailparameterviews.MailBoxFiltersView"
       template="www/mailBoxFiltersView.zpt"
       name="filters.html"
       permission="cpsmailaccess.ConfigureMailBox"
@@ -249,7 +289,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxFiltersView"
+      class=".mailparameterviews.MailBoxFiltersView"
       name="addFilter.html"
       attribute="addFilter"
       permission="cpsmailaccess.ConfigureMailBox"
@@ -257,7 +297,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxFiltersView"
+      class=".mailparameterviews.MailBoxFiltersView"
       name="moveFilter.html"
       attribute="moveFilter"
       permission="cpsmailaccess.ConfigureMailBox"
@@ -265,7 +305,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxFiltersView"
+      class=".mailparameterviews.MailBoxFiltersView"
       name="removeFilter.html"
       attribute="removeFilter"
       permission="cpsmailaccess.ConfigureMailBox"
@@ -273,7 +313,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxParametersView"
+      class=".mailparameterviews.MailBoxParametersView"
       name="reindexMailCatalog.html"
       attribute="reindexMailCatalog"
       permission="cpsmailaccess.ConfigureMailBox"
@@ -281,7 +321,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxParametersView"
+      class=".mailparameterviews.MailBoxParametersView"
       name="reconnect.html"
       attribute="reconnect"
       permission="cpsmailaccess.ConfigureMailBox"
@@ -289,7 +329,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxParametersView"
+      class=".mailparameterviews.MailBoxParametersView"
       name="clearMailCatalog.html"
       attribute="clearMailCatalog"
       permission="cpsmailaccess.ConfigureMailBox"
@@ -297,7 +337,7 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxParametersView"
+      class=".mailparameterviews.MailBoxParametersView"
       name="clearMailBodies.html"
       attribute="clearMailBodies"
       permission="cpsmailaccess.ConfigureMailBox"
@@ -370,17 +410,9 @@
 
   <browser:page
       for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxParametersView"
+      class=".mailparameterviews.MailBoxParametersView"
       name="editParameters.html"
       attribute="setParameters"
-      permission="cpsmailaccess.ViewMailBox"
-      />
-
-  <browser:page
-      for=".interfaces.IMailBox"
-      class=".mailbox.MailBoxParametersView"
-      name="addParameter.html"
-      attribute="addParameter"
       permission="cpsmailaccess.ViewMailBox"
       />
 

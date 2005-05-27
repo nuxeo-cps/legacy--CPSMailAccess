@@ -24,7 +24,8 @@ import unittest
 from zope.testing import doctest
 import sys
 from Products.CPSMailAccess.interfaces import IMailBox, IMailFolder
-from Products.CPSMailAccess.mailbox import MailBox, MailBoxParametersView
+from Products.CPSMailAccess.mailbox import MailBox
+from Products.CPSMailAccess.mailparameterviews import MailBoxParametersView
 from Products.CPSMailAccess.mailmessageeditview import MailMessageEdit
 from basetestcase import MailTestCase
 

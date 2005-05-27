@@ -1,0 +1,71 @@
+<html metal:use-macro="here/main_template/macros/master">
+  <metal:block fill-slot="css_slot">
+    <style type="text/css" media="all"
+      tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
+    <style type="text/css" media="all"
+      tal:content="string:@import
+           url(${context/portal_url}/++resource++calendar/calendar-win2k-1.css);"/>
+  </metal:block>
+  <metal:block fill-slot="javascript_head_slot">
+    <script type="text/javascript"
+      tal:attributes="src string:${context/portal_url}/++resource++cpsmailaccess.js;"
+      src="++resource++cpsmailaccess.js">
+    </script>
+ </metal:block>
+  <metal:block metal:fill-slot="main">
+
+    <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
+
+    <h4><span i18n:translate="">cpsma_mailtool_parameters</span></h4>
+
+    <form name="parameters" action="editParameters.html" method="post">
+      <div class="manageGroup">
+        <table width="100%">
+          <tr>
+            <td/>
+            <td/>
+            <td>
+              <div class="dlabel">
+                <span i18n:translate="">portal wide</span>
+              </div>
+            </td>
+          </tr>
+
+          <tal:block tal:repeat="parameter view/renderParametersForm">
+          <tr tal:define="type parameter/type;
+                          name python:parameter['name']+':'+parameter['ptype'];
+                          value parameter/value;">
+
+            <td width="30%" align="right">
+              <div class="dlabel">
+                <tal:block i18n:translate="" tal:content="parameter/name"/> :
+              </div>
+            </td>
+            <td width="40%" align="left">
+                  <input tal:condition="python:type!='list'"
+                          style="width: 100%"
+                          tal:attributes="type type;
+                                          name name;
+                                          value value;"/>
+              <textarea rows="10" style="width: 100%"
+                         tal:condition="python:type=='list'"
+                         tal:content="value"
+                         tal:attributes="type type;
+                                         name name;">
+
+              </textarea>
+            </td>
+            <td width="20%">
+              <input type="checkbox"
+                      tal:attributes="name python:'secu_%s' % parameter['name'];
+                                      checked python:test(parameter['secu']==0, 1, 0)"/>
+            </td>
+          </tr>
+          </tal:block>
+        </table>
+      </div>
+      <input type="submit" class="standalone"
+             name="submit" value="submit" i18n:translate="sumbit_mailbox_params"/>
+   </form>
+  </metal:block>
+</html>
