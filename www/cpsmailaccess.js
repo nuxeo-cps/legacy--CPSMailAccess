@@ -189,18 +189,27 @@ function saveMessageDatas()
   {
     url = "saveMessageForm.html";
     status = 503;
-    and = escape("&");
-    body = "attacher_on=" + attacher_on + and + "cc_on="+ cc_on + and + "bcc_on=" + bcc_on
-    body = body + and + "msg_subject="+ msg_subject + and + "msg_body="
-    body = body + msg_body + and + "msg_to=" + msg_to
-    body = body + and + "msg_cc="+ msg_cc + and + "msg_bcc=" + msg_bcc;
+    equals = "=";
+
+    var poster = new Array();
+
+    poster.push(encodeURIComponent("attacher_on") + equals + encodeURIComponent(attacher_on));
+    poster.push(encodeURIComponent("cc_on") + equals + encodeURIComponent(cc_on));
+    poster.push(encodeURIComponent("bcc_on") + equals + encodeURIComponent(bcc_on));
+    poster.push(encodeURIComponent("msg_subject") + equals + encodeURIComponent(msg_subject));
+    poster.push(encodeURIComponent("msg_body") + equals + encodeURIComponent(msg_body));
+    poster.push(encodeURIComponent("msg_to") + equals + encodeURIComponent(msg_to));
+    poster.push(encodeURIComponent("msg_cc") + equals + encodeURIComponent(msg_cc));
+    poster.push(encodeURIComponent("msg_bcc") + equals + encodeURIComponent(msg_bcc));
+
+    poster = poster.join("&");
 
     i = 0;
     while ((status == 503) && (i<10))
     {
       xml.open("POST", url, false);
-      xml.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      xml.send(body);
+      xml.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xml.send(poster);
       status = xml.status;
       if (status == 503)
       {
