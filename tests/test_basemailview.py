@@ -17,19 +17,26 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 import unittest
-from zope.testing import doctest
-from Testing.ZopeTestCase import installProduct
-from Testing.ZopeTestCase import ZopeTestCase
 import os
+
+from zope.testing import doctest
+
 from Products.CPSMailAccess.basemailview import BaseMailMessageView
+from basetestcase import MailTestCase
 
-installProduct('Five')
-
-class BaseMailViewCase(ZopeTestCase):
+class BaseMailViewCase(MailTestCase):
 
     def test_instance(self):
         mv = BaseMailMessageView(None, None)
         self.assertNotEquals(mv, None)
+
+    def test_lasterror(self):
+        box = self._getMailBox()
+        res, err = box.testConnection()
+
+        mv = BaseMailMessageView(box, None)
+        error = mv._last_error
+        self.assertEquals(error, err)
 
 
 def test_suite():

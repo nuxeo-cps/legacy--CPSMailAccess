@@ -1000,6 +1000,14 @@ class MailBox(MailBoxBaseCaching):
             mail._getStore()._payload = ''
             mail._file_list = []
 
+    def testConnection(self):
+        """ tests the connection """
+        try:
+            connector = self._getconnector()
+            return True, None
+        except ConnectionError, e:
+            return False, e
+
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
 
@@ -1182,6 +1190,7 @@ class MailBoxView(MailFolderView):
                 psm = 'cpsma_synchronized'
             except ConnectionError:
                 psm = 'cpsma_failed_synchro'
+                mailbox.clearSynchro()
         else:
             psm = 'cps_already_synchronizing'
 

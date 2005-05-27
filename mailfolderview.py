@@ -25,6 +25,7 @@ from zope.app.cache.ram import RAMCache
 from zope.interface import directlyProvides, directlyProvidedBy
 
 from basemailview import BaseMailMessageView
+from baseconnection import ConnectionError
 from interfaces import IMailMessage, ITrashFolder, IDraftFolder, ISentFolder,\
                        IContainerFolder
 from utils import *
@@ -36,7 +37,8 @@ class MailFolderView(BaseMailMessageView):
         # marking folder
         context = self.context
         if context is not None:
-            self._setMarkers(context)
+            if self._last_error is None:
+                self._setMarkers(context)
 
     def _setMarkers(self, context):
         """ setting up markers """
@@ -182,6 +184,9 @@ class MailFolderView(BaseMailMessageView):
 
         uses a batch
         """
+        if self._last_error is not None:
+            return []
+
         mailfolder = self.context
         if int(keep_last_sort) == 1:
             founded = self.getLastMailListSortCache()

@@ -1,6 +1,10 @@
 <html metal:use-macro="here/main_template/macros/master">
   <metal:block metal:fill-slot="main"
-      tal:define="base_url here/getBaseUrl">
+                tal:define="base_url here/getBaseUrl;
+                            msm request/msm|nothing">
+    <tal:block tal:condition="msm">
+        <div class="message" tal:content="msm" i18n:translate=""/>
+    </tal:block>
     <h1>Webmail</h1>
     <table width="100%">
       <tr>

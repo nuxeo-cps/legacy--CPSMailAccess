@@ -27,6 +27,18 @@ from mailexceptions import MailContainerError
 
 class BaseMailMessageView(BrowserView):
 
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self._test_connection()
+
+    def _test_connection(self):
+        """ test if connection is up """
+        self._last_error = None
+        if self.context is not None:
+            mailbox = self.context.getMailBox()
+            if mailbox is not None:
+                result, self._last_error = mailbox.testConnection()
+
     def getBaseUrl(self):
         """ retrieves baseurl """
         portal_url = getToolByName(self.context, 'portal_url')

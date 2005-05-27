@@ -47,6 +47,8 @@ class MailActionsView(BaseMailMessageView):
         """ XXX need to use the mapping menuItems in CMFOnFive instead
             XX need to implements zope 3 action providers
         """
+        if self._last_error is not None:
+            return []
         root = ''
         container = self.context
         actions = []

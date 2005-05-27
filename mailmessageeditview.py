@@ -274,7 +274,9 @@ class MailMessageEdit(BrowserView):
         """ saves the form into the message """
         if self.request is None:
             return
+
         form = self.request.form
+        LOG('form', INFO, str(form))
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
 
