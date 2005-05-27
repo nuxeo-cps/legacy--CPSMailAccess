@@ -71,7 +71,7 @@
     <h4><span i18n:translate="">cpsma_mailbox_managment_tasks</span></h4>
     <div class="manageGroup">
     <table>
-      <tr>
+      <tr tal:replace="nothing">
         <td>
           <div>
             <form action="reindexMailCatalog.html">
@@ -83,7 +83,7 @@
           </div>
         </td>
       </tr>
-      <tr>
+      <tr tal:replace="nothing">
         <td>
           <div>
             <form action="clearMailCatalog.html">
@@ -95,7 +95,7 @@
           </div>
         </td>
       </tr>
-      <tr>
+      <tr tal:replace="nothing">
         <td>
           <div>
             <form action="clearMailBodies.html">
@@ -119,7 +119,7 @@
           </form>
         </td>
       <tr>
-      <tr>
+      <tr tal:replace="nothing">
         <td>
           <div>
             <form action="reconnect.html">
