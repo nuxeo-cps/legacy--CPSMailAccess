@@ -383,3 +383,6 @@ msgstr "Reconnect to mail server"
 
 msgid "cpsma_clear_mail_bodies"
 msgstr "Removed cached mail bodies"
+
+msgid "cpsma_failed_send"
+msgstr "Could not send the message"

@@ -383,3 +383,7 @@ msgstr "Reconnecter au serveur de messagerie"
 
 msgid "cpsma_clear_mail_bodies"
 msgstr "Supprimer les corps de messages emmagasinés"
+
+msgid "cpsma_failed_send"
+msgstr "Impossible d'envoyer le message"
+

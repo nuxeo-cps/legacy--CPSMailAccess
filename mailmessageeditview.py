@@ -121,7 +121,11 @@ class MailMessageEdit(BrowserView):
             return False, psm
 
         # using the message instance that might have attached files already
-        result, error = self.context.sendEditorsMessage()
+        try:
+            result, error = self.context.sendEditorsMessage()
+        except ConnectionError:
+            result = False
+            error = 'cpsma_failed_send'
 
         if self.request is not None:
             if result:

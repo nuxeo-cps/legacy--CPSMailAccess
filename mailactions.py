@@ -47,12 +47,27 @@ class MailActionsView(BaseMailMessageView):
         """ XXX need to use the mapping menuItems in CMFOnFive instead
             XX need to implements zope 3 action providers
         """
-        if self._last_error is not None:
-            return []
         root = ''
         container = self.context
-        actions = []
         base_url = self.getBaseUrl()
+        box = container.getMailBox()
+        user_name = box.getConnectionParams()['uid']
+
+        if self._last_error is not None:
+            root = self.getAbsoluteUrl(container)
+            configure = {'icon' : base_url + '/cpsma_configure.png',
+                         'title' : 'cpsma_configure',
+                         'long_title' : 'cpsma_configure',
+                         'action' : root + '/configure.html'}
+            synchro = {'icon' : base_url + '/cpsma_getmails.png',
+                       'title' : 'cpsma_getmessages',
+                       'long_title' : 'cpsma_getmessages',
+                       'action' : root + \
+                       '/syncProgress.html?g_user=' + user_name}
+
+            return [[synchro, configure]]
+
+        actions = []
 
         if IMailBox.providedBy(container):
             root = self.getAbsoluteUrl(container)
@@ -210,9 +225,6 @@ class MailActionsView(BaseMailMessageView):
                 actions.append(delete)
         else:
             return []
-
-        box = container.getMailBox()
-        user_name = box.getConnectionParams()['uid']
 
         configure = {'icon' : base_url + '/cpsma_configure.png',
                      'title' : 'cpsma_configure',

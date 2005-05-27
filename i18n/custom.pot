@@ -384,3 +384,6 @@ msgstr ""
 
 msgid "cpsma_clear_mail_bodies"
 msgstr ""
+
+msgid "cpsma_failed_send"
+msgstr ""
