@@ -390,3 +390,9 @@ msgstr ""
 
 msgid "cpsma_first_time"
 msgstr ""
+
+msgid "cpsma_mailtool_parameters"
+msgstr ""
+
+msgid "cpsma_portal_wide"
+msgstr ""

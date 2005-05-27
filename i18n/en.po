@@ -393,3 +393,12 @@ msgstr ""
 "Please set your parameters.<br/>"
 "On any doubts, please refer to the documentation."
 
+msgid "cpsma_configure_mailtool"
+msgstr "Configure webmail"
+
+msgid "cpsma_mailtool_parameters"
+msgstr "Webmail configuration"
+
+msgid "cpsma_portal_wide"
+msgstr "Portal wide"
+
