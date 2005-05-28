@@ -50,14 +50,10 @@ class BaseMailMessageView(BrowserView):
         url = portal_url.getRelativeUrl(element)
         full_url = '%s/%s' % (self.getBaseUrl(), url)
         splited = full_url.split('/')
-        print splited[-1]
-        print element.id
         if splited[-1] != element.id:
             del splited[-1]
         absolute_url = '/'.join(splited)
-        print str(absolute_url)
         return absolute_url
-
 
     def getIconName(self, short_title, selected, root):
         """Return icon name
