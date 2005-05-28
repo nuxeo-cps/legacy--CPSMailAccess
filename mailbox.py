@@ -197,7 +197,8 @@ class MailBox(MailBoxBaseCaching):
         portal_webmail = getToolByName(self, 'portal_webmail')
         defaults = portal_webmail.default_connection_params
         if self._connection_params == {}:
-            self._connection_params = defaults
+            for key in defaults.keys():
+                self._connection_params[key] = defaults[key]
         else:
             # updating
             for key in defaults.keys():
