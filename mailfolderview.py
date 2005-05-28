@@ -89,30 +89,50 @@ class MailFolderView(BaseMailMessageView):
         if len(new_name) > max_folder_size:
             new_name = new_name[:max_folder_size]
 
-        renamed = mailfolder.rename(new_name)
-        fullname = mailfolder.server_name
-        folder = getFolder(mailbox, fullname)
+        try:
+            renamed = mailfolder.rename(new_name)
+        except ConnectionError:
+            renamed = False
+            psm = 'cpsma_could_not_perform'
 
-        if self.request is not None and renamed is not None:
-            self.request.response.redirect(folder.absolute_url()+'/view')
+        if renamed:
+            fullname = mailfolder.server_name
+            folder = getFolder(mailbox, fullname)
+        else:
+            folder = self
+
+        if self.request is not None:
+            resp = self.request.response
+            if renamed:
+                resp.redirect(folder.absolute_url()+'/view')
+            else:
+                resp.redirect(folder.absolute_url()+'/view?msm=%s' % psm)
+
         return folder
 
     def delete(self):
-        """ action called to rename the current folder
-        """
+        """ action called to rename the current folder """
         mailfolder = self.context
         title = mailfolder.title
-        deleted = mailfolder.delete()
-        # deleted is the new place for the folder
-        if self.request is not None and deleted is not None:
+        try:
+            deleted = mailfolder.delete()
             psm = 'Folder %s sent to the trash.' % title
-            # let's go to the mailbox INBOX
-            mailbox = mailfolder.getMailBox()
-            if hasattr(mailbox, 'INBOX'):
-                goto = mailbox['INBOX']
+        except ConnectionError:
+            deleted = False
+            psm = 'cpsma_could_not_perform'
+
+        # deleted is the new place for the folder
+        if self.request is not None:
+            if deleted:
+                # let's go to the mailbox INBOX
+                mailbox = mailfolder.getMailBox()
+                if hasattr(mailbox, 'INBOX'):
+                    goto = mailbox['INBOX']
+                else:
+                    goto = mailbox
+                url = goto.absolute_url()
             else:
-                goto = mailbox
-            url = goto.absolute_url()
+                url = mailfolder.absolute_url()
             self.request.response.redirect(url+'/view?msm=%s' % psm)
 
     def _sortMessages(self, elements, sort_with, sort_asc):
@@ -314,13 +334,23 @@ class MailFolderView(BaseMailMessageView):
         max_folder_size = self.getMaxFolderSize()
         if len(name) > max_folder_size:
             name = name[:max_folder_size]
+
         if not mailfolder.hasKey(name):
             server_name = mailfolder.server_name + '.' + name
-            new_folder = mailfolder._addFolder(name, server_name, True)
+            try:
+                new_folder = mailfolder._addFolder(name, server_name, True)
+            except ConnectionError:
+                new_folder = None
+                psm = 'cpsma_could_not_perform'
         else:
             new_folder = mailfolder[name]
-        if self.request is not None and new_folder is not None:
-            self.request.response.redirect(new_folder.absolute_url()+'/view')
+
+        if self.request is not None:
+            resp = self.request.response
+            if new_folder is not None:
+                resp.redirect(new_folder.absolute_url()+'/view')
+            else:
+                resp.redirect(mailfolder.absolute_url()+'/view?msm=%s' % psm)
 
     def getMessageUidAndFolder(self, id):
         """ get message from id

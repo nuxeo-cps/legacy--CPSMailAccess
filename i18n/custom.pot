@@ -396,3 +396,6 @@ msgstr ""
 
 msgid "cpsma_portal_wide"
 msgstr ""
+
+msgid "cpsma_could_not_perform"
+msgstr ""

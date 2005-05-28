@@ -402,3 +402,5 @@ msgstr "Webmail configuration"
 msgid "cpsma_portal_wide"
 msgstr "Portal wide"
 
+msgid "cpsma_could_not_perform"
+msgstr "The operation could not be performed on the mail server"
