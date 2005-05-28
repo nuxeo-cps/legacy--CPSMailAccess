@@ -58,7 +58,7 @@
             <td width="20%">
               <input type="checkbox"
                       tal:attributes="name python:'secu_%s' % parameter['name'];
-                                      checked python:test(parameter['secu']==0, 1, 0)"/>
+                                      checked python:test(parameter['secu']==1, 1, 0)"/>
             </td>
           </tr>
           </tal:block>

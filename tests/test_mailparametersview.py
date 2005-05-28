@@ -48,22 +48,22 @@ class MailParamsTestCase(MailTestCase):
                   'submit' : 'ok'}
 
         computed = view._computeRequest(params)
-        self.assertEquals(computed, {'connection_type' : ('DUMMY', 1),
-                                     'uid' : ('tarek', 1), 'ok': ('12', 1)})
+        self.assertEquals(computed, {'connection_type' : ('DUMMY', 0),
+                                     'uid' : ('tarek', 0), 'ok': ('12', 0)})
 
         params = {'connection_type' : 'DUMMY', 'uid' : 'tarek', 'ok': '12',
-                  'submit' : 'ok', 'secu_connection_type' : 0, 'secu_ok': 0}
+                  'submit' : 'ok', 'secu_connection_type' : 1, 'secu_ok': 1}
 
         computed = view._computeRequest(params)
-        self.assertEquals(computed, {'connection_type' : ('DUMMY', 0),
-                                     'uid' : ('tarek', 1), 'ok': ('12', 0)})
+        self.assertEquals(computed, {'connection_type' : ('DUMMY', 1),
+                                     'uid' : ('tarek', 0), 'ok': ('12', 1)})
 
         params = {'connection_type' : 'DUMMY', 'uid' : 'tarek', 'ok': '12',
                   'submit' : 'ok', 'secu_connection_type' : 'on', 'secu_ok': ''}
 
         computed = view._computeRequest(params)
         self.assertEquals(computed, {'connection_type' : ('DUMMY', 1),
-                                     'uid' : ('tarek', 1), 'ok': ('12', 0)})
+                                     'uid' : ('tarek', 0), 'ok': ('12', 0)})
 
 
     def test_MailBoxParametersInterface(self):

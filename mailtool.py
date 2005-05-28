@@ -101,7 +101,7 @@ class MailTool(Folder): # UniqueObject
     def getConnectionParams(self):
         return self.default_connection_params
 
-    def setParameters(self, connection_params=None, resync=True):
+    def setParameters(self, connection_params, resync=True):
         """ sets the parameters """
         for key in connection_params.keys():
             self.default_connection_params[key] = connection_params[key]

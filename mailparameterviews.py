@@ -59,6 +59,7 @@ class MailParametersView(BrowserView):
             if not key.startswith('secu_'):
                 if params.has_key('secu_%s' % key):
                     value = params['secu_%s' % key]
+
                     # for checkboxes
                     if not isinstance(value, int):
                         if value == 'on':
@@ -68,7 +69,7 @@ class MailParametersView(BrowserView):
                             value = 0
                     combined_params[key] = (params[key], value)
                 else:
-                    combined_params[key] = (params[key], 1)
+                    combined_params[key] = (params[key], 0)
 
         return combined_params
 
@@ -81,6 +82,7 @@ class MailParametersView(BrowserView):
         their own parameters in the next parameter use
         """
         params = self._computeRequest(params)
+        print str(params)
         self.context.setParameters(params, False)
         if self.request is not None:
             self.request.response.redirect('configure.html')
@@ -151,7 +153,7 @@ class MailBoxParametersView(MailParametersView):
         for param  in params.keys():
             value, secu = params[param]
 
-            if param == 'uid' or secu == 0:
+            if param == 'uid' or secu == 1:
                 continue
 
             rendered_param = {}
