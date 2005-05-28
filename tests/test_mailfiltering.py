@@ -78,6 +78,11 @@ class MailFilteringTestCase(MailTestCase):
         self.assert_(not ob._matchCondition('i have a cool usbkey', 6,
                                             ' i have a cool usbkey  '))
 
+    def test_matchCondition_weird(self):
+        # testing that none works ok
+        ob = MailFiltering()
+        self.assert_(ob._matchCondition(None, 6, 'key '))
+
     def test_matchConditionMail(self):
         # for extact matches when value looks like a mail
         # we try to extract nude email or name

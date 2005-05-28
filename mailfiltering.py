@@ -176,7 +176,12 @@ class MailFiltering:
             ° 5: is
             ° 6: isn't
         """
-        value = value.lower().strip()
+        # if value is None
+        # we consider it's ''
+        if value is None:
+            value = ''
+        else:
+            value = value.lower().strip()
 
         # XXX need to use message encoding here
         value = decodeHeader(value)
