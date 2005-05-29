@@ -99,7 +99,7 @@ class MailFolderView(BaseMailMessageView):
             fullname = mailfolder.server_name
             folder = getFolder(mailbox, fullname)
         else:
-            folder = self
+            folder = mailfolder
 
         if self.request is not None:
             resp = self.request.response
