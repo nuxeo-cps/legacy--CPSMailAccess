@@ -399,3 +399,6 @@ msgstr ""
 
 msgid "cpsma_could_not_perform"
 msgstr ""
+
+msgid "instant_load"
+msgstr ""

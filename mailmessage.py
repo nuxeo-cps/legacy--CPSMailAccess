@@ -113,7 +113,9 @@ class MailMessage(Folder):
                         self._setStoreHeader('name', item[1])
 
             content_type = '%s/%s' % (structure_infos[0], structure_infos[1])
+            content_type = '%s; charset="%s"' % (content_type, charset)
             self._setStoreHeader('Content-type', content_type)
+            self._setStoreHeader('charset', charset)
 
             if len(structure_infos) > 5:
                 self._setStoreHeader('Content-transfer-encoding',
@@ -121,7 +123,6 @@ class MailMessage(Folder):
             else:
                 self._setStoreHeader('Content-transfer-encoding', '')
 
-            self._setStoreHeader('Charset', charset)
             skip_headers = ('content-type', 'content-transfer-encoding',
                             'charset')
         else:
