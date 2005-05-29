@@ -51,16 +51,6 @@ class MailRendererTestCase(MailTestCase):
                 res.append(ob)
         return res
 
-    def getMailInstance(self,number):
-        ob = MailMessage()
-        if number < 9:
-            data = self._msgobj('msg_0'+str(number+1)+'.txt')
-        else:
-            data = self._msgobj('msg_'+str(number+1)+'.txt')
-
-        ob.loadMessage(data)
-        return ob
-
     def test_simpleInstanciation(self):
         # testing simple instanciation
         ob = MailRenderer()
@@ -82,7 +72,7 @@ class MailRendererTestCase(MailTestCase):
     def test_allRendering(self):
         # testing all mails with MIME engine
         ob = MailRenderer()
-        for i in range(47):
+        for i in range(48):
             mail = self.getMailInstance(i)
             # need soem acquisition here
             container = self._getMailBox()
@@ -115,6 +105,23 @@ class MailRendererTestCase(MailTestCase):
         rd = MailRenderer()
         types = rd.extractPartTypes('multipart/mixed;')
         self.assertEquals(types, {'type' : 'multipart/mixed'})
+
+    def test_stringToUnicode(self):
+        rd = MailRenderer()
+        self.assertEquals(rd._stringToUnicode('יייייייי'), u'יייייייי')
+
+    def test_b64Extractor(self):
+        # check that all transformations don't bust base64 encoded mails
+        ob = MailRenderer()
+        mail = self.getMailInstance(48, True)
+        self.assertEquals(mail.getHeader('Content-type'),
+                          ['text/plain; charset="utf-8"'])
+        container = self._getMailBox()
+        container._setObject('my_mail', mail)
+        mail = getattr(container, 'my_mail')
+        rendered = ob.renderBody(mail)
+        self.assertNotEquals(rendered.find(u'Le but \xe9tant effectivement'),
+                             -1)
 
 def test_suite():
     return unittest.TestSuite((

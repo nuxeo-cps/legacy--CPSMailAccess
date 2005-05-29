@@ -55,7 +55,11 @@ class MailTraverser(FiveTraversable):
         if mail.instant_load and name == 'view':
             traverser_locker.acquire()
             try:
-                mail._loadMessage()
+                try:
+                    mail._loadMessage()
+                except ConnectionError:
+                    # could not load
+                    pass
             finally:
                 traverser_locker.release()
         return FiveTraversable.traverse(self, name, furtherPath)

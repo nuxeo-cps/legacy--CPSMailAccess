@@ -208,16 +208,17 @@ class MailTestCase(ZopeTestCase):
         return openfile(filename)
 
 
-    def getMailInstance(self, number):
+    def getMailInstance(self, number, raw=False):
         ob = MailMessage()
         if number < 9:
             data = self._msgobj('msg_0'+str(number+1)+'.txt')
         else:
             data = self._msgobj('msg_'+str(number+1)+'.txt')
         ob.loadMessageFromRaw(data)
-        store = ob._getStore()
-        while isinstance(store._payload, list):
-            store._payload = store._payload[0]._payload
+        if not raw:
+            store = ob._getStore()
+            while isinstance(store._payload, list):
+                store._payload = store._payload[0]._payload
         return ob
 
     def getMailInstanceT(self, number):

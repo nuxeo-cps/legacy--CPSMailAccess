@@ -89,8 +89,6 @@ class MailRenderer:
         else:
             pcharset = 'ISO-8859-15'
 
-        content = self._stringToUnicode(content, pcharset)
-
         if ptype in ('text/plain', 'text', 'message/rfc822', 'text/html'):
             if part_cte not in ('7bit', '8bit', '', None):
                 output_str = StringIO()
@@ -103,16 +101,20 @@ class MailRenderer:
             else:
                 result = content
 
+            result = self._stringToUnicode(result, pcharset)
+
             # try to find html in text/plain
             # in some spam/ads
-            if result.lower().startswith('<html>') and ptype != 'text/html':
+            if result.lower().startswith(u'<html>') and ptype != 'text/html':
                 ptype = 'text/html'
 
             if ptype == 'text/html':
                 result = sanitizeHTML(result)
+
             return result
 
         if ptype.startswith('multipart'):
+            content = self._stringToUnicode(content, pcharset)
             return content
 
         raise NotImplementedError('part_type %s charset %s type %s content %s' \
