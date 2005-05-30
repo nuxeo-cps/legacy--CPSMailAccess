@@ -93,7 +93,7 @@ class MailTool(Folder): # UniqueObject
                     'treeview_style' : ('lotus', 1),
                     'message_list_cols' :
                     ('Attachments, Icon, From, Date, Subject, Size', 1),
-                    'signature' : ('', 1)
+                    'signature' : ('', 0)
                    }
         for key in default:
             self.default_connection_params[key] = default[key]
