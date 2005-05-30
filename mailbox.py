@@ -30,6 +30,7 @@ from Globals import InitializeClass
 from OFS.Folder import Folder
 from OFS.ObjectManager import BadRequest
 from ZODB.PersistentMapping import PersistentMapping
+from AccessControl import Unauthorized
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.Five import BrowserView
@@ -454,7 +455,12 @@ class MailBox(MailBoxBaseCaching):
 
         result, error = self._sendMailMessage(msg_from, msg_to, msg)
         if result:
-            self._givePoints(msg)
+            try:
+                self._givePoints(msg)
+            except Unauthorized:
+                # no home directory
+                pass
+
             connector = self._getconnector()
             connector.writeMessage('INBOX.Sent', msg.getRawMessage())
 
@@ -694,10 +700,11 @@ class MailBox(MailBoxBaseCaching):
         uid = self.wrapConnectionParams(self.getConnectionParams())['uid']
 
         results = self.readDirectoryValue(dirname='members',
-            id=uid, fields=['email','givenName', 'sn'])
+            id=uid, fields=['email', 'givenName', 'sn'])
 
         if results is None:
-            return [{'email' : '?', 'fullname' : '?'}]
+            email = self.getConnectionParams()['login']
+            return [{'email' : email, 'fullname' : ''}]
         else:
             email = results['email']
             givenName = results['givenName']
@@ -849,6 +856,7 @@ class MailBox(MailBoxBaseCaching):
                         entry = entries[0][1]
                     entry['mails_sent'] += 1
                     self._editEntry('.addressbook', entry)
+
 
     def _createMailDirectoryEntry(self, mail):
         """ translate a mail to an entry """

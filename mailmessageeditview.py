@@ -164,7 +164,7 @@ class MailMessageEdit(BrowserView):
 
 
     def getIdentitites(self):
-        """ gives to the editor the list of current mùailbox idendities """
+        """ gives to the editor the list of current mailbox idendities """
         mailbox = self.context
         identities = mailbox.getIdentitites()
         return identities
@@ -174,7 +174,10 @@ class MailMessageEdit(BrowserView):
         identities = self.getIdentitites()
         if len(identities) > 0:
             identity = identities[0]        # think about multi-identity later
-            return '%s <%s>' %(identity['fullname'], identity['email'])
+            if identity['fullname'] != '':
+                return '%s <%s>' %(identity['fullname'], identity['email'])
+            else:
+                return identity['email']
         else:
             return '?'
 
