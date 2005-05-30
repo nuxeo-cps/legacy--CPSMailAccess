@@ -118,12 +118,12 @@ class MailFolderView(BaseMailMessageView):
             deleted = mailfolder.delete()
             psm = 'Folder %s sent to the trash.' % title
         except ConnectionError:
-            deleted = False
+            deleted = None
             psm = 'cpsma_could_not_perform'
 
         # deleted is the new place for the folder
         if self.request is not None:
-            if deleted:
+            if deleted is not None:
                 # let's go to the mailbox INBOX
                 mailbox = mailfolder.getMailBox()
                 if hasattr(mailbox, 'INBOX'):
