@@ -408,3 +408,5 @@ msgstr "The operation could not be performed on the mail server"
 msgid "instant_load"
 msgstr "Could not retrieve mail body"
 
+msgid "cpsma_no_private"
+msgstr "No private allowed"

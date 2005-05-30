@@ -407,3 +407,7 @@ msgstr "L'opération n'a pas pu être realisé sur le serveur de mails"
 
 msgid "instant_load"
 msgstr "Le corps du message n'a pas pu être récupéré du serveur"
+
+msgid "cpsma_no_private"
+msgstr "Pas de contacts privés possible."
+

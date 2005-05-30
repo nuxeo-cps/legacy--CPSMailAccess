@@ -808,9 +808,14 @@ class MailBox(MailBoxBaseCaching):
                                          ['fullname', 'email', 'id',
                                           'mails_sent'], **kw)
 
-        private_adressbook = self._searchEntries('.addressbook',
+
+        try:
+            private_adressbook = self._searchEntries('.addressbook',
                                                   ['fullname', 'email',
                                                    'id', 'mails_sent'], **kw)
+
+        except Unauthorized:
+            private_adressbook = []
 
         adressbook.extend(private_adressbook)
         adressbook = self._sortDirectorySearchResult(adressbook, 'mails_sent')
@@ -829,9 +834,13 @@ class MailBox(MailBoxBaseCaching):
                                           'mails_sent'])
         adressbook = self._sortDirectorySearchResult(adressbook, 'mails_sent',
                                                      max_entries)
-        private_adressbook = self._searchEntries('.addressbook',
-                                                  ['fullname', 'email',
-                                                   'id', 'mails_sent'])
+        try:
+            private_adressbook = self._searchEntries('.addressbook',
+                                                     ['fullname', 'email',
+                                                     'id', 'mails_sent'])
+        except Unauthorized:
+            private_adressbook = []
+
         private_adressbook = \
             self._sortDirectorySearchResult(private_adressbook,
                                             'mails_sent', max_entries)

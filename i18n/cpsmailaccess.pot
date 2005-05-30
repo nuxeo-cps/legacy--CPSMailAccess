@@ -405,3 +405,6 @@ msgstr ""
 
 msgid "instant_load"
 msgstr ""
+
+msgid "cpsma_no_private"
+msgstr ""

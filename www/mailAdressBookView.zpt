@@ -26,6 +26,7 @@
           <h2><img src="cpsma_users.png"/>&#160;
               <span i18n:translate="cpsma_personal_address_book">
               Personal address book</span></h2>
+          <tal:block tal:condition="privates">
           <div tal:repeat="private privates" style="margin-top:8px;">
             <tal:block tal:define="email python:private[1]['email'];
                                     fullname python:private[1]['fullname'];
@@ -51,6 +52,12 @@
             <span i18n:translate="">cpsma_all_entries</span>
             </a>
           </div>
+          </tal:block>
+          <tal:block tal:condition="not:privates">
+            <div style="margin-top:15px;margin-left: 4px" i18n:translate="cpsma_no_private">
+            No private adress book.
+            </div>
+          </tal:block>
         </div>
         <div class="publicBook">
 
