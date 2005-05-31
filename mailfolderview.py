@@ -413,13 +413,19 @@ class MailFolderView(BaseMailMessageView):
                 if action == 'cut':
                     mailbox.fillClipboard('cut', msg_list)
                 if action == 'delete':
+                    interrupted = False
                     for msg in msg_list:
                         folder, uid = self.getMessageUidAndFolder(msg)
-                        folder.deleteMessage(uid)
-                    if len(msg_list) > 1:
-                        psm = 'Messages sent to Trash.'
-                    else:
-                        psm = 'Message sent to Trash.'
+                        res = folder.deleteMessage(uid)
+                        if not res:
+                            psm = 'cpsma_could_not_perform'
+                            interrupted = True
+                            break
+                    if not interrupted:
+                        if len(msg_list) > 1:
+                            psm = 'cpsma_msgs_sent_to_trash'
+                        else:
+                            psm = 'cpsma_msg_sent_to_trash'
         if action == 'paste':
             mailbox = mailfolder.getMailBox()
             past_action, ids = mailbox.getClipboard()
@@ -429,12 +435,18 @@ class MailFolderView(BaseMailMessageView):
                         # it's a cut'n'paste
                         for id in ids:
                             folder, uid = self.getMessageUidAndFolder(id)
-                            folder.moveMessage(uid, mailfolder)
+                            res = folder.moveMessage(uid, mailfolder)
+                            if not res:
+                                psm = 'cpsma_could_not_perform'
+                                break
                     else:
                         # it's a copy
                         for id in ids:
                             folder, uid = self.getMessageUidAndFolder(id)
-                            folder.copyMessage(uid, mailfolder)
+                            res = folder.copyMessage(uid, mailfolder)
+                            if not res:
+                                psm = 'cpsma_could_not_perform'
+                                break
                 finally:
                     mailbox.clearClipboard()
 
