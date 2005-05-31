@@ -384,8 +384,7 @@ class MailMessageEdit(BrowserView):
                              kw['msg_body'], came_from)
 
     def saveMessage(self):
-        """ saves the message in Drafts
-        """
+        """ saves the message in Drafts """
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
         msg_from = self._identyToMsgHeader()
