@@ -403,7 +403,7 @@ msgid "cpsma_portal_wide"
 msgstr "Généralisé"
 
 msgid "cpsma_could_not_perform"
-msgstr "L'opération n'a pas pu être realisé sur le serveur de mails"
+msgstr "L'opération n'a pas pu être réalisée sur le serveur de mails"
 
 msgid "instant_load"
 msgstr "Le corps du message n'a pas pu être récupéré du serveur"
@@ -411,3 +411,11 @@ msgstr "Le corps du message n'a pas pu être récupéré du serveur"
 msgid "cpsma_no_private"
 msgstr "Pas de contacts privés possible."
 
+msgid "cpsma_max_size_reached"
+msgstr "Taille maximum autorisée atteinte"
+
+msgid "cpsma_msgs_sent_to_trash"
+msgstr "Messages envoyés à la corbeille"
+
+msgid "cpsma_msg_sent_to_trash"
+msgstr "Message envoyé à la corbeille."

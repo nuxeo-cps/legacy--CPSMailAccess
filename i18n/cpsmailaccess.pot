@@ -408,3 +408,12 @@ msgstr ""
 
 msgid "cpsma_no_private"
 msgstr ""
+
+msgid "cpsma_max_size_reached"
+msgstr ""
+
+msgid "cpsma_msgs_sent_to_trash"
+msgstr ""
+
+msgid "cpsma_msg_sent_to_trash"
+msgstr ""

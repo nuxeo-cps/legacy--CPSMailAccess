@@ -410,3 +410,12 @@ msgstr "Could not retrieve mail body"
 
 msgid "cpsma_no_private"
 msgstr "No private allowed"
+
+msgid "cpsma_max_size_reached"
+msgstr ""
+
+msgid "cpsma_msgs_sent_to_trash"
+msgstr "Messages sent to Trash."
+
+msgid "cpsma_msg_sent_to_trash"
+msgstr "Message sent to Trash."
