@@ -303,10 +303,13 @@ class MailFolder(BTreeFolder2):
     def _copyMessage(self, uid, to_mailbox):
         """ copies a message """
         id = self.getIdFromUid(uid)
-        msg = self[id]
-        new_uid = to_mailbox.getNextMessageUid()
-        msg_copy = to_mailbox._addMessage(new_uid, msg.digest)
-        msg_copy.copyFrom(msg)
+        if self.has_key(id):
+            msg = self[id]
+            new_uid = to_mailbox.getNextMessageUid()
+            msg_copy = to_mailbox._addMessage(new_uid, msg.digest)
+            msg_copy.copyFrom(msg)
+            return True
+        return False
 
     def _deleteMessage(self, uid):
         """ deletes a message """
@@ -889,7 +892,6 @@ class MailFolder(BTreeFolder2):
                 res = connector.copy(self.server_name, to_mailbox.server_name, uid)
             except ConnectionError:
                 res = False
-
             if not res:
                 return False
         # XXX todo : check if is the same msg uid

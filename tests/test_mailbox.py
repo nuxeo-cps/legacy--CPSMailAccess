@@ -98,13 +98,14 @@ class MailBoxTestCase(MailTestCase):
         self.assertEquals(action, None)
         self.assertEquals(ids, None)
 
-    ### fake imap pb
-    def oldtest_saveEditorMessage(self):
+    def test_saveEditorMessage(self):
         # tests that the editor message gets copied into drafts
         mailbox = self._getMailBox()
         inbox = mailbox._addFolder('INBOX', 'INBOX')
         drafts = inbox._addFolder('Drafts', 'INBOX.Drafts')
         msg = mailbox.getCurrentEditorMessage()
+        self.assertEquals(msg.draft, 0)
+
         mailbox.saveEditorMessage()
 
         messages = drafts.objectItems()
@@ -112,6 +113,7 @@ class MailBoxTestCase(MailTestCase):
         message = messages[0][1]
 
         self.assertEquals(message.digest, msg.digest)
+        self.assertEquals(message.draft, 1)
 
     def test_getIdentitites(self):
         # tests indentity
@@ -344,7 +346,6 @@ class MailBoxTestCase(MailTestCase):
         mailbox.clearMailBodies()
         self.assertEquals(mail._getStore()._payload, '')
         self.assertEquals(mail._file_list, [])
-
 
 def test_suite():
     return unittest.TestSuite((
