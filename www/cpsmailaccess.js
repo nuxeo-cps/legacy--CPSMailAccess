@@ -229,15 +229,15 @@ function toggleElementVisibility(id)
 
   if (element)
   {
-    if (element.className == "hidden_part")
+    if (element.className.find("not_hidden_part"))
     {
-      element.className = "not_hidden_part";
-      element.style.visibility = "visible";
+      element.className.replace("not_hidden_part", "hidden_part");
+      element.style.visibility = "hidden";
     }
     else
     {
-      element.className = "hidden_part";
-      element.style.visibility = "hidden";
+      element.className.replace("hidden_part", "not_hidden_part");
+      element.style.visibility = "visible";
     }
   }
 }

@@ -27,19 +27,24 @@
                           max_folder_size here/getMaxFolderSize;
                           synchro python:here.getMailBox().isSynchronizing();
                           is_folder python:1;
+                          cpscat nocall:here/Localizer/default;
+                          max_size_reached python:cpscat('cpsma_max_size_reached');
                           show_content_toolbar python:content_managment or clipboard">
 
     <div class="message" tal:condition="synchro" i18n:translate="cps_synchronizing">
     While the box is beeing synchronized, webmail features are limited to browsing.
     </div>
-    <div tal:condition="edit_name">
-     <a href="view"
-        class="close_rename_form"
-        title="close">
-        <img src="cpsma_delete_file.png"/>
-     </a>
+
+    <div id="renameFolder" class="hidden_part">
+    <img src="cpsma_delete_file.png"
+            class="close_rename_form"
+            title="close"
+            alt="close"
+            onmouseover="setCursor(this)"
+            onclick="toggleElementVisibility('renameFolder')"/>
+
      <form action="rename.html" method="post" class="rename_form"
-          tal:define="max_size_reached_msg string:'max_size_reached';
+          tal:define="max_size_reached_msg python:chr(34)+max_size_reached+chr(34);
                       js_snip python:'controlInputSize(this, %s, event, %s)' % (max_folder_size,
                        max_size_reached_msg)">
        <input type="text" name="new_name" id="new_name"
@@ -48,14 +53,17 @@
        <input type="submit" name="submit" value="cpsma_change"  i18n:attributes="value"/>
      </form>
     </div>
-    <div tal:condition="add_folder">
-     <a href="view"
-        class="close_rename_form"
-        title="close">
-        <img src="cpsma_delete_file.png"/>
-     </a>
+
+    <div id="addFolder" class="hidden_part">
+    <img src="cpsma_delete_file.png"
+            class="close_rename_form"
+            title="close"
+            alt="close"
+            onmouseover="setCursor(this)"
+            onclick="toggleElementVisibility('addFolder')"/>
+
      <form action="addFolder.html" method="post" class="rename_form"
-          tal:define="max_size_reached_msg string:max_size_reached;
+          tal:define="max_size_reached_msg python:chr(34)+max_size_reached+chr(34);
                       js_snip python:'controlInputSize(this, %s, event, %s)' % (max_folder_size,
                       max_size_reached_msg)">
        <input type="text" name="name" value=""
@@ -63,12 +71,13 @@
        <input type="submit" name="submit" value="cpsma_add" i18n:attributes="value"/>
      </form>
     </div>
-    <div tal:condition="move_folder">
-      <a href="view"
-         class="close_rename_form"
-         title="close">
-        <img src="cpsma_delete_file.png"/>
-      </a>
+    <div id="moveFolder" class="hidden_part">
+        <img src="cpsma_delete_file.png"
+             class="close_rename_form"
+             title="close" alt="move"
+             onmouseover="setCursor(this)"
+             onclick="toggleElementVisibility('moveFolder')"/>
+
       <div class="rename_form">
         <metal:block use-macro="here/boxes_mailaccess/macros/basebox_moveview"/>
       </div>

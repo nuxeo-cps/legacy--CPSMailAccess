@@ -186,7 +186,7 @@ form.renameForm {
 
 }
 
-a.close_rename_form {
+img.close_rename_form {
   padding: 4px;
   float: right;
 }
@@ -194,7 +194,6 @@ a.close_rename_form {
 div.rename_form {
   margin-bottom: 10px;
   padding: 10px;
-  border: dotted black 1px;
 }
 
 form.rename_form {
@@ -305,7 +304,6 @@ textarea.recipients:hover {
 
 div.hidden_part {
   display: none;
-  margin-bottom: 5px;
 }
 
 span.link {

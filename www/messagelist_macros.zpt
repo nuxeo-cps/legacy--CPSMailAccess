@@ -37,14 +37,24 @@
                     <tal:block tal:repeat="action action_pack">
                     <td class="selectableButton">
                     <center>
+                      <tal:block tal:condition="action/action">
                         <a tal:attributes="href action/action;
-                                        target action/target|nothing">
+                                            target action/target|nothing">
+                            <img i18n:attributes="title alt"
+                                tal:attributes="src action/icon;
+                                    title action/long_title;
+                                    alt action/long_title;
+                                    onclick action/onclick|nothing"/>
+                         </a>
+                      </tal:block>
+                      <tal:block tal:condition="not:action/action">
                         <img i18n:attributes="title alt"
-                            tal:attributes="src action/icon;
-                                title action/long_title;
-                                alt action/long_title;
-                                onclick action/onclick|nothing"/>
-                        </a>
+                              tal:attributes="src action/icon;
+                                              title action/long_title;
+                                              alt action/long_title;
+                                              onmouseover python:'setCursor(this)';
+                                              onclick action/onclick|nothing"/>
+                      </tal:block>
                     </center>
                     </td>
                     </tal:block>
@@ -68,18 +78,22 @@
            <td class="selectableButton">
              <input class="manage_copy" type="submit"
               name="action_copy" value="copy"
+              onmouseover="setCursor(this)"
               i18n:attributes="value"/>
            </td>
            <td class="selectableButton">
             <input class="manage_cut" type="submit" name="action_cut" value="cut"
+             onmouseover="setCursor(this)"
              i18n:attributes="value"/>
            </td>
            <td class="selectableButton">
             <input class="manage_paste" type="submit" name="action_paste" value="paste"
+             onmouseover="setCursor(this)"
              i18n:attributes="value"/>
            </td>
            <td class="selectableButton">
              <input class="manage_delete" type="submit" name="action_delete" value="delete"
+             onmouseover="setCursor(this)"
              i18n:attributes="value"/>
            </td>
            <td class="selectableButton"
@@ -91,10 +105,12 @@
                            function_call python:'selectAllMessages(this, '+sall+', '+dsall+')'">
             <input class="manage_selectall" type="button" name="selectall"
                     value="select all" tal:attributes="onclick function_call"
+                    onmouseover="setCursor(this)"
                     i18n:attributes="value"/>
            </td>
            <td class="selectableButton" tal:condition="clipboard|nothing">
               <input class="manage_delete" type="submit" name="action_clear" value="clear"
+                      onmouseover="setCursor(this)"
                       i18n:attributes="value"/>
            </td>
          </tr>
