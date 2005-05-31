@@ -191,7 +191,10 @@ class ZemanticMessageAdapter:
                     value = unicode(cdate.strftime('%d/%m/%Y'))
                     value = URIRef(value)
                 else:
+                    if len(value) > 0 and value[0] in u'?*':
+                        value = u'_' + value
                     value = Literal(value)
+
                 triple = (ob_uri, relation, value)
                 triples.append(triple)
         # a triple for the direct body

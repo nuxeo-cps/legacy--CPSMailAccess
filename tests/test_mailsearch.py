@@ -257,6 +257,22 @@ class MailSearchTestCase(MailTestCase):
         res = cat.search(query_request=query)
         self.assertEquals(len(res), 0)
 
+    def test_two_words(self):
+
+        cat = self._getCatalog()
+
+        for i in range(37):
+            ob = self.getMailInstance(i)
+            ob = ob.__of__(self.portal)
+            ob.getPhysicalPath = self.fakeGetPhysicalPath
+            cat.indexMessage(ob)
+
+        query = {}
+        query['searchable_text'] = u'enclosing message'
+        res = cat.search(query_request=query)
+        self.assertEquals(len(res), 1)
+
+
     def test_ZemanticInstanciation(self):
 
         ob = ZemanticMailCatalog()
@@ -326,6 +342,19 @@ class MailSearchTestCase(MailTestCase):
 
         for message in messages:
             ob.unIndexMessage(message)
+
+    def test_ZemanticMessageAdapterIndexerUnindexerWithQuestionMark(self):
+
+        ob = ZemanticMailCatalog()
+        messages = []
+
+        message = self.getMailInstanceT(1)
+        message = message.__of__(self.portal)
+        message.setHeader('Subject', '????')
+
+        ob.indexMessage(message)
+        messages.append(message)
+        ob.unIndexMessage(message)
 
         res = ob.query(Query(Any, Any, Any))
         self.assertEquals(len(list(res)),  0)

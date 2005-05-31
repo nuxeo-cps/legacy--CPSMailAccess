@@ -131,9 +131,13 @@ class MailSearchView(BrowserView):
                     relation = relation.strip().decode('ISO-8859-15')
                 relation = relation.lower()
 
-                if value.strip() == '*':    # stands for all entries
+                value = value.strip()
+
+                if len(value) == 1 and value in '?*':    # stands for all entries
                     query = Query(Any, u'<%s>' % relation, Any)
                 else:
+                    if len(value) > 1 and value[0] in '?*':
+                        value[0] = '_'
                     if not isinstance(value, unicode):
                         value = value.strip().decode('ISO-8859-15')
                     query = Query(Any, u'<%s>' % relation, u'"%s"' % value)
