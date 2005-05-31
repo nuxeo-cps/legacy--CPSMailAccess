@@ -40,7 +40,7 @@ from mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder,\
                   AsyncCall
-import baseconnection
+from baseconnection import has_connection, ConnectionError
 
 class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
@@ -86,7 +86,7 @@ class MailFolder(BTreeFolder2):
 
     def getNextMessageUid(self):
         """ retrieves next id for messages """
-        if baseconnection.has_connection == 1:
+        if has_connection == 1:
             connector = self._getconnector()
             return connector.getNextUid(self.server_name)
         else:
@@ -327,7 +327,7 @@ class MailFolder(BTreeFolder2):
     def changeMessageFlags(self, msg, flag, value):
         """ event triggered when a message flag changes """
         # has to be desynced......
-        if baseconnection.has_connection:
+        if has_connection:
             connector = self._getconnector()
             flag = flag.capitalize()
             kw = {flag: value}
@@ -380,7 +380,7 @@ class MailFolder(BTreeFolder2):
         self._setObject(new_id, new_folder)
         new_folder = self[new_id]
 
-        if server and baseconnection.has_connection:
+        if server and has_connection:
             connector = self._getconnector()
             # todo : look at the result
             connector.create(new_folder.server_name)
@@ -515,7 +515,7 @@ class MailFolder(BTreeFolder2):
         try:
             msg_body = connector.fetch(server_name, uid,
                                        '(BODY.PEEK[%s])' % part_num)
-        except baseconnection.ConnectionError:
+        except ConnectionError:
             skip = True
 
         if not skip:
@@ -565,7 +565,7 @@ class MailFolder(BTreeFolder2):
 
         try:
             uids = connector.search(self.server_name, None, 'ALL')
-        except baseconnection.ConnectionError:
+        except ConnectionError:
             # XXX should be a more specific exception (no such dir)
             # this will happen if the directory has been
             # deleted form the server
@@ -596,7 +596,7 @@ class MailFolder(BTreeFolder2):
                 fetched = connector.fetch(self.server_name, uid_sequence,
                                           fetch_str)
                 mailfailed = False
-            except baseconnection.ConnectionError:
+            except ConnectionError:
                 fetched = []
                 mailfailed = True
             #end = time.time() - start
@@ -735,7 +735,7 @@ class MailFolder(BTreeFolder2):
         else:
             newmailbox = new_name
 
-        if baseconnection.has_connection:
+        if has_connection:
             connector = self._getconnector()
             server_rename = connector.rename(oldmailbox, newmailbox)
             if not server_rename:
@@ -855,11 +855,14 @@ class MailFolder(BTreeFolder2):
 
         res = msg is not None
 
-        if baseconnection.has_connection:
-            connector = self._getconnector()
-            res = connector.copy(self.server_name, new_mailbox.server_name,
-                                 uid)
-            connector.setFlags(self.server_name, uid, {'Deleted': 1})
+        if has_connection:
+            try:
+                connector = self._getconnector()
+                res = connector.copy(self.server_name, new_mailbox.server_name,
+                                    uid)
+                connector.setFlags(self.server_name, uid, {'Deleted': 1})
+            except ConnectionError:
+                res = False
             if not res:
                 return False
 
@@ -869,7 +872,7 @@ class MailFolder(BTreeFolder2):
 
     def validateChanges(self):
         """ call expunger """
-        if baseconnection.has_connection:
+        if has_connection:
             connector = self._getconnector()
             connector.select(self.server_name)
             connector.expunge()
@@ -880,9 +883,13 @@ class MailFolder(BTreeFolder2):
         if to_mailbox == self:
             return False
 
-        if baseconnection.has_connection:
-            connector = self._getconnector()
-            res = connector.copy(self.server_name, to_mailbox.server_name, uid)
+        if has_connection:
+            try:
+                connector = self._getconnector()
+                res = connector.copy(self.server_name, to_mailbox.server_name, uid)
+            except ConnectionError:
+                res = False
+
             if not res:
                 return False
         # XXX todo : check if is the same msg uid
