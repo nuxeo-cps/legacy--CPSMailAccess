@@ -130,7 +130,8 @@ class MailActionsView(BaseMailMessageView):
                     add_folder = {'icon' : base_url + '/cpsma_addfolder.png',
                                 'title' : 'cpsma_add_subfolder',
                                 'long_title' : 'cpsma_add_subfolder',
-                                'action' : 'view?add_folder=1&keep_last_sort=1'}
+                                'action' : '',
+                                'onclick' : "toggleElementVisibility('addFolder')"}
                     actions.append(add_folder)
 
                 sent_server_name = mailbox.getSentFolder().server_name
@@ -139,11 +140,16 @@ class MailActionsView(BaseMailMessageView):
                     move_folder = {'icon' : root + '/cpsma_movefolder.png',
                                    'title' : 'cpsma_move_folder',
                                    'long_title' : 'cpsma_move_folder',
-                                   'action' : 'view?move_folder=1'}
+                                   'action' : '',
+                                   'onclick' : "toggleElementVisibility('moveFolder')"
+                                   }
+
                     rename = {'icon' : base_url + '/cpsma_rename.png',
-                                'title' : 'cpsma_rename_folder',
-                                'long_title' : 'cpsma_rename_folder',
-                                'action' : 'view?edit_name=1&keep_last_sort=1'}
+                              'title' : 'cpsma_rename_folder',
+                              'long_title' : 'cpsma_rename_folder',
+                              'action' : '',
+                              'onclick' : "toggleElementVisibility('renameFolder')"
+                             }
 
                     if candelete:
                         delete = {'icon' : base_url + '/cpsma_delete.png',
@@ -207,12 +213,12 @@ class MailActionsView(BaseMailMessageView):
 
                 actions.extend([reply, reply_all, forward])
 
-                if container.draft:
-                    draft = {'icon' : base_url + '/cpsma_reload.png',
-                        'title' : 'cpsma_load_message',
-                        'long_title' : 'cpsma_load_message',
-                        'action' : 'reload.html'}
-                    actions.extend([draft])
+            if container.draft:
+                draft = {'icon' : base_url + '/cpsma_reload.png',
+                    'title' : 'cpsma_load_message',
+                    'long_title' : 'cpsma_load_message',
+                    'action' : 'reload.html'}
+                actions.extend([draft])
 
 
             if current_folder.id != trash_name:
