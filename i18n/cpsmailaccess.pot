@@ -420,3 +420,15 @@ msgstr ""
 
 msgid "cpsma_message_sent"
 msgstr ""
+
+msgid "cpsma_confirm_erase"
+msgstr ""
+
+msgid "cpsma_confirm_erase_folder"
+msgstr ""
+
+msgid "cpsma_webmail_navigation"
+msgstr ""
+
+msgid "cpsma_attached_files"
+msgstr ""

@@ -543,3 +543,8 @@ def answerSubject(subject, fwd=False):
             return subject
         else:
             return 'Fwd: %s' % subject
+
+def translate(context, msg):
+    """ translate msg, used to isolate localizer use """
+    translator = context.Localizer.default
+    return translator.gettext(msg)

@@ -422,3 +422,15 @@ msgstr "Message sent to Trash."
 
 msgid "cpsma_message_sent"
 msgstr "Message sent."
+
+msgid "cpsma_confirm_erase"
+msgstr "Are you sure ?"
+
+msgid "cpsma_confirm_erase_folder"
+msgstr "Are you sure you want to erase the folder ?"
+
+msgid "cpsma_webmail_navigation"
+msgstr "Dossiers de mails"
+
+msgid "cpsma_attached_files"
+msgstr "Attached files"

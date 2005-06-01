@@ -422,3 +422,15 @@ msgstr "Message envoyé à la corbeille."
 
 msgid "cpsma_message_sent"
 msgstr "Message envoyé."
+
+msgid "cpsma_confirm_erase"
+msgstr "Etes vous sûr ?"
+
+msgid "cpsma_confirm_erase_folder"
+msgstr "Etes vous sûr de vouloir effacer le dossier ?"
+
+msgid "cpsma_webmail_navigation"
+msgstr "Dossiers de mails"
+
+msgid "cpsma_attached_files"
+msgstr "Pièces jointes"

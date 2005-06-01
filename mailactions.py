@@ -21,7 +21,7 @@ from Products.CPSMailAccess.interfaces import IMailBox, IMailMessage, \
     IMailFolder
 from Products.Five import BrowserView
 
-from utils import getToolByName
+from utils import getToolByName, translate
 from basemailview import BaseMailMessageView
 
 """ XXXX using a view to retrieve actions
@@ -111,12 +111,13 @@ class MailActionsView(BaseMailMessageView):
             mailbox = container.getMailBox()
             root = self.getAbsoluteUrl(mailbox)
             candelete = not mailbox.elementIsInTrash(container)
+            confirm_msg = translate(mailbox, 'cpsma_confirm_erase')
 
             if container == mailbox.getTrashFolder():
                 empty_trash = {'icon' : base_url + '/cpsma_emptytrash.png',
                                'title' : 'cpsma_empty_trash',
                                'long_title' : 'cpsma_empty_trash',
-                               'onclick' : "return window.confirm('Are you sure?')",
+                               'onclick' : "return window.confirm('%s')" % confirm_msg,
                                'action' : root + '/emptyTrash.html'}
                 actions.append(empty_trash)
 
@@ -152,10 +153,12 @@ class MailActionsView(BaseMailMessageView):
                              }
 
                     if candelete:
+                        confirm_msg = translate(mailbox, 'cpsma_confirm_erase_folder')
+
                         delete = {'icon' : base_url + '/cpsma_delete.png',
                                     'title' : 'cpsma_delete_folder',
                                     'long_title' : 'cpsma_delete_folder',
-                                    'onclick' : "return window.confirm('Are you sure?')",
+                                    'onclick' : "return window.confirm('%s')" % confirm_msg,
                                     'action' : 'delete.html'}
                         list_ = [delete, rename, move_folder]
                     else:
@@ -222,10 +225,11 @@ class MailActionsView(BaseMailMessageView):
 
 
             if current_folder.id != trash_name:
+                confirm_msg = translate(mailbox, 'cpsma_confirm_erase')
                 delete = {'icon' : base_url + '/cpsma_delete.png',
                         'title' : 'cpsma_delete_message',
                         'long_title' : 'cpsma_delete_message',
-                        'onclick' : "return window.confirm('Are you sure?')",
+                        'onclick' : "return window.confirm('%s')" % confirm_msg,
                         'action' : 'delete.html'}
 
                 actions.append(delete)
