@@ -38,22 +38,25 @@
                     <td class="selectableButton">
                     <center>
                       <tal:block tal:condition="action/action">
-                        <a tal:attributes="href action/action;
-                                            target action/target|nothing">
-                            <img i18n:attributes="title alt"
-                                tal:attributes="src action/icon;
-                                    title action/long_title;
-                                    alt action/long_title;
-                                    onclick action/onclick|nothing"/>
-                         </a>
-                      </tal:block>
-                      <tal:block tal:condition="not:action/action">
+                      <div tal:attributes="onclick action/onclick|nothing;
+                                           onmouseover python:'setCursor(this)'">
+                       <a tal:attributes="href action/action">
                         <img i18n:attributes="title alt"
-                              tal:attributes="src action/icon;
-                                              title action/long_title;
-                                              alt action/long_title;
-                                              onmouseover python:'setCursor(this)';
-                                              onclick action/onclick|nothing"/>
+                             tal:attributes="src action/icon;
+                             title action/long_title;
+                             alt action/long_title;"/>
+                       </a>
+                      </div>
+                      </tal:block>
+
+                      <tal:block tal:condition="not:action/action">
+                      <div tal:attributes="onclick action/onclick|nothing;
+                                           onmouseover python:'setCursor(this)'">
+                        <img i18n:attributes="title alt"
+                             tal:attributes="src action/icon;
+                             title action/long_title;
+                             alt action/long_title;"/>
+                      </div>
                       </tal:block>
                     </center>
                     </td>
@@ -279,9 +282,12 @@
     </metal:block>
 
     <metal:block define-macro="messagetoolbar">
+      <tal:block tal:define="no_shortcuts no_shortcuts|folder|nothing;
+                              no_shortcuts no_shortcuts|nothing">
       <div class="mailToolBar"
+           tal:condition="not:no_shortcuts"
            tal:define="folder python:here.getMailFolder()">
-          <a tal:condition="folder" style="float: right; margin-right: 4px"
+          <a style="float: right; margin-right: 4px"
              i18n:attributes="title"
              tal:attributes="href python:folder.absolute_url()+'/view?keep_last_sort=1';
                              title string:Back to folder">
@@ -306,6 +312,7 @@
         </tal:block>
 
         </div>
+      </tal:block>
     </metal:block>
 
     <metal:block define-macro="messageheaders">
