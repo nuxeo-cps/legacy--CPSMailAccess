@@ -49,7 +49,7 @@
       <div class="box">
         <div class="body">
           <div class="content" style="background-color: white">
-            <div class="title2">
+            <div class="title2" i18n:translate="cpsma_webmail_navigation">
             Webmail Navigation
             </div>
             <tal:block tal:repeat="element treeview">
@@ -142,7 +142,7 @@
       <div class="box">
         <div class="body">
           <div class="content" style="background-color: white">
-            <div class="title2">
+            <div class="title2" i18n:translate="cpsma_attached_files">
             Attached files
             </div>
             <table width="100%">
