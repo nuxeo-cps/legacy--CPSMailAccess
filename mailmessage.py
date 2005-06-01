@@ -326,19 +326,20 @@ class MailMessage(Folder):
         else:
             # creating a multipart message
             copy = message_from_string(store.as_string())   # making a copy
-            copy['content-type'] = 'text/plain; charset=iso-8859-1'
-            copy['content-transfer-encoding'] = '7bits'
+            copy['content-type'] = 'text/plain; charset=iso-8859-15'
+            copy['content-transfer-encoding'] = '7bit'
 
-            if not self.hasAttachment:
+            if self._file_list == []:
                 message = copy
             else:
                 message = Message.Message()
                 for gheader in ('From', 'To', 'Cc', 'BCc', 'Subject', 'Date',
                                 'Return-Path', 'Received', 'Delivered-To',
                                 'Message-ID', 'References'):
-                    if copy[gheader] is not None:
-                        message[gheader] = copy[gheader]
-                        del copy[gheader]
+                    if gheader in copy:
+                        for value in  copy.get_all(gheader):
+                            message[gheader] = copy[gheader]
+                        copy.__delitem__(gheader)
 
                 message['content-type'] = \
                     'multipart/mixed; boundary=---BOUNDARY---'

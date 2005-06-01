@@ -305,6 +305,10 @@ class MailMessageTestCase(MailTestCase):
         msg = ob.getRawMessage()
         self.assertNotEquals(ob.getHeader('Message-ID')[0], '<876576>')
 
+    def test_hasAttachment2(self):
+        ob = MailMessage()
+        self.assert_(not ob.hasAttachment())
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageTestCase),
