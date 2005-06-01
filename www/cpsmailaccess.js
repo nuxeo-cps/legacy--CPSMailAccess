@@ -215,7 +215,8 @@ function saveMessageDatas()
     while ((status == 503) && (i<10))
     {
       xml.open("POST", url, false);
-      xml.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xml.setRequestHeader("Content-type",
+                           "application/x-www-form-urlencoded; charset=utf-8");
       xml.send(poster);
       status = xml.status;
       if (status == 503)
@@ -303,7 +304,8 @@ function sendMessage()
     while ((status == 503) && (i<10))
     {
       xml.open("POST", url, false);
-      xml.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xml.setRequestHeader("Content-type",
+                           "application/x-www-form-urlencoded; charset=utf-8");
       xml.send(poster);
       status = xml.status;
       if (status == 503)
@@ -356,7 +358,8 @@ function translate(msg)
     while ((status == 503) && (i<10))
     {
       xml.open("POST", url, false);
-      xml.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xml.setRequestHeader("Content-type",
+                           "application/x-www-form-urlencoded; charset=utf-8");
       xml.send("message="+msg);
       status = xml.status;
       if (status == 503)

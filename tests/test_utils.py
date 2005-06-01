@@ -226,6 +226,10 @@ The CPS Team.
         res = answerSubject('Fwd: ytfuygiujoipok', True)
         self.assertEquals(res, 'Fwd: ytfuygiujoipok')
 
+    def test_Utf8ToIso(self):
+        res = Utf8ToIso('Ã©Ã©')
+        self.assertEquals(res, 'éé')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),

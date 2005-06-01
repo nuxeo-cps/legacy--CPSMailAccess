@@ -22,7 +22,7 @@ from Globals import InitializeClass
 import sys
 from smtplib import SMTP
 from utils import getToolByName, decodeHeader, verifyBody,\
-                  cleanUploadedFileName
+                  cleanUploadedFileName, Utf8ToIso
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
@@ -90,7 +90,10 @@ class MailMessageEdit(BrowserView):
         # complete kw with form
         if self.request is not None:
             for key, value in self.request.form.items():
-                kw[key] = value
+                kw[key] = Utf8ToIso(value)
+
+        msg_subject = Utf8ToIso(msg_subject)
+        msg_body = Utf8ToIso(msg_body)
 
         no_redirect =  'responsetype' in kw
 
@@ -321,20 +324,20 @@ class MailMessageEdit(BrowserView):
         msg = mailbox.getCurrentEditorMessage()
 
         if form.has_key('msg_body'):
-            msg_body = form['msg_body']
+            msg_body = Utf8ToIso(form['msg_body'])
             msg.setDirectBody(msg_body)
 
         if form.has_key('msg_subject'):
-            msg_subject = form['msg_subject']
+            msg_subject = Utf8ToIsoform(['msg_subject'])
             msg.setHeader('Subject', msg_subject)
 
         textareas = (('msg_to', 'To'), ('msg_cc', 'Cc'), ('msg_bcc', 'BCc'))
 
         for area, id in textareas:
             if form.has_key(area):
-                msg_body = form[area]
+                msg_body = Utf8ToIso(form[area])
                 if msg_body.strip() == '':
-                    continue
+                   continue
                 lines = msg_body.split('\n')
                 msg.removeHeader(id)            # otherwise previous ones stays there
                 for line in lines:

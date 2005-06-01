@@ -503,6 +503,20 @@ def secureUnicode(unicode_content):
     string_ = unicode_content.encode('ISO-8859-15', 'replace')
     return string_.decode('ISO-8859-15')
 
+def Utf8ToIso(value, codec='ISO-8859-15'):
+    """ decode a str
+    >>> Utf8ToIso(None)
+    >>> Utf8ToIso('')
+    ''
+    >>> Utf8ToIso('donothing')
+    'donothing'
+    """
+    if isinstance(value, str):
+        uvalue = value.decode('utf-8', 'replace')
+        return uvalue.encode(codec)
+    else:
+        return value
+
 def linkifyMailBody(body, email_sub=r'<a href="mailto:\1">\1</a>'):
     """ replace mails and urls by links
 
