@@ -306,6 +306,10 @@ div.hidden_part {
   display: none;
 }
 
+div.not_hidden_part {
+  display: 1;
+}
+
 span.link {
   color: blue; /* put cps color here*/
 }

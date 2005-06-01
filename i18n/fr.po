@@ -419,3 +419,6 @@ msgstr "Messages envoyés à la corbeille"
 
 msgid "cpsma_msg_sent_to_trash"
 msgstr "Message envoyé à la corbeille."
+
+msgid "cpsma_message_sent"
+msgstr "Message envoyé."

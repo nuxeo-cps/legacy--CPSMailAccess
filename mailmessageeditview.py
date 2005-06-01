@@ -84,17 +84,55 @@ class MailMessageEdit(BrowserView):
                     return '%s is not a valid email' % value
         return None
 
-    def sendMessage(self, msg_from, msg_subject, msg_body, came_from=None):
+    def sendMessage(self, msg_from, msg_subject=None, msg_body=None,
+                    came_from=None, **kw):
         """ calls MailTool """
+        # complete kw with form
+        if self.request is not None:
+            for key, value in self.request.form.items():
+                kw[key] = value
+
+        no_redirect =  'responsetype' in kw
+
         # call mail box to send a message and to copy it to "send" section
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
-        msg.setHeader('Subject', msg_subject)
 
+        # getting values from request
+        if msg_subject is not None:
+            msg.setHeader('Subject', msg_subject)
+
+        if msg_body is not None:
+            msg_body = verifyBody(msg_body)
+            msg.setDirectBody(msg_body)
+
+        if msg_subject is not None:
+            if msg_subject.strip() == '' and msg_body.strip() == '':
+                # todo :XXX  need to be externalized in i18n
+                psm = 'both subject and body are empty'
+                if self.request is not None and not no_redirect:
+                    self.request.response.redirect('editMessage.html?msm=%s'\
+                        % (psm))
+                return False, psm
+
+        textareas = (('msg_to', 'To'), ('msg_cc', 'Cc'), ('msg_bcc', 'BCc'))
+
+        for area, id in textareas:
+            if kw.has_key(area):
+                cvalue = kw[area]
+                if cvalue.strip() == '':
+                    continue
+                lines = cvalue.split('\n')
+                msg.removeHeader(id)            # otherwise previous ones stays there
+                for line in lines:
+                    if line.strip() != '':
+                        self.addRecipient(line, id)
+
+        # cheking elements
         Tos = msg.getHeader('To')
         if Tos == []:
             psm = 'Recipient is required'
-            if self.request is not None:
+            if self.request is not None and not no_redirect:
                 # todo : need to be externalized in i18n
                 self.request.response.redirect('editMessage.html?msm=%s'\
                     % (psm))
@@ -103,22 +141,13 @@ class MailMessageEdit(BrowserView):
         error = self._verifyRecipients(msg)
         if error is not None:
             psm = error
-            if self.request is not None:
+            if self.request is not None and not no_redirect:
                 # todo : need to be externalized in i18n
                 self.request.response.redirect('editMessage.html?msm=%s'\
                     % (psm))
             return False, psm
-        msg.setHeader('From', msg_from)
-        msg_body = verifyBody(msg_body)
-        msg.setDirectBody(msg_body)
 
-        if msg_subject.strip() == '' and msg_body.strip() == '':
-            if self.request is not None:
-                # todo : need to be externalized in i18n
-                psm = 'both subject and body are empty'
-                self.request.response.redirect('editMessage.html?msm=%s'\
-                    % (psm))
-            return False, psm
+        msg.setHeader('From', msg_from)
 
         # using the message instance that might have attached files already
         try:
@@ -140,26 +169,31 @@ class MailMessageEdit(BrowserView):
                         origin.setFlag('forwarded', 1)
                         folder.changeMessageFlags(origin, 'forwarded', 1)
 
-                # clear the editor
-                self.initializeEditor(False)
-
-                if came_from is not None and came_from !='':
-                    goto = came_from
-                else:
-                    if hasattr(mailbox, 'INBOX'):
-                        goto = mailbox.INBOX.absolute_url()
-                    else:
-                        goto = mailbox.absolute_url()
-
                 # todo : need to be externalized
-                psm = 'Message sent.'
-                self.request.response.redirect('%s/view?msm=%s'\
-                    % (goto, psm))
+                psm = 'cpsma_message_sent'
+
+                # clear the editor
+                self.initializeEditor(False, no_redirect)
+                if not no_redirect:
+                    if came_from is not None and came_from !='':
+                        goto = came_from
+                    else:
+                        if hasattr(mailbox, 'INBOX'):
+                            goto = mailbox.INBOX.absolute_url()
+                        else:
+                            goto = mailbox.absolute_url()
+                    self.request.response.redirect('%s/view?msm=%s'\
+                                                    % (goto, psm))
+                else:
+                    return True, psm
             else:
                 goto = mailbox.absolute_url()+'/editMessage.html'
                 psm = error
-                self.request.response.redirect('%s?msm=%s'\
-                    % (goto, psm))
+                if not no_redirect:
+                    self.request.response.redirect('%s?msm=%s'\
+                                                    % (goto, psm))
+                else:
+                    return True, psm
         return result, error
 
 
@@ -283,7 +317,6 @@ class MailMessageEdit(BrowserView):
             return
 
         form = self.request.form
-        LOG('form', INFO, str(form))
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
 
@@ -363,13 +396,15 @@ class MailMessageEdit(BrowserView):
                 self.request.response.redirect('editMessage.html')
 
 
-    def editAction(self, action, **kw):
+    def editAction(self, **kw):
         """ dispatch a form action to the right method
         """
         if self.request is not None:
             if self.request.form is not None:
                 for element in self.request.form.keys():
                     kw[element] = self.request.form[element]
+
+        action = kw['action']
 
         if action == 'add_recipient':
             self.addRecipient(kw['msg_to'], kw['sent_type'])
@@ -395,19 +430,19 @@ class MailMessageEdit(BrowserView):
             self.request.response.redirect('editMessage.html\
                                             ?msm=%s' % psm)
 
-    def initializeEditor(self, back_to_front=True):
+    def initializeEditor(self, back_to_front=True, no_move=False):
         """ cleans the editor
         """
         mailbox = self.context
         mailbox.clearEditorMessage()
-
-        if self.request is not None:
-            if not back_to_front:
-                self.request.response.redirect('editMessage.html')
-            else:
-                if hasattr(mailbox, 'INBOX'):
-                    url = '%s/INBOX/view' % mailbox.absolute_url()
+        if not no_move:
+            if self.request is not None:
+                if not back_to_front:
+                    self.request.response.redirect('editMessage.html')
                 else:
-                    url = '%s/view' % mailbox.absolute_url()
-                self.request.response.redirect(url)
+                    if hasattr(mailbox, 'INBOX'):
+                        url = '%s/INBOX/view' % mailbox.absolute_url()
+                    else:
+                        url = '%s/view' % mailbox.absolute_url()
+                    self.request.response.redirect(url)
 

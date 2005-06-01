@@ -1,6 +1,7 @@
 <html>
   <body>
     <metal:block define-macro="mailbox_warning">
+      <div class="clipboardContent hidden_part" i18n:translate="" id="java_msm"></div>
       <metal:block tal:define="msm request/msm|nothing;
                                 clipboard clipboard|nothing;">
        <div class="clipboardContent" tal:condition="python:clipboard or msm">

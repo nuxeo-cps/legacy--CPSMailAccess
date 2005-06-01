@@ -107,6 +107,20 @@ function delay(ms)
 /*
   saves datas using XmlHttpRequest
 */
+function createXMLObject()
+{
+  if (window.XMLHttpRequest) // Firefox
+    xml = new XMLHttpRequest();
+  else if (window.ActiveXObject) // Internet Explorer
+    xml = new ActiveXObject("Microsoft.XMLHTTP");
+  else
+  {
+    // XMLHttpRequest not supported
+    xml = null;
+  }
+  return xml;
+}
+
 function saveMessageDatas()
 {
   msg_subject = document.getElementById('msg_subject');
@@ -176,14 +190,7 @@ function saveMessageDatas()
     attacher_on = "0";
   }
 
-  if(window.XMLHttpRequest) // Firefox
-    xml = new XMLHttpRequest();
-  else if(window.ActiveXObject) // Internet Explorer
-    xml = new ActiveXObject("Microsoft.XMLHTTP");
-  else
-  {
-    // XMLHttpRequest not supported
-  }
+  xml = createXMLObject();
 
   if (xml)
   {
@@ -217,6 +224,199 @@ function saveMessageDatas()
         delay(200);
       }
     }
+  }
+  else
+  {
+    alert("operation not supported");
+  }
+}
+
+function setMessage(msg)
+{
+  element = document.getElementById("java_msm");
+
+  if (element)
+  {
+    element.innerHTML = msg;
+    if (msg)
+    {
+      if (element.className.indexOf("not_hidden_part") == -1)
+      {
+        toggleElementVisibility("java_msm");
+      }
+    }
+    else
+    {
+      if (element.className.indexOf("not_hidden_part") != -1)
+      {
+        toggleElementVisibility("java_msm");
+      }
+    }
+  }
+}
+
+// sends the message
+function sendMessage()
+{
+  setMessage("Working.");
+  // reading values on the form
+  came_from = document.getElementById("came_from");
+  came_from = came_from.value;
+
+  msg_from = document.getElementById("msg_from");
+  msg_from = msg_from.value;
+
+  msg_subject = document.getElementById("msg_subject");
+  msg_subject = msg_subject.value;
+
+  msg_body = document.getElementById("msg_body");
+  msg_body = msg_body.value;
+
+  msg_to = document.getElementById("msg_to");
+  msg_to = msg_to.value;
+
+  msg_cc = document.getElementById("msg_cc");
+  msg_cc = msg_cc.value;
+
+  msg_bcc = document.getElementById("msg_bcc");
+  msg_bcc = msg_bcc.value;
+
+  // computing uri
+  var poster = new Array();
+  equals = "=";
+  poster.push(encodeURIComponent("responsetype") + equals + encodeURIComponent("text"));
+  poster.push(encodeURIComponent("msg_subject") + equals + encodeURIComponent(msg_subject));
+  poster.push(encodeURIComponent("msg_body") + equals + encodeURIComponent(msg_body));
+  poster.push(encodeURIComponent("msg_to") + equals + encodeURIComponent(msg_to));
+  poster.push(encodeURIComponent("msg_cc") + equals + encodeURIComponent(msg_cc));
+  poster.push(encodeURIComponent("msg_bcc") + equals + encodeURIComponent(msg_bcc));
+  poster.push(encodeURIComponent("msg_from") + equals + encodeURIComponent(msg_from));
+  poster = poster.join("&");
+
+  // sending mail
+  xml = createXMLObject();
+  if (xml)
+  {
+    url = "sendMessage.html";
+    status = 503;
+    i = 0;
+    while ((status == 503) && (i<10))
+    {
+      xml.open("POST", url, false);
+      xml.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xml.send(poster);
+      status = xml.status;
+      if (status == 503)
+      {
+        i++;
+        delay(200);
+      }
+    }
+
+    response = extractResponse(xml.responseText);
+
+    if (response == "cpsma_message_sent")
+    {
+      trans = translate(response);
+    }
+    else
+    {
+      trans = response;
+    }
+
+    setMessage(trans);
+
+    if (response == "cpsma_message_sent")
+    {
+      if (came_from)
+      {
+        gotoUrl(came_from+"?msm=" + response);
+      }
+      else
+      {
+        clearEditor();
+      }
+    }
+  }
+  else
+  {
+    alert("operation not supported");
+  }
+  //gotoUrl("editAction.html?" + poster);
+}
+
+function translate(msg)
+{
+  xml = createXMLObject();
+  if (xml)
+  {
+    url = "Localizer/default/gettext";
+    status = 503;
+    i = 0;
+    while ((status == 503) && (i<10))
+    {
+      xml.open("POST", url, false);
+      xml.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xml.send("message="+msg);
+      status = xml.status;
+      if (status == 503)
+      {
+        i++;
+        delay(200);
+      }
+    }
+
+    res = extractResponse(xml.responseText);
+    return res
+  }
+  else
+  {
+    return msg;
+  }
+}
+
+function extractResponse(response)
+{
+  start = response.indexOf("<body>", 0);
+  if (start != -1)
+  {
+    start = start + "<body>".length + 1;
+    end = response.indexOf("</body>", start) - 1;
+    return response.substring(start, end);
+  }
+  else
+  {
+    return response;
+  }
+}
+
+function clearEditor()
+{
+  msg_subject = document.getElementById("msg_subject");
+  msg_body = document.getElementById("msg_body");
+  msg_to = document.getElementById("msg_to");
+  msg_cc = document.getElementById("msg_cc");
+  msg_bcc = document.getElementById("msg_bcc");
+
+  if (msg_to)
+  {
+    msg_to.value = "";
+  }
+  if (msg_body)
+  {
+    msg_body.value = "";
+  }
+  if (msg_cc)
+  {
+    msg_cc.value = "";
+  }
+  if (msg_bcc)
+  {
+    msg_bcc.value = "";
+  }
+  if (msg_subject)
+  {
+    msg_subject.value = "";
   }
 }
 

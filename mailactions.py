@@ -93,19 +93,19 @@ class MailActionsView(BaseMailMessageView):
                         'action' : root + '/initializeEditor.html',
                         'onclick' : ''}
 
-                """
+
                 send = {'icon' : base_url + '/cpsma_sendmsg.png',
                                  'title' : 'send message',
                                  'long_title' : 'send the message',
-                                 'action' : 'editMessage.html',
-                                 'onclick' : 'saveMessageDatas();alert("click below");'}
-                """
+                                 'action' : '',
+                                 'onclick' : 'sendMessage();'}
+
                 configure = {'icon' : base_url + '/cpsma_configure.png',
                              'title' : 'cpsma_configure',
                              'long_title' : 'cpsma_configure',
                              'action' : root + '/configure.html'}
 
-                return [[save, init, configure]]
+                return [[send, save], [init, configure]]
 
         elif IMailFolder.providedBy(container):
             mailbox = container.getMailBox()

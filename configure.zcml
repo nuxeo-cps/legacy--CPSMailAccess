@@ -571,6 +571,14 @@
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailmessageeditview.MailMessageEdit"
+      name="sendMessage.html"
+      attribute="sendMessage"
+      permission="cpsmailaccess.SendMails"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
       name="removeRecipient.html"
       attribute="removeRecipient"
       permission="cpsmailaccess.SendMails"
