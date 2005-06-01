@@ -202,7 +202,7 @@ function saveMessageDatas()
     poster.push(encodeURIComponent("msg_cc") + equals + encodeURIComponent(msg_cc));
     poster.push(encodeURIComponent("msg_bcc") + equals + encodeURIComponent(msg_bcc));
 
-    poster = poster.join("&");
+    poster = poster.join(encodeURIComponent("&"));
 
     i = 0;
     while ((status == 503) && (i<10))
