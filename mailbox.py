@@ -43,7 +43,8 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.publisher.browser import FileUpload
 from zope.app.cache.ram import RAMCache
 
-from utils import getToolByName, decodeHeader, uniqueId, makeId, getFolder
+from utils import getToolByName, decodeHeader, uniqueId, makeId, getFolder,\
+                  createDigest
 from interfaces import IMailBox, IMailMessage, IMailFolder, IMessageTraverser
 from mailfolder import MailFolder, manage_addMailFolder
 from maileditormessage import MailEditorMessage
@@ -452,6 +453,7 @@ class MailBox(MailBoxBaseCaching):
             return False
         msg_from = msg.getHeader('From')
         msg_to = msg.getHeader('To') + msg.getHeader('Cc') + msg.getHeader('BCc')
+        msg.digest = createDigest(msg)
 
         result, error = self._sendMailMessage(msg_from, msg_to, msg)
         if result:

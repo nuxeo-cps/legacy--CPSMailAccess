@@ -230,6 +230,10 @@ The CPS Team.
         res = Utf8ToIso('Ã©Ã©')
         self.assertEquals(res, 'éé')
 
+    def test_createDigest(self):
+        msg = self.getMailInstance(2)
+        self.assertEquals(createDigest(msg), 'ea879bcd72364153266cdd7d2c59c2d4')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),

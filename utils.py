@@ -548,3 +548,16 @@ def translate(context, msg):
     """ translate msg, used to isolate localizer use """
     translator = context.Localizer.default
     return translator.gettext(msg)
+
+def createDigest(msg):
+    """ create a message digest """
+    if msg is None:
+        return None
+    subs = ('Date', 'Subject', 'From', 'To', 'Cc', 'Message-ID')
+    sub_keys = {}
+    for sub in subs:
+        if msg.getHeader(sub) != []:
+            sub_keys[sub] = msg.getHeader(sub)
+
+    all_values = str(sub_keys.values())
+    return md5Hash(all_values)

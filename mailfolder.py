@@ -39,7 +39,7 @@ from mailmessage import MailMessage
 from mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder,\
-                  AsyncCall
+                  AsyncCall, createDigest
 from baseconnection import has_connection, ConnectionError
 
 class MailFolder(BTreeFolder2):
@@ -395,9 +395,12 @@ class MailFolder(BTreeFolder2):
         id = self.getIdFromUid(uid)
         try:
             msg = self[id]
+            if IMailMessage.providedBy(msg):
+                return msg
+            else:
+                return None
         except KeyError:
             return None
-        return msg
 
     def childFoldersCount(self):
         """ See interfaces.IMailFolder """
@@ -416,11 +419,6 @@ class MailFolder(BTreeFolder2):
             folders = self.getchildFolders()
             for folder in folders:
                 folder.setSyncState(state, True)
-
-    def _createKey(self, header):
-        """ creates unique key for messages identification """
-        s = ''.join(header.values())
-        return md5Hash(s)
 
     def getMessagePart(self, uid, part):
         """ retrieves a part from the server """
@@ -619,12 +617,7 @@ class MailFolder(BTreeFolder2):
                 digest = None
                 if not mailfailed:
                     msg_headers = fetched_mail[2]
-                    subs = ('Date', 'Subject', 'From', 'To', 'Cc', 'Message-ID')
-                    sub_keys = {}
-                    for sub in subs:
-                        if msg_headers.has_key(sub):
-                            sub_keys[sub] = msg_headers[sub]
-                    digest = self._createKey(sub_keys)
+                    digest = createDigest(msg)
 
                 # comparing digest with msg digest
                 if msg is not None:
@@ -972,6 +965,7 @@ class MailFolder(BTreeFolder2):
         current_number = self.getUidFromId(id)
         next_id = str(int(current_number) + 1)
         return self.getIdFromUid(next_id)
+
 
 """ classic Zope 2 interface for class registering
 """
