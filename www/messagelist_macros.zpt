@@ -40,6 +40,7 @@
                     <center>
                       <tal:block tal:condition="action/action">
                       <div tal:attributes="onclick action/onclick|nothing;
+                                           id action/id;
                                            onmouseover python:'setCursor(this)'">
                        <a tal:attributes="href action/action">
                         <img i18n:attributes="title alt"
@@ -51,7 +52,8 @@
                       </tal:block>
 
                       <tal:block tal:condition="not:action/action">
-                      <div tal:attributes="onclick action/onclick|nothing;
+                      <div tal:attributes="id action/id;
+                                            onclick action/onclick|nothing;
                                            onmouseover python:'setCursor(this)'">
                         <img i18n:attributes="title alt"
                              tal:attributes="src action/icon;

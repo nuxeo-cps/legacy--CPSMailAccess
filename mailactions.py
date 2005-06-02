@@ -57,11 +57,13 @@ class MailActionsView(BaseMailMessageView):
             root = self.getAbsoluteUrl(container)
             configure = {'icon' : base_url + '/cpsma_configure.png',
                          'title' : 'cpsma_configure',
+                         'id' : 'configure',
                          'long_title' : 'cpsma_configure',
                          'action' : root + '/configure.html'}
             synchro = {'icon' : base_url + '/cpsma_getmails.png',
                        'title' : 'cpsma_getmessages',
                        'long_title' : 'cpsma_getmessages',
+                       'id' : 'synchro',
                        'action' : root + \
                        '/syncProgress.html?g_user=' + user_name}
 
@@ -75,6 +77,7 @@ class MailActionsView(BaseMailMessageView):
             if self.is_editor():
                 save = {'icon' : base_url + '/cpsma_save.png',
                         'title' : 'cpsma_save_message',
+                        'id' : 'save',
                         'long_title' : 'cpsma_save_message',
                         'onclick' : 'saveMessageDatas()',
                         'action' : root + '/saveMessage.html'}
@@ -90,19 +93,22 @@ class MailActionsView(BaseMailMessageView):
                 init = {'icon' : base_url + '/cpsma_initeditor.png',
                         'title' : 'cpsma_init_editor',
                         'long_title' : 'cpsma_init_editor',
+                        'id' : 'init',
                         'action' : root + '/initializeEditor.html',
                         'onclick' : ''}
 
 
                 send = {'icon' : base_url + '/cpsma_sendmsg.png',
-                                 'title' : 'send message',
-                                 'long_title' : 'send the message',
-                                 'action' : '',
-                                 'onclick' : 'sendMessage();'}
+                        'title' : 'send message',
+                        'long_title' : 'send the message',
+                        'action' : '',
+                        'id' : 'send',
+                        'onclick' : 'sendMessage();'}
 
                 configure = {'icon' : base_url + '/cpsma_configure.png',
                              'title' : 'cpsma_configure',
                              'long_title' : 'cpsma_configure',
+                             'id' : 'configure',
                              'action' : root + '/configure.html'}
 
                 return [[send, save], [init, configure]]
@@ -117,6 +123,7 @@ class MailActionsView(BaseMailMessageView):
                 empty_trash = {'icon' : base_url + '/cpsma_emptytrash.png',
                                'title' : 'cpsma_empty_trash',
                                'long_title' : 'cpsma_empty_trash',
+                               'id' : 'empty_trash',
                                'onclick' : "return window.confirm('%s')" % confirm_msg,
                                'action' : root + '/emptyTrash.html'}
                 actions.append(empty_trash)
@@ -132,6 +139,7 @@ class MailActionsView(BaseMailMessageView):
                                 'title' : 'cpsma_add_subfolder',
                                 'long_title' : 'cpsma_add_subfolder',
                                 'action' : '',
+                                'id' : 'add_folder',
                                 'onclick' : "toggleElementVisibility('addFolder')"}
                     actions.append(add_folder)
 
@@ -142,6 +150,7 @@ class MailActionsView(BaseMailMessageView):
                                    'title' : 'cpsma_move_folder',
                                    'long_title' : 'cpsma_move_folder',
                                    'action' : '',
+                                   'id' : 'move_folder',
                                    'onclick' : "toggleElementVisibility('moveFolder')"
                                    }
 
@@ -149,6 +158,7 @@ class MailActionsView(BaseMailMessageView):
                               'title' : 'cpsma_rename_folder',
                               'long_title' : 'cpsma_rename_folder',
                               'action' : '',
+                              'id' : 'rename',
                               'onclick' : "toggleElementVisibility('renameFolder')"
                              }
 
@@ -156,10 +166,11 @@ class MailActionsView(BaseMailMessageView):
                         confirm_msg = translate(mailbox, 'cpsma_confirm_erase_folder')
 
                         delete = {'icon' : base_url + '/cpsma_delete.png',
-                                    'title' : 'cpsma_delete_folder',
-                                    'long_title' : 'cpsma_delete_folder',
-                                    'onclick' : "return window.confirm('%s')" % confirm_msg,
-                                    'action' : 'delete.html'}
+                                  'title' : 'cpsma_delete_folder',
+                                  'long_title' : 'cpsma_delete_folder',
+                                  'id' : 'delete',
+                                  'onclick' : "return window.confirm('%s')" % confirm_msg,
+                                  'action' : 'delete.html'}
                         list_ = [delete, rename, move_folder]
                     else:
                         list_ = [rename, move_folder]
@@ -171,6 +182,7 @@ class MailActionsView(BaseMailMessageView):
                 filter_ = {'icon' : root + '/cpsma_filter_big.png',
                         'title' : 'cpsma_filter',
                         'long_title' : 'cpsma_filter',
+                        'id' : 'filter',
                         'action' : 'runFilters.html'}
                 actions.append(filter_)
 
@@ -202,35 +214,40 @@ class MailActionsView(BaseMailMessageView):
                 reply = {'icon' : base_url + '/cpsma_reply.png',
                          'title' : 'cpsma_reply',
                          'long_title' : 'cpsma_reply',
+                         'id' : 'reply',
                          'action' : 'reply.html'}
 
                 reply_all = {'icon' : base_url + '/cpsma_replyall.png',
                              'title' : 'cpsma_reply_all',
                              'long_title' : 'cpsma_reply_all',
+                             'id' : 'reply_all',
                              'action' : 'replyAll.html'}
 
                 forward = {'icon' : base_url + '/cpsma_forward.png',
                            'title' : 'cpsma_forward',
                            'long_title' : 'cpsma_forward',
+                           'id' : 'forward',
                            'action' : 'forward.html'}
 
                 actions.extend([reply, reply_all, forward])
 
             if container.draft:
                 draft = {'icon' : base_url + '/cpsma_reload.png',
-                    'title' : 'cpsma_load_message',
-                    'long_title' : 'cpsma_load_message',
-                    'action' : 'reload.html'}
+                         'title' : 'cpsma_load_message',
+                         'long_title' : 'cpsma_load_message',
+                         'id' : 'draft',
+                         'action' : 'reload.html'}
                 actions.extend([draft])
 
 
             if current_folder.id != trash_name:
                 confirm_msg = translate(mailbox, 'cpsma_confirm_erase')
                 delete = {'icon' : base_url + '/cpsma_delete.png',
-                        'title' : 'cpsma_delete_message',
-                        'long_title' : 'cpsma_delete_message',
-                        'onclick' : "return window.confirm('%s')" % confirm_msg,
-                        'action' : 'delete.html'}
+                          'title' : 'cpsma_delete_message',
+                          'long_title' : 'cpsma_delete_message',
+                          'id' : 'delete_folder',
+                          'onclick' : "return window.confirm('%s')" % confirm_msg,
+                          'action' : 'delete.html'}
 
                 actions.append(delete)
         else:
@@ -239,26 +256,31 @@ class MailActionsView(BaseMailMessageView):
         configure = {'icon' : base_url + '/cpsma_configure.png',
                      'title' : 'cpsma_configure',
                      'long_title' : 'cpsma_configure',
+                     'id' : 'configure',
                      'action' : root + '/configure.html'}
 
         synchro = {'icon' : base_url + '/cpsma_getmails.png',
                    'title' : 'cpsma_getmessages',
                    'long_title' : 'cpsma_getmessages',
+                   'id' : 'synchro',
                    'action' : root + '/syncProgress.html?g_user=' + user_name}
 
         search = {'icon' : base_url + '/cspma_mail_find.png',
                    'title' : 'cpsma_search_messages',
                    'long_title' : 'cpsma_search_messages',
+                   'id' : 'search',
                    'action' : root + '/zemanticSearchMessage.html'}
 
         write   = {'icon' : base_url + '/cpsma_writemail.png',
                    'title' : 'cpsma_write_message',
                    'long_title' : 'cpsma_write_message',
+                   'id' : 'write',
                    'action' : root + '/editMessage.html'}
 
         adressbook   = {'icon' : base_url + '/cpsma_addressbook.png',
                         'title' : 'cpsma_address_books',
                         'long_title' : 'cpsma_address_books',
+                        'id' : 'adressbook',
                         'action' : root + '/addressBooks.html'}
 
 

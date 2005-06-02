@@ -1,10 +1,12 @@
 <html metal:use-macro="here/main_template/macros/master">
 
   <metal:block metal:fill-slot="head_slot">
-      <!--meta http-equiv="refresh" content="1; URL=synchronize.html"-->
+
       <metal:block tal:define="g_user request/g_user|nothing;">
-        <meta http-equiv="refresh" tal:attributes="content python:'1'+chr(59)+' URL=background_synchro?user='+g_user"/>
+        <meta http-equiv="refresh"
+               tal:attributes="content python:'1'+chr(59)+' URL=\'background_synchro?user='+g_user+'\''"/>
       </metal:block>
+
   </metal:block>
   <metal:block metal:fill-slot="main">
 

@@ -87,10 +87,25 @@ class MailMessageEdit(BrowserView):
     def sendMessage(self, msg_from, msg_subject=None, msg_body=None,
                     came_from=None, **kw):
         """ calls MailTool """
+        EMPTY = '__#EMPTY#__'
+
         # complete kw with form
         if self.request is not None:
             for key, value in self.request.form.items():
                 kw[key] = Utf8ToIso(value)
+
+        for key in kw:
+            if kw[key] == EMPTY:
+                kw[key] = ''
+
+        if msg_from == EMPTY:
+            msg_from = ''
+
+        if msg_subject == EMPTY:
+            msg_subject = ''
+
+        if msg_body == EMPTY:
+            msg_body = ''
 
         msg_subject = Utf8ToIso(msg_subject)
         msg_body = Utf8ToIso(msg_body)
@@ -124,7 +139,10 @@ class MailMessageEdit(BrowserView):
             if kw.has_key(area):
                 cvalue = kw[area]
                 if cvalue.strip() == '':
-                    continue
+                    if no_redirect:
+                        msg.removeHeader(id)
+                    else:
+                        continue
                 lines = cvalue.split('\n')
                 msg.removeHeader(id)            # otherwise previous ones stays there
                 for line in lines:
@@ -149,6 +167,7 @@ class MailMessageEdit(BrowserView):
                 self.request.response.redirect('editMessage.html?msm=%s'\
                     % (psm))
             return False, psm
+
 
         msg.setHeader('From', msg_from)
 

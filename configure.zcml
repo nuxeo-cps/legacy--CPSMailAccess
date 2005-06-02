@@ -241,6 +241,15 @@
   <browser:page
       for=".interfaces.IMailTool"
       class=".mailparameterviews.MailToolParametersView"
+      template="www/mailToolParametersView.zpt"
+      name="view"
+      permission="cpsmailaccess.ManageMailTool"
+      />
+
+
+  <browser:page
+      for=".interfaces.IMailTool"
+      class=".mailparameterviews.MailToolParametersView"
       name="editParameters.html"
       attribute="setParameters"
       permission="cpsmailaccess.ManageMailTool"

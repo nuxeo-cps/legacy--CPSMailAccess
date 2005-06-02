@@ -347,6 +347,13 @@ class MailBoxTestCase(MailTestCase):
         self.assertEquals(mail._getStore()._payload, '')
         self.assertEquals(mail._file_list, [])
 
+    def test_sendEditorsMessage(self):
+        mailbox = self._getMailBox()
+        # XXX todo: find out why zopetestcase bust the fakesmtplib
+        # at this time we just calling it
+        # to make sure it will raise within the smtplib
+        self.assertRaises(AttributeError, mailbox.sendEditorsMessage)
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),

@@ -578,3 +578,7 @@ div.bottomleftcorner {
 td.bold {
   font-weight: bold;
 }
+
+.waiting_process {
+  background-color: #e7e7e7;
+}

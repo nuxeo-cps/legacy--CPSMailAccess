@@ -24,6 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 /*
   changes the icon that is in front of subject header (+ or-)
 */
+EMPTY = "__#EMPTY#__";
+var currentXMLObject = false;
+var currentTranslateXMLObject = false;
+
 function switchMailHeadersState()
 {
   node = document.getElementById("mailMoreInfos");
@@ -190,9 +194,9 @@ function saveMessageDatas()
     attacher_on = "0";
   }
 
-  xml = createXMLObject();
+  currentXMLObject = createXMLObject();
 
-  if (xml)
+  if (currentXMLObject)
   {
     url = "saveMessageForm.html";
     status = 503;
@@ -214,11 +218,11 @@ function saveMessageDatas()
     i = 0;
     while ((status == 503) && (i<10))
     {
-      xml.open("POST", url, false);
-      xml.setRequestHeader("Content-type",
-                           "application/x-www-form-urlencoded; charset=utf-8");
-      xml.send(poster);
-      status = xml.status;
+      currentXMLObject.open("POST", url, false);
+      currentXMLObject.setRequestHeader("Content-Type",
+                           "application/www-form-urlencoded; charset=utf-8");
+      currentXMLObject.send(poster);
+      status = currentXMLObject.status;
       if (status == 503)
       {
         i++;
@@ -232,6 +236,42 @@ function saveMessageDatas()
   }
 }
 
+/*
+  hidden, visible
+*/
+function toggleElementVisibility(element_id)
+{
+
+  element = document.getElementById(element_id);
+
+  if (element)
+  {
+    if (element.className.find("not_hidden_part") != -1)
+    {
+
+      element.className = element.className.replace("not_hidden_part", "hidden_part");
+      element.style.visibility = "hidden";
+    }
+    else
+    {
+
+      if (element.className.find("hidden_part") != -1)
+      {
+        element.className = element.className.replace("hidden_part", "not_hidden_part");
+      }
+      else
+      {
+        element.className = element.className + " hidden_part";
+      }
+
+      element.style.visibility = "visible";
+    }
+  }
+  else
+  {
+  }
+}
+
 function setMessage(msg)
 {
   element = document.getElementById("java_msm");
@@ -241,13 +281,18 @@ function setMessage(msg)
     element.innerHTML = msg;
     if (msg)
     {
+      // showing it
+
       if (element.className.indexOf("not_hidden_part") == -1)
       {
         toggleElementVisibility("java_msm");
+
       }
     }
     else
     {
+
+      // hiding it
       if (element.className.indexOf("not_hidden_part") != -1)
       {
         toggleElementVisibility("java_msm");
@@ -256,66 +301,32 @@ function setMessage(msg)
   }
 }
 
-// sends the message
-function sendMessage()
+
+
+function getValueFromInput(id)
 {
-  setMessage("Working.");
-  // reading values on the form
-  came_from = document.getElementById("came_from");
-  came_from = came_from.value;
-
-  msg_from = document.getElementById("msg_from");
-  msg_from = msg_from.value;
-
-  msg_subject = document.getElementById("msg_subject");
-  msg_subject = msg_subject.value;
-
-  msg_body = document.getElementById("msg_body");
-  msg_body = msg_body.value;
-
-  msg_to = document.getElementById("msg_to");
-  msg_to = msg_to.value;
-
-  msg_cc = document.getElementById("msg_cc");
-  msg_cc = msg_cc.value;
-
-  msg_bcc = document.getElementById("msg_bcc");
-  msg_bcc = msg_bcc.value;
-
-  // computing uri
-  var poster = new Array();
-  equals = "=";
-  poster.push(encodeURIComponent("responsetype") + equals + encodeURIComponent("text"));
-  poster.push(encodeURIComponent("msg_subject") + equals + encodeURIComponent(msg_subject));
-  poster.push(encodeURIComponent("msg_body") + equals + encodeURIComponent(msg_body));
-  poster.push(encodeURIComponent("msg_to") + equals + encodeURIComponent(msg_to));
-  poster.push(encodeURIComponent("msg_cc") + equals + encodeURIComponent(msg_cc));
-  poster.push(encodeURIComponent("msg_bcc") + equals + encodeURIComponent(msg_bcc));
-  poster.push(encodeURIComponent("msg_from") + equals + encodeURIComponent(msg_from));
-  poster = poster.join("&");
-
-  // sending mail
-  xml = createXMLObject();
-  if (xml)
+  input_ob = document.getElementById(id);
+  if (!input_ob)
   {
-    url = "sendMessage.html";
-    status = 503;
-    i = 0;
-    while ((status == 503) && (i<10))
-    {
-      xml.open("POST", url, false);
-      xml.setRequestHeader("Content-type",
-                           "application/x-www-form-urlencoded; charset=utf-8");
-      xml.send(poster);
-      status = xml.status;
-      if (status == 503)
-      {
-        i++;
-        delay(200);
-      }
-    }
-
-    response = extractResponse(xml.responseText);
+    return EMPTY;
+  }
+  value_ob = input_ob.value;
+  if (value_ob == "")
+  {
+    return EMPTY;
+  }
+  else
+  {
+    return value_ob;
+  }
+}
+// sends the message
+function sendMessageResult()
+{
+  if (currentXMLObject.readyState == 4)
+  {
+    unWaitProcess();
+    response = extractResponse(currentXMLObject.responseText);
 
     if (response == "cpsma_message_sent")
     {
@@ -342,6 +353,91 @@ function sendMessage()
   }
   else
   {
+    if (currentXMLObject.readyState==1)
+    {
+      // protecting from "double-send" and making screen changes
+      waitProcess();
+
+      // setting up msg
+      element = document.getElementById("java_msm");
+      element.className = element.className.replace("hidden_part", "not_hidden_part");
+      element.style.visibility = "visible";
+      element.innerHTML = "Sending the message...";
+    }
+  }
+}
+
+function waitProcess()
+{
+  element = document.getElementById("send");
+  element.style.visibility = "hidden";
+  element = document.getElementById("msg_body");
+  element.className = element.className + " waiting_process";
+  element = document.getElementById("msg_to");
+  element.className = element.className + " waiting_process";
+  element = document.getElementById("msg_subject");
+  element.className = element.className + " waiting_process";
+}
+
+function unWaitProcess()
+{
+  element = document.getElementById("send");
+  element.style.visibility = "visible";
+  element = document.getElementById("msg_body");
+  element.className = element.className.replace("waiting_process", "");
+  element = document.getElementById("msg_to");
+  element.className = element.className.replace("waiting_process", "");
+  element = document.getElementById("msg_subject");
+  element.className = element.className.replace("waiting_process", "");
+}
+
+function sendMessage()
+{
+  // reading values on the form
+  came_from = getValueFromInput("came_from");
+  if (came_from==EMPTY)
+  {
+    came_from = "";
+  }
+  msg_from = getValueFromInput("msg_from");
+  msg_subject = getValueFromInput("msg_subject");
+  msg_body = getValueFromInput("msg_body");
+  msg_to = getValueFromInput("msg_to");
+  msg_cc = getValueFromInput("msg_cc");
+  msg_bcc = getValueFromInput("msg_bcc");
+
+  // computing uri
+  var poster = new Array();
+  equals = "=";
+  poster.push(encodeURIComponent("responsetype") + equals + encodeURIComponent("text"));
+  poster.push(encodeURIComponent("msg_subject") + equals + encodeURIComponent(msg_subject));
+  poster.push(encodeURIComponent("msg_body") + equals + encodeURIComponent(msg_body));
+  poster.push(encodeURIComponent("msg_to") + equals + encodeURIComponent(msg_to));
+  poster.push(encodeURIComponent("msg_cc") + equals + encodeURIComponent(msg_cc));
+  poster.push(encodeURIComponent("msg_bcc") + equals + encodeURIComponent(msg_bcc));
+  poster.push(encodeURIComponent("msg_from") + equals + encodeURIComponent(msg_from));
+  poster = poster.join("&");
+
+  // sending mail
+  currentXMLObject = createXMLObject();
+
+  if (xml)
+  {
+    url = "sendMessage.html";
+    currentXMLObject.open("POST", url, true);
+    currentXMLObject.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    currentXMLObject.onreadystatechange = sendMessageResult;
+    try
+    {
+      currentXMLObject.send(poster);
+    }
+    catch(err)
+    {
+      alert("operation not supported");
+    }
+  }
+  else
+  {
     alert("operation not supported");
   }
   //gotoUrl("editAction.html?" + poster);
@@ -349,28 +445,29 @@ function sendMessage()
 
 function translate(msg)
 {
-  xml = createXMLObject();
-  if (xml)
+  txml = createXMLObject();
+
+  if (txml)
   {
     url = "Localizer/default/gettext";
     status = 503;
     i = 0;
     while ((status == 503) && (i<10))
     {
-      xml.open("POST", url, false);
-      xml.setRequestHeader("Content-type",
-                           "application/x-www-form-urlencoded; charset=utf-8");
-      xml.send("message="+msg);
+      txml.open("POST", url, false);
+      txml.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      txml.send(encodeURIComponent("message")+"="+encodeURIComponent(msg));
       status = xml.status;
       if (status == 503)
       {
         i++;
         delay(200);
       }
-    }
 
-    res = extractResponse(xml.responseText);
-    return res
+    }
+    alert(txml.responseText);
+    res = extractResponse(txml.responseText);
+    return res;
   }
   else
   {
@@ -423,27 +520,6 @@ function clearEditor()
   }
 }
 
-/*
-  hidden, visible
-*/
-function toggleElementVisibility(id)
-{
-  element = document.getElementById(id);
-
-  if (element)
-  {
-    if (element.className.find("not_hidden_part"))
-    {
-      element.className.replace("not_hidden_part", "hidden_part");
-      element.style.visibility = "hidden";
-    }
-    else
-    {
-      element.className.replace("hidden_part", "not_hidden_part");
-      element.style.visibility = "visible";
-    }
-  }
-}
 
 /*
   Will popup the recipient picker window
