@@ -465,7 +465,6 @@ function translate(msg)
       }
 
     }
-    alert(txml.responseText);
     res = extractResponse(txml.responseText);
     return res;
   }
