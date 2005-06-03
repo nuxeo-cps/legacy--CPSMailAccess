@@ -337,8 +337,9 @@ class MailMessage(Folder):
                                 'Return-Path', 'Received', 'Delivered-To',
                                 'Message-ID', 'References'):
                     if gheader in copy:
-                        for value in  copy.get_all(gheader):
-                            message[gheader] = copy[gheader]
+                        values = copy.get_all(gheader)
+                        for value in values:
+                            message[gheader] = value
                         copy.__delitem__(gheader)
 
                 message['content-type'] = \
