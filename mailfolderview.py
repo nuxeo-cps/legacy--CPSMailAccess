@@ -226,6 +226,16 @@ class MailFolderView(BaseMailMessageView):
         elements = mailfolder.getMailMessages(list_folder=False,
             list_messages=True, recursive=False)
 
+        # removing deleted message if not in Trash
+        box = mailfolder.getMailBox()
+        if box is not None and mailfolder != box.getTrashFolder():
+            new_list = []
+            for element in elements:
+                if element.deleted != 1:
+                    new_list.append(element)
+        else:
+            new_list = elements
+
         # now cutting in nb_items
         nb_elements = len(elements)
         nb_pages = int(ceil(float(nb_elements) / float(nb_items)))
@@ -241,7 +251,7 @@ class MailFolderView(BaseMailMessageView):
             last_element = nb_elements - 1
 
         # sorting before slicing
-        elements = self._sortMessages(elements, sort_with, sort_asc)
+        elements = self._sortMessages(new_list, sort_with, sort_asc)
 
         # slicing
         elements = elements[first_element:last_element+1]

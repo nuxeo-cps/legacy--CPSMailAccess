@@ -523,6 +523,18 @@ class MailFolderViewTestCase(MailTestCase):
         # if not this will raise an error
         string_ = unicode_.encode('ISO-8859-15')
 
+    def test_removingdeletedmessage(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+        message = ob._addMessage('msg', '.1')
+        message2 = ob._addMessage('msg2', '.2')
+        message2.deleted = 1
+
+        rendered_mails = view.renderMailList()[1]
+        self.assertEquals(len(rendered_mails), 1)
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailFolderViewTestCase),
