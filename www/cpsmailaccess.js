@@ -382,16 +382,7 @@ function sendMessageResult()
   {
     unWaitProcess();
     response = extractResponse(currentXMLObject.responseText);
-
-    if (response == "cpsma_message_sent")
-    {
-      trans = translate(response);
-    }
-    else
-    {
-      trans = response;
-    }
-
+    trans = translate(response);
     setMessage(trans);
 
     if (response == "cpsma_message_sent")
