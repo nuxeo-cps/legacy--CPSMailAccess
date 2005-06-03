@@ -452,3 +452,6 @@ msgstr "Saving the message..."
 
 msgid "cpsm_not_valid_mail"
 msgstr "is not a valid email"
+
+msgid "cpsm_empty_subjet_body"
+msgstr "both subject and body are empty"

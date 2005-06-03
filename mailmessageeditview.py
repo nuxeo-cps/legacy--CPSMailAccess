@@ -127,7 +127,7 @@ class MailMessageEdit(BrowserView):
         if msg_subject is not None:
             if msg_subject.strip() == '' and msg_body.strip() == '':
                 # todo :XXX  need to be externalized in i18n
-                psm = 'both subject and body are empty'
+                psm = 'cpsm_empty_subjet_body'
                 if self.request is not None and not no_redirect:
                     self.request.response.redirect('editMessage.html?msm=%s'\
                         % (psm))

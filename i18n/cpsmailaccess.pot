@@ -451,3 +451,5 @@ msgstr ""
 msgid "cpsm_not_valid_mail"
 msgstr ""
 
+msgid "cpsm_empty_subjet_body"
+msgstr ""
