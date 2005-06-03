@@ -434,3 +434,21 @@ msgstr "Dossiers de mails"
 
 msgid "cpsma_attached_files"
 msgstr "Pièces jointes"
+
+msgid "cpsma_message_saved"
+msgstr "Message enregistré dans les brouillons"
+
+msgid "cpsma_message_saved_no_subject"
+msgstr "Le sujet est nécessaire à la sauvegarde"
+
+msgid "cpsma_message_saved_no_recipient"
+msgstr "Le destinataire est nécessaire à la sauvegarde"
+
+msgid "cpsma_message_sending"
+msgstr "Envoi en cours..."
+
+msgid "cpsma_message_saving"
+msgstr "Sauvegarde en cours..."
+
+msgid "cpsm_not_valid_mail"
+msgstr "n'est pas un email valide"

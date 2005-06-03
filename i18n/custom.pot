@@ -429,3 +429,21 @@ msgstr ""
 
 msgid "cpsma_attached_files"
 msgstr ""
+
+msgid "cpsma_message_saved"
+msgstr ""
+
+msgid "cpsma_message_saved_no_subject"
+msgstr ""
+
+msgid "cpsma_message_saved_no_recipient"
+msgstr ""
+
+msgid "cpsma_message_sending"
+msgstr ""
+
+msgid "cpsma_message_saving"
+msgstr ""
+
+msgid "cpsm_not_valid_mail"
+msgstr ""

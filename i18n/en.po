@@ -434,3 +434,21 @@ msgstr "Dossiers de mails"
 
 msgid "cpsma_attached_files"
 msgstr "Attached files"
+
+msgid "cpsma_message_saved"
+msgstr "Message saved in drafts"
+
+msgid "cpsma_message_saved_no_subject"
+msgstr "Subject is needed inorder to save the message"
+
+msgid "cpsma_message_saved_no_recipient"
+msgstr "Recipient is needed inorder to save the message"
+
+msgid "cpsma_message_sending"
+msgstr "Sending the message..."
+
+msgid "cpsma_message_saving"
+msgstr "Saving the message..."
+
+msgid "cpsm_not_valid_mail"
+msgstr "is not a valid email"
