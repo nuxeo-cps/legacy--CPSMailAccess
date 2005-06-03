@@ -233,6 +233,9 @@ The CPS Team.
     def test_createDigest(self):
         msg = self.getMailInstance(2)
         self.assertEquals(createDigest(msg), 'ea879bcd72364153266cdd7d2c59c2d4')
+        list_ = {'From': 'okokok', '2': 'opoihuou'}
+        md5 = createDigestFromList(list_)
+        self.assertEquals(md5,'015cded315e5d0f1e5f7ff295f09f306')
 
 def test_suite():
     return unittest.TestSuite((

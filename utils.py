@@ -561,3 +561,14 @@ def createDigest(msg):
 
     all_values = str(sub_keys.values())
     return md5Hash(all_values)
+
+def createDigestFromList(headers):
+    """ create a message digest from given headers """
+    subs = ('Date', 'Subject', 'From', 'To', 'Cc', 'Message-ID')
+    sub_keys = {}
+    for sub in subs:
+        if sub in headers:
+            sub_keys[sub] = headers[sub]
+
+    all_values = str(sub_keys.values())
+    return md5Hash(all_values)

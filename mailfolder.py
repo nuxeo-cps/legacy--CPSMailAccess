@@ -39,7 +39,7 @@ from mailmessage import MailMessage
 from mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder,\
-                  AsyncCall, createDigest
+                  AsyncCall, createDigestFromList
 from baseconnection import has_connection, ConnectionError
 
 class MailFolder(BTreeFolder2):
@@ -550,7 +550,7 @@ class MailFolder(BTreeFolder2):
 
     def _synchronizeFolder(self, return_log=False, indexStack=[]):
         """ See interfaces.IMailFolder """
-        LOG('_synchronizeFolder', INFO, self.id)
+        LOG('_synchronizeFolder', DEBUG, self.id)
         self._clearCache()
         sync_states = {}
         log = []
@@ -617,7 +617,7 @@ class MailFolder(BTreeFolder2):
                 digest = None
                 if not mailfailed:
                     msg_headers = fetched_mail[2]
-                    digest = createDigest(msg)
+                    digest = createDigestFromList(msg_headers)
 
                 # comparing digest with msg digest
                 if msg is not None:
