@@ -44,7 +44,7 @@ from zope.publisher.browser import FileUpload
 from zope.app.cache.ram import RAMCache
 
 from utils import getToolByName, decodeHeader, uniqueId, makeId, getFolder,\
-                  createDigest
+                  createDigest, translate
 from interfaces import IMailBox, IMailMessage, IMailFolder, IMessageTraverser
 from mailfolder import MailFolder, manage_addMailFolder
 from maileditormessage import MailEditorMessage
@@ -450,7 +450,7 @@ class MailBox(MailBoxBaseCaching):
         """ sends the cached message """
         msg = self.getCurrentEditorMessage()
         if msg is None:
-            return False
+            return False, 'KO'
         msg_from = msg.getHeader('From')
         msg_to = msg.getHeader('To') + msg.getHeader('Cc') + msg.getHeader('BCc')
         msg.digest = createDigest(msg)
@@ -463,23 +463,21 @@ class MailBox(MailBoxBaseCaching):
                 # no home directory
                 pass
 
+            sent_folder = self.getSentFolder()
             connector = self._getconnector()
-            connector.writeMessage('INBOX.Sent', msg.getRawMessage())
+
+            uid = connector.writeMessage(sent_folder.server_name,
+                                         msg.getRawMessage())
+            connector.setFlags(sent_folder.server_name, uid, {'Seen': 1})
 
             # on the zodb, by synchronizing INBOX.Sent folder
-            if hasattr(self, 'INBOX'):
-                if hasattr(self.INBOX, 'Sent'):
-                    self.INBOX.Sent._synchronizeFolder(return_log=False)
-                else:
-                    self._syncdirs()
-                    self.INBOX._synchronizeFolder(return_log=False)
-            else:
-                self._syncdirs()
-                self._synchronizeFolder(return_log=False)
+            try:
+                sent_folder._synchronizeFolder(return_log=False)
+            finally:
+                self.clearSynchro()
 
-            self.clearSynchro()
             self.clearEditorMessage()
-            return True, ''
+            return True, 'OK'
         else:
             return False, error
 
@@ -680,21 +678,31 @@ class MailBox(MailBoxBaseCaching):
             subject = subjects[0]
             msg.title = decodeHeader(subject)
 
-        # copy it to draft folder
+        msg.draft = 1
+        msg.seen = 1
+        msg.setHeader('Date', formatdate())
+
         drafts = self.getDraftFolder()
-        new_uid = drafts.getNextMessageUid()
-        msg_copy = drafts._addMessage(new_uid, msg.digest, index=False)
-        msg_copy.copyFrom(msg)
-        msg_copy.draft = 1
-        msg_copy.seen = 1
-        msg_copy.setHeader('Date', formatdate())
 
         # and to server
         if has_connection:
             connector = self._getconnector()
-            # need to create the message on server side
-            new_uid = connector.writeMessage(drafts.server_name,
-                                             msg_copy.getRawMessage())
+
+            uid = connector.writeMessage(drafts.server_name, msg.getRawMessage())
+            connector.setFlags(drafts.server_name, uid, {'Seen': 1})
+
+            # on the zodb, by synchronizing INBOX.Draft folder
+            try:
+                drafts._synchronizeFolder(return_log=False)
+            finally:
+                self.clearSynchro()
+        else:
+            # copy it to draft folder
+            new_uid = drafts.getNextMessageUid()
+            msg_copy = drafts._addMessage(new_uid, msg.digest, index=False)
+            msg_copy.draft = 1
+            msg_copy.seen = 1
+            msg_copy.setHeader('Date', formatdate())
 
     def getIdentitites(self):
         """ returns identities """
@@ -1109,6 +1117,13 @@ class MailBoxView(MailFolderView):
         target = mailbox.moveElement(from_place, to_place)
         if self.request is not None and target is not None:
             self.request.response.redirect(target.absolute_url()+ '/view')
+
+    def getunicodetext(self, message):
+        """ retrieves a translation in a full unicode response """
+        mailbox = self.context
+        self.request.response.setHeader('content-type',
+                                        'text/plain; charset=utf-8')
+        return translate(mailbox, message)
 
 class MailBoxTraversable(FiveTraversable):
     """ use to vizualize the mail parts in the mail editor

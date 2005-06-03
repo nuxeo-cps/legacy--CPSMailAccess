@@ -79,8 +79,8 @@ class MailActionsView(BaseMailMessageView):
                         'title' : 'cpsma_save_message',
                         'id' : 'save',
                         'long_title' : 'cpsma_save_message',
-                        'onclick' : 'saveMessageDatas()',
-                        'action' : root + '/saveMessage.html'}
+                        'onclick' : 'saveMessage()',
+                        'action' : ''}
 
                 """
                 attach_file = {'icon' : base_url + '/cpsma_attach.png',

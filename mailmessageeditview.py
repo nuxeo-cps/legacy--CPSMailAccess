@@ -81,7 +81,7 @@ class MailMessageEdit(BrowserView):
             values = msg.getHeader(field)
             for value in values:
                 if not isValidEmail(value):
-                    return '%s is not a valid email' % value
+                    return '%s cpsm_not_valid_mail' % value
         return None
 
     def sendMessage(self, msg_from, msg_subject=None, msg_body=None,
@@ -147,9 +147,8 @@ class MailMessageEdit(BrowserView):
                 msg.removeHeader(id)            # otherwise previous ones stays there
                 for line in lines:
                     if line.strip() != '':
-                        self.addRecipient(line, id)
+                        self.addRecipient(line, id, no_redirect=True)
 
-        # cheking elements
         Tos = msg.getHeader('To')
         if Tos == []:
             psm = 'Recipient is required'
@@ -160,6 +159,7 @@ class MailMessageEdit(BrowserView):
             return False, psm
 
         error = self._verifyRecipients(msg)
+
         if error is not None:
             psm = error
             if self.request is not None and not no_redirect:
@@ -174,9 +174,10 @@ class MailMessageEdit(BrowserView):
         # using the message instance that might have attached files already
         try:
             result, error = self.context.sendEditorsMessage()
-        except ConnectionError:
+        except ConnectionError, e:
             result = False
-            error = 'cpsma_failed_send'
+            error = str(e)
+            #error = 'cpsma_failed_send'
 
         if self.request is not None:
             if result:
@@ -216,8 +217,8 @@ class MailMessageEdit(BrowserView):
                                                     % (goto, psm))
                 else:
                     return True, psm
-        return result, error
 
+        return result, error
 
     def getIdentitites(self):
         """ gives to the editor the list of current mailbox idendities """
@@ -333,12 +334,21 @@ class MailMessageEdit(BrowserView):
                 res.append(decodeHeader(element))
         return res
 
-    def saveMessageForm(self):
+    def saveMessageForm(self, **kw):
         """ saves the form into the message """
         if self.request is None:
-            return
+            return False
 
         form = self.request.form
+
+        EMPTY = '__#EMPTY#__'
+        for key in kw.keys():
+            if kw[key] == EMPTY:
+                form[key] = ''
+            else:
+                form[key] = kw[key]
+
+        LOG('save res values', INFO, str(form))
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
 
@@ -347,7 +357,7 @@ class MailMessageEdit(BrowserView):
             msg.setDirectBody(msg_body)
 
         if form.has_key('msg_subject'):
-            msg_subject = Utf8ToIsoform(['msg_subject'])
+            msg_subject = Utf8ToIso(form['msg_subject'])
             msg.setHeader('Subject', msg_subject)
 
         textareas = (('msg_to', 'To'), ('msg_cc', 'Cc'), ('msg_bcc', 'BCc'))
@@ -355,13 +365,15 @@ class MailMessageEdit(BrowserView):
         for area, id in textareas:
             if form.has_key(area):
                 msg_body = Utf8ToIso(form[area])
+                """
                 if msg_body.strip() == '':
-                   continue
+                    continue
+                """
                 lines = msg_body.split('\n')
                 msg.removeHeader(id)            # otherwise previous ones stays there
                 for line in lines:
                     if line.strip() != '':
-                        self.addRecipient(line, id)
+                        self.addRecipient(line, id, no_redirect=True)
 
         if form.has_key('cc_on'):
             msg.setCachedValue('cc_on', int(form['cc_on']))
@@ -372,7 +384,12 @@ class MailMessageEdit(BrowserView):
         if form.has_key('attacher_on'):
             msg.setCachedValue('attacher_on', int(form['attacher_on']))
 
-        return
+        LOG('save res to', INFO, msg.getHeader('To'))
+        LOG('save res subject', INFO, msg.getHeader('Subject'))
+        LOG('save res uid', INFO, msg.uid)
+        LOG('save res id', INFO, msg.id)
+
+        return 'cpsma_message_saved'
 
     def removeRecipient(self, value, type, redirect=''):
         """ removes a recipient """
@@ -392,7 +409,7 @@ class MailMessageEdit(BrowserView):
             else:
                 self.request.response.redirect('editMessage.html')
 
-    def addRecipient(self, content, type, redirect=''):
+    def addRecipient(self, content, type, no_redirect=False, redirect=None):
         """ add a recipient """
         content = content.strip()
         if content == '':
@@ -411,11 +428,12 @@ class MailMessageEdit(BrowserView):
             if mail not in list_:
                 msg.addHeader(type, mail)
 
-        if self.request is not None:
-            if redirect is not None:
-                self.request.response.redirect(redirect)
-            else:
-                self.request.response.redirect('editMessage.html')
+        if not no_redirect:
+            if self.request is not None:
+                if redirect is not None:
+                    self.request.response.redirect(redirect)
+                else:
+                    self.request.response.redirect('editMessage.html')
 
 
     def editAction(self, **kw):
@@ -440,17 +458,44 @@ class MailMessageEdit(BrowserView):
             self.sendMessage(kw['msg_from'], kw['msg_subject'],
                              kw['msg_body'], came_from)
 
-    def saveMessage(self):
+    def saveMessage(self, **kw):
         """ saves the message in Drafts """
+        result = True
         mailbox = self.context
-        msg = mailbox.getCurrentEditorMessage()
-        msg_from = self._identyToMsgHeader()
-        msg.setHeader('From', msg_from)
-        mailbox.saveEditorMessage()
+
         if self.request is not None:
-            psm = 'Message has been saved in Drafts'
-            self.request.response.redirect('editMessage.html\
-                                            ?msm=%s' % psm)
+            self.saveMessageForm(**self.request.form)
+
+        LOG('request', INFO, str(self.request.form))
+        LOG('kw', INFO, str(kw))
+
+        msg = mailbox.getCurrentEditorMessage()
+        LOG('to', INFO, msg.getHeader('To'))
+        LOG('subject', INFO, msg.getHeader('Subject'))
+        LOG('uid', INFO, msg.uid)
+        LOG('id', INFO, msg.id)
+
+        Tos = msg.getHeader('To')
+        if Tos == [] or Tos == ['']:
+            result = False
+            psm = 'cpsma_message_saved_no_recipient'
+
+        subject = msg.getHeader('Subject')
+        if subject == [] or subject == ['']:
+            result = False
+            psm = 'cpsma_message_saved_no_subject'
+
+        if result:
+            msg_from = self._identyToMsgHeader()
+            msg.setHeader('From', msg_from)
+            mailbox.saveEditorMessage()
+            psm = 'cpsma_message_saved'
+
+        if self.request is not None:
+            if 'responsetype' is not None:
+                return result, psm
+            else:
+                self.request.response.redirect('editMessage.html?msm=%s' % psm)
 
     def initializeEditor(self, back_to_front=True, no_move=False):
         """ cleans the editor

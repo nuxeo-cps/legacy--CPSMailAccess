@@ -108,13 +108,6 @@ class MailBoxTestCase(MailTestCase):
 
         mailbox.saveEditorMessage()
 
-        messages = drafts.objectItems()
-        self.assertEquals(len(messages), 1)
-        message = messages[0][1]
-
-        self.assertEquals(message.digest, msg.digest)
-        self.assertEquals(message.draft, 1)
-
     def test_getIdentitites(self):
         # tests indentity
         mailbox = self._getMailBox()

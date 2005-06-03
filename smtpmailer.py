@@ -22,11 +22,14 @@
     utility thru zcml directive
     and get notification when swork is done
 """
+import socket
+from smtplib import SMTPRecipientsRefused
 
 from zope.app.mail.mailer import SMTPMailer
 from zope.app.mail.delivery import QueuedMailDelivery
 from zope.interface import implements
-from smtplib import SMTPRecipientsRefused
+
+from baseconnection import ConnectionError
 
 class MultiSMTPMailer(SMTPMailer):
     """ a class that delivers a mail to any SMTP server """
@@ -38,7 +41,10 @@ class MultiSMTPMailer(SMTPMailer):
         self.port = port
         self.username = username
         self.password = password
-        SMTPMailer.send(self, fromaddr, toaddrs, message)
+        try:
+            SMTPMailer.send(self, fromaddr, toaddrs, message)
+        except socket.gaierror, e:
+            raise ConnectionError(str(e))
 
 class SmtpQueuedMailer(object):
     """ a class that sends mails """

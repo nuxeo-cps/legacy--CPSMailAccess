@@ -125,110 +125,166 @@ function createXMLObject()
   return xml;
 }
 
-function saveMessageDatas()
+function getVisibleState(id)
 {
-  msg_subject = document.getElementById('msg_subject');
-  msg_subject = msg_subject.value;
-
-  msg_body = document.getElementById('msg_body');
-  msg_body = msg_body.value;
-
-  msg_to = document.getElementById('msg_to');
-  msg_to = msg_to.value;
-
-  msg_cc = document.getElementById('msg_cc');
-  msg_cc = msg_cc.value;
-
-  msg_bcc = document.getElementById('msg_bcc');
-  msg_bcc = msg_bcc.value;
-
   try
   {
-    Cc = document.getElementById('Cc');
-    if (Cc.style.visibility == 'hidden')
+    element = document.getElementById(id);
+    if (element)
     {
-      cc_on = "0";
+      if (element.style.visibility == "hidden")
+      {
+        return "0";
+      }
+      else
+      {
+        return "1";
+      }
     }
-    else
     {
-      cc_on = "1";
+      return "0";
     }
   }
   catch(err)
   {
-    cc_on = "0";
+    return "0";
   }
-  try
-  {
-    BCc = document.getElementById('BCc');
+}
 
-    if (BCc.style.visibility == 'hidden')
-    {
-      bcc_on =  "0";
-    }
-    else
-    {
-      bcc_on = "1";
-    }
-  }
-  catch(err)
-  {
-    bcc_on = "0";
-  }
+/*
+ Saving message(asynced)
+*/
 
-  try
+function saveMessageDataResult()
+{
+  if (currentXMLObject.readyState == 4)
   {
-    Attach = document.getElementById('attacher');
+    unWaitProcess();
+    response = extractResponse(currentXMLObject.responseText);
+    trans = translate(response);
+    setMessage(trans);
 
-    if (Attach.style.visibility == 'hidden')
-    {
-      attacher_on =  "0";
-    }
-    else
-    {
-      attacher_on = "1";
-    }
   }
-  catch(err)
+  else
   {
-    attacher_on = "0";
+    if (currentXMLObject.readyState==1)
+    {
+      // protecting from "double-send" and making screen changes
+      waitProcess();
+
+      // setting up msg
+      element = document.getElementById("java_msm");
+      element.className = element.className.replace("hidden_part", "not_hidden_part");
+      element.style.visibility = "visible";
+      element.innerHTML = translate("cpsma_message_saving");
+    }
   }
+}
+
+function saveMessageDatas(synced)
+{
+  msg_from = getValueFromInput("msg_from");
+  msg_body = getValueFromInput("msg_body");
+  msg_to = getValueFromInput("msg_to");
+  msg_cc = getValueFromInput("msg_cc");
+  msg_bcc = getValueFromInput("msg_bcc");
+  msg_subject = getValueFromInput("msg_subject");
+  cc_on = getVisibleState("Cc");
+  bcc_on = getVisibleState("CCc");
+  attacher_on = getVisibleState("attacher");
 
   currentXMLObject = createXMLObject();
 
   if (currentXMLObject)
   {
     url = "saveMessageForm.html";
-    status = 503;
-    equals = "=";
 
     var poster = new Array();
+    poster.push("attacher_on=" + encodeURIComponent(attacher_on));
+    poster.push("cc_on=" + encodeURIComponent(cc_on));
+    poster.push("bcc_on=" + encodeURIComponent(bcc_on));
+    poster.push("msg_subject=" + encodeURIComponent(msg_subject));
+    poster.push("msg_body=" + encodeURIComponent(msg_body));
+    poster.push("msg_to=" + encodeURIComponent(msg_to));
+    poster.push("msg_cc=" + encodeURIComponent(msg_cc));
+    poster.push("msg_bcc=" + encodeURIComponent(msg_bcc));
+    poster = poster.join("&");
 
-    poster.push(encodeURIComponent("attacher_on") + equals + encodeURIComponent(attacher_on));
-    poster.push(encodeURIComponent("cc_on") + equals + encodeURIComponent(cc_on));
-    poster.push(encodeURIComponent("bcc_on") + equals + encodeURIComponent(bcc_on));
-    poster.push(encodeURIComponent("msg_subject") + equals + encodeURIComponent(msg_subject));
-    poster.push(encodeURIComponent("msg_body") + equals + encodeURIComponent(msg_body));
-    poster.push(encodeURIComponent("msg_to") + equals + encodeURIComponent(msg_to));
-    poster.push(encodeURIComponent("msg_cc") + equals + encodeURIComponent(msg_cc));
-    poster.push(encodeURIComponent("msg_bcc") + equals + encodeURIComponent(msg_bcc));
-
-    poster = poster.join(encodeURIComponent("&"));
-
-    i = 0;
-    while ((status == 503) && (i<10))
+    if (synced == 0)
+    {
+      currentXMLObject.open("POST", url, true);
+      currentXMLObject.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      currentXMLObject.onreadystatechange = saveMessageDataResult;
+      currentXMLObject.send(poster);
+    }
+    else
     {
       currentXMLObject.open("POST", url, false);
-      currentXMLObject.setRequestHeader("Content-Type",
-                           "application/www-form-urlencoded; charset=utf-8");
+      currentXMLObject.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       currentXMLObject.send(poster);
-      status = currentXMLObject.status;
-      if (status == 503)
-      {
-        i++;
-        delay(200);
-      }
+      return currentXMLObject.responseText;
     }
+  }
+  else
+  {
+    alert("operation not supported");
+  }
+}
+
+function saveMessageResult()
+{
+  if (currentXMLObject.readyState == 4)
+  {
+    unWaitProcess();
+    response = extractResponse(currentXMLObject.responseText);
+    trans = translate(response);
+    setMessage(trans);
+
+  }
+  else
+  {
+    if (currentXMLObject.readyState==1)
+    {
+      // protecting from "double-send" and making screen changes
+      waitProcess();
+
+      // setting up msg
+      element = document.getElementById("java_msm");
+      element.className = element.className.replace("hidden_part", "not_hidden_part");
+      element.style.visibility = "visible";
+      element.innerHTML = translate("cpsma_message_saving");
+    }
+  }
+}
+
+function saveMessage()
+{
+  msg_from = getValueFromInput("msg_from");
+  msg_subject = getValueFromInput("msg_subject");
+  msg_body = getValueFromInput("msg_body");
+  msg_to = getValueFromInput("msg_to");
+  msg_cc = getValueFromInput("msg_cc");
+  msg_bcc = getValueFromInput("msg_bcc");
+
+  // computing uri
+  var poster = new Array();
+
+  poster.push("msg_to=" + encodeURIComponent(msg_to));
+  poster.push("msg_subject=" + encodeURIComponent(msg_subject));
+  poster.push("msg_body=" + encodeURIComponent(msg_body));
+  poster.push("msg_cc=" + encodeURIComponent(msg_cc));
+  poster.push("msg_bcc=" + encodeURIComponent(msg_bcc));
+  poster.push("msg_from=" + encodeURIComponent(msg_from));
+  poster = poster.join("&");
+
+  currentXMLObject = createXMLObject();
+  if (currentXMLObject)
+  {
+    url = "saveMessage.html";
+    currentXMLObject.open("POST", url, true);
+    currentXMLObject.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    currentXMLObject.onreadystatechange = saveMessageResult;
+    currentXMLObject.send(poster);
   }
   else
   {
@@ -282,16 +338,13 @@ function setMessage(msg)
     if (msg)
     {
       // showing it
-
       if (element.className.indexOf("not_hidden_part") == -1)
       {
         toggleElementVisibility("java_msm");
-
       }
     }
     else
     {
-
       // hiding it
       if (element.className.indexOf("not_hidden_part") != -1)
       {
@@ -300,8 +353,6 @@ function setMessage(msg)
     }
   }
 }
-
-
 
 function getValueFromInput(id)
 {
@@ -320,7 +371,11 @@ function getValueFromInput(id)
     return value_ob;
   }
 }
-// sends the message
+
+/*
+  sends the message : asynced response
+*/
+
 function sendMessageResult()
 {
   if (currentXMLObject.readyState == 4)
@@ -362,8 +417,29 @@ function sendMessageResult()
       element = document.getElementById("java_msm");
       element.className = element.className.replace("hidden_part", "not_hidden_part");
       element.style.visibility = "visible";
-      element.innerHTML = "Sending the message...";
+      element.innerHTML = translate("cpsma_message_sending");
     }
+  }
+}
+
+/*
+  block-unblock operations on the ui
+*/
+function block(id)
+{
+  element = document.getElementById(id);
+  if (element)
+  {
+    element.className = element.className + " waiting_process";
+  }
+}
+
+function unBlock(id)
+{
+  element = document.getElementById(id);
+  if (element)
+  {
+    element.className = element.className.replace("waiting_process", "");
   }
 }
 
@@ -371,26 +447,31 @@ function waitProcess()
 {
   element = document.getElementById("send");
   element.style.visibility = "hidden";
-  element = document.getElementById("msg_body");
-  element.className = element.className + " waiting_process";
-  element = document.getElementById("msg_to");
-  element.className = element.className + " waiting_process";
-  element = document.getElementById("msg_subject");
-  element.className = element.className + " waiting_process";
+  element = document.getElementById("save");
+  element.style.visibility = "hidden";
+  block("msg_body");
+  block("msg_to");
+  block("msg_cc");
+  block("msg_bcc");
+  block("msg_subject");
 }
 
 function unWaitProcess()
 {
   element = document.getElementById("send");
   element.style.visibility = "visible";
-  element = document.getElementById("msg_body");
-  element.className = element.className.replace("waiting_process", "");
-  element = document.getElementById("msg_to");
-  element.className = element.className.replace("waiting_process", "");
-  element = document.getElementById("msg_subject");
-  element.className = element.className.replace("waiting_process", "");
+  element = document.getElementById("save");
+  element.style.visibility = "visible";
+  unBlock("msg_body");
+  unBlock("msg_to");
+  unBlock("msg_cc");
+  unBlock("msg_bcc");
+  unBlock("msg_subject");
 }
 
+/*
+  send the message (asynced)
+*/
 function sendMessage()
 {
   // reading values on the form
@@ -399,6 +480,7 @@ function sendMessage()
   {
     came_from = "";
   }
+
   msg_from = getValueFromInput("msg_from");
   msg_subject = getValueFromInput("msg_subject");
   msg_body = getValueFromInput("msg_body");
@@ -408,20 +490,20 @@ function sendMessage()
 
   // computing uri
   var poster = new Array();
-  equals = "=";
-  poster.push(encodeURIComponent("responsetype") + equals + encodeURIComponent("text"));
-  poster.push(encodeURIComponent("msg_subject") + equals + encodeURIComponent(msg_subject));
-  poster.push(encodeURIComponent("msg_body") + equals + encodeURIComponent(msg_body));
-  poster.push(encodeURIComponent("msg_to") + equals + encodeURIComponent(msg_to));
-  poster.push(encodeURIComponent("msg_cc") + equals + encodeURIComponent(msg_cc));
-  poster.push(encodeURIComponent("msg_bcc") + equals + encodeURIComponent(msg_bcc));
-  poster.push(encodeURIComponent("msg_from") + equals + encodeURIComponent(msg_from));
+
+  poster.push("msg_to=" + encodeURIComponent(msg_to));
+  poster.push("responsetype=text");
+  poster.push("msg_subject=" + encodeURIComponent(msg_subject));
+  poster.push("msg_body=" + encodeURIComponent(msg_body));
+  poster.push("msg_cc=" + encodeURIComponent(msg_cc));
+  poster.push("msg_bcc=" + encodeURIComponent(msg_bcc));
+  poster.push("msg_from=" + encodeURIComponent(msg_from));
   poster = poster.join("&");
 
   // sending mail
   currentXMLObject = createXMLObject();
 
-  if (xml)
+  if (currentXMLObject)
   {
     url = "sendMessage.html";
     currentXMLObject.open("POST", url, true);
@@ -440,38 +522,35 @@ function sendMessage()
   {
     alert("operation not supported");
   }
-  //gotoUrl("editAction.html?" + poster);
 }
 
+/*
+  call the server for a translation (synced)
+*/
 function translate(msg)
 {
-  txml = createXMLObject();
-
-  if (txml)
+  currentTranslateXMLObject = createXMLObject();
+  if (currentTranslateXMLObject)
   {
-    url = "Localizer/default/gettext";
-    status = 503;
-    i = 0;
-    while ((status == 503) && (i<10))
+    url = "getunicodetext";
+    currentTranslateXMLObject.open("POST", url, false);
+    currentTranslateXMLObject.setRequestHeader("Content-type",
+       "application/x-www-form-urlencoded");
+    try
     {
-      txml.open("POST", url, false);
-      txml.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      txml.send(encodeURIComponent("message")+"="+encodeURIComponent(msg));
-      status = xml.status;
-      if (status == 503)
-      {
-        i++;
-        delay(200);
-      }
-
+      currentTranslateXMLObject.send("message="+encodeURIComponent(msg));
+      resp = extractResponse(currentTranslateXMLObject.responseText);
     }
-    res = extractResponse(txml.responseText);
-    return res;
+    catch (err)
+    {
+      resp = msg;
+    }
   }
   else
   {
-    return msg;
+    resp = msg;
   }
+  return resp;
 }
 
 function extractResponse(response)
@@ -527,7 +606,7 @@ var parent_window;
 
 function popupRecipientPicker()
  {
-    saveMessageDatas();
+    saveMessageDatas(1);
 
     var args;
     url = "selectRecipients.html";
@@ -678,6 +757,7 @@ function cellDest(node)
   pd_setupDropTarget(node, 1);
 
 }
+
 
 pd_node_setup['cellDrag'] = cellDrag;
 pd_node_setup['cellDest'] = cellDest;

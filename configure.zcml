@@ -158,6 +158,14 @@
       />
 
   <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxView"
+      name="getunicodetext"
+      attribute="getunicodetext"
+      permission="cpsmailaccess.ViewMailBox"
+      />
+
+  <browser:page
       for=".interfaces.IMailFolder"
       class=".mailbox.MailBoxView"
       name="moveElement.html"
