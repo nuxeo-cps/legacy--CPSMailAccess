@@ -5,7 +5,7 @@ INSTALLATION NOTES
 
 To install CPSMailAccess you will need:
 
-- a working Zope2.7.x + CPS 3.3.x (x>3)
+- a working Zope2.7.x + CPS 3.3.4 or greater
 - ZopeX3-3.0.0
 - Five : http://codespeak.net/z3/five/ from the svn repo
 - TrustedExecutables :
