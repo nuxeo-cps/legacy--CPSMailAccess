@@ -1,7 +1,7 @@
 $Id$
 
 - Zope-2.7.3 or greater
-- CPS3.0 or greater
+- CPS3.3.4 or greater
 - CPSInstaller
 - Zope X3.0.0 or greater
 - Five 0.3 or greater
