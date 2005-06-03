@@ -1,0 +1,29 @@
+Return-Path: <postmaster@xx.xx.be>
+Delivered-To: XXX@XXX.org
+Received: (qmail 8548 invoked by uid 503); 28 May 2005 14:09:30 -0000
+Received: from unknown (HELO xxxx.brutele.be) (212.68.199.148)
+  by ns2641.ovh.net with SMTP; 28 May 2005 14:09:30 -0000
+Received: from helium.goams.com (mail.goams.com [212.68.193.206])
+        by xxxx.brutele.be (MOS 3.5.8-GR)
+        with ESMTP id DVC21909;
+        Sat, 28 May 2005 15:17:41 +0200 (CEST)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Subject: Forum AFPY - Re: WxPython/Boa Constructor: quels sujets desirez vous?
+Date: Sat, 28 May 2005 15:17:33 +0200
+Message-ID: <fc2765bf1ae9b88bbca4dbad7fb766d0@cmfboard.org>
+From: xxx <xxx@free.fr>
+In-Reply-To: <e888b4b192e6157ea84c34ed17028b9b@cmfboard.org>
+X-Mailer: PortalTransport MailTransport
+X-Junkmail-Status: score=10/50, host=xx.xx.be
+X-Junkmail-SD-Raw: score=unknown, refid=0001.0A090202.42986EB2.0005-A-, ip=212.68.193.206
+
+RW4gdW4gc2V1bCBtb3QgOiBmb3JtaWRhYmxlICEhIQ0KDQpMJ2lkw6llIGRlIGdlc3Rpb24gZGUg
+Y29udGFjdHMgbWUgcGxhaXQuIExlIGJ1dCDDqXRhbnQgZWZmZWN0aXZlbWVudCBkJ2FwcHJlbmRy
+ZSDDoCB1dGlsaXNlciBXeFB5dGhvbi9Cb2EuDQoNCk1lcmNpIGQnYXZhbmNlLg0KDQoNCm9yaWdp
+bmFsOiBodHRwOi8vYWZweS5vcmcvcHl0aG9uL2ZvcnVtX3B5dGhvbi9mb3J1bV9nZW5lcmFsLzk2
+MzM2NjgxMDE1NC83NDcyNzQxODg2NjYNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoi
+Rm9ydW0gZ8OpbsOpcmFsIFB5dGhvbiIgaHR0cDovL2FmcHkub3JnL3B5dGhvbi9mb3J1bV9weXRo
+b24vZm9ydW1fZ2VuZXJhbA0KIkFzc29jaWF0aW9uIEZyYW5jb3Bob25lIFBZdGhvbiIgaHR0cDov
+L2FmcHkub3JnDQo=

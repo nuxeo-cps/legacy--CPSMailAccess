@@ -1,0 +1,87 @@
+Return-Path: <python-list-bounces+tziade=xxx.xxx@python.org>
+Delivered-To: tziade@xxx.xxx
+Received: (qmail 11278 invoked by uid 1009); 24 May 2005 12:25:29 +0200
+Received: from python-list-bounces+tziade=xxx.xxx@python.org by xxx.xxx.xxx by uid 1008 with qmail-scanner-1.22-st-qms
+ (clamscan: 0.75-1. spamassassin: 3.0.0.  Clear:RC:0(194.109.24.27):SA:0(-2.5/5.0):.
+ Processed in 1.461256 secs); 24 May 2005 10:25:29 -0000
+X-Spam-Status: No, hits=-2.5 required=5.0
+Received: from smtp-vbr7.xs4all.nl (194.109.24.27)
+  by xxx.xxx.xxx with SMTP; 24 May 2005 12:25:28 +0200
+Received: from bag.python.org (bag.python.org [194.109.207.14])
+        by smtp-vbr7.xs4all.nl (8.12.11/8.12.11) with ESMTP id j4OAPRLp038439
+        for <tziade@xxx.xxx>; Tue, 24 May 2005 12:25:27 +0200 (CEST)
+        (envelope-from python-list-bounces+tziade=xxx.xxx@python.org)
+Received: from bag.python.org (bag [127.0.0.1])
+        by bag.python.org (Postfix) with ESMTP id 078CB1E434F
+        for <tziade@xxx.xxx>; Tue, 24 May 2005 12:24:34 +0200 (CEST)
+X-Original-To: python-list@python.org
+Delivered-To: python-list@bag.python.org
+Received: from bag.python.org (bag [127.0.0.1])
+        by bag.python.org (Postfix) with ESMTP id 742221E4003
+        for <python-list@python.org>; Tue, 24 May 2005 12:24:01 +0200 (CEST)
+Received: from bag (HELO bag.python.org) (127.0.0.1)
+        by bag.python.org with SMTP; 24 May 2005 12:23:48 +0200
+Received: from rproxy.gmail.com (rproxy.gmail.com [64.233.170.200])
+        by bag.python.org (Postfix) with ESMTP
+        for <python-list@python.org>; Tue, 24 May 2005 12:23:48 +0200 (CEST)
+Received: by rproxy.gmail.com with SMTP id a41so1000493rng
+        for <python-list@python.org>; Tue, 24 May 2005 03:23:46 -0700 (PDT)
+DomainKey-Signature: a=rsa-sha1; q=dns; c=nofws; s=beta; d=gmail.com;
+        h=received:message-id:date:from:reply-to:to:subject:mime-version:content-type:content-transfer-encoding:content-disposition;
+        b=JvS8QEPt3MQLaR8jY7h3Cg7/TLF1S5XJXAhB2+B99eElE/6i6Cj7wubIyvaieXDPrrUV+jwCrOB2E3NaenaQjckDoReAAt0JsuiI1L62crOSnDdOZ4yJnzmh5wYMJ3vUOnLbPyodvABz06p8J70aBkkwRPh9F+MAQtdl4ve573I=
+Received: by 10.38.152.4 with SMTP id z4mr3751468rnd;
+        Tue, 24 May 2005 03:23:46 -0700 (PDT)
+Received: by 10.38.207.41 with HTTP; Tue, 24 May 2005 03:23:45 -0700 (PDT)
+Message-ID: <5327162005052403233f44fc03@mail.gmail.com>
+Date: Tue, 24 May 2005 20:23:45 +1000
+From: Anthony <anthony.briggs@gmail.com>
+To: python-au@starship.python.net, python-list@python.org,
+        ozzope@lists.ozzope.org
+Subject: Melbourne (Australia) Python User Group
+Mime-Version: 1.0
+Content-Disposition: inline
+X-BeenThere: python-list@python.org
+X-Mailman-Version: 2.1.6rc4+
+Precedence: list
+Reply-To: Anthony <anthony.briggs@gmail.com>
+List-Id: General discussion list for the Python programming language
+        <python-list.python.org>
+List-Unsubscribe: <http://mail.python.org/mailman/listinfo/python-list>,
+        <mailto:python-list-request@python.org?subject=unsubscribe>
+List-Archive: <http://mail.python.org/pipermail/python-list>
+List-Post: <mailto:python-list@python.org>
+List-Help: <mailto:python-list-request@python.org?subject=help>
+List-Subscribe: <http://mail.python.org/mailman/listinfo/python-list>,
+        <mailto:python-list-request@python.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: python-list-bounces+tziade=xxx.xxx@python.org
+Errors-To: python-list-bounces+tziade=xxx.xxx@python.org
+X-Virus-Scanned: by XS4ALL Virus Scanner
+
+Hi all,
+
+I'm interested in starting a Python user group in Melbourne,
+Australia. So far there seems to have been a lot of interest from
+various parties, but for whatever reasons it's fizzled out. So I've
+decided that if there's going to be a user group, I'll have to start
+it myself (hopefully without the meetup.com albatross).
+
+If you're in Melbourne, you're a python programmer and you're
+interested in meeting up, drop me an email and let me know. I'll
+probably also contact the Linux user groups in the area, but if you
+know of any other groups that would be interested, please let me know.
+If you want to forward this email on to other people or groups, feel
+free to do so.
+
+Thanks,
+
+Anthony
+
+--
+-----------------------------------------------------
+ HyPEraCtiVE? HeY, WhO aRE YoU cALliNg HypERaCtIve?!
+ aNthONy.BrIGgS@gmAiL.CoM
+-----------------------------------------------------
+--
+http://mail.python.org/mailman/listinfo/python-list
