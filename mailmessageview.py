@@ -327,11 +327,8 @@ class MailMessageView(BaseMailMessageView):
         trash_folder = mailbox.getTrashFolder()
         # deletes it locally *and* from server
         msg_container.moveMessage(msg.uid, trash_folder)
-        # need to do the same on server
-        msg.setFlag('deleted', 1)
-        if msg_container is not None:
-            msg_container.changeMessageFlags(msg, 'deleted', 1)
 
+        # need to do the same on server
         if self.request is not None:
             psm = 'Message sent to Trash.'
             folder = msg_container.absolute_url()
