@@ -1,7 +1,12 @@
 $Id$
 
-INSTALLATION NOTES
-==================
+A - INSTALLATION NOTES
+B - CONFIGURATION
+C - EXTRA NOTES
+
+
+A - INSTALLATION NOTES
+======================
 
 1- Prerequests
 2 - rdflib installation
@@ -72,8 +77,8 @@ install CPSMailAccess::
 And run it.
 
 
-CONFIGURATION
-=============
+B - CONFIGURATION
+=================
 
 1 - Portal setup
 
@@ -142,15 +147,16 @@ c - First synchronization
 the first synchronization takes a big while: all mails from server are fetched and indexed
 to create a browsing structure into zope.
 
-For big boxes (>30 0000 mails) it can take up to 5 minutes sometimes, depending on the server strength and on the network.
+For big boxes (>30 0000 mails) it can take up to 5 minutes sometimes, depending on the server strength and on the network. But this needs to be done juste once.
+If you don't care about sub folders of your IMAP box, you can even pass this step.
 
-But this needs to be done juste once.
+Another good idea would be to clean up the box before synhronizing it.
+
+The beta 2 version of the product will provide an asynchronous system based on zasync
+to be able to synchronize in the background.
 
 In the Administration panel, click on the "Synchronize the whole box" button. This will launch
-the work. The beta 2 version of the product will provide an asynchronous system based on zasync
- to be able to synchronize in the background.
-
-When the box is synchronized, you will be taken in your INBOX and will be able to start to use
+the work. When the box is synchronized, you will be taken in your INBOX and will be able to start to use
  the webmail.
 
 d - Every day synchronization
@@ -164,6 +170,17 @@ e - How to use the webmail
 please refer to the user manual
 
 
+C - EXTRA NOTES
+===============
+
+1 - Using other mail client within the same mail account at the same time
+
+If you are using at the same time the webmail and another mail client,
+you can have unexpected events. For example, if another mail client filters
+ incoming messages, by marking them as "deleted" and do not expunge them,
+  they will still appear in the webmail and marked as deleted until the mail client is closed
+
+Trying to work on those "pre-deleted" messages can lead to errors.
 
 
 
