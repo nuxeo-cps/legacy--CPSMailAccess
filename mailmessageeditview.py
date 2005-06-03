@@ -348,7 +348,6 @@ class MailMessageEdit(BrowserView):
             else:
                 form[key] = kw[key]
 
-        LOG('save res values', INFO, str(form))
         mailbox = self.context
         msg = mailbox.getCurrentEditorMessage()
 
@@ -383,11 +382,6 @@ class MailMessageEdit(BrowserView):
 
         if form.has_key('attacher_on'):
             msg.setCachedValue('attacher_on', int(form['attacher_on']))
-
-        LOG('save res to', INFO, msg.getHeader('To'))
-        LOG('save res subject', INFO, msg.getHeader('Subject'))
-        LOG('save res uid', INFO, msg.uid)
-        LOG('save res id', INFO, msg.id)
 
         return 'cpsma_message_saved'
 
@@ -466,15 +460,7 @@ class MailMessageEdit(BrowserView):
         if self.request is not None:
             self.saveMessageForm(**self.request.form)
 
-        LOG('request', INFO, str(self.request.form))
-        LOG('kw', INFO, str(kw))
-
         msg = mailbox.getCurrentEditorMessage()
-        LOG('to', INFO, msg.getHeader('To'))
-        LOG('subject', INFO, msg.getHeader('Subject'))
-        LOG('uid', INFO, msg.uid)
-        LOG('id', INFO, msg.id)
-
         Tos = msg.getHeader('To')
         if Tos == [] or Tos == ['']:
             result = False

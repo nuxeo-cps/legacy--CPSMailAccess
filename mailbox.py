@@ -253,7 +253,7 @@ class MailBox(MailBoxBaseCaching):
         start_time = time.time()
         indexStack = []
         # retrieving folder list from server
-        LOG('synchronize', INFO, 'synchro started light = %s' % str(light))
+        LOG('synchronize', DEBUG, 'synchro started light = %s' % str(light))
         connector = self._getconnector()
 
         if light == 1:
@@ -281,7 +281,7 @@ class MailBox(MailBoxBaseCaching):
             dir_.runFilters()
 
         # now indexing
-        LOG('synchro', INFO, 'half time : %s seconds' % \
+        LOG('synchro', DEBUG, 'half time : %s seconds' % \
             (time.time() - start_time))
 
         # now indexing
@@ -292,7 +292,7 @@ class MailBox(MailBoxBaseCaching):
         y = 0
         len_ = len(indexStack)
         for item in indexStack:
-            LOG('synchro', INFO, 'indexing %d/%d' %(y, len_))
+            LOG('synchro', DEBUG, 'indexing %d/%d' %(y, len_))
             self.indexMessage(item)
             if i == 299:
                 get_transaction().commit(1)     # used to prevent swapping
@@ -302,7 +302,7 @@ class MailBox(MailBoxBaseCaching):
             y += 1
         self.search_available = True
         endtime = time.time() - start_time
-        LOG('synchro', INFO, 'total time : %s seconds' % endtime)
+        LOG('synchro', DEBUG, 'total time : %s seconds' % endtime)
         self.clearSynchro()
         return returned
 
@@ -644,7 +644,7 @@ class MailBox(MailBoxBaseCaching):
         start_time = time.time()
         for mail in mails:
             #cat.indexMessage(mail)
-            LOG('synchro', INFO, 'indexing %d/%d' %(i, len_))
+            LOG('synchro', DEBUG, 'indexing %d/%d' %(i, len_))
             zemantic_cat.indexMessage(mail)
             if y == 299:
                 get_transaction().commit(1)     # used to prevent swapping
@@ -653,7 +653,7 @@ class MailBox(MailBoxBaseCaching):
                 y += 1
             i += 1
         endtime = time.time() - start_time
-        LOG('synchro', INFO, 'total time : %s seconds' % endtime)
+        LOG('synchro', DEBUG, 'total time : %s seconds' % endtime)
 
     def indexMessage(self, msg):
         """ indexes message """
@@ -1090,7 +1090,7 @@ class MailBoxView(MailFolderView):
         """ synchronizes mailbox """
         # todo : block a new synchronization if it's already
         # XXX inside
-        LOG('synchro', INFO, 'start light:%s' % str(light))
+        LOG('synchro', DEBUG, 'start light:%s' % str(light))
         mailbox = self.context
 
         if not mailbox.isSynchronizing():
