@@ -466,7 +466,10 @@ class MailFolder(BTreeFolder2):
                         have_file = False
                         for sub_part in part:
                             if isinstance(sub_part, list):
-                                if (sub_part[0] == 'name' or
+                                if (sub_part[0] == 'name'):
+                                    have_file = True
+                                    break
+                                if (len(sub_part) > 3 and
                                     sub_part[2] == 'name'):
                                     have_file = True
                                     break
@@ -487,13 +490,12 @@ class MailFolder(BTreeFolder2):
                                     if sub[0] == 'name':
                                         file['filename'] = sub[1]
                                         break
-                                    if sub[2] == 'name':
+                                    if len(sub) > 3 and sub[2] == 'name':
                                         file['filename'] = sub[3]
                                         break
                             file_list.append(file)
                         i += 1
             if part_infos[0] in ('mixed', 'related', 'signed'):
-                import pdb;pdb.set_trace()
                 part_infos = part_infos[1]
                 part_num = '1'
                 i = 1
@@ -503,8 +505,10 @@ class MailFolder(BTreeFolder2):
                         have_file = False
                         for sub_part in part:
                             if isinstance(sub_part, list):
-                                if (sub_part[0] == 'name' or
-                                    sub_part[2] == 'name'):
+                                if (sub_part[0] == 'name'):
+                                    have_file = True
+                                    break
+                                if len(sub_part) > 3 and sub_part[2] == 'name':
                                     have_file = True
                                     break
                         if have_file:
@@ -524,7 +528,7 @@ class MailFolder(BTreeFolder2):
                                     if sub[0] == 'name':
                                         file['filename'] = sub[1]
                                         break
-                                    if sub[2] == 'name':
+                                    if len(sub) > 3 and sub[2] == 'name':
                                         file['filename'] = sub[3]
                                         break
                             file_list.append(file)
