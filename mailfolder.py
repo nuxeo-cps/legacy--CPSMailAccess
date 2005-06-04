@@ -433,7 +433,7 @@ class MailFolder(BTreeFolder2):
                                         connector, afterload=False):
         """ loads a message from server
 
-        XXX might be outsourced into imap
+        XXX might be outsourced into imap and cleaned
         """
         if self.instant_load and not afterload:
             msg_object.loadMessage(msg_flags, msg_headers, 'instant_load',
@@ -452,7 +452,7 @@ class MailFolder(BTreeFolder2):
         if len(structure) == 1:
             structure = structure[0]
 
-        part_infos =  structure
+        part_infos = structure
 
         if part_infos[0] in ('related', 'relative', 'mixed', 'alternative',
                              'signed'):
@@ -466,7 +466,8 @@ class MailFolder(BTreeFolder2):
                         have_file = False
                         for sub_part in part:
                             if isinstance(sub_part, list):
-                                if sub_part[0] == 'name':
+                                if (sub_part[0] == 'name' or
+                                    sub_part[2] == 'name'):
                                     have_file = True
                                     break
                         if have_file:
@@ -486,11 +487,48 @@ class MailFolder(BTreeFolder2):
                                     if sub[0] == 'name':
                                         file['filename'] = sub[1]
                                         break
+                                    if sub[2] == 'name':
+                                        file['filename'] = sub[3]
+                                        break
                             file_list.append(file)
                         i += 1
             if part_infos[0] in ('mixed', 'related', 'signed'):
+                import pdb;pdb.set_trace()
                 part_infos = part_infos[1]
                 part_num = '1'
+                i = 1
+                file_list = msg_object.getFileList()
+                for part in part_infos[1:]:
+                    if isinstance(part, list):
+                        have_file = False
+                        for sub_part in part:
+                            if isinstance(sub_part, list):
+                                if (sub_part[0] == 'name' or
+                                    sub_part[2] == 'name'):
+                                    have_file = True
+                                    break
+                        if have_file:
+                            file = {}
+                            if part[0] == 'unknown':
+                                file['mimetype'] = ''
+                            else:
+                                file['mimetype'] = '%s/%s' % (part[0],
+                                                            part[1])
+                            file['content-transfer-encoding'] = part[4]
+                            file['size'] = part[5]
+                            # we don't want to load the file
+                            file['data'] = None
+                            file['part'] = i
+                            for sub in part:
+                                if isinstance(sub, list):
+                                    if sub[0] == 'name':
+                                        file['filename'] = sub[1]
+                                        break
+                                    if sub[2] == 'name':
+                                        file['filename'] = sub[3]
+                                        break
+                            file_list.append(file)
+                        i += 1
             else:
                 if len(part_infos) > 2:
                     part_infos = part_infos[2]
@@ -507,7 +545,7 @@ class MailFolder(BTreeFolder2):
             else:
                 part_infos = part_infos[1]
                 part_num = '%s.1' % part_num
-        elif part_infos[0] in ('relative', 'signed'):
+        elif part_infos[0] in ('relative', 'signed', 'mixed'):
             part_infos = part_infos[1]
             part_num = '%s.1' % part_num
         else:
