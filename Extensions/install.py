@@ -85,7 +85,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         """ check skin order """
         all_skins = self.portal.portal_skins.getSkinPaths()
         for skin_name, skin_path in all_skins:
-            if skin_name != 'Basic':
+            if skin_name not in ('Basic', 'CPSSkins'):
                 continue
             path = [x.strip() for x in skin_path.split(',')]
             if not path[0] == 'custom':
