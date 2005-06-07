@@ -182,5 +182,10 @@ you can have unexpected events. For example, if another mail client filters
 
 Trying to work on those "pre-deleted" messages can lead to errors.
 
+2 - Attached files
+
+Attached files gets scanned when you are viewing the mail, so the attach icon won't appear
+ until the mail is viewed.
+
 
 
