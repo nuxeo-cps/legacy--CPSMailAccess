@@ -546,8 +546,11 @@ def answerSubject(subject, fwd=False):
 
 def translate(context, msg):
     """ translate msg, used to isolate localizer use """
-    translator = context.Localizer.default
-    return translator.gettext(msg)
+    if hasattr(context, 'Localizer'):
+        translator = context.Localizer.default
+        return translator.gettext(msg)
+    else:
+        return msg
 
 def createDigest(msg):
     """ create a message digest """

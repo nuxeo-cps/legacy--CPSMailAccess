@@ -237,6 +237,12 @@ The CPS Team.
         md5 = createDigestFromList(list_)
         self.assertEquals(md5,'015cded315e5d0f1e5f7ff295f09f306')
 
+    def test_translate(self):
+        # make sure it works if Localizer is not there
+        ob = self
+        res = translate(ob, 'ok')
+        self.assertEquals(res, 'ok')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),
