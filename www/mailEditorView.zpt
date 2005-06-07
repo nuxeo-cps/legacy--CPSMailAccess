@@ -67,7 +67,9 @@
       <table width="100%" class="editorHeader">
 
         <tr>
-         <td colspan="3">
+         <td colspan="3"><div class="clipboardContent hidden_part"
+                               i18n:translate=""
+                               id="message_headers_msm"></div>
            <div id="To" tal:define="elements python:here.getDestList(type_='To');
                                     elements python:'\r\n'.join(elements)">
              <div class="recipient_header"><span i18n:translate="cpsma_to">To</span>:</div>
@@ -158,5 +160,6 @@
          onclick="saveMessageDatas()"/>
       </div>
     </form>
+    <script langage="javascript">refreshAck();</script>
   </metal:block>
 </html>

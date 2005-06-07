@@ -453,3 +453,24 @@ msgstr ""
 
 msgid "cpsm_empty_subjet_body"
 msgstr ""
+
+msgid "cpsm_notify_subject"
+msgstr ""
+
+msgid "cpsm_notify_body"
+msgstr ""
+
+msgid "cpsma_notify_ask"
+msgstr ""
+
+msgid "cpsma_notify_remove"
+msgstr ""
+
+msgid "cpsma_notify_processing"
+msgstr ""
+
+msgid "cpsma_notification_sent"
+msgstr ""
+
+msgid "cpsma_notified"
+msgstr ""

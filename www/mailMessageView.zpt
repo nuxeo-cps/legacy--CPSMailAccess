@@ -42,5 +42,10 @@
     <div id="mailBody">
       <tal:block tal:replace="structure here/renderBody"/>
     </div>
+    <tal:block tal:condition="python:here.notificationEmail() is not None">
+      <script langage="javascript">
+        notifySender();
+      </script>
+    </tal:block>
   </metal:block>
 </html>

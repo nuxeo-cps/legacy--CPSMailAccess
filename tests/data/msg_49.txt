@@ -9,6 +9,7 @@ Received: from helium.goams.com (mail.goams.com [212.68.193.206])
         Sat, 28 May 2005 15:17:41 +0200 (CEST)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
+Disposition-Notification-To: =?ISO-8859-1?Q?Tarek_Ziad=E9?= <tziade@xxxx.xxx>
 Content-Transfer-Encoding: base64
 Subject: Forum AFPY - Re: WxPython/Boa Constructor: quels sujets desirez vous?
 Date: Sat, 28 May 2005 15:17:33 +0200

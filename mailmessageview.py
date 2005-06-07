@@ -155,13 +155,17 @@ class MailMessageView(BaseMailMessageView):
         context = self.context
         if context is not None:# and IMailPart.providedBy(context):
             headers = self.context.getHeader(name)
-            if headers == []:
+            if headers == [] or headers is None:
                 return u'?'
             else:
                 decoded = []
                 for header in headers:
+                    if header is None:
+                        continue
                     header = decodeHeader(header)
                     decoded.append(header)
+                if len(decoded) == 0:
+                    return u'?'
                 if not list_:
                     return secureUnicode(u' '.join(decoded))
                 else:
@@ -447,3 +451,51 @@ class MailMessageView(BaseMailMessageView):
         """ returns mail folder """
         message = self.context
         return message.getMailFolder()
+
+    def notificationEmail(self):
+        """ returns notification email if exists folder """
+        message = self.context
+        rendered = self.renderHeaderList('Disposition-Notification-To')
+        if rendered == u'?':
+            return None
+        else:
+            return rendered
+
+    def notify(self, just_remove):
+        """ returns a notification """
+        recipient = self.notificationEmail()
+        message = self.context
+        # notify
+        if just_remove != 1:
+            result, error = self._sendNotification(recipient)
+        else:
+            result = True
+            error = 'cpsma_notified'
+
+        # remove header
+        if recipient is not None and result:
+            message.removeHeader('Disposition-Notification-To')
+        return error
+
+    def getunicodetext(self, message):
+        """ retrieves a translation in a full unicode response """
+        msg = self.context
+        mailbox = msg.getMailBox()
+        self.request.response.setHeader('content-type',
+                                        'text/plain; charset=utf-8')
+        if mailbox is not None:
+            return translate(mailbox, message)
+        else:
+            return message
+
+    def _sendNotification(self, recipient):
+        """ sends a message """
+        msg = self.context
+        mailbox = msg.getMailBox()
+        if mailbox is not None:
+            try:
+                return mailbox.sendNotification(recipient, msg)
+            except ConnectionError:
+                return False, 'cpsma_could_not_perform'
+        else:
+            return False, 'cpsma_no_mailbox'

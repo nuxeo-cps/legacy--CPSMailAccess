@@ -48,6 +48,7 @@ from utils import getToolByName, decodeHeader, uniqueId, makeId, getFolder,\
 from interfaces import IMailBox, IMailMessage, IMailFolder, IMessageTraverser
 from mailfolder import MailFolder, manage_addMailFolder
 from maileditormessage import MailEditorMessage
+from mailmessage import MailMessage
 from mailfolderview import MailFolderView
 from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
 from basemailview import BaseMailMessageView
@@ -208,6 +209,11 @@ class MailBox(MailBoxBaseCaching):
                 portalwide = value[1] == 1
                 if portalwide or not self._connection_params.has_key(key):
                     self._connection_params[key] = value
+                elif not portalwide:
+                    local_value = self._connection_params[key]
+                    if local_value[1] == 1:
+                        self._connection_params[key] = (local_value[0], 0)
+
         if not self._connection_params.has_key('uid'):
             uid = self.id.replace('box_', '')
             self._connection_params['uid'] = (uid, 0)
@@ -425,6 +431,55 @@ class MailBox(MailBoxBaseCaching):
         if connector is None:
             raise ValueError(NO_CONNECTOR)
         return connector
+
+    def sendNotification(self, recipient, msg):
+        """ sends a notification """
+        id_ = self.getIdentitites()[0]
+
+        if id_['fullname'] != '':
+            msg_from = '%s <%s>' % (id_['fullname'], id_['email'])
+        else:
+            msg_from = id_['email']
+
+        _notification_subject = translate(self, 'cpsm_notify_subject')
+        _notification_template = translate(self, 'cpsm_notify_body')
+
+        portal_webmail = getToolByName(self, 'portal_webmail')
+        maildeliverer = portal_webmail.maildeliverer
+        msg_subject = msg.getHeader('Subject')[0]
+        msg_body  = _notification_template
+        msg_body = msg_body.replace('_ORIGINAL_MAIL_SUBJECT_', msg_subject)
+        msg_notif = MailMessage()
+        msg_notif.setDirectBody(msg_body)
+        msg_notif.setHeader('Subject', _notification_subject)
+        msg_notif.setHeader('From', msg_from)
+        msg_notif.setHeader('Date', formatdate())
+
+        msg_content = msg_notif.getRawMessage()
+        params = self.getConnectionParams()
+        smtp_host = params['smtp_host']
+        smtp_port = params['smtp_port']
+
+        result, error = maildeliverer.send(msg_from, recipient, msg_content,
+                                           smtp_host, smtp_port, None, None)
+        if result:
+            sent_folder = self.getSentFolder()
+            connector = self._getconnector()
+
+            uid = connector.writeMessage(sent_folder.server_name,
+                                         msg_notif.getRawMessage())
+            connector.setFlags(sent_folder.server_name, uid, {'Seen': 1})
+
+            # on the zodb, by synchronizing INBOX.Sent folder
+            try:
+                sent_folder._synchronizeFolder(return_log=False)
+            finally:
+                self.clearSynchro()
+
+            self.clearEditorMessage()
+            return True, 'cpsma_notification_sent'
+        else:
+            return False, error
 
     def _sendMailMessage(self, msg_from, msg_to, msg):
         """ sends an instance of MailMessage """

@@ -105,13 +105,20 @@ class MailActionsView(BaseMailMessageView):
                         'id' : 'send',
                         'onclick' : 'sendMessage();'}
 
+                ack = {'icon' : base_url + '/cpsma_ack.png',
+                        'title' : 'cpsma_ack',
+                        'long_title' : 'cpsma_ack',
+                        'action' : '',
+                        'id' : 'ack',
+                        'onclick' : 'setAck();'}
+
                 configure = {'icon' : base_url + '/cpsma_configure.png',
                              'title' : 'cpsma_configure',
                              'long_title' : 'cpsma_configure',
                              'id' : 'configure',
                              'action' : root + '/configure.html'}
 
-                return [[send, save], [init, configure]]
+                return [[send, save], [ack, init], [configure]]
 
         elif IMailFolder.providedBy(container):
             mailbox = container.getMailBox()

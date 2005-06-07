@@ -194,6 +194,19 @@ class MailMessageViewTestCase(MailTestCase):
         hl = view.renderHeaderList('From')
         self.assertEquals(hl, u'Tarek Ziadé')
 
+    def test_renderHeaderListWithNones(self):
+        # checks unicoding
+        ob = self.getMailInstance(6)
+        ob.setHeader('From', None)
+
+        ob.getPhysicalPath = self.fakePhysicalPath
+
+        # need to set up context and request object here
+        view = MailMessageView(ob, None)
+
+        hl = view.renderHeaderList('From')
+        self.assertEquals(hl, u'?')
+
     def test_reply_all(self):
         mbox =self._getMailBox()
         ob = self.getMailInstance(6)
@@ -310,6 +323,25 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_('<15893651.1105277510670.JavaMail.nobody@hr_01_rev_b>' in refs)
         self.assert_('<Ref1>' in refs)
 
+    def test_notificationEmail(self):
+        mbox = self._getMailBox()
+
+        message = self.getMailInstance(43)
+        view = MailMessageView(message, None)
+
+        self.assertEquals(view.notificationEmail(), None)
+
+        message = self.getMailInstance(48)
+        view = MailMessageView(message, None)
+
+        self.assertEquals(view.notificationEmail(), u'Tarek Ziadé<tziade@xxxx.xxx>')
+
+    def test_notify(self):
+        mbox = self._getMailBox()
+        message = self.getMailInstance(48)
+        message = message.__of__(mbox)
+        view = MailMessageView(message, None)
+        self.assertRaises(AttributeError, view.notify, 0)
 
 def test_suite():
     return unittest.TestSuite((

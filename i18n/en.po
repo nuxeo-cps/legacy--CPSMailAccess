@@ -455,3 +455,27 @@ msgstr "is not a valid email"
 
 msgid "cpsm_empty_subjet_body"
 msgstr "both subject and body are empty"
+
+msgid "cpsm_notify_subject"
+msgstr "Read notification"
+
+msgid "cpsm_notify_body"
+msgstr "Your message '_ORIGINAL_MAIL_SUBJECT_' has been read"
+
+msgid "cpsma_notify_ask"
+msgstr "The sender asked to be notified when you read this mail, do you want to notify him or her ?"
+
+msgid "cpsma_notify_remove"
+msgstr "Do you want to definitly remove the notification flag from this mail ?"
+
+msgid "cpsma_notify_processing"
+msgstr "Notification in process..."
+
+msgid "cpsma_notification_sent"
+msgstr "Notification sent."
+
+msgid "cpsma_notified"
+msgstr "Notification sent."
+
+msgid "cpsma_return_receipt"
+msgstr "Ask for a read receipt"

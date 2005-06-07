@@ -283,6 +283,14 @@
   <browser:page
       for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
+      name="getunicodetext"
+      attribute="getunicodetext"
+      permission="cpsmailaccess.ViewMailBox"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessageview.MailMessageView"
       name="viewFile.html"
       attribute="viewFile"
       permission="cpsmailaccess.ViewMailBox"
@@ -411,6 +419,21 @@
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailmessageeditview.MailMessageEdit"
+      name="hasNotification"
+      attribute="hasNotification"
+      permission="cpsmailaccess.SendMails"
+      />
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
+      name="toggleNotification"
+      attribute="toggleNotification"
+      permission="cpsmailaccess.SendMails"
+      />
+
+  <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailmessageeditview.MailMessageEdit"
       name="addRecipient"
       attribute="addRecipient"
       permission="cpsmailaccess.SendMails"
@@ -454,6 +477,22 @@
       class=".mailmessageview.MailMessageView"
       name="mailList.html"
       attribute="renderMailList"
+      permission="cpsmailaccess.ViewMailBox"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessageview.MailMessageView"
+      name="notificationEmail"
+      attribute="notificationEmail"
+      permission="cpsmailaccess.ViewMailBox"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessageview.MailMessageView"
+      name="notify"
+      attribute="notify"
       permission="cpsmailaccess.ViewMailBox"
       />
 

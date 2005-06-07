@@ -222,7 +222,8 @@ class MailMessageEdit(BrowserView):
 
     def getIdentitites(self):
         """ gives to the editor the list of current mailbox idendities """
-        mailbox = self.context
+        msg = self.context
+        mailbox = msg.getMailBox()
         identities = mailbox.getIdentitites()
         return identities
 
@@ -484,8 +485,7 @@ class MailMessageEdit(BrowserView):
                 self.request.response.redirect('editMessage.html?msm=%s' % psm)
 
     def initializeEditor(self, back_to_front=True, no_move=False):
-        """ cleans the editor
-        """
+        """ cleans the editor """
         mailbox = self.context
         mailbox.clearEditorMessage()
         if not no_move:
@@ -499,3 +499,40 @@ class MailMessageEdit(BrowserView):
                         url = '%s/view' % mailbox.absolute_url()
                     self.request.response.redirect(url)
 
+    def toggleNotification(self):
+        """ returns a notification """
+        mailbox = self.context
+
+        notification_header = 'Disposition-Notification-To'
+        msg = mailbox.getCurrentEditorMessage()
+        notification = msg.getHeader(notification_header)
+
+        if notification == [] or notification is None:
+            msg_from = self._identyToMsgHeader()
+            msg.setHeader(notification_header, msg_from)
+            result = True
+        else:
+            msg.removeHeader(notification_header)
+            result = False
+
+        if self.request is not None:
+            if result:
+                return 'cpsma_return_receipt'
+            else:
+                return ''
+
+    def hasNotification(self):
+        """ returns notification stats """
+        mailbox = self.context
+        notification_header = 'Disposition-Notification-To'
+        msg = mailbox.getCurrentEditorMessage()
+        notification = msg.getHeader(notification_header)
+
+        result = not (notification == [] or notification is None)
+        if self.request is not None:
+            if result:
+                return 'cpsma_return_receipt'
+            else:
+                return ''
+        else:
+            return result

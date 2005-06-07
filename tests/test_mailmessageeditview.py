@@ -182,13 +182,37 @@ class MailMessageEditTestCase(MailTestCase):
 
         view.sendMessage('from me', 'subject', 'body')
 
-
     def test_getIdentitites(self):
         mailbox = self._getMailBox()
         mailbox.clearEditorMessage()        # clean previous tests
         view = MailMessageEdit(mailbox, None)
         self.assertEquals(view.getIdentitites(), [{'fullname': 'Tarek Ziad\xe9',
                                                    'email': 'tz@nuxeo.com'}])
+
+    def test_toggleNotification(self):
+        mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()        # clean previous tests
+        msg = mailbox.getCurrentEditorMessage()
+        self.assertEquals(msg.getHeader('Disposition-Notification-To'), [])
+
+        view = MailMessageEdit(mailbox, None)
+        view.toggleNotification()
+        self.assertEquals(msg.getHeader('Disposition-Notification-To'),
+                          ['Tarek Ziad\xe9 <tz@nuxeo.com>'])
+
+        view.toggleNotification()
+        self.assertEquals(msg.getHeader('Disposition-Notification-To'), [])
+
+    def test_hasNotification(self):
+
+        mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()        # clean previous tests
+        view = MailMessageEdit(mailbox, None)
+        view.toggleNotification()
+        self.assert_(view.hasNotification())
+        view.toggleNotification()
+        self.assert_(not view.hasNotification())
+
 
 def test_suite():
     return unittest.TestSuite((

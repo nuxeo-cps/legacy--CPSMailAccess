@@ -163,7 +163,6 @@ function saveMessageDataResult()
     response = extractResponse(currentXMLObject.responseText);
     trans = translate(response);
     setMessage(trans);
-
   }
   else
   {
@@ -227,7 +226,7 @@ function saveMessageDatas(synced)
   }
   else
   {
-    alert("operation not supported");
+    alert("saveMessageDatas: operation not supported");
   }
 }
 
@@ -239,7 +238,6 @@ function saveMessageResult()
     response = extractResponse(currentXMLObject.responseText);
     trans = translate(response);
     setMessage(trans);
-
   }
   else
   {
@@ -288,7 +286,7 @@ function saveMessage()
   }
   else
   {
-    alert("operation not supported");
+    alert("saveMessage: operation not supported");
   }
 }
 
@@ -328,9 +326,14 @@ function toggleElementVisibility(element_id)
   }
 }
 
-function setMessage(msg)
+function setMessage(msg, element_name)
 {
-  element = document.getElementById("java_msm");
+  if (!element_name)
+  {
+    element_name = "java_msm";
+  }
+
+  element = document.getElementById(element_name);
 
   if (element)
   {
@@ -340,7 +343,8 @@ function setMessage(msg)
       // showing it
       if (element.className.indexOf("not_hidden_part") == -1)
       {
-        toggleElementVisibility("java_msm");
+        element.className = element.className.replace("hidden_part", "not_hidden_part");
+        element.style.visibility = "visible";
       }
     }
     else
@@ -348,7 +352,8 @@ function setMessage(msg)
       // hiding it
       if (element.className.indexOf("not_hidden_part") != -1)
       {
-        toggleElementVisibility("java_msm");
+        element.className = element.className.replace("not_hidden_part", "hidden_part");
+        element.style.visibility = "hidden";
       }
     }
   }
@@ -506,12 +511,12 @@ function sendMessage()
     }
     catch(err)
     {
-      alert("operation not supported");
+      alert("sendMessage: operation not supported");
     }
   }
   else
   {
-    alert("operation not supported");
+    alert("sendMessage: operation not supported");
   }
 }
 
@@ -779,3 +784,111 @@ function selectAllMessages(object, select_all_value, deselect_all_value)
   }
 }
 
+function refreshAck()
+{
+  // retrieving ack status
+  xml = createXMLObject();
+  if (xml)
+  {
+    url = "hasNotification";
+    xml.open("POST", url, false);
+    try
+    {
+      xml.send(null);
+    }
+    catch(err)
+    {
+      // seems to fail on page load in IE 5
+      // alert("refreshAck: operation not supported");
+    }
+    result = xml.responseText;
+    setMessage(result);
+  }
+}
+
+function setAck()
+{
+  // retrieving ack status
+  xml = createXMLObject();
+  if (xml)
+  {
+    url = "toggleNotification";
+    xml.open("POST", url, false);
+    try
+    {
+      xml.send(null);
+    }
+    catch(err)
+    {
+      alert("setAck: operation not supported");
+    }
+  }
+  result = xml.responseText;
+  result = translate(result);
+  setMessage(result);
+}
+
+function doNotifyDone()
+{
+  if (currentXMLObject.readyState == 4)
+  {
+    result = currentXMLObject.responseText;
+    res = translate(result);
+    setMessage(res);
+  }
+  else
+  {
+    if (currentXMLObject.readyState==1)
+    {
+      res = translate("cpsma_notify_processing");
+      setMessage(res);
+    }
+  }
+}
+
+function doNotify(just_remove)
+{
+  // retrieving ack status
+  currentXMLObject = createXMLObject();
+  if (xml)
+  {
+    url = "notify";
+    currentXMLObject.open("POST", url, true);
+    currentXMLObject.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    currentXMLObject.onreadystatechange = doNotifyDone;
+    try
+    {
+      if (just_remove==1)
+      {
+        currentXMLObject.send("just_remove:int=1");
+      }
+      else
+      {
+        currentXMLObject.send("just_remove:int=0");
+      }
+    }
+    catch(err)
+    {
+      alert("doNotify: operation not supported");
+    }
+  }
+}
+
+function notifySender()
+{
+  message = translate("cpsma_notify_ask");
+  notify = window.confirm(message);
+  if (notify)
+  {
+    res = doNotify();
+  }
+  else
+  {
+    message = translate("cpsma_notify_remove");
+    notify = window.confirm(message);
+    if (notify)
+    {
+      res = doNotify(1);
+    }
+  }
+}

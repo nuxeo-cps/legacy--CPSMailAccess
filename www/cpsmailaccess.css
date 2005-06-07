@@ -582,3 +582,8 @@ td.bold {
 .waiting_process {
   background-color: #e7e7e7;
 }
+
+.pushed
+{
+  background-color: #c0ff75;
+}

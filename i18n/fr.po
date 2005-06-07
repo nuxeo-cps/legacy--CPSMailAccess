@@ -455,3 +455,27 @@ msgstr "n'est pas un email valide"
 
 msgid "cpsm_empty_subjet_body"
 msgstr "Sujet et corps du message sont vides"
+
+msgid "cpsm_notify_subject"
+msgstr "Notification de lecture"
+
+msgid "cpsm_notify_body"
+msgstr "Votre message '_ORIGINAL_MAIL_SUBJECT_' a bien été lu."
+
+msgid "cpsma_notify_ask"
+msgstr "L'expéditeur souhaite une notification de lecture, voulez vous l'envoyer ?"
+
+msgid "cpsma_notify_remove"
+msgstr "Voulez vous supprimer définitivement de ce message la demande de notification"
+
+msgid "cpsma_notify_processing"
+msgstr "Notification en cours..."
+
+msgid "cpsma_notification_sent"
+msgstr "Notification envoyée..."
+
+msgid "cpsma_notified"
+msgstr "Notification envoyée..."
+
+msgid "cpsma_return_receipt"
+msgstr "Demander un accusé de lecture"
