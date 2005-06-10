@@ -300,7 +300,7 @@ class MailSearchTestCase(MailTestCase):
             message = message.__of__(self.portal)
             message.getPhysicalPath = self.fakeGetPhysicalPath
 
-            adapted_message = ZemanticMessageAdapter(message)
+            adapted_message = ZemanticMessageAdapter(message, None)
             tuple_ = adapted_message.threeTuples()
 
     def test_ZemanticMessageAdapterThreeTuples(self):
@@ -308,7 +308,7 @@ class MailSearchTestCase(MailTestCase):
         message = self.getMailInstance(23)
         message = message.__of__(self.portal)
         message.getPhysicalPath = self.fakeGetPhysicalPath
-        adapted_message = ZemanticMessageAdapter(message)
+        adapted_message = ZemanticMessageAdapter(message, None)
         tuples = adapted_message.threeTuples()
         self.assertEquals(len(tuples), 3)
         self.assertEquals(tuples[0], (u'nowere/my_message_2',
@@ -330,7 +330,7 @@ class MailSearchTestCase(MailTestCase):
             messages.append(message)
 
         res = ob.query(Query(Any, Any, Any))
-        self.assertEquals(len(list(res)),  41)
+        self.assertEquals(len(list(res)),  46)
 
         subjects_ = list(ob.subjects())
         c_subjects_ = []
@@ -358,6 +358,50 @@ class MailSearchTestCase(MailTestCase):
 
         res = ob.query(Query(Any, Any, Any))
         self.assertEquals(len(list(res)),  0)
+
+    def test_threading(self):
+        ob = ZemanticMailCatalog()
+
+        message1 = self.getMailInstanceT(1)
+        message1 = message1.__of__(self.portal)
+        message1.setHeader('Subject', 'message 1')
+        message1.setHeader('message-id', '1')
+        ob.indexMessage(message1)
+
+        message2 = self.getMailInstanceT(1)
+        message2 = message2.__of__(self.portal)
+        message2.setHeader('Subject', 'message 2')
+        message2.setHeader('message-id', '2')
+        message2.setHeader('references', '1')
+        ob.indexMessage(message2)
+
+        message3 = self.getMailInstanceT(1)
+        message3 = message3.__of__(self.portal)
+        message3.setHeader('Subject', 'message 3')
+        message3.setHeader('message-id', '3')
+        message3.addHeader('references', '2')
+        message3.addHeader('references', '1')
+        # check headers
+        refs = message3.getHeader('references')
+        self.assertEquals(refs, ['2', '1'])
+
+        ob.indexMessage(message3)
+
+        # now we should have a clean thread semantically indexed
+        msg1_uri = URIRef(unicode(message1.absolute_url()))
+        res = ob.query(Query(msg1_uri, URIRef(u'thread'), Any))
+        res = list(res)
+        self.assertEquals(len(res), 0)
+
+        msg2_uri = URIRef(unicode(message2.absolute_url()))
+        res = ob.query(Query(msg2_uri, URIRef(u'thread'), Any))
+        res = list(res)
+        self.assertEquals(len(res), 1)
+
+        msg3_uri = URIRef(unicode(message3.absolute_url()))
+        res = ob.query(Query(msg3_uri, URIRef(u'thread'), Any))
+        res = list(res)
+        self.assertEquals(len(res), 2)
 
 def test_suite():
     return unittest.TestSuite((

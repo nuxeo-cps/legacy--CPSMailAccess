@@ -21,13 +21,17 @@ import os
 import time
 
 from Products.Five import BrowserView
-from utils import getToolByName, parseDateString, decodeHeader, getFolder
+from utils import getToolByName, parseDateString, decodeHeader, getFolder, \
+                  traverseToObject
 from mailexceptions import MailCatalogError
 from mailmessageview import MailMessageView
 from mailsearch import intersection  as z_intersection
+from mailsearch import unifyList as z_unifyList
 
 from zemantic.public import *
 from zemantic.query import UnionChain
+
+# XXXX todo: outsource ALL zemantic related stuff into mailsearch
 
 class MailSearchView(BrowserView):
 
@@ -54,7 +58,7 @@ class MailSearchView(BrowserView):
             for result in raw_results:
                 current = {}
                 current['path'] = result.getPath()
-                object = self.traverseToObject(current['path'])
+                object = traverseToObject(box, current['path'])
                 current['object'] = object
                 current['rid'] = result.getRID()
                 # see if this can be done more quickly
@@ -68,27 +72,6 @@ class MailSearchView(BrowserView):
 
         dtime = time.time() - start
         return (results, dtime)
-
-    def traverseToObject(self, path):
-        """ transforms an url to its object """
-        # XXX needs refactoring
-        mailbox = self.context
-        path = path.split('/')
-        if len(path) == 0:
-            return None
-        while len(path) > 0 and path[0] != mailbox.id:
-            del path[0]
-        if len(path) == 0:
-            return None
-        # starting at mailbox
-        del path[0]
-        subject = mailbox
-        for element in path:
-            if hasattr(subject, element):
-                subject = getattr(subject, element)
-            else:
-                return None
-        return subject
 
     def zemanticPredicateList(self):
         """ retrieves all predicates """
@@ -198,8 +181,7 @@ class MailSearchView(BrowserView):
         if raw_results == [None]:
             raw_results = []
         else:
-            raw_results = [raw_result.triple()[0] \
-                           for raw_result in raw_results]
+            raw_results = z_unifyList(raw_results)
 
         # after zemantic has done its works,
         # we might sub-search bodies on IMAP
@@ -219,7 +201,7 @@ class MailSearchView(BrowserView):
         results = []
         msg_viewer = MailMessageView(None, self.request)
         for result in raw_results:
-            object = self.traverseToObject(result)
+            object = traverseToObject(mailbox, result)
             # if object is None, it means
             # that the catalog holds deprecated entries
             # we don't want to see here

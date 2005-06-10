@@ -49,7 +49,7 @@ from rdflib.Literal import Literal
 stop_words_filename = os.path.join(os.path.dirname(landmark), 'stopwords.txt')
 
 def intersection(x, y):
-    # intersect triples, strings,unicode and URIRef
+    """ intersect triples, strings,unicode and URIRef """
     result = []
     for e in x:
         for item in y:
@@ -60,6 +60,36 @@ def intersection(x, y):
             if e == item:
                 result.append(e)
     return result
+
+def union(x, y):
+    """ intersect triples, strings,unicode and URIRef """
+    result = []
+
+    for e in y:
+        if not type(e) in (str, URIRef):
+            e = e.triple()[0]
+        result.append(e)
+
+    for e in x:
+        if not type(e) in (str, URIRef):
+            e = e.triple()[0]
+        if e not in result:
+            result.append(e)
+
+    return result
+
+def unifyList(list_):
+    """ returns unified list """
+    unified = []
+    for item in list_:
+        if not type(item) in (str, URIRef):
+            item = item.triple()[0]
+        unified.append(item)
+    return unified
+
+def get_uri(portal_object):
+    return URIRef(unicode(portal_object.absolute_url())) # zope 2 dependant
+
 
 class MailStopWords(FileStopwords):
     pass
@@ -151,16 +181,29 @@ class ZemanticMessageAdapter:
     implements(IRDFThreeTuples)
 
     default_charset = 'ISO-8859-15'
-    headers = ('date', 'from', 'to', 'subject', 'cc', 'sender')
+    headers = (u'message-id', u'date', u'from', u'to', u'subject', u'cc',
+               u'sender')
+    message_relation = ((u'references', u'thread'),
+                        (u'in-reply-to', u'replies'))
 
-    def __init__(self, message, full_indexation=False):
+    def __init__(self, message, catalog, full_indexation=False):
         self.context = message
+        self.catalog = catalog
         self.full_indexation = full_indexation
         charset = message.getHeader('Charset')
         if charset is None or charset == []:
             self.charset = self.default_charset
         else:
             self.charset = charset[0]
+
+    def _headerToUnicode(self, value):
+        if isinstance(value, str):
+            try:
+                value = value.decode(self.charset)
+            except (encoding_exceptions.LookupError,
+                    UnicodeDecodeError):
+                value = value.decode(default_charset)
+        return value
 
     def threeTuples(self):
         """ give zemantic the sequence of relations """
@@ -170,7 +213,7 @@ class ZemanticMessageAdapter:
         if message.absolute_url() == '':
             return []
 
-        ob_uri = URIRef(unicode(message.absolute_url()))    # zope 2 dependant
+        ob_uri = get_uri(message)
 
         triples = []
         if self.full_indexation:
@@ -183,21 +226,11 @@ class ZemanticMessageAdapter:
             values = message.getHeader(header_name)
             for value in values:
                 header_name = header_name.lower()
-                if isinstance(header_name, str):
-                    try:
-                        header_name = header_name.decode(self.charset)
-                    except (encoding_exceptions.LookupError,
-                            UnicodeDecodeError):
-                        header_name = header_name.decode(default_charset)
-
+                header_name = self._headerToUnicode(header_name)
                 relation = URIRef(header_name)
                 value = decodeHeader(value)
-                if isinstance(value, str):
-                    try:
-                        value = value.decode(self.charset)
-                    except (encoding_exceptions.LookupError,
-                            UnicodeDecodeError):
-                        value = value.decode(default_charset)
+                value = self._headerToUnicode(value)
+
                 if header_name == 'date':
                     # fixed string date indexing
                     cdate = parseDateString(value)
@@ -210,21 +243,42 @@ class ZemanticMessageAdapter:
 
                 triple = (ob_uri, relation, value)
                 triples.append(triple)
+
         # a triple for the direct body
         if self.full_indexation:
             body = message.getDirectBody()
             if body is not None:
                 body = removeHTML(body)
 
-            if isinstance(body, str):
-                try:
-                    body = body.decode(self.charset)
-                except (encoding_exceptions.LookupError, UnicodeDecodeError):
-                    body = body.decode(default_charset)
+            body = self._headerToUnicode(body)
 
             body = Literal(body)
             triples.append((ob_uri, URIRef(u'body'), body))
 
+        # relations with other mails
+        for relation in self.message_relation:
+            # all relations are based on message ids
+            relation_name = relation[0]
+            relation_object = relation[1]
+            values = message.getHeader(relation_name)
+            for value in values:
+                # let's try to find the message id in the catalog
+                value = decodeHeader(value)
+                value = self._headerToUnicode(value)
+                query_ = Query((Any, u'<message-id>', URIRef(value)))
+                results = self.catalog.query(query_)
+                results = list(results)
+
+                if len(results) > 0:
+                    indexed_uris = []
+                    for result in results:
+                        uri = result.triple()[0]
+                        if uri in indexed_uris:
+                            continue
+                        else:
+                            indexed_uris.append(uri)
+                        relation = (ob_uri, URIRef(unicode(relation_object)), uri)
+                        triples.append(relation)
         return triples
 
 class ZemanticMailCatalog(TripleStore):
@@ -233,14 +287,14 @@ class ZemanticMailCatalog(TripleStore):
 
     def indexMessage(self, message, full_indexation=False):
         """ index message """
-        zmessage = ZemanticMessageAdapter(message, full_indexation)
+        zmessage = ZemanticMessageAdapter(message, self, full_indexation)
         tuples = zmessage.threeTuples()
         self.addTriples(tuples)
 
     def unIndexMessage(self, message):
         """ unindex message """
         # undindexing is removing all triples where message is the subject
-        zmessage = ZemanticMessageAdapter(message, False)
+        zmessage = ZemanticMessageAdapter(message, self, False)
         tuples = zmessage.threeTuples()
         for tuple_ in tuples:
             try:
@@ -248,5 +302,15 @@ class ZemanticMailCatalog(TripleStore):
             except (KeyError, sre_constants.error):
                 pass
 
+    def make_query(self, query_tuple):
+        """ creates a query object and query """
+        subject = query_tuple[0]
+        object = u'<%s>' % query_tuple[1]
+        if query_tuple[2] is None:
+            predicate = Any
+        else:
+            predicate = query_tuple[2]
+        q = Query(subject, object, predicate)
+        return self.query(q)
 
 InitializeClass(ZemanticMailCatalog)

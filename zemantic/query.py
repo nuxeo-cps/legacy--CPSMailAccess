@@ -224,7 +224,7 @@ class Query(object):
 
                 if self.o is None:
                     ioresult = []
-                    for o in self.uniqueObjects():
+                    for o in store.uniqueObjects():
                         ioresult.append(Result((None, None, o)))
 
                 elif type(self.o) is TupleType or IQuery.providedBy(self.o):

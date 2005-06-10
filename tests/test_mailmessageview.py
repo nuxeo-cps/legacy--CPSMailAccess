@@ -27,10 +27,14 @@ from Testing.ZopeTestCase import ZopeTestCase, _print
 from zope.testing import doctest
 from zope.publisher.browser import FileUpload
 
+from rdflib.URIRef import URIRef
+
 from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.mailmessageview import MailMessageView
 from Products.CPSMailAccess.interfaces import IMailMessage
 from Products.CPSMailAccess.mailmessageview import MailMessageView
+from Products.CPSMailAccess.mailsearch import get_uri
+from Products.CPSMailAccess.zemantic.query import Query
 from Products.CPSMailAccess.tests import __file__ as landmark
 
 from basetestcase import MailTestCase
@@ -342,6 +346,32 @@ class MailMessageViewTestCase(MailTestCase):
         message = message.__of__(mbox)
         view = MailMessageView(message, None)
         self.assertRaises(AttributeError, view.notify, 0)
+
+    def test_getReferences(self):
+        mbox = self._getMailBox()
+        cat = mbox._getZemanticCatalog()
+        message = self.getMailInstanceT(48)
+        message.setHeader('message-id', '1')
+        message = message.__of__(mbox)
+        cat.indexMessage(message)
+
+        message2 = self.getMailInstanceT(47)
+        message2 = message2.__of__(mbox)
+        message2.setHeader('message-id', '2')
+        message2.setHeader('references', '1')
+        self.assertEquals(message2.getHeader('references'), ['1'])
+        cat.indexMessage(message2)
+
+        # verify indexing
+        uri = get_uri(message2)
+        res = list(cat.query(Query(uri, u'<thread>', None)))
+        self.assertEquals(len(res), 1)
+        """
+        view = MailMessageView(message2, None)
+        self.assertRaises(AttributeError, view.notify, 0)
+        refs = view.getReferences()
+        self.assertEquals(refs, ['2'])
+        """
 
 def test_suite():
     return unittest.TestSuite((

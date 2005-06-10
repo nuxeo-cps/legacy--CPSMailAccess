@@ -181,8 +181,8 @@ class MailSearchViewTestCase(MailTestCase):
     def test_zemanticPredicateList_light(self):
         searchview, cat, zcat, box = self._getView(False)
         list_ = searchview.zemanticPredicateList()
-        self.assertEquals(list_, [u'cc', u'date', u'from', u'sender',
-                                  u'subject', u'to'])
+        self.assertEquals(list_, [u'cc', u'date', u'from', u'message-id',
+                                  u'sender', u'subject', u'to'])
 
     def test_zemantic_searchs_light(self):
         searchview, cat, zcat, box = self._getView(False)

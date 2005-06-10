@@ -575,3 +575,25 @@ def createDigestFromList(headers):
 
     all_values = str(sub_keys.values())
     return md5Hash(all_values)
+
+def traverseToObject(root, path):
+    """ transforms a path into an object
+
+    XXX need to use regular travsersal here later, in z3
+    """
+    path = path.split('/')
+    if len(path) == 0:
+        return None
+    while len(path) > 0 and path[0] != root.id:
+        del path[0]
+    if len(path) == 0:
+        return None
+    # starting at root
+    del path[0]
+    subject = root
+    for element in path:
+        if hasattr(subject, element):
+            subject = getattr(subject, element)
+        else:
+            return None
+    return subject

@@ -35,6 +35,19 @@
       </script>
     </div>
     <div class="spacer"></div>
+    <div id="references" tal:define="refs here/getReferences">
+      <div tal:repeat="ref refs" class="mailReferences">
+        <div tal:attributes="onclick python:'gotoUrl(\''+ ref.absolute_url() +'/view\')';
+                             onmouseover python:'setCursor(this)'">
+          <table width="100%">
+            <tr class="tr_title">
+              <td align="left" tal:content="ref/view/renderSubject"/>
+              <td align="right" tal:content="ref/view/renderDate"/>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
     <div class="mailHeaders">
       <metal:block use-macro="here/messagelist_macros/messagetoolbar"/>
       <metal:block use-macro="here/messagelist_macros/messageheaders"/>

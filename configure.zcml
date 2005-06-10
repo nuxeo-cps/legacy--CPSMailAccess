@@ -475,6 +475,14 @@
   <browser:page
       for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
+      name="getReferences"
+      attribute="getReferences"
+      permission="cpsmailaccess.ViewMailBox"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessageview.MailMessageView"
       name="mailList.html"
       attribute="renderMailList"
       permission="cpsmailaccess.ViewMailBox"

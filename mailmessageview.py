@@ -499,3 +499,25 @@ class MailMessageView(BaseMailMessageView):
                 return False, 'cpsma_could_not_perform'
         else:
             return False, 'cpsma_no_mailbox'
+
+    def getReferences(self):
+        """ look in catalog for references """
+        msg = self.context
+        mailbox = msg.getMailBox()
+        refs = mailbox.getReferences(msg)
+        # we want to sort refs by dates
+        sres = []
+        for msg in refs:
+            msg = traverseToObject(mailbox, msg)
+            if msg is None:
+                continue
+            date = msg.getHeader('Date')
+            if date != [] and date is not None:
+                stDate = decodeHeader(date)
+                sorter = parseDateString(stDate)
+                sres.append((sorter, msg))
+            else:
+                sres.append(0, msg)
+        sres.sort()
+        return [item[1] for item in sres]
+

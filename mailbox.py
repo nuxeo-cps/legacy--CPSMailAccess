@@ -53,7 +53,7 @@ from mailfolderview import MailFolderView
 from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
 from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
-from mailsearch import MailCatalog, ZemanticMailCatalog
+from mailsearch import MailCatalog, ZemanticMailCatalog, get_uri, union
 from directorypicker import DirectoryPicker
 from baseconnection import has_connection
 from mailfiltering import ZMailFiltering
@@ -1124,6 +1124,17 @@ class MailBox(MailBoxBaseCaching):
                 all_res.append((server_dir, dir_res))
 
         return all_res
+
+    def getReferences(self, message):
+        """ returns refs """
+        cat = self._getZemanticCatalog()
+        msg_uri = get_uri(message)
+        res = cat.make_query((msg_uri, u'replies', None))
+        replies = [e.triple()[2] for e in list(res)]
+
+        res = cat.make_query((msg_uri, u'thread', None))
+        thread = [e.triple()[2] for e in list(res)]
+        return union(replies, thread)
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
