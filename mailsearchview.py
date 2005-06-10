@@ -21,9 +21,10 @@ import os
 import time
 
 from Products.Five import BrowserView
-from utils import getToolByName, parseDateString, decodeHeader
+from utils import getToolByName, parseDateString, decodeHeader, getFolder
 from mailexceptions import MailCatalogError
 from mailmessageview import MailMessageView
+from mailsearch import intersection  as z_intersection
 
 from zemantic.public import *
 from zemantic.query import UnionChain
@@ -97,14 +98,22 @@ class MailSearchView(BrowserView):
         list_.sort()
         return list_
 
-    def _intersection(self, x, y):
-        # in our case, intersection is made on subject
-        result = []
-        for e in x:
-            for item in y:
-                if e.triple()[0]  == item.triple()[0]:
-                    result.append(e)
-        return result
+    def _bodySearch(self, query):
+        """ makes an IMAP search and translate UIDS results in URIS """
+        mailbox = self.context
+        results = mailbox.searchInConnection('(body "%s")' % query)
+        uris = []
+        for server_res in results:
+            server_folder = server_res[0]
+            server_uids = server_res[1]
+            server_ob = getFolder(mailbox, server_folder)
+            if server_ob is not None:
+                for uid in server_uids:
+                    # uids are given in a tuple (server_dir, uid)
+                    ob = server_ob.findMessageByUid(uid)
+                    if ob is not None:
+                        uris.append(ob.absolute_url())
+            return uris
 
     def zemanticSearchMessages(self, **kw):
         """ zemantic query """
@@ -112,7 +121,10 @@ class MailSearchView(BrowserView):
         mailbox = self.context
         i = 0
         found = True
+        body_search = False
+        body_search_query = None
         queries = []
+        numparam = 0
         # maximum parameters == kw length / 2
         while i < len(kw.keys()) / 2:
             rrelation = 'relation_%d' %  i
@@ -124,24 +136,30 @@ class MailSearchView(BrowserView):
 
                 if value.strip() == '':    # we skip empty value
                     continue
+
                 relation = kw[rrelation]
 
                 # XXX encoding in iso8859-15 (today's CPS)
                 if not isinstance(relation, unicode):
                     relation = relation.strip().decode('ISO-8859-15')
                 relation = relation.lower()
-
                 value = value.strip()
 
-                if len(value) == 1 and value in '?*':    # stands for all entries
-                    query = Query(Any, u'<%s>' % relation, Any)
+                if relation == 'body':
+                    # special case: mail body is not indexed by zope
+                    body_search = True
+                    body_search_query = value
                 else:
-                    if len(value) > 1 and value[0] in '?*':
-                        value[0] = '_'
-                    if not isinstance(value, unicode):
-                        value = value.strip().decode('ISO-8859-15')
-                    query = Query(Any, u'<%s>' % relation, u'"%s"' % value)
-                queries.append(query)
+                    numparam += 1
+                    if len(value) == 1 and value in '?*':    # stands for all entries
+                        query = Query(Any, u'<%s>' % relation, Any)
+                    else:
+                        if len(value) > 1 and value[0] in '?*':
+                            value[0] = '_'
+                        if not isinstance(value, unicode):
+                            value = value.strip().decode('ISO-8859-15')
+                        query = Query(Any, u'<%s>' % relation, u'"%s"' % value)
+                    queries.append(query)
 
         cat = mailbox._getZemanticCatalog()
 
@@ -169,7 +187,7 @@ class MailSearchView(BrowserView):
                     query_results = []
 
                 if i > 0:
-                    raw_results = self._intersection(query_results, raw_results)
+                    raw_results = z_intersection(query_results, raw_results)
                 else:
                     raw_results = query_results
 
@@ -182,6 +200,21 @@ class MailSearchView(BrowserView):
         else:
             raw_results = [raw_result.triple()[0] \
                            for raw_result in raw_results]
+
+        # after zemantic has done its works,
+        # we might sub-search bodies on IMAP
+        if body_search:
+            body_search_results = self._bodySearch(body_search_query)
+            if not intersection:
+                raw_results.append(body_search_results)
+            else:
+                if raw_results != []:
+                    raw_results = z_intersection(body_search_results,
+                                                 raw_results)
+                else:
+                    # one intersection
+                    if numparam == 0:
+                        raw_results = body_search_results
 
         results = []
         msg_viewer = MailMessageView(None, self.request)
@@ -212,6 +245,10 @@ class MailSearchView(BrowserView):
 
         results.sort()
         results.reverse()
+
+        # XXX at this time, no batch, limit the result to 100 entries
+        if len(results) > 100:
+            results = results[:100]
 
         sorted_results = [result[1] for result in results]
 

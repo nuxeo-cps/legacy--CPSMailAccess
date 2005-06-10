@@ -87,7 +87,7 @@
             <input class="fullwidth" type="text" name="value_2" tal:attributes="value value_2"/>
           </td>
         </tr>
-        <tr tal:replace="nothing">
+        <tr>
           <td align="right">
             <div class="dlabel" i18n:translate="cpsma_search_message_contains">
             Message Contains :
@@ -96,6 +96,7 @@
           <td >
             <input type="hidden" name="relation_3" value="body"/>
             <input class="fullwidth" type="text" name="value_3" tal:attributes="value value_3"/>
+            <span style="color: red" i18n:translate="cpsma_bodysearch_warning">*body search is mail server-side and thus very slow</span>
           </td>
         </tr>
         <tr>

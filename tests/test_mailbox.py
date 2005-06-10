@@ -347,6 +347,12 @@ class MailBoxTestCase(MailTestCase):
         # to make sure it will raise within the smtplib
         self.assertRaises(AttributeError, mailbox.sendEditorsMessage)
 
+    def test_searchInConnection(self):
+        mailbox = self._getMailBox()
+        res= mailbox.searchInConnection('(body test)')
+        self.assert_(len(res) > 0)
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),

@@ -474,3 +474,6 @@ msgstr ""
 
 msgid "cpsma_notified"
 msgstr ""
+
+msgid "cpsma_bodysearch_warning"
+msgid ""

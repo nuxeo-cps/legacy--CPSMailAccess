@@ -1108,6 +1108,23 @@ class MailBox(MailBoxBaseCaching):
         except ConnectionError, e:
             return False, e
 
+    def searchInConnection(self, query):
+        """ sends a query to the connector and mix the results all """
+        connector = self._getconnector()
+        all_res = []
+        # now will make a search into the whole box
+        server_directories = connector.list()
+        for server_dir in server_directories:
+            server_dir = server_dir['Name']
+            try:
+                dir_res = connector.search(server_dir, None, query)
+            except ConnectionError:
+                dir_res = []
+            if dir_res != [] and dir_res != ['']:
+                all_res.append((server_dir, dir_res))
+
+        return all_res
+
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)
 

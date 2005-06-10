@@ -48,6 +48,19 @@ from rdflib.Literal import Literal
 
 stop_words_filename = os.path.join(os.path.dirname(landmark), 'stopwords.txt')
 
+def intersection(x, y):
+    # intersect triples, strings,unicode and URIRef
+    result = []
+    for e in x:
+        for item in y:
+            if not type(e) in (str, URIRef):
+                e = e.triple()[0]
+            if not type(item) in (str, URIRef):
+                item = item.triple()[0]
+            if e == item:
+                result.append(e)
+    return result
+
 class MailStopWords(FileStopwords):
     pass
 

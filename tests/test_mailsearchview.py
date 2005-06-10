@@ -233,7 +233,10 @@ class MailSearchViewTestCase(MailTestCase):
         results = searchview.zemanticSearchMessages(**query)[0]
         self.assertEquals(len(results), 0)
 
-
+    def test_bodySearch(self):
+        searchview, cat, zcat, box = self._getView(False)
+        res = searchview._bodySearch('test')
+        self.assertEquals(res, [])
 
 def test_suite():
     return unittest.TestSuite((

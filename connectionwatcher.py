@@ -39,7 +39,7 @@ class ConnectionWatcher(Thread):
 
     terminated = False
 
-    def __init__(self, parent=None, sleep_time=2, idle_time=30):
+    def __init__(self, parent=None, sleep_time=2, idle_time=60):
         Thread.__init__(self)
         self.parent = parent
         self.sleep_time = sleep_time

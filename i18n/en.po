@@ -479,3 +479,6 @@ msgstr "Notification sent."
 
 msgid "cpsma_return_receipt"
 msgstr "Ask for a read receipt"
+
+msgid "cpsma_bodysearch_warning"
+msgid "*body search is mail server-side and thus very slow"
