@@ -365,25 +365,25 @@ class MailSearchTestCase(MailTestCase):
         message1 = self.getMailInstanceT(1)
         message1 = message1.__of__(self.portal)
         message1.setHeader('Subject', 'message 1')
-        message1.setHeader('message-id', '1')
+        message1.setHeader('message-id', '<1>')
         ob.indexMessage(message1)
 
         message2 = self.getMailInstanceT(1)
         message2 = message2.__of__(self.portal)
         message2.setHeader('Subject', 'message 2')
-        message2.setHeader('message-id', '2')
-        message2.setHeader('references', '1')
+        message2.setHeader('message-id', '<2>')
+        message2.setHeader('references', '<1>')
         ob.indexMessage(message2)
 
         message3 = self.getMailInstanceT(1)
         message3 = message3.__of__(self.portal)
         message3.setHeader('Subject', 'message 3')
-        message3.setHeader('message-id', '3')
-        message3.addHeader('references', '2')
-        message3.addHeader('references', '1')
+        message3.setHeader('message-id', '<3>')
+        message3.addHeader('references', '<2>')
+        message3.addHeader('references', '<1>')
         # check headers
         refs = message3.getHeader('references')
-        self.assertEquals(refs, ['2', '1'])
+        self.assertEquals(refs, ['<2>', '<1>'])
 
         ob.indexMessage(message3)
 
@@ -393,11 +393,6 @@ class MailSearchTestCase(MailTestCase):
         res = list(res)
         self.assertEquals(len(res), 0)
 
-        # testing back references
-        res = ob.query(Query(msg1_uri, URIRef(u'back-thread'), Any))
-        res = list(res)
-        self.assertEquals(len(res), 2)
-
         msg2_uri = URIRef(unicode(message2.absolute_url()))
         res = ob.query(Query(msg2_uri, URIRef(u'thread'), Any))
         res = list(res)
@@ -405,6 +400,11 @@ class MailSearchTestCase(MailTestCase):
 
         msg3_uri = URIRef(unicode(message3.absolute_url()))
         res = ob.query(Query(msg3_uri, URIRef(u'thread'), Any))
+        res = list(res)
+        self.assertEquals(len(res), 2)
+
+        # testing back references
+        res = ob.query(Query(msg1_uri, URIRef(u'back-thread'), Any))
         res = list(res)
         self.assertEquals(len(res), 2)
 

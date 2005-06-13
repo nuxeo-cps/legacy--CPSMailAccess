@@ -162,7 +162,11 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_(view)
 
         body = view._bodyRender(ob)
-        self.assertEquals(body, u"sqdsqd d<br/>sqdsqd<br/>qsd<br/>sd<br/>qs<br/>dsqdqsdsq<br/><br/><br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br/><br/>Mme XXX<br/>Direction Informatique<br/>xxxx - SIEGE<br/>Tel : XXX<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br/><br/>--------------------------------------------<br/><br/>Ce mail est \xe0 l'attention exclusive des destinataires d\xe9sign\xe9s. Il peut<br/>contenir des informations confidentielles. Si vous le recevez par erreur,<br/>merci de le d\xe9truire et d'en informer sans d\xe9lais l'exp\xe9diteur.<br/><br/>Le contenu de ce mail ne pourrait engager la responsabilit\xe9 de la Banque<br/>Centrale des Etats de l'Afrique de l'Ouest que s'il a \xe9t\xe9 \xe9mis par une<br/>personne d\xfbment habilit\xe9e, agissant dans le cadre strict des fonctions<br/>auxquelles elle est employ\xe9e et \xe0 des fins non \xe9trang\xe8res \xe0 ses attributions.<br/><br/>Toute diffusion, copie, publication partielle ou totale, ou toute autre<br/>utilisation est interdite, sauf autorisation.<br/><br/>--------------------------------------------<br/><br/>")
+        body = body.split('<br/>')
+
+        self.assertEquals(body[0], u'sqdsqd d')
+        self.assertEquals(body[7],
+                          u'</span><span class="shrinkable not_hidden_part">')
 
         body = view.renderBody()
 
@@ -183,7 +187,7 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_(view)
 
         body = view.renderBody()
-        self.assertEquals(body, u'         ezezf<br> ezf<br> <b>ezf</b><br> ef<br> <br> ez<br> <br> <span class="moz-smiley-s6"><span> :-[ </span></span><br> ezf<br>  ')
+        self.assertEquals(body, u'         ezezf<br/> ezf<br/> <b>ezf</b><br/> ef<br/><span class="shrinkable not_hidden_part"> <br/></span> ez<br/><span class="shrinkable not_hidden_part"> <br/></span> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> ezf<br/><span class="shrinkable not_hidden_part">  <br/></span>')
 
     def test_renderHeaderList(self):
         # checks unicoding
@@ -351,15 +355,15 @@ class MailMessageViewTestCase(MailTestCase):
         mbox = self._getMailBox()
         cat = mbox._getZemanticCatalog()
         message = self.getMailInstanceT(48)
-        message.setHeader('message-id', '1')
+        message.setHeader('message-id', '<1>')
         message = message.__of__(mbox)
         cat.indexMessage(message)
 
         message2 = self.getMailInstanceT(47)
         message2 = message2.__of__(mbox)
-        message2.setHeader('message-id', '2')
-        message2.setHeader('references', '1')
-        self.assertEquals(message2.getHeader('references'), ['1'])
+        message2.setHeader('message-id', '<2>')
+        message2.setHeader('references', '<1>')
+        self.assertEquals(message2.getHeader('references'), ['<1>'])
         cat.indexMessage(message2)
 
         # verify indexing

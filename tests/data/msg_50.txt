@@ -1,0 +1,30 @@
+Return-Path: <dev-bounces@lists.nuxeo.com>
+Delivered-To: xxxx@nuxeo.com
+Message-ID: <42A882A1.2060608@nuxeo.com>
+Date: Thu, 09 Jun 2005 19:55:45 +0200
+From: xxx
+User-Agent: Mozilla Thunderbird 1.0.2 (X11/20050331)
+X-Accept-Language: fr, en
+MIME-Version: 1.0
+To: xxx
+Subject: Re: [Dev] CPS: loadcustom
+References: <D3FB7D99-584E-48E2-9D62-30ED005E1452@nuxeo.com>    <42A87078.2060601@nuxeo.com>
+        <4D23F833-EB8A-42DF-BB1D-4ADED7203590@nuxeo.com>
+In-Reply-To: <4D23F833-EB8A-42DF-BB1D-4ADED7203590@nuxeo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 8bit
+X-BeenThere: xxx
+X-Mailman-Version: 2.1.5
+Precedence: list
+List-Id: dev.lists.nuxeo.com
+List-Unsubscribe: <http://lists.nuxeo.com/mailman/listinfo/dev>,
+        <mailto:dev-request@lists.nuxeo.com?subject=unsubscribe>
+List-Archive: <http://lists.nuxeo.com/mailman/private/dev>
+List-Post: <mailto:dev@lists.nuxeo.com>
+List-Help: <mailto:dev-request@lists.nuxeo.com?subject=help>
+List-Subscribe: <http://lists.nuxeo.com/mailman/listinfo/dev>,
+        <mailto:dev-request@lists.nuxeo.com?subject=subscribe>
+Sender: dev-bounces@lists.nuxeo.com
+Errors-To: dev-bounces@lists.nuxeo.com
+
+mailbody
