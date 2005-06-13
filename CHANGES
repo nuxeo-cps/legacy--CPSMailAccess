@@ -3,7 +3,9 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- First release
+- Message view let the user navigates through the tread
+- Message view let the user "shrink" the mail body
+
 Bug fixes:
 ~~~~~~~~~~
 -
