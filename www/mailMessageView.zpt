@@ -36,7 +36,7 @@
     </div>
     <div class="spacer"></div>
     <div id="references" tal:define="refs here/getReferences">
-      <div tal:repeat="ref refs" class="mailReferences">
+      <div tal:repeat="ref refs" class="mailReferences selectable">
         <div tal:attributes="onclick python:'gotoUrl(\''+ ref.absolute_url() +'/view\')';
                              onmouseover python:'setCursor(this)'">
           <table width="100%">
@@ -49,14 +49,14 @@
       </div>
     </div>
     <div class="mailHeaders">
-      <metal:block use-macro="here/messagelist_macros/messagetoolbar"/>
       <metal:block use-macro="here/messagelist_macros/messageheaders"/>
+      <metal:block use-macro="here/messagelist_macros/messagetoolbar"/>
     </div>
     <div id="mailBody">
       <tal:block tal:replace="structure here/renderBody"/>
     </div>
     <div id="references" tal:define="refs here/getBackReferences">
-      <div tal:repeat="ref refs" class="mailBackReferences">
+      <div tal:repeat="ref refs" class="mailBackReferences selectable">
         <div tal:attributes="onclick python:'gotoUrl(\''+ ref.absolute_url() +'/view\')';
                              onmouseover python:'setCursor(this)'">
         <table width="100%">
