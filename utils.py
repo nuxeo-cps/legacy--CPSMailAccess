@@ -597,3 +597,9 @@ def traverseToObject(root, path):
         else:
             return None
     return subject
+
+def parseRefs(refs):
+    """ transforms a reference string into a ref list """
+    re_script = r'<\S*>'
+    result = re.findall(re_script, refs.strip())
+    return [ref.strip() for ref in result]

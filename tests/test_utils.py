@@ -243,6 +243,17 @@ The CPS Team.
         res = translate(ob, 'ok')
         self.assertEquals(res, 'ok')
 
+    def test_referencesReader(self):
+        ob = self.getMailInstance(49)
+        refs = ob.getHeader('References')
+        refs = parseRefs(refs[0])
+        self.assertEquals(refs, ['<D3FB7D99-584E-48E2-9D62-30ED005E1452@nuxeo.com>',
+                                 '<42A87078.2060601@nuxeo.com>',
+                                 '<4D23F833-EB8A-42DF-BB1D-4ADED7203590@nuxeo.com>'])
+
+        refs = parseRefs('<42A87078.2060601@nuxeo.com>')
+        self.assertEquals(refs, ['<42A87078.2060601@nuxeo.com>'])
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),

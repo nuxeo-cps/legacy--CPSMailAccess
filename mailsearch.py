@@ -36,7 +36,7 @@ from Products.TextIndexNG2.TextIndexNG import TextIndexNG
 from Products.TextIndexNG2.Stopwords import FileStopwords
 
 from configuration import __file__ as landmark
-from utils import makeId, parseDateString, removeHTML, decodeHeader
+from utils import makeId, parseDateString, removeHTML, decodeHeader, parseRefs
 from interfaces import IMailCatalog
 
 from zemantic.triplestore import TripleStore
@@ -274,8 +274,12 @@ class ZemanticMessageAdapter:
                     # let's try to find the message id in _message_ids
                     value = decodeHeader(value)
                     value = self._headerToUnicode(value)
-                    if self.catalog._message_ids.has_key(value):
-                        uri = self.catalog._message_ids[value]
+                    refs = parseRefs(value)
+
+                    for ref in refs:
+                        if not self.catalog._message_ids.has_key(ref):
+                            continue
+                        uri = self.catalog._message_ids[ref]
                         if uri in uris:
                             continue
                         LOG('related', INFO, str(uri))
