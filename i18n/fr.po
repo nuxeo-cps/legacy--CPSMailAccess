@@ -481,4 +481,4 @@ msgid "cpsma_return_receipt"
 msgstr "Demander un accusé de lecture"
 
 msgid "cpsma_bodysearch_warning"
-msgid "*les recherches dans le corps peuvent être lentes"
+msgstr "*les recherches dans le corps peuvent être lentes"
