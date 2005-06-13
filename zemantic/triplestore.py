@@ -16,7 +16,7 @@ __rdf_description__ = '''\
 <rdf:RDF xmlns="http://web.resource.org/cc/"
 xmlns:dc="http://purl.org/dc/elements/1.1/"
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<Work rdf:about="http://zemantic.org/zemantic/triplestore.py"
+# <Work rdf:about="http://zemantic.org/zemantic/triplestore.py"
   dc:title="zemantic.triplestore"
   dc:date="2005"
   dc:description="Triple store catalogs.">
@@ -78,7 +78,10 @@ class TripleStore(Persistent):
 
     def clear(self, backend=None):
         """ Clear zemantic. """
-        self.__init__(backend)
+        if backend is None:
+            backend = IOZODBTextIndexBackend()
+        self.backend = backend
+        self._v_store = rdflibTripleStore(backend=backend)
 
     def notifyOn(self):
         """

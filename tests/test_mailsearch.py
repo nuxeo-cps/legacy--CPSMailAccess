@@ -393,6 +393,11 @@ class MailSearchTestCase(MailTestCase):
         res = list(res)
         self.assertEquals(len(res), 0)
 
+        # testing back references
+        res = ob.query(Query(msg1_uri, URIRef(u'back-thread'), Any))
+        res = list(res)
+        self.assertEquals(len(res), 2)
+
         msg2_uri = URIRef(unicode(message2.absolute_url()))
         res = ob.query(Query(msg2_uri, URIRef(u'thread'), Any))
         res = list(res)
@@ -402,6 +407,26 @@ class MailSearchTestCase(MailTestCase):
         res = ob.query(Query(msg3_uri, URIRef(u'thread'), Any))
         res = list(res)
         self.assertEquals(len(res), 2)
+
+    def test_clear(self):
+        ob = ZemanticMailCatalog()
+
+        message1 = self.getMailInstanceT(1)
+        message1 = message1.__of__(self.portal)
+        message1.setHeader('Subject', 'message 1')
+        message1.setHeader('message-id', '1')
+        ob.indexMessage(message1)
+
+        res = ob.query(Query(Any, Any, Any))
+        res = list(res)
+        self.assertEquals(len(res), 6)
+
+        ob.clear()
+
+        res = ob.query(Query(Any, Any, Any))
+        res = list(res)
+        self.assertEquals(len(res), 0)
+
 
 def test_suite():
     return unittest.TestSuite((

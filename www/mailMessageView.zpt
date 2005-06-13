@@ -55,6 +55,19 @@
     <div id="mailBody">
       <tal:block tal:replace="structure here/renderBody"/>
     </div>
+    <div id="references" tal:define="refs here/getBackReferences">
+      <div tal:repeat="ref refs" class="mailBackReferences">
+        <div tal:attributes="onclick python:'gotoUrl(\''+ ref.absolute_url() +'/view\')';
+                             onmouseover python:'setCursor(this)'">
+        <table width="100%">
+            <tr class="tr_title">
+            <td align="left" tal:content="ref/view/renderSubject"/>
+            <td align="right" tal:content="ref/view/renderDate"/>
+            </tr>
+        </table>
+        </div>
+      </div>
+    </div>
     <tal:block tal:condition="python:here.notificationEmail() is not None">
       <script langage="javascript">
         notifySender();

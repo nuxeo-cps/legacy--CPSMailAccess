@@ -29,6 +29,7 @@ from ZODB.PersistentMapping import PersistentMapping
 from Globals import InitializeClass
 
 from zope.interface import implements
+from BTrees.OOBTree import OOBTree
 
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.TextIndexNG2.TextIndexNG import TextIndexNG
@@ -205,7 +206,7 @@ class ZemanticMessageAdapter:
                 value = value.decode(default_charset)
         return value
 
-    def threeTuples(self):
+    def threeTuples(self, index_relations=True):
         """ give zemantic the sequence of relations """
         message = self.context
         default_charset = self.default_charset
@@ -223,10 +224,13 @@ class ZemanticMessageAdapter:
 
         for header in headers:
             header_name = header
-            values = message.getHeader(header_name)
+            header_name = self._headerToUnicode(header_name)
+            try:
+                values = message.getHeader(header_name)
+            except UnicodeDecodeError:
+                values = []
             for value in values:
                 header_name = header_name.lower()
-                header_name = self._headerToUnicode(header_name)
                 relation = URIRef(header_name)
                 value = decodeHeader(value)
                 value = self._headerToUnicode(value)
@@ -256,45 +260,80 @@ class ZemanticMessageAdapter:
             triples.append((ob_uri, URIRef(u'body'), body))
 
         # relations with other mails
-        for relation in self.message_relation:
-            # all relations are based on message ids
-            relation_name = relation[0]
-            relation_object = relation[1]
-            values = message.getHeader(relation_name)
-            for value in values:
-                # let's try to find the message id in the catalog
-                value = decodeHeader(value)
-                value = self._headerToUnicode(value)
-                query_ = Query((Any, u'<message-id>', URIRef(value)))
-                results = self.catalog.query(query_)
-                results = list(results)
-
-                if len(results) > 0:
-                    indexed_uris = []
-                    for result in results:
-                        uri = result.triple()[0]
-                        if uri in indexed_uris:
+        if index_relations:
+            uris = []
+            for relation in self.message_relation:
+                # all relations are based on message ids
+                relation_name = relation[0]
+                relation_object = relation[1]
+                try:
+                    values = message.getHeader(relation_name)
+                except UnicodeDecodeError:
+                    values = []
+                for value in values:
+                    # let's try to find the message id in _message_ids
+                    value = decodeHeader(value)
+                    value = self._headerToUnicode(value)
+                    if self.catalog._message_ids.has_key(value):
+                        uri = self.catalog._message_ids[value]
+                        if uri in uris:
                             continue
-                        else:
-                            indexed_uris.append(uri)
-                        relation = (ob_uri, URIRef(unicode(relation_object)), uri)
+                        LOG('related', INFO, str(uri))
+                        relation_object = unicode(relation_object)
+                        relation_ref = URIRef(relation_object)
+                        relation = (ob_uri, relation_ref, uri)
                         triples.append(relation)
+                        # making the backed relation
+                        back_relation_ref = URIRef(u'back-'+relation_object)
+                        back_relation = (uri, back_relation_ref, ob_uri)
+                        triples.append(back_relation)
+                        uris.append(uri)
         return triples
 
 class ZemanticMailCatalog(TripleStore):
 
     implements(IMailCatalog)
 
-    def indexMessage(self, message, full_indexation=False):
+    def __init__(self, backend=None):
+        TripleStore.__init__(self, backend)
+        self._message_ids = OOBTree()
+
+    def clear(self):
+        TripleStore.clear(self)
+        self._message_ids = OOBTree()
+
+    def _headerToUnicode(self, value):
+        if isinstance(value, str):
+            try:
+                value = value.decode('ISO-8859-15')
+            except (encoding_exceptions.LookupError,
+                    UnicodeDecodeError):
+                value = value.decode(default_charset)
+        return value
+
+    def indexMessage(self, message, full_indexation=False,
+                     index_relations=True):
         """ index message """
         zmessage = ZemanticMessageAdapter(message, self, full_indexation)
-        tuples = zmessage.threeTuples()
+        tuples = zmessage.threeTuples(index_relations)
+
+        # adding message to _message_ids
+        ob_uri = get_uri(message)
+        message_id = message.getHeader('message-id')
+        if message_id is not None and message_id != []:
+            message_id = self._headerToUnicode(message_id[0])
+            self._message_ids[message_id] = ob_uri
         self.addTriples(tuples)
 
     def unIndexMessage(self, message):
         """ unindex message """
         # undindexing is removing all triples where message is the subject
         zmessage = ZemanticMessageAdapter(message, self, False)
+        # adding message to _message_ids
+        message_id = message.getHeader('message-id')
+        if message_id is not None and message_id != []:
+            if self._message_ids.has_key(message_id):
+                del self._message_ids[message_id]
         tuples = zmessage.threeTuples()
         for tuple_ in tuples:
             try:

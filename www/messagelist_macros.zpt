@@ -330,7 +330,7 @@
             </b>
           </div>
         </div>
-        <div id="mailBreak"/>
+        <!--div id="mailBreak"/-->
         <div id="mailMoreInfos">
           <div id="mailDate">
             <b>
@@ -358,6 +358,7 @@
           </div>
         </div>
       </metal:block>
+
       <metal:block define-macro="batcher">
         <div class="batcher" tal:condition="python:nbpages &gt; 1">
           Page <span tal:replace="page" /> of <span tal:replace="nbpages" /><br/>

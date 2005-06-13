@@ -500,11 +500,14 @@ class MailMessageView(BaseMailMessageView):
         else:
             return False, 'cpsma_no_mailbox'
 
-    def getReferences(self):
+    def _getRef(self, back=False):
         """ look in catalog for references """
         msg = self.context
         mailbox = msg.getMailBox()
-        refs = mailbox.getReferences(msg)
+        if not back:
+            refs = mailbox.getReferences(msg)
+        else:
+            refs = mailbox.getBackReferences(msg)
         # we want to sort refs by dates
         sres = []
         for msg in refs:
@@ -521,3 +524,10 @@ class MailMessageView(BaseMailMessageView):
         sres.sort()
         return [item[1] for item in sres]
 
+    def getReferences(self):
+        """ look in catalog for references """
+        return self._getRef()
+
+    def getBackReferences(self):
+        """ look in catalog for backreferences """
+        return self._getRef(back=True)

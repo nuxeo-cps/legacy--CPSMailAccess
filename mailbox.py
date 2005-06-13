@@ -179,6 +179,9 @@ class MailBox(MailBoxBaseCaching):
     >>> IMailBox.providedBy(f)
     True
     """
+    #used formigrations
+    __version__ = 'beta2'
+
     ### XXX see if "properties" are ok in zope3/five context
     meta_type = "CPSMailAccess Box"
     portal_type = meta_type
@@ -282,9 +285,11 @@ class MailBox(MailBoxBaseCaching):
             returned = logtext
 
         # run filters on INBOX
+        LOG('synchro', DEBUG, 'running filters')
         for directory in server_directory:
             dir_ = getFolder(self, directory['Name'])
             dir_.runFilters()
+        LOG('synchro', DEBUG, 'done running filters')
 
         # now indexing
         LOG('synchro', DEBUG, 'half time : %s seconds' % \
@@ -556,14 +561,12 @@ class MailBox(MailBoxBaseCaching):
 
     def getDraftFolderName(self):
         """ returns the draft name """
-
         return self.getConnectionParams()['draft_folder_name']
 
     def getDraftFolder(self):
         """ returns the draft folder, creates it in case
             it does not exists yet
         """
-
         draft_name = self.getDraftFolderName()
         draft = getFolder(self, draft_name)
         if draft is None:
@@ -710,12 +713,12 @@ class MailBox(MailBoxBaseCaching):
         endtime = time.time() - start_time
         LOG('synchro', DEBUG, 'total time : %s seconds' % endtime)
 
-    def indexMessage(self, msg):
+    def indexMessage(self, msg, index_relations=True):
         """ indexes message """
         #cat = self._getCatalog()
         #cat.indexMessage(msg)
         zemantic_cat = self._getZemanticCatalog()
-        zemantic_cat.indexMessage(msg)
+        zemantic_cat.indexMessage(msg, index_relations)
 
     def unIndexMessage(self, msg):
         """ unindexes message """
@@ -1134,7 +1137,26 @@ class MailBox(MailBoxBaseCaching):
 
         res = cat.make_query((msg_uri, u'thread', None))
         thread = [e.triple()[2] for e in list(res)]
+        res = union(replies, thread)
+        bres = self.getBackReferences(message)
+        return [element for element in res if element not in bres]
+
+    def getBackReferences(self, message):
+        """ returns refs """
+        cat = self._getZemanticCatalog()
+        msg_uri = get_uri(message)
+        res = cat.make_query((msg_uri, u'back-replies', None))
+        replies = [e.triple()[2] for e in list(res)]
+
+        res = cat.make_query((msg_uri, u'back-thread', None))
+        thread = [e.triple()[2] for e in list(res)]
         return union(replies, thread)
+
+    def isSpecialFolder(self, folder):
+        special_folders = (self.getDraftFolderName(),
+                           self.getTrashFolderName(), self.getSentFolderName())
+
+        return folder.server_name in special_folders
 
 # Classic Zope 2 interface for class registering
 InitializeClass(MailBox)

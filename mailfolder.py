@@ -361,7 +361,8 @@ class MailFolder(BTreeFolder2):
     def _indexMessage(self, msg):
         """ indexes message """
         mailbox = self.getMailBox()
-        mailbox.indexMessage(msg)
+        index_relations = not mailbox.isSpecialFolder(self)
+        mailbox.indexMessage(msg, index_relations=index_relations)
 
     def _unIndexMessage(self, msg):
         """ indexes message """
@@ -639,6 +640,7 @@ class MailFolder(BTreeFolder2):
             uid_sequence = ','.join(sub_bloc)
             #start = time.time()
             # gets flags, size and headers
+            LOG('_synchronizeFolder', DEBUG, 'fetching %s' % str(uid_sequence))
             try:
                 fetched = connector.fetch(self.server_name, uid_sequence,
                                           fetch_str)
@@ -714,21 +716,26 @@ class MailFolder(BTreeFolder2):
 
             get_transaction().commit()  # implicitly usable without import
             get_transaction().begin()   # implicitly usable without import
+            LOG('_synchronizeFolder', DEBUG, 'done fetching')
             #end_time = time.time() - start_time
 
         # now clear messages in zodb that appears to be
         # deleted from the directory
         # and put them in the cache
+        LOG('_synchronizeFolder', DEBUG, 'deleting messages')
         for message in zodb_messages:
             if not sync_states['%s' % message.digest]:
                 digest = message.digest
                 mailbox.addMailToCache(message, digest)
                 # XXX need to remove for catalogs
                 self._deleteMessage(message.uid)
+        LOG('_synchronizeFolder', DEBUG, 'done deleting messages')
+
         # used to prevent swapping
         get_transaction().commit()    # implicitly usable without import
         get_transaction().begin()     # implicitly usable without import
 
+        LOG('_synchronizeFolder done for', DEBUG, self.id)
         if return_log:
             return log
         else:

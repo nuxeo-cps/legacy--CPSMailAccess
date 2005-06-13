@@ -483,6 +483,14 @@
   <browser:page
       for=".interfaces.IMailMessage"
       class=".mailmessageview.MailMessageView"
+      name="getBackReferences"
+      attribute="getBackReferences"
+      permission="cpsmailaccess.ViewMailBox"
+      />
+
+  <browser:page
+      for=".interfaces.IMailMessage"
+      class=".mailmessageview.MailMessageView"
       name="mailList.html"
       attribute="renderMailList"
       permission="cpsmailaccess.ViewMailBox"

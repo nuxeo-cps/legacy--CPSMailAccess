@@ -113,8 +113,27 @@ class CPSMailAccessInstaller(CPSInstaller):
         # XXX not used yet
         # self.linkFiveActionTool()
         self.setupTranslations()
+        self.verifySearchEngine()
         self.finalize()
         self.log("End of Install/Update : CPSMailAccess Product")
+
+    def verifySearchEngine(self):
+        """ upgrade mailsearch engine """
+        wm = self.portal.portal_webmail
+        from BTrees.OOBTree import OOBTree
+        for id, box in wm.objectItems():
+            if not hasattr(box, '__version__'):
+                # beta 1, upgrading to beta 2
+                self.log('upgrading box %s to beta 2' % id)
+                box.__version__ = 'beta2'
+                zcat = box._getZemanticCatalog()
+                zcat._message_ids = OOBTree()
+            else:
+                self.log('box %s version ok (%s)' % (id, box.__version__))
+                zcat = box._getZemanticCatalog()
+                if not hasattr(zcat, '_message_ids'):
+                    self.log('old catalog, upgrading')
+                    zcat._message_ids = OOBTree()
 
     def setupPortalWebMail(self):
         """ sets up portal webmail
