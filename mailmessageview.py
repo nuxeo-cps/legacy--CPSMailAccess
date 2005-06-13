@@ -389,7 +389,10 @@ class MailMessageView(BaseMailMessageView):
             if file['filename'] == filename:
                 data = file['data']
                 if data is None:
-                    data = self._getMailFile(mail, file['part'])
+                    try:
+                        data = self._getMailFile(mail, file['part'])
+                    except ConnectionError:
+                        return None
 
                 filecontent = data
                 cte = file['content-transfer-encoding']
