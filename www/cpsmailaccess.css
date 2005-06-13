@@ -128,9 +128,8 @@ div.message_msglist {
   height: 200px;
 }
 
-td.selectable:hover {
+.selectable:hover {
   background-color:  #c0ff75;
-
 }
 
 table.editorHeader {
@@ -303,11 +302,11 @@ textarea.recipients:hover {
   background-color:  #c0ff75;
 }
 
-div.hidden_part {
+.hidden_part {
   display: none;
 }
 
-div.not_hidden_part {
+.not_hidden_part {
   display: 1;
 }
 
@@ -321,10 +320,6 @@ div.subject {
   font-weight: bold;
   margin-right: 4px;
   width: 100px;
-}
-
-a.selectable:hover {
-  background-color:  #c0ff75;
 }
 
 input.fullwidth {
@@ -444,7 +439,7 @@ div.dragBox {
 }
 
 input.cellInput {
-  width: 75px;
+  width: 150px;
   padding-left: 4px;
   padding-right: 4px;
 }
@@ -605,4 +600,19 @@ div.mailBackReferences {
   padding: 1px;
   -moz-border-radius-bottomleft: 12px;
   -moz-border-radius-bottomright: 12px;
+}
+
+.block_section:hover {
+  background-color: white;
+}
+
+.block_section {
+  float: right;
+  margin-right: 8px;
+  color: black;
+}
+
+span.button {
+  border: 1px solid black;
+  padding: 2px;
 }

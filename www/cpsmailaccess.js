@@ -892,3 +892,43 @@ function notifySender()
     }
   }
 }
+
+
+/*
+   functions used for filter screen
+*/
+function pickupParameter()
+{
+  toggleElementVisibility("moveFolder");
+}
+
+function filterTypeChanged(object)
+{
+  element = document.getElementById("folder_selector");
+
+  if (object.value != 3)
+  {
+    element.className = element.className.replace("hidden_part", "not_hidden_part");
+    element.style.visibility = "visible";
+  }
+  else
+  {
+    element.className = element.className.replace("not_hidden_part", "hidden_part");
+    element.style.visibility = "hidden";
+    element = document.getElementById("moveFolder");
+    element.className = element.className.replace("not_hidden_part", "hidden_part");
+    element.style.visibility = "hidden";
+  }
+  element = document.getElementById("folder_selection");
+  element.value = "";
+}
+
+function setPickupFolder(element)
+{
+  folder_name = element.id;
+  element = document.getElementById("folder_selection");
+  element.value = folder_name;
+  element = document.getElementById("moveFolder");
+  element.className = element.className.replace("not_hidden_part", "hidden_part");
+  element.style.visibility = "hidden";
+}

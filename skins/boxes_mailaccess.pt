@@ -241,3 +241,34 @@
     </tal:block>
   </tal:block>
 </metal:block>
+
+<metal:block define-macro="basebox_pickup_folder_view">
+  <tal:block tal:define="treeview here/treeview.html|nothing">
+    <tal:block tal:condition="treeview">
+      <div class="form_title" i18n:translate="cpsma_pickup_new_folder">
+        Pickup a folder
+      </div>
+      <tal:block tal:repeat="element treeview">
+        <metal:block use-macro="here/boxes_mailaccess/macros/pickup_node"/>
+      </tal:block>
+    </tal:block>
+  </tal:block>
+</metal:block>
+
+<metal:block define-macro="pickup_node">
+  <div>
+    <tal:block tal:repeat="icon_ob element/front_icons">
+      &#160;&#160;&#160;
+    </tal:block>
+    <span tal:attributes="id element/server_name"
+           onclick="setPickupFolder(this)" onmouseover="setCursor(this)" class="selectable">
+      <img src="cpsma_selectfolder.png"/>
+      <span tal:replace="element/short_title"/>
+    </span>
+    <div tal:attributes="id element/short_title_id">
+      <tal:block tal:repeat="element element/childs">
+        <metal:block use-macro="here/boxes_mailaccess/macros/pickup_node"/>
+      </tal:block>
+    </div>
+  </div>
+</metal:block>
