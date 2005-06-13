@@ -932,3 +932,26 @@ function setPickupFolder(element)
   element.className = element.className.replace("not_hidden_part", "hidden_part");
   element.style.visibility = "hidden";
 }
+
+/* toggle shrinkable part visibility */
+function shrinkHtml()
+{
+  elements = document.getElementsByTagName("span");
+  for (i=0; i<elements.length; i++)
+  {
+    element = elements[i];
+    if (element.className.indexOf("shrinkable") != -1)
+    {
+      if (element.className.indexOf("not_hidden_part") != -1)
+      {
+        element.className = element.className.replace("not_hidden_part", "hidden_part");
+        element.style.visibility = "hidden";
+      }
+      else
+      {
+        element.className = element.className.replace("hidden_part", "not_hidden_part");
+        element.style.visibility = "visible";
+      }
+    }
+  }
+}

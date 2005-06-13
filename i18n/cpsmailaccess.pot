@@ -477,3 +477,6 @@ msgstr ""
 
 msgid "cpsma_bodysearch_warning"
 msgid ""
+
+msgid "cpsma_shrink"
+msgstr ""

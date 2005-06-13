@@ -482,3 +482,6 @@ msgstr "Ask for a read receipt"
 
 msgid "cpsma_bodysearch_warning"
 msgstr "*body search is mail server-side and thus very slow"
+
+msgid "cpsma_shrink"
+msgstr "Shrink"

@@ -37,7 +37,7 @@ from mimetools import decode
 from zope.interface import implements
 
 from utils import decodeHeader, HTMLize, sanitizeHTML,\
-                  secureUnicode
+                  secureUnicode, shrinkHtml
 from interfaces import IMailRenderer
 
 
@@ -154,7 +154,7 @@ class MailRenderer:
         if not html:
             body = HTMLize(body)
 
-        return body
+        return shrinkHtml(body)
 
     def _stringToUnicode(self, string, charset='ISO-8859-15'):
         """ safe string to unicode """

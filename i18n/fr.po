@@ -482,3 +482,6 @@ msgstr "Demander un accusé de lecture"
 
 msgid "cpsma_bodysearch_warning"
 msgstr "*les recherches dans le corps peuvent être lentes"
+
+msgid "cpsma_shrink"
+msgstr "Condenser"

@@ -603,3 +603,26 @@ def parseRefs(refs):
     re_script = r'<\S*>'
     result = re.findall(re_script, refs.strip())
     return [ref.strip() for ref in result]
+
+def shrinkHtml(text, remove_quoted=True):
+    """ shrink mail body rendered in HTML
+
+    will remove empty lines and optionnaly,
+    all lines starting with >
+    """
+    shrinked = []
+    text = text.replace('<br/>', '\n')
+    text = text.replace('<br>', '\n')
+    text = text.split('\n')
+
+    for line in text:
+        sline = line.strip()
+        if sline == '':
+            shrinked.append('<span class="shrinkable not_hidden_part">%s<br/></span>' % line)
+        elif ((sline.startswith('>') or sline.startswith('&gt;')) and
+               remove_quoted):
+            shrinked.append('<span class="shrinkable not_hidden_part">%s<br/></span>' % line)
+        else:
+            shrinked.append('%s<br/>' % line)
+
+    return ''.join(shrinked)

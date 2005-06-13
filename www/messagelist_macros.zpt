@@ -290,22 +290,26 @@
       <div class="mailToolBar"
            tal:condition="not:no_shortcuts"
            tal:define="folder python:here.getMailFolder()">
-          <a style="float: right; margin-right: 4px"
+          <a class="block_section"
              i18n:attributes="title"
              tal:attributes="href python:folder.absolute_url()+'/view?keep_last_sort=1';
                              title string:Back to folder">
             <img id="new_page" src="cpsma_back.png"/>
              <span i18n:translate="cpsma_back_to_folder">Back to folder</span>
           </a>
-          <a style="float: right; margin-right: 4px"
+          <a class="block_section"
              i18n:attributes="title"
-             target="_blank"
              tal:attributes="href python:here.absolute_url()+'/viewAlone.html';
                              title string:In a new page"
              target="_blank">
             <img id="new_page" src="launch.png"/>
             <span i18n:translate="cpsma_detach">Detach</span>
           </a>
+          <span class="block_section"
+                onmouseover="setCursor(this)" onclick="shrinkHtml()">
+            <img id="shrink" src="cpsma_shrink.png"/>
+            <span i18n:translate="cpsma_shrink">Shrink</span>
+          </span>
         <tal:block tal:condition="request/showfolders|python:0">
             <a  i18n:attributes="title"
                 tal:attributes="href python:here.absolute_url()+'/view';
@@ -330,7 +334,7 @@
             </b>
           </div>
         </div>
-        <!--div id="mailBreak"/-->
+        <br/>
         <div id="mailMoreInfos">
           <div id="mailDate">
             <b>
