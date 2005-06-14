@@ -152,7 +152,7 @@ class MailBoxParametersView(MailParametersView):
         for param  in params.keys():
             value, secu = params[param]
 
-            if param == 'uid' or secu == 1:
+            if param == 'uid' or secu in (1, -1):
                 continue
 
             rendered_param = {}

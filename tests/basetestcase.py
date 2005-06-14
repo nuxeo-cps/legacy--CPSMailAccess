@@ -100,6 +100,8 @@ class FakePortal(Folder):
     portal_directories = FakeDirectories('portal_directories')
     portal_url = FakePortalUrl()
     portal_webmail = MailTool()
+    maildir_path = os.path.join(os.path.dirname(landmark), 'maildir')
+
     # no portal wide parameter
     portal_webmail.default_connection_params['max_folder_size'] = (20,0)
     portal_webmail.default_connection_params['uid'] = ('tziade',0)
@@ -117,6 +119,7 @@ class FakePortal(Folder):
     portal_webmail.default_connection_params['treeview_style'] = ('lotus',0)
     portal_webmail.default_connection_params['message_list_cols'] = (('From', 'Date',
                                                             'Subject', 'Size'),0)
+    portal_webmail.default_connection_params['maildir'] = (maildir_path, -1)
 
     def getPhysicalPath(self):
         return ('', 'nowhere')

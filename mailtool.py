@@ -32,7 +32,7 @@ from zope.interface import implements
 
 from interfaces import IMailTool
 from connectionlist import registerConnections, ConnectionList
-from smtpmailer import SmtpQueuedMailer
+from smtpmailer import SmtpMailer
 from mailbox import manage_addMailBox
 from utils import makeId, getMemberById
 
@@ -66,14 +66,22 @@ class MailTool(Folder): # UniqueObject
     connection_list = getConnection()
     _initialized = 0
 
-    # to be externalized
-    maildeliverer = SmtpQueuedMailer()
-
     def __init__(self):
         Folder.__init__(self)
+        self.__version__ = '1.0'
         self.default_connection_params = PersistentMapping()
         self._initializeParameters()
         self._initializeConnectionList()
+        mail_dir = self.default_connection_params['maildir'][0]
+        self._maildeliverer = SmtpMailer(mail_dir)
+
+    def getMailDeliverer(self):
+        """ check if _maildeliverer points on the right
+        folder, if not recreates it"""
+        mail_dir = self.default_connection_params['maildir'][0]
+        if self._maildeliverer.maildir_directory != mail_dir:
+            self._maildeliverer = SmtpMailer(mail_dir)
+        return self._maildeliverer
 
     def _initializeParameters(self):
         """ XXX might want to externalize it """
@@ -93,7 +101,8 @@ class MailTool(Folder): # UniqueObject
                     'treeview_style' : ('lotus', 1),
                     'message_list_cols' :
                     ('Attachments, Icon, From, Date, Subject, Size', 1),
-                    'signature' : ('', 0)
+                    'signature' : ('', 0),
+                    'maildir' : ('/tmp/maildir', -1),
                    }
         for key in default:
             self.default_connection_params[key] = default[key]

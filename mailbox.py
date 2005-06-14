@@ -204,7 +204,9 @@ class MailBox(MailBoxBaseCaching):
         defaults = portal_webmail.default_connection_params
         if self._connection_params == {}:
             for key in defaults.keys():
-                self._connection_params[key] = defaults[key]
+                # -1 are notvisible from mailboxes
+                if defaults[key] != -1:
+                    self._connection_params[key] = defaults[key]
         else:
             # updating
             for key in defaults.keys():
@@ -450,7 +452,7 @@ class MailBox(MailBoxBaseCaching):
         _notification_template = translate(self, 'cpsm_notify_body')
 
         portal_webmail = getToolByName(self, 'portal_webmail')
-        maildeliverer = portal_webmail.maildeliverer
+        maildeliverer = portal_webmail.getMailDeliverer()
         msg_subject = msg.getHeader('Subject')[0]
         msg_body  = _notification_template
         msg_body = msg_body.replace('_ORIGINAL_MAIL_SUBJECT_', msg_subject)
@@ -461,6 +463,7 @@ class MailBox(MailBoxBaseCaching):
         msg_notif.setHeader('Date', formatdate())
 
         msg_content = msg_notif.getRawMessage()
+
         params = self.getConnectionParams()
         smtp_host = params['smtp_host']
         smtp_port = params['smtp_port']
@@ -490,7 +493,7 @@ class MailBox(MailBoxBaseCaching):
         """ sends an instance of MailMessage """
         params = self.getConnectionParams()
         portal_webmail = getToolByName(self, 'portal_webmail')
-        maildeliverer = portal_webmail.maildeliverer
+        maildeliverer = portal_webmail.getMailDeliverer()
 
         signature = params['signature']
         if signature.strip() != '':

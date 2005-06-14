@@ -114,8 +114,21 @@ class CPSMailAccessInstaller(CPSInstaller):
         # self.linkFiveActionTool()
         self.setupTranslations()
         self.verifySearchEngine()
+        self.verifyMailToolVersion()
         self.finalize()
         self.log("End of Install/Update : CPSMailAccess Product")
+
+    def verifyMailToolVersion(self):
+        wm = self.portal.portal_webmail
+        if not hasattr(wm, '__version__'):
+            # below 1.0, need upgrade
+            self.log('upgrading mailtool to beta 2')
+            wm.__version__ = '1.0'
+            params = wm.default_connection_params
+            if not params.has_key('maildir'):
+                params['maildir'] = ('/tmp/maildir', -1)
+            from Products.CPSMailAccess.smtpmailer import SmtpMailer
+            wm._maildeliverer = SmtpMailer('/tmp/maildir')
 
     def verifySearchEngine(self):
         """ upgrade mailsearch engine """
