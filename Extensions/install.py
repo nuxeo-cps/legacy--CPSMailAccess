@@ -32,6 +32,7 @@ from Products.CPSInstaller.CPSInstaller import CPSInstaller
 
 from Products.CPSMailAccess.mailtool import manage_addMailTool
 from Products.CPSMailAccess.permissions import permissions
+from Products.CPSMailAccess.mailbox import MailBox
 
 try:
   from Products.CPSSubscriptions.CPSSubscriptionsPermissions import \
@@ -134,7 +135,10 @@ class CPSMailAccessInstaller(CPSInstaller):
         """ upgrade mailsearch engine """
         wm = self.portal.portal_webmail
         from BTrees.OOBTree import OOBTree
+
         for id, box in wm.objectItems():
+            if not isinstance(box, MailBox):
+                continue
             if not hasattr(box, '__version__'):
                 # beta 1, upgrading to beta 2
                 self.log('upgrading box %s to beta 2' % id)
