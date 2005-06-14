@@ -5,6 +5,7 @@ New features:
 ~~~~~~~~~~~~~
 - Message view let the user navigates through the tread
 - Message view let the user "shrink" the mail body
+- SMTP threaded queue with filesystem Maildir
 
 Bug fixes:
 ~~~~~~~~~~
