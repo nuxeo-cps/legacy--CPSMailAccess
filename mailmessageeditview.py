@@ -292,7 +292,8 @@ class MailMessageEdit(BrowserView):
         msg.setCachedValue('attacher_on', 0)
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
-        return True
+        else:
+            return True
 
     def detachFile(self, filename):
         """ detach a file
@@ -343,6 +344,10 @@ class MailMessageEdit(BrowserView):
         form = self.request.form
 
         EMPTY = '__#EMPTY#__'
+        for key in form.keys():
+            if form[key] == EMPTY:
+                form[key] = ''
+
         for key in kw.keys():
             if kw[key] == EMPTY:
                 form[key] = ''

@@ -27,7 +27,7 @@ from Products.CPSMailAccess.interfaces import IMailBox, IMailFolder
 from Products.CPSMailAccess.mailbox import MailBox
 from Products.CPSMailAccess.mailparameterviews import MailBoxParametersView
 from Products.CPSMailAccess.mailmessageeditview import MailMessageEdit
-from basetestcase import MailTestCase
+from basetestcase import MailTestCase, FakeRequest
 
 class FakeFieldStorage:
     file = None
@@ -212,6 +212,22 @@ class MailMessageEditTestCase(MailTestCase):
         self.assert_(view.hasNotification())
         view.toggleNotification()
         self.assert_(not view.hasNotification())
+
+    def test_saveMessageForm(self):
+        mailbox = self._getMailBox()
+        mailbox.clearEditorMessage()        # clean previous tests
+        msg = mailbox.getCurrentEditorMessage()
+
+        view = MailMessageEdit(mailbox, None)
+        view.request = FakeRequest()
+        self.assertEquals(msg.getHeader('From'), [])
+        self.assertEquals(msg.getHeader('To'), [])
+        kw = {'msg_to': 'toto', 'msg_cc': '__#EMPTY#__'}
+        import pdb;pdb.set_trace()
+        view.saveMessageForm(**kw)
+
+        self.assertEquals(msg.getHeader('To'), ['toto'])
+        self.assertEquals(msg.getHeader('Cc'), [])
 
 
 def test_suite():
