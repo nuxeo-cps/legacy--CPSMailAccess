@@ -107,8 +107,8 @@ class MailFolderView(BaseMailMessageView):
                 resp.redirect(folder.absolute_url()+'/view')
             else:
                 resp.redirect(folder.absolute_url()+'/view?msm=%s' % psm)
-
-        return folder
+        else:
+            return folder
 
     def delete(self):
         """ action called to rename the current folder """
