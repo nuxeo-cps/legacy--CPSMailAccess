@@ -518,7 +518,12 @@ class MailBox(MailBoxBaseCaching):
         msg_to = msg.getHeader('To') + msg.getHeader('Cc') + msg.getHeader('BCc')
         msg.digest = createDigest(msg)
 
-        result, error = self._sendMailMessage(msg_from, msg_to, msg)
+        try:
+            result, error = self._sendMailMessage(msg_from, msg_to, msg)
+        except ValueError:
+            result = False
+            error = 'cpsma_could_not_send'
+
         if result:
             try:
                 self._givePoints(msg)
