@@ -28,10 +28,9 @@ from mailmessageview import MailMessageView
 from mailsearch import intersection  as z_intersection
 from mailsearch import unifyList as z_unifyList
 
+# XXXX todo: outsource ALL zemantic related stuff into mailsearch
 from zemantic.public import *
 from zemantic.query import UnionChain
-
-# XXXX todo: outsource ALL zemantic related stuff into mailsearch
 
 class MailSearchView(BrowserView):
 
@@ -103,7 +102,6 @@ class MailSearchView(BrowserView):
         start = time.time()
         mailbox = self.context
         i = 0
-        found = True
         body_search = False
         body_search_query = None
         queries = []
@@ -135,6 +133,7 @@ class MailSearchView(BrowserView):
                 else:
                     numparam += 1
                     if len(value) == 1 and value in '?*':    # stands for all entries
+                        # XXX need to be outsourced in mailsearch
                         query = Query(Any, u'<%s>' % relation, Any)
                     else:
                         if len(value) > 1 and value[0] in '?*':
