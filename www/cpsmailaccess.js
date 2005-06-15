@@ -592,6 +592,13 @@ function clearEditor()
   {
     msg_subject.value = "";
   }
+
+  /* if there are attached files, need to hide the box/portlet */
+  attached_files = document.getElementById("attached_files");
+  if (attached_files)
+  {
+    attached_files.style.visibility = "hidden";
+  }
 }
 
 

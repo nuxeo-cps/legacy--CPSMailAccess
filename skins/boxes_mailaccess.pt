@@ -139,7 +139,7 @@
  <tal:block tal:define="attached_files here/attachedFiles.html|nothing;
                         mailedit here/is_editor|nothing">
    <tal:block tal:condition="attached_files">
-      <div class="box">
+      <div class="box" id="attached_files">
         <div class="body">
           <div class="content" style="background-color: white">
             <div class="title2" i18n:translate="cpsma_attached_files">
@@ -204,7 +204,7 @@
  <tal:block tal:define="attached_files here/attachedFiles.html|nothing;
                         mailedit here/is_editor|nothing">
    <tal:block tal:condition="attached_files">
-      <div>
+      <div id="attached_files">
         <table width="100%">
             <tal:block tal:repeat="attached_file_pack attached_files">
             <tr>
