@@ -5,5 +5,5 @@ $Id$
 - CPSInstaller
 - Zope X3.0.0 or greater
 - Five 0.3 or greater
-- rdflib 2.0.6 or greater (http://rdflib.net/)
+- rdflib 2.0.6 (http://rdflib.net/)
 

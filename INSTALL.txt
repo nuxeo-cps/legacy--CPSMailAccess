@@ -27,7 +27,7 @@ To install CPSMailAccess you will need:
 - TrustedExecutables :
   http://www.dieter.handshake.de/pyprojects/zope/#TrustedExecutables
 - TextIndexNG2 2.2.0 or greater : http://www.zope.org/Members/ajung/TextIndexNG/
-- rdflib 2.0.6 or greater : http://rdflib.net/
+- rdflib 2.0.6 : http://rdflib.net/
 
 2 - rdflib installation
 
