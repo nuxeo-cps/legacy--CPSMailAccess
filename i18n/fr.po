@@ -488,3 +488,6 @@ msgstr "*les recherches dans le corps peuvent être lentes"
 
 msgid "cpsma_shrink"
 msgstr "Condenser"
+
+msgid "cpsma_empty_folder"
+msgstr "Dossier vide"

@@ -184,7 +184,7 @@
               python:test(is_folder,'folder_msglist','message_msglist')">
 
         <tal:block tal:condition="not:messages">
-        <div class="emptyFolder" i18n:translate="empty_folder">
+        <div class="emptyFolder" i18n:translate="cpsma_empty_folder">
          Empty folder.
         </div>
         </tal:block>

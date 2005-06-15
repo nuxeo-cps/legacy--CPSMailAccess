@@ -488,3 +488,6 @@ msgstr "*body search is mail server-side and thus very slow"
 
 msgid "cpsma_shrink"
 msgstr "Shrink"
+
+msgid "cpsma_empty_folder"
+msgstr "Empty folder"

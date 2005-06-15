@@ -480,3 +480,6 @@ msgid ""
 
 msgid "cpsma_shrink"
 msgstr ""
+
+msgid "cpsma_empty_folder"
+msgstr ""
