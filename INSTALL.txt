@@ -121,9 +121,32 @@ quick parameters review :
     o SMTP Host: SMTP host name
     o SMTP Port: SMTP port name
     o Trash folder name: should be left at INBOX.Trash
-    o Treeview style : 
+    o Treeview style :
       if lotus, the trash, sent and draft folders appear outside INBOX
       if classical, they will be childs of INBOX
+    o SMTP Folder: This is the server system folder where messages
+                   that are beenig sent are written. More information below
+
+
+about SMTP Folder:
+
+    SMTP Folder is MailDir folder used for asynchronous sends of mails.
+    In order to work you need to provide a path on your system
+    that can be written by the zope process.
+
+    CPSMailAccess will take care of initializing the MailDir the first time,
+    so if you can provide a path where the last part is not existing yet.
+
+    For example:
+
+          /tmp/foo/bar
+
+    CPSMailAccess will create the "bar" folder. /tmp/foo path have to exists though.
+
+    if bar already exists but is not a MailDir folder structure, it won't work.
+
+    A maildir structure is composed of three sub folders: cur, new and tmp.
+
 
 2 - User setup
 
