@@ -18,9 +18,9 @@
 #
 # $Id$
 from email import message_from_string
-from email import base64MIME
 import thread
 from urllib import quote
+from StringIO import StringIO
 
 from zLOG import LOG, DEBUG, INFO
 from Globals import InitializeClass
@@ -32,6 +32,7 @@ from OFS.SimpleItem import SimpleItem
 
 from zope.interface import implements
 from zope.schema.fieldproperty import FieldProperty
+from zope.publisher.browser import FileUpload
 
 from interfaces import IMailMessage, IMailFolder, IMailBox
 from baseconnection import ConnectionError
@@ -42,6 +43,11 @@ from mailexceptions import MailPartError
 from utils import *
 
 traverser_locker = thread.allocate_lock()
+
+class FakeFieldStorage:
+    file = None
+    filename = ''
+    headers = []
 
 class MailTraverser(FiveTraversable):
     """ this is used to load message body when any
@@ -282,18 +288,22 @@ class MailMessageView(BaseMailMessageView):
                 msg.addHeader('Cc', element)
 
         if not reply_all and forward:
-            # todo : append attached files
-            # XXX to be done
-            """
-            for part in range(origin_msg.getPartCount()):
-                # XX todo : avoid re-generate part on each visit : use caching
-                current_part = origin_msg.getPart(part)
-                part_ob = MailPart('part_'+str(part), origin_msg, current_part)
-                infos = part_ob.getFileInfos()
-                if infos is not None:
-                    msg.attachPart(current_part)
-            """
-            pass
+            attached_files = self._attached_filelist()
+            filenames = [file['filename'] for file in attached_files]
+
+            # get each file and attach them
+            for filename in filenames:
+                file_content, file_type, cte = origin_msg.getFile(filename)
+
+                # create a FileUpload with the raw content
+                fp = StringIO(file_content)
+                fs = FakeFieldStorage()
+                fs.file = fp
+                fs.filename = filename
+                file = FileUpload(fs)
+
+                # attach it
+                msg.attachFile(file)
 
         subjects = origin_msg.getHeader('Subject')
         if subjects == []:
@@ -339,8 +349,7 @@ class MailMessageView(BaseMailMessageView):
             self.request.response.\
                 redirect('%s/view?msm=%s' % (folder, psm))
 
-    def attached_files(self):
-        # todo :scans attached files
+    def _attached_filelist(self):
         message = self.context
         # XX hack : need to do better
         if hasattr(message, 'editor_msg'):
@@ -360,7 +369,11 @@ class MailMessageView(BaseMailMessageView):
             file['delete_url'] = ('deleteAttachement.html?filename=' +
                                   file['filename'])
             list_files.append(file)
+        return list_files
 
+    def attached_files(self):
+        # todo :scans attached files
+        list_files = self._attached_filelist()
         i = 0
         clist_files = []
         while i < len(list_files):
@@ -371,50 +384,19 @@ class MailMessageView(BaseMailMessageView):
             i += 2
         return clist_files
 
-    def _getMailFile(self, mail, part):
-        """ mailfile """
-        mailfolder = mail.getMailFolder()
-        if mailfolder is None:
-            return None
-        else:
-            uid = mail.uid
-            return mailfolder.getMessagePart(uid, part)
-
     def viewFile(self, filename):
         """ returns a file """
-        mail = self.context
-        files = mail.getFileList()
-        found = False
-        for file in files:
-            if file['filename'] == filename:
-                data = file['data']
-                if data is None:
-                    try:
-                        data = self._getMailFile(mail, file['part'])
-                    except ConnectionError:
-                        return None
+        message = self.context
+        filecontent, content_type, cte = message.getFile(filename)
 
-                filecontent = data
-                cte = file['content-transfer-encoding']
-
-                content_type = file['mimetype']
-                if isinstance(cte, list):
-                    if cte != []:
-                        cte = cte[0]
-                    else:
-                        cte ='7bit'
-
-                if cte == 'base64':
-                    filecontent = base64MIME.decode(filecontent)
-                found = True
-
-        if not found:
+        if filecontent is None:
             return None
         else:
             if self.request is not None:
                 response = self.request.response
                 response.setHeader('Content-Type', content_type)
-                response.setHeader('Content-Disposition', 'inline; filename=%s' % filename)
+                response.setHeader('Content-Disposition',
+                                   'inline; filename=%s' % filename)
                 response.setHeader('Content-Length', len(filecontent))
                 response.write(filecontent)
 

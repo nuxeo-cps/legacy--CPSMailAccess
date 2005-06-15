@@ -379,6 +379,36 @@ class MailMessageViewTestCase(MailTestCase):
         self.assertEquals(refs, ['2'])
         """
 
+    def test_forwardWithAttachedFile(self):
+        # tests that messages forwarded does not loose their attached
+        # parts
+        mbox = self._getMailBox()
+
+        # attach a file
+        ob = self.getMailInstance(43)
+        ob = ob.__of__(mbox)
+        ob.getPhysicalPath = self.fakePhysicalPath
+
+        my_file = self._openfile('PyBanner048.gif')
+        storage = FakeFieldStorage()
+        storage.file = my_file
+        storage.filename = 'SecondPyBansxzner048.gif'
+        uploaded = FileUpload(storage)
+        ob.attachFile(uploaded)
+
+        # forward the mail
+        view = MailMessageView(ob, None)
+        self.assert_(view)
+        view.forward()
+
+        # now verify the result in the editor
+        msg = mbox._cache.query('maileditor')
+        files = msg.getFileList()
+        self.assertEquals(len(files), 1)
+        file = files[0]
+        self.assertEquals(file['filename'], 'SecondPyBansxzner048.gif')
+        self.assertEquals(file['mimetype'], 'image/gif')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageViewTestCase),

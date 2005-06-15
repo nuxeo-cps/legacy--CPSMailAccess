@@ -223,7 +223,6 @@ class MailMessageEditTestCase(MailTestCase):
         self.assertEquals(msg.getHeader('From'), [])
         self.assertEquals(msg.getHeader('To'), [])
         kw = {'msg_to': 'toto', 'msg_cc': '__#EMPTY#__'}
-        import pdb;pdb.set_trace()
         view.saveMessageForm(**kw)
 
         self.assertEquals(msg.getHeader('To'), ['toto'])

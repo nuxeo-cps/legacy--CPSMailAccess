@@ -46,6 +46,7 @@ from mimeguess import mimeGuess
 from mailrenderer import MailRenderer
 from basemailview import BaseMailMessageView
 from mailfolderview import MailFolderView
+from baseconnection import ConnectionError
 
 class MailMessage(Folder):
     """ Mailmessage is a lightweight message
@@ -249,7 +250,6 @@ class MailMessage(Folder):
 
     def attachFile(self, file):
         """ attach an file """
-        # XXXX not properly atatche, to be
         files = self._file_list
         exists =  False
         for cfile in files:
@@ -260,21 +260,24 @@ class MailMessage(Folder):
         if not exists:
             file.seek(0)
             try:
-                part_file = Message.Message()
-                part_file['content-disposition'] = 'attachment; filename= %s'\
-                        % file.filename
-                part_file['content-transfer-encoding'] = 'base64'
                 data = file.read()
-                mime_type = mimeGuess(data)
-                data = base64MIME.encode(data)
-                part_file.set_payload(data)
-                part_file['content-type'] = '%s; name=%s' % (mime_type,
-                                                            file.filename)
             finally:
                 file.close()
 
+            part_file = Message.Message()
+            part_file['content-disposition'] = 'attachment; filename= %s'\
+                    % file.filename
+            part_file['content-transfer-encoding'] = 'base64'
+
+            mime_type = mimeGuess(data)
+            data = base64MIME.encode(data)
+            part_file.set_payload(data)
+            part_file['content-type'] = '%s; name=%s' % (mime_type,
+                                                         file.filename)
+
+
             file = {'filename' : file.filename, 'mimetype': mime_type,
-                       'data' : part_file}
+                    'data' : part_file, 'content-transfer-encoding' : 'base64'}
 
             files.append(file)
 
@@ -444,6 +447,51 @@ class MailMessage(Folder):
     def _p_resolveConflict(self, old_state, saved_state, new_state):
         """ returns latest state """
         return new_state
+
+    def getFile(self, filename):
+        """ returns a file in a buffer """
+        files = self.getFileList()
+        found = False
+        content_type = cte = None
+
+        for file in files:
+            if file['filename'] == filename:
+                data = file['data']
+                if data is None:
+                    try:
+                        data = self._getFile(file['part'])
+                    except ConnectionError:
+                        return None
+
+                cte = file['content-transfer-encoding']
+                content_type = file['mimetype']
+                if isinstance(cte, list):
+                    if cte != []:
+                        cte = cte[0]
+                    else:
+                        cte ='7bit'
+
+                if data.__class__ == Message.Message:
+                    filecontent = data.get_payload()
+                else:
+                    filecontent = data
+
+                if cte == 'base64':
+                    filecontent = base64MIME.decode(filecontent)
+                found = True
+
+        if not found:
+            return None, None, None
+        else:
+            return filecontent, content_type, cte
+
+    def _getFile(self, part):
+        """ mailfile """
+        mailfolder = self.getMailFolder()
+        if mailfolder is None:
+            return None
+        else:
+            return mailfolder.getMessagePart(self.uid, part)
 
 InitializeClass(MailMessage)
 
