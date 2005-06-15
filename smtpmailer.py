@@ -97,12 +97,6 @@ class MailSender(QueueProcessorThread):
 
     def _parseMessage(self, message):
         """ Extract infos from the message """
-        fromaddr = ''
-        toaddrs = ()
-        hostname = 'localhost'
-        port = 25
-        username = None
-        password = None
         rest = []
 
         elements = (('fromaddr', 'X-Zope-From'), ('toaddrs', 'X-Zope-To'),
