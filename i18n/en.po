@@ -230,6 +230,9 @@ msgstr "SMTP Host"
 msgid "smtp_port"
 msgstr "SMTP Port"
 
+msgid "maildir"
+msgstr "SMTP Folder"
+
 msgid "trash_folder_name"
 msgstr "Trash folder name"
 

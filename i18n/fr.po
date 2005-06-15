@@ -230,6 +230,9 @@ msgstr "Hôte SMTP"
 msgid "smtp_port"
 msgstr "Port SMTP"
 
+msgid "maildir"
+msgstr "Répertoire SMTP"
+
 msgid "trash_folder_name"
 msgstr "Nom du dossier Trash"
 
