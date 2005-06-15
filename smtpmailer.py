@@ -93,7 +93,7 @@ class MailSender(QueueProcessorThread):
         self.__event = threading.Event()
         self.__interval = idle_time
         self.maildir_directory = maildir_directory
-        self.maildir = Maildir(self.maildir_directory)
+        self.maildir = Maildir(self.maildir_directory, True)
 
     def _parseMessage(self, message):
         """ Extract infos from the message """
