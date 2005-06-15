@@ -292,6 +292,7 @@ class MailMessageEdit(BrowserView):
         msg.setCachedValue('attacher_on', 0)
         if self.request is not None:
             self.request.response.redirect('editMessage.html')
+            return None
         else:
             return True
 
