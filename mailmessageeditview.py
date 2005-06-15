@@ -490,6 +490,8 @@ class MailMessageEdit(BrowserView):
             else:
                 self.request.response.redirect('editMessage.html?msm=%s' % psm)
 
+        return None
+
     def initializeEditor(self, back_to_front=True, no_move=False):
         """ cleans the editor """
         mailbox = self.context
@@ -526,6 +528,8 @@ class MailMessageEdit(BrowserView):
                 return 'cpsma_return_receipt'
             else:
                 return ''
+        else:
+            return None
 
     def hasNotification(self):
         """ returns notification stats """

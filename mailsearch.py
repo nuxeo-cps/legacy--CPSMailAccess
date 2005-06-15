@@ -203,13 +203,12 @@ class ZemanticMessageAdapter:
                 value = value.decode(self.charset)
             except (encoding_exceptions.LookupError,
                     UnicodeDecodeError):
-                value = value.decode(default_charset)
+                value = value.decode(self.default_charset)
         return value
 
     def threeTuples(self, index_relations=True):
         """ give zemantic the sequence of relations """
         message = self.context
-        default_charset = self.default_charset
 
         if message.absolute_url() == '':
             return []
@@ -312,7 +311,7 @@ class ZemanticMailCatalog(TripleStore):
                 value = value.decode('ISO-8859-15')
             except (encoding_exceptions.LookupError,
                     UnicodeDecodeError):
-                value = value.decode(default_charset)
+                value = value.decode(self.default_charset)
         return value
 
     def indexMessage(self, message, full_indexation=False,

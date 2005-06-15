@@ -452,8 +452,7 @@ class MailMessage(Folder):
         """ returns a file in a buffer """
         files = self.getFileList()
         found = False
-        content_type = cte = None
-
+        filecontent = content_type = cte = None
         for file in files:
             if file['filename'] == filename:
                 data = file['data']

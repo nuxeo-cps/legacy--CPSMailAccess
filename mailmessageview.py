@@ -439,7 +439,6 @@ class MailMessageView(BaseMailMessageView):
 
     def notificationEmail(self):
         """ returns notification email if exists folder """
-        message = self.context
         rendered = self.renderHeaderList('Disposition-Notification-To')
         if rendered == u'?':
             return None

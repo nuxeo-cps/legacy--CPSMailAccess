@@ -107,6 +107,7 @@ class MailFolderView(BaseMailMessageView):
                 resp.redirect(folder.absolute_url()+'/view')
             else:
                 resp.redirect(folder.absolute_url()+'/view?msm=%s' % psm)
+            return None
         else:
             return folder
 
