@@ -353,6 +353,10 @@ class MailBoxTestCase(MailTestCase):
         res= mailbox.searchInConnection('(body test)')
         self.assert_(len(res) > 0)
 
+    def test_sendNotification(self):
+        mailbox = self._getMailBox()
+        msg = self.getMailInstance(4)
+        mailbox.sendNotification('xxxx', msg)
 
 def test_suite():
     return unittest.TestSuite((

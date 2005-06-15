@@ -461,6 +461,7 @@ class MailBox(MailBoxBaseCaching):
         msg_notif.setHeader('Subject', _notification_subject)
         msg_notif.setHeader('From', msg_from)
         msg_notif.setHeader('Date', formatdate())
+        msg_notif.setHeader('To', recipient)
 
         msg_content = msg_notif.getRawMessage()
 
@@ -533,6 +534,9 @@ class MailBox(MailBoxBaseCaching):
 
             sent_folder = self.getSentFolder()
             connector = self._getconnector()
+
+            # remove notification header before copying it
+            msg.removeHeader('Disposition-Notification-To')
 
             uid = connector.writeMessage(sent_folder.server_name,
                                          msg.getRawMessage())
