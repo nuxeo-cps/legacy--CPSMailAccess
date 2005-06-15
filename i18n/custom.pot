@@ -483,3 +483,6 @@ msgstr ""
 
 msgid "cpsma_empty_folder"
 msgstr ""
+
+msgid "cpsma_expunged"
+msgstr ""

@@ -491,3 +491,7 @@ msgstr "Condenser"
 
 msgid "cpsma_empty_folder"
 msgstr "Dossier vide"
+
+msgid "cpsma_expunged"
+msgstr "Corbeille vidée."
+

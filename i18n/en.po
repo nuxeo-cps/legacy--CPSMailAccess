@@ -491,3 +491,6 @@ msgstr "Shrink"
 
 msgid "cpsma_empty_folder"
 msgstr "Empty folder"
+
+msgid "cpsma_expunged"
+msgstr "Trash expunged."

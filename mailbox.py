@@ -1195,7 +1195,7 @@ class MailBoxView(MailFolderView):
         mailbox.emptyTrashFolder()
         trash = mailbox.getTrashFolder()
         if self.request is not None:
-            psm = 'Trash expunged.'
+            psm = 'cpsma_expunged'
             self.request.response.redirect(trash.absolute_url()+\
                                            '/view?msm=%s' % psm)
 
