@@ -29,7 +29,6 @@ from datetime import datetime
 from time import strftime, localtime, mktime
 from random import randrange
 from email.Utils import fix_eols, parsedate_tz, mktime_tz
-from email.Utils import parsedate
 from encodings import exceptions as encoding_exceptions
 
 from zLOG import LOG, INFO
@@ -130,16 +129,12 @@ def parseDateString(date_string):
         tm = mktime_tz(tm)
         localized = localtime(tm)
     else:
-        tm = parsedate(date_string)
-        if tm is not None:
-            tm = mktime(tm)
-        else:
-            # the time does not follow RFC 2822
-            # let's try to guess it with z3 DateTimeParser
-            try:
-                localized = DateTimeParser().parse(date_string)
-            except (ZSyntaxError, DateTimeError):
-                localized = (1970, 1, 1, 0, 0, 0)
+        # the time does not follow RFC 2822
+        # let's try to guess it with z3 DateTimeParser
+        try:
+            localized = DateTimeParser().parse(date_string)
+        except (ZSyntaxError, DateTimeError):
+            localized = (1970, 1, 1, 0, 0, 0)
 
     return datetime(localized[0], localized[1], localized[2],
                      localized[3], localized[4], localized[5])
