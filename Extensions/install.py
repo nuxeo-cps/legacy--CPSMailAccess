@@ -127,9 +127,9 @@ class CPSMailAccessInstaller(CPSInstaller):
             wm.__version__ = '1.0'
             params = wm.default_connection_params
             if not params.has_key('maildir'):
-                params['maildir'] = ('/tmp/maildir', -1)
+                params['maildir'] = ('/tmp/maildir', 0)
             if not params.has_key('direct_smtp'):
-                params['direct_smtp'] = (1, -1)
+                params['direct_smtp'] = (1, 0)
             from Products.CPSMailAccess.smtpmailer import SmtpMailer
             wm._maildeliverer = SmtpMailer('/tmp/maildir', 1)
 
