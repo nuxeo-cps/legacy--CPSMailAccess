@@ -620,13 +620,15 @@ class CPSMailAccessInstaller(CPSInstaller):
 
     def setupPortlets(self):
         """ installing portlets """
-        portlets = ({'type': 'Custom Portlet',
+        portlets = ({'identifier': 'webmail_navigation',
+                     'type': 'Custom Portlet',
                      'slot': 'left',
                      'order': 0,
                      'render_method': 'portlets_treeview',
                      'Title': 'Webmail navigation',
                     },
-                    {'type': 'Custom Portlet',
+                    {'identifier': 'webmail_files',
+                     'type': 'Custom Portlet',
                      'slot': 'right',
                      'order': 0,
                      'render_method': 'portlets_attached_files',

@@ -60,13 +60,23 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
         except BadRequestException:
             pass
 
-    def test_install(self):
+    def _installWebmail():
         # installing
         self.installProduct()
         self.app.portal.cpsmailaccess_installer()
 
+    def test_install(self):
+        self._installWebmail()
         # updating
         self.app.portal.cpsmailaccess_installer()
+
+    def test_portlets(self):
+        # verify that portlets does not get installed twice
+        self._installWebmail()
+
+        self.app.portal.cpsmailaccess_installer()
+        portlets = getattr(self.app.portal.portal_webmail, '.cps_portlets')
+        self.assertEquals(len(portlets.objectIds()), 2)
 
 class MailInstaller(CPSTestCase.CPSInstaller):
 
