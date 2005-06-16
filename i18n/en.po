@@ -233,6 +233,9 @@ msgstr "SMTP Port"
 msgid "maildir"
 msgstr "SMTP Folder"
 
+msgid "direct_smtp"
+msgstr "Direct SMTP send ?"
+
 msgid "trash_folder_name"
 msgstr "Trash folder name"
 

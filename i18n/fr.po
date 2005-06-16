@@ -233,6 +233,9 @@ msgstr "Port SMTP"
 msgid "maildir"
 msgstr "Répertoire SMTP"
 
+msgid "direct_smtp"
+msgstr "Envoi SMTP direct ?"
+
 msgid "trash_folder_name"
 msgstr "Nom du dossier Trash"
 

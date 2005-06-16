@@ -73,14 +73,20 @@ class MailTool(Folder): # UniqueObject
         self._initializeParameters()
         self._initializeConnectionList()
         mail_dir = self.default_connection_params['maildir'][0]
-        self._maildeliverer = SmtpMailer(mail_dir)
+        direct_smtp = self.default_connection_params['direct_smtp'][0]
+        self._maildeliverer = SmtpMailer(mail_dir, direct_smtp)
 
     def getMailDeliverer(self):
         """ check if _maildeliverer points on the right
         folder, if not recreates it"""
         mail_dir = self.default_connection_params['maildir'][0]
-        if self._maildeliverer.maildir_directory != mail_dir:
-            self._maildeliverer = SmtpMailer(mail_dir)
+        direct_smtp = self.default_connection_params['direct_smtp'][0]
+
+        # recreate in case of changes
+        if (self._maildeliverer.maildir_directory != mail_dir or
+            self._maildeliverer.direct_smtp != direct_smtp):
+            self._maildeliverer = SmtpMailer(mail_dir, direct_smtp)
+
         return self._maildeliverer
 
     def _initializeParameters(self):
@@ -103,6 +109,7 @@ class MailTool(Folder): # UniqueObject
                     ('Attachments, Icon, From, Date, Subject, Size', 1),
                     'signature' : ('', 0),
                     'maildir' : ('/tmp/maildir', -1),
+                    'direct_smtp' : (1, -1)
                    }
         for key in default:
             self.default_connection_params[key] = default[key]

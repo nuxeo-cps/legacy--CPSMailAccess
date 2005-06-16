@@ -233,6 +233,9 @@ msgstr ""
 msgid "maildir"
 msgstr ""
 
+msgid "direct_smtp"
+msgstr ""
+
 msgid "trash_folder_name"
 msgstr ""
 

@@ -84,17 +84,7 @@ class MailWriter(object):
         msg.write(message)
         msg.commit()
 
-class MailSender(QueueProcessorThread):
-    """ a thread class that sends mail found in a system folder """
-    def __init__(self, maildir_directory, idle_time=1):
-        QueueProcessorThread.__init__(self)
-        self.__stopped = True
-        # watching folder every second by default
-        self.__event = threading.Event()
-        self.__interval = idle_time
-        self.maildir_directory = maildir_directory
-        self.maildir = Maildir(self.maildir_directory, True)
-
+class BaseMailSender:
     def _parseMessage(self, message):
         """ Extract infos from the message """
         rest = []
@@ -123,13 +113,25 @@ class MailSender(QueueProcessorThread):
 
         return values, '\n'.join(rest)
 
-
     def _createMailer(self, hostname, port, username, password):
         """ creates a mailer
 
         XXX outsourced so we can think of a pool mailer later for optimisation
         """
         return SMTPMailer(hostname, port, username, password)
+
+
+class MailSender(BaseMailSender, QueueProcessorThread):
+    """ a thread class that sends mail found in a system folder
+    """
+    def __init__(self, maildir_directory, idle_time=1):
+        QueueProcessorThread.__init__(self)
+        self.__stopped = True
+        # watching folder every second by default
+        self.__event = threading.Event()
+        self.__interval = idle_time
+        self.maildir_directory = maildir_directory
+        self.maildir = Maildir(self.maildir_directory, True)
 
     def run(self, forever=True):
         """ threaded code """
@@ -206,13 +208,14 @@ def removeMailElement():
     if mail_sender is not None:
         mail_sender.stop()
 
-class SmtpMailer(object):
+class SmtpMailer(BaseMailSender):
     """ a class that delivers a mail to any SMTP server """
     __version__ = '1.0'
 
-    def __init__(self, maildir_directory):
+    def __init__(self, maildir_directory, direct_smtp):
         self.maildir_directory = maildir_directory
         self._started = False
+        self.direct_smtp = direct_smtp
 
     def _checkElements(self):
         setMailElement(self.maildir_directory)
@@ -221,22 +224,36 @@ class SmtpMailer(object):
              username=None, password=None):
         """ writes the mail mails """
         # the first sent ever, wakes everything
-        self.start_sender()
-
-        global mail_writer
-        try:
-            mail_writer.write(fromaddr, toaddrs, message, hostname, port,
-                              username, password, )
-        except SMTPRecipientsRefused, e:
-            return False, e.recipients
+        if self.direct_smtp:
+            self.stop_sender()
+            elements, message = self._parseMessage(message)
+            mailer = self._createMailer(hostname, port, username, password)
+            try:
+                mailer.send(fromaddr, toaddrs, message)
+            except SMTPRecipientsRefused, e:
+                return False, e.recipients
+            else:
+                return True, ''
         else:
-            return True, ''
+            self.start_sender()
+
+            global mail_writer
+            try:
+                mail_writer.write(fromaddr, toaddrs, message, hostname, port,
+                                  username, password, )
+            except SMTPRecipientsRefused, e:
+                return False, e.recipients
+            else:
+                return True, ''
 
     def stop_sender(self):
-        self._checkElements()
-        global mail_sender
-        if mail_sender.running():
-            mail_sender.stop()
+        if self.direct_smtp:
+            removeMailElement()
+        else:
+            self._checkElements()
+            global mail_sender
+            if mail_sender.running():
+                mail_sender.stop()
 
     def start_sender(self):
         """ starts the sender """

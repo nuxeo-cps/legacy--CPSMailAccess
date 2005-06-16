@@ -128,8 +128,10 @@ class CPSMailAccessInstaller(CPSInstaller):
             params = wm.default_connection_params
             if not params.has_key('maildir'):
                 params['maildir'] = ('/tmp/maildir', -1)
+            if not params.has_key('direct_smtp'):
+                params['direct_smtp'] = (1, -1)
             from Products.CPSMailAccess.smtpmailer import SmtpMailer
-            wm._maildeliverer = SmtpMailer('/tmp/maildir')
+            wm._maildeliverer = SmtpMailer('/tmp/maildir', 1)
 
     def verifySearchEngine(self):
         """ upgrade mailsearch engine """

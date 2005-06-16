@@ -126,7 +126,8 @@ quick parameters review :
       if classical, they will be childs of INBOX
     o SMTP Folder: This is the server system folder where messages
                    that are beenig sent are written. More information below
-
+    o Direct SMTP send ? : if 0, SMTP Folder is used, otherwise,
+                           mails are sent directly to the SMTP server
 
 about SMTP Folder:
 
