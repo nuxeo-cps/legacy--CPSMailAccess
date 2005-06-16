@@ -245,14 +245,10 @@ class MailBox(MailBoxBaseCaching):
             self._directory_picker = DirectoryPicker(portal_directories)
         return self._directory_picker
 
-    def setParameters(self, connection_params=None, resync=True):
+    def setParameters(self, connection_params=None):
         """ sets the parameters """
         for key in connection_params.keys():
             self._connection_params[key] = connection_params[key]
-
-        if resync is True:
-            self._getconnector()
-            self.synchronize()
 
     def synchronize(self, no_log=False, light=1):
         """ see interface """

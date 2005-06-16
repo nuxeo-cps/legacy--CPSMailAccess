@@ -345,8 +345,7 @@ class MailBoxTestCase(MailTestCase):
         # XXX todo: find out why zopetestcase bust the fakesmtplib
         # at this time we just calling it
         # to make sure it will raise within the smtplib
-        # XXX this is not anymore testable (asynced)
-        #self.assertRaises(AttributeError, mailbox.sendEditorsMessage)
+        self.assertRaises(AttributeError, mailbox.sendEditorsMessage)
 
     def test_searchInConnection(self):
         mailbox = self._getMailBox()
@@ -356,7 +355,10 @@ class MailBoxTestCase(MailTestCase):
     def test_sendNotification(self):
         mailbox = self._getMailBox()
         msg = self.getMailInstance(4)
-        mailbox.sendNotification('xxxx', msg)
+        # XXX todo: find out why zopetestcase bust the fakesmtplib
+        # at this time we just calling it
+        # to make sure it will raise within the smtplib
+        self.assertRaises(AttributeError, mailbox.sendNotification, 'xxxx', msg)
 
 def test_suite():
     return unittest.TestSuite((
