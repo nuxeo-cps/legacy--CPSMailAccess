@@ -656,6 +656,14 @@ class MailFolder(BTreeFolder2):
 
             for uid in sub_bloc:
                 mailbox.synchroTick()
+                if not fetched.has_key(uid):
+                    LOG('_synchronizeFolder', DEBUG,
+                               'failed to get message %s in %s' % \
+                               (uid, self.server_name))
+                    log.append('failed to get message %s in %s' \
+                                % (uid, self.server_name))
+                    continue
+
                 fetched_mail = fetched[uid]
                 found = False
                 msg = self.findMessageByUid(uid)
