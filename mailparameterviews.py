@@ -82,7 +82,7 @@ class MailParametersView(BrowserView):
         their own parameters in the next parameter use
         """
         params = self._computeRequest(params)
-        self.context.setParameters(params, False)
+        self.context.setParameters(params)
         if self.request is not None:
             self.request.response.redirect('configure.html')
 
