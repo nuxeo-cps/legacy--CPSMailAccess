@@ -609,15 +609,25 @@ def shrinkHtml(text, remove_quoted=True):
     text = text.replace('<br/>', '\n')
     text = text.replace('<br>', '\n')
     text = text.split('\n')
-
+    i = 0
     for line in text:
         sline = line.strip()
-        if sline == '':
-            shrinked.append('<span class="shrinkable not_hidden_part">%s<br/></span>' % line)
-        elif ((sline.startswith('>') or sline.startswith('&gt;')) and
-               remove_quoted):
+
+        condition1 = (sline == '' and ((i < len(text) - 2 and
+                      text[i+1].strip() == '') or i == len(text) - 1))
+
+        condition2 = ((sline.startswith('>') or sline.startswith('&gt;')) and
+                       remove_quoted)
+
+        condition3 = (sline.endswith(':') and i < len(text) - 2
+                      and (text[i+1].strip().startswith('>') or
+                           text[i+1].strip().startswith('&gt;'))
+                     )
+
+        if condition1 or condition2 or condition3:
             shrinked.append('<span class="shrinkable not_hidden_part">%s<br/></span>' % line)
         else:
             shrinked.append('%s<br/>' % line)
+        i += 1
 
     return ''.join(shrinked)

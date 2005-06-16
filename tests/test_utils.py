@@ -254,6 +254,11 @@ The CPS Team.
         refs = parseRefs('<42A87078.2060601@nuxeo.com>')
         self.assertEquals(refs, ['<42A87078.2060601@nuxeo.com>'])
 
+    def test_shrinkHtml(self):
+        text = 'Joe wrote:\n> ezc\n  > cez\n> dezez\n > errv\n\nHello\n\nWorld\n'
+        text = shrinkHtml(text)
+        self.assertEquals(text, '<span class="shrinkable not_hidden_part">Joe wrote:<br/></span><span class="shrinkable not_hidden_part">> ezc<br/></span><span class="shrinkable not_hidden_part">  > cez<br/></span><span class="shrinkable not_hidden_part">> dezez<br/></span><span class="shrinkable not_hidden_part"> > errv<br/></span><br/>Hello<br/><br/>World<br/><span class="shrinkable not_hidden_part"><br/></span>')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),
