@@ -26,7 +26,7 @@ if hasattr(context, 'asynchronous_call_manager'):
                 % (root, box_name, str(light)), {})
 else:
     bckgrd = False
-    res, psm = container.background(box_name, light)
+    res = container.background(box_name, light)
 
 if req is not None:
     root = container.portal_url()
@@ -36,8 +36,7 @@ if req is not None:
         else:
             psm = None
     else:
-        if bckgrd:
-            psm = 'cpsma_failed_synchro'
+        psm = 'cpsma_failed_synchro'
 
     box = container.portal_webmail[box_name]
     if hasattr(box, 'INBOX'):
