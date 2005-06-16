@@ -401,6 +401,9 @@ class IMAPConnection(BaseConnection):
                 imap_raw = fimap_raw
 
             for sub_raw in imap_raw:
+                # filtering not parsed parts
+                if sub_raw == [')']:
+                    continue
                 message = messages_queried[u]
                 sub_result = []
                 i = 0
