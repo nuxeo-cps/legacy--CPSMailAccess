@@ -165,8 +165,7 @@ class MailMessageViewTestCase(MailTestCase):
         body = body.split('<br/>')
 
         self.assertEquals(body[0], u'sqdsqd d')
-        self.assertEquals(body[7],
-                          u'</span><span class="shrinkable not_hidden_part">')
+        self.assertEquals(body[7], u'</span>')
 
         body = view.renderBody()
 
@@ -187,7 +186,7 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_(view)
 
         body = view.renderBody()
-        self.assertEquals(body, u'         ezezf<br/> ezf<br/> <b>ezf</b><br/> ef<br/><span class="shrinkable not_hidden_part"> <br/></span> ez<br/><span class="shrinkable not_hidden_part"> <br/></span> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> ezf<br/><span class="shrinkable not_hidden_part">  <br/></span>')
+        self.assertEquals(body, u'         ezezf<br/> ezf<br/> <b>ezf</b><br/> ef<br/> <br/> ez<br/> <br/> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> ezf<br/><span class="shrinkable not_hidden_part">  <br/></span>')
 
     def test_renderHeaderList(self):
         # checks unicoding
@@ -349,9 +348,7 @@ class MailMessageViewTestCase(MailTestCase):
         message = self.getMailInstance(48)
         message = message.__of__(mbox)
         view = MailMessageView(message, None)
-        #self.assertRaises(AttributeError, view.notify, 0)
-        # XXX asynced raise
-        view.notify(0)
+        self.assertRaises(AttributeError, view.notify, 0)
 
     def test_getReferences(self):
         mbox = self._getMailBox()
