@@ -264,16 +264,21 @@ class MailMessage(Folder):
             finally:
                 file.close()
 
-            part_file = Message.Message()
-            part_file['content-disposition'] = 'attachment; filename= %s'\
-                    % file.filename
-            part_file['content-transfer-encoding'] = 'base64'
-
             mime_type = mimeGuess(data)
-            data = base64MIME.encode(data)
-            part_file.set_payload(data)
-            part_file['content-type'] = '%s; name=%s' % (mime_type,
-                                                         file.filename)
+
+            if mime_type in ('message/rfc822'):
+                part_file = message_from_string(data)
+            else:
+                part_file = Message.Message()
+                part_file['content-disposition'] = 'attachment; filename= %s'\
+                                                    % file.filename
+                part_file['content-transfer-encoding'] = 'base64'
+                data = base64MIME.encode(data)
+                data = data.replace('\n', '')
+                part_file.set_payload(data)
+
+                part_file['content-type'] = '%s; name=%s' % (mime_type,
+                                                             file.filename)
 
 
             file = {'filename' : file.filename, 'mimetype': mime_type,
@@ -355,7 +360,8 @@ class MailMessage(Folder):
                 for file in self.getFileList():
                     # data contains the part
                     if file['data'] is not None:
-                        message._payload.append(file['data'])
+                        data = file['data']
+                        message._payload.append(data)
 
             message['User-Agent'] = 'Nuxeo CPSMailAccess'
 

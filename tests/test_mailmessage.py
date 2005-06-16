@@ -309,6 +309,20 @@ class MailMessageTestCase(MailTestCase):
         ob = MailMessage()
         self.assert_(not ob.hasAttachment())
 
+    def test_attachMessage(self):
+        # attaching message was busting the mail
+        ob = self.getMailInstance(35)
+        file = openfile('msg_35.txt')
+        storage = FakeFieldStorage()
+        storage.file = file
+        storage.filename = 'msg_35.txt'
+        uploaded = FileUpload(storage)
+        ob.attachFile(uploaded)
+
+        # check that an attached message does not bust the message
+        ob.getRawMessage()
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageTestCase),
