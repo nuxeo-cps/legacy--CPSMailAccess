@@ -150,8 +150,8 @@ class IMAPConnection(BaseConnection):
         self._respawn()
         try:
             typ, dat = self._connection.login(user, password)
-        except (IMAP4.error, IndexError):
-            raise ConnectionError(LOGIN_FAILED + ' for user %s' % user)
+        except (IMAP4.error, IndexError), e:
+            raise ConnectionError(str(e))
 
         # _connection state is AUTH if login succeeded
         if typ == 'OK' :
@@ -371,18 +371,16 @@ class IMAPConnection(BaseConnection):
 
         try:
             self._selectMailBox(mailbox)
-        except (IMAP4.error, IMAP4_SSL.error):
-            raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
+        except (IMAP4.error, IMAP4_SSL.error), e:
+            raise ConnectionError(str(e))
         try:
             imap_result =  self._connection.uid('fetch', message_number, message_parts)
-        except self._connection.error:
-            raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
-        except IndexError:
-            raise ConnectionError(MAILBOX_INDEX_ERROR % (message_number,
-                                                        mailbox))
-        except (AttributeError, IMAP4.error, IMAP4_SSL.error):
-            raise ConnectionError(CANNOT_READ_MESSAGE % (message_number,
-                                                        mailbox))
+        except self._connection.error, e:
+            raise ConnectionError(str(e))
+        except IndexError, e:
+            raise ConnectionError(str(e))
+        except (AttributeError, IMAP4.error, IMAP4_SSL.error), e:
+            raise ConnectionError(str(e))
 
         if imap_result[0] == 'OK':
             imap_raw = imap_result[1]
@@ -425,8 +423,8 @@ class IMAPConnection(BaseConnection):
         self._selectMailBox(mailbox)
         try:
             imap_result =  self._connection.uid('search', charset, *criteria)
-        except self._connection.error:
-            raise ConnectionError(CANNOT_SEARCH_MAILBOX % mailbox)
+        except self._connection.error, e:
+            raise ConnectionError(str(e))
 
         if imap_result[0] == 'NO':
             # XXX try to parse errors

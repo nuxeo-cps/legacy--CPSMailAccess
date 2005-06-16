@@ -1210,8 +1210,8 @@ class MailBoxView(MailFolderView):
             try:
                 mailbox.synchronize(no_log=True, light=light)
                 psm = 'cpsma_synchronized'
-            except ConnectionError:
-                psm = 'cpsma_failed_synchro'
+            except ConnectionError, e:
+                psm = str(e)
                 mailbox.clearSynchro()
         else:
             psm = 'cps_already_synchronizing'

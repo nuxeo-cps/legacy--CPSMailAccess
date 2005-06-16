@@ -645,7 +645,7 @@ class MailFolder(BTreeFolder2):
                 fetched = connector.fetch(self.server_name, uid_sequence,
                                           fetch_str)
                 mailfailed = False
-            except ConnectionError:
+            except ConnectionError, e:
                 fetched = []
                 mailfailed = True
             #end = time.time() - start
@@ -689,6 +689,8 @@ class MailFolder(BTreeFolder2):
                                                          connector)
 
                     if not skip:
+                        LOG('_synchronizeFolder', DEBUG,
+                            'adding message %s in %s' % (uid, self.server_name))
                         log.append('adding message %s in %s' % \
                                    (uid, self.server_name))
                         # XXX todo : load filelist
@@ -701,10 +703,16 @@ class MailFolder(BTreeFolder2):
                     # Message was in cache, adding it to self
                     if not found:
                         if not mailfailed:
+                            LOG('_synchronizeFolder', DEBUG,
+                                'moving message %s in %s' % (uid, self.server_name))
+
                             log.append('moving message %s in %s' % \
                                     (uid, self.server_name))
                             self._setObject(msg.getId(), msg)
                         else:
+                            LOG('_synchronizeFolder', DEBUG,
+                               'failed to get message %s in %s' % \
+                               (uid, self.server_name))
                             log.append('failed to get message %s in %s' \
                                         % (uid, self.server_name))
 

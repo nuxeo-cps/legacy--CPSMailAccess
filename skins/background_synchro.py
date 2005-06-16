@@ -8,6 +8,7 @@
 """
 # XXX executed as root when asynced,
 # need to change mails owner when they are created
+
 box_name = 'box_%s' % user
 req = context.REQUEST
 res = True
@@ -25,12 +26,7 @@ if hasattr(context, 'asynchronous_call_manager'):
                 % (root, box_name, str(light)), {})
 else:
     bckgrd = False
-    try:
-        container.background(box_name, light)
-    # except ConnectionError: this will be available when code is put in
-    # mailtoool class
-    except:
-        res = False
+    res, psm = container.background(box_name, light)
 
 if req is not None:
     root = container.portal_url()
@@ -40,7 +36,8 @@ if req is not None:
         else:
             psm = None
     else:
-        psm = 'cpsma_failed_synchro'
+        if bckgrd:
+            psm = 'cpsma_failed_synchro'
 
     box = container.portal_webmail[box_name]
     if hasattr(box, 'INBOX'):
