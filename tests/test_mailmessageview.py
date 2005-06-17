@@ -406,6 +406,25 @@ class MailMessageViewTestCase(MailTestCase):
         self.assertEquals(file['filename'], 'SecondPyBansxzner048.gif')
         self.assertEquals(file['mimetype'], 'image/gif')
 
+    def _getBoxMail(self):
+        return 'bob'
+
+    def test_prepareReplyRecipient(self):
+        mbox = self._getMailBox()
+
+        # attach a file
+        ob = self.getMailInstance(43)
+        ob = ob.__of__(mbox)
+        ob.getPhysicalPath = self.fakePhysicalPath
+        ob.addHeader('To', 'bob')
+        ob.addHeader('Cc', 'bob')
+
+        view = MailMessageView(ob, None)
+        self.assert_(view)
+        view._getBoxMail = self._getBoxMail
+
+        view.prepareReplyRecipient(reply_all=1)
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageViewTestCase),

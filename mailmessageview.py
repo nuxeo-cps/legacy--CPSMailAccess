@@ -279,7 +279,8 @@ class MailMessageView(BaseMailMessageView):
             # to -> cc if to is different than boxmail
             for to in tos:
                 if sameMail(boxmail, to):
-                    del tos[to]
+                    tos.remove(to)
+
             ccs.extend(tos)
 
             for element in ccs:
