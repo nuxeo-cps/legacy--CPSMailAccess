@@ -179,9 +179,6 @@ class MailBox(MailBoxBaseCaching):
     >>> IMailBox.providedBy(f)
     True
     """
-    #used formigrations
-    __version__ = 'beta2'
-
     ### XXX see if "properties" are ok in zope3/five context
     meta_type = "CPSMailAccess Box"
     portal_type = meta_type
@@ -192,6 +189,7 @@ class MailBox(MailBoxBaseCaching):
     catalog_id = '.zcatalog'
 
     def __init__(self, uid=None, server_name='', **kw):
+        __version__ = (1, 0, 0, 'b2')
         MailBoxBaseCaching.__init__(self, uid, server_name, **kw)
         self.search_available = True
         self._filters = ZMailFiltering()

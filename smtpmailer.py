@@ -167,7 +167,7 @@ def removeMailElement():
 
 class SmtpMailer(Persistent):
     """ a class that delivers a mail to any SMTP server """
-    __version__ = '1.0'
+    __version__ = (1, 0)
 
     def __init__(self, maildir_directory, direct_smtp):
         self.maildir_directory = maildir_directory

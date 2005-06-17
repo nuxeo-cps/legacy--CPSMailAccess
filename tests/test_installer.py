@@ -60,7 +60,14 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
         except BadRequestException:
             pass
 
-    def _installWebmail():
+        upgrader = ExternalMethod('cpsmailaccess_installer', '',
+                                   'CPSMailAccess.install', 'upgrade')
+        try:
+            self.portal._setObject('cpsmailaccess_upgrader', upgrader)
+        except BadRequestException:
+            pass
+
+    def _installWebmail(self):
         # installing
         self.installProduct()
         self.app.portal.cpsmailaccess_installer()
@@ -77,6 +84,20 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
         self.app.portal.cpsmailaccess_installer()
         portlets = getattr(self.app.portal.portal_webmail, '.cps_portlets')
         self.assertEquals(len(portlets.objectIds()), 2)
+
+    def test_upgrade(self):
+
+        self._installWebmail()
+        self.app.portal.portal_webmail.__version__ = 'upgrade me'
+
+        # updating
+        self.app.portal.cpsmailaccess_upgrader('beta2')
+
+        # checking version
+        self.assertEquals(self.app.portal.portal_webmail.__version__,
+                          (1, 0, 0, 'b2'))
+
+
 
 class MailInstaller(CPSTestCase.CPSInstaller):
 

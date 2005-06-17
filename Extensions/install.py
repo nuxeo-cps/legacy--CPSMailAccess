@@ -50,6 +50,7 @@ class CPSMailAccessInstaller(CPSInstaller):
     """ Installer class for CPSMailAccess
     """
     product_name = 'CPSMailAccess'
+    _versions = [(1, 0, 0, 'b1'), (1, 0, 0, 'b2')]
 
     def installProduct(self,ModuleName,
         InstallModuleName='install',MethodName='install'):
@@ -109,50 +110,12 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.setupDefaultAddressBooks()
         self.setupMembersSchemasAndLayouts()
         self.addWMAction()
-        self.checkExistingMailBoxes()
         self.setupPermissions()
         # XXX not used yet
         # self.linkFiveActionTool()
         self.setupTranslations()
-        self.verifySearchEngine()
-        self.verifyMailToolVersion()
         self.finalize()
         self.log("End of Install/Update : CPSMailAccess Product")
-
-    def verifyMailToolVersion(self):
-        wm = self.portal.portal_webmail
-        if not hasattr(wm, '__version__'):
-            # below 1.0, need upgrade
-            self.log('upgrading mailtool to beta 2')
-            wm.__version__ = '1.0'
-            params = wm.default_connection_params
-            if not params.has_key('maildir'):
-                params['maildir'] = ('/tmp/maildir', 0)
-            if not params.has_key('direct_smtp'):
-                params['direct_smtp'] = (1, 0)
-            from Products.CPSMailAccess.smtpmailer import SmtpMailer
-            wm._maildeliverer = SmtpMailer('/tmp/maildir', 1)
-
-    def verifySearchEngine(self):
-        """ upgrade mailsearch engine """
-        wm = self.portal.portal_webmail
-        from BTrees.OOBTree import OOBTree
-
-        for id, box in wm.objectItems():
-            if not isinstance(box, MailBox):
-                continue
-            if not hasattr(box, '__version__'):
-                # beta 1, upgrading to beta 2
-                self.log('upgrading box %s to beta 2' % id)
-                box.__version__ = 'beta2'
-                zcat = box._getZemanticCatalog()
-                zcat._message_ids = OOBTree()
-            else:
-                self.log('box %s version ok (%s)' % (id, box.__version__))
-                zcat = box._getZemanticCatalog()
-                if not hasattr(zcat, '_message_ids'):
-                    self.log('old catalog, upgrading')
-                    zcat._message_ids = OOBTree()
 
     def setupPortalWebMail(self):
         """ sets up portal webmail
@@ -591,17 +554,6 @@ class CPSMailAccessInstaller(CPSInstaller):
         self.deleteActions({'portal_subscriptions': ['notify_content',]})
         self.verifyAction('portal_subscriptions', **action)
 
-    def checkExistingMailBoxes(self):
-        """ checks mailbox parameters """
-        wm = self.portal.portal_webmail
-        dp = wm.default_connection_params
-        for id, box in wm.objectItems():
-            for item in dp.keys():
-                if not hasattr(box, '_connection_params'):
-                    setattr(box, '_connection_params', {})
-                if not box._connection_params.has_key(item):
-                    box._connection_params[item] = dp[item]
-
     def setupPermissions(self):
         """ sets up permission """
         self.setupPortalPermissions(permissions, self.portal)
@@ -645,6 +597,75 @@ class CPSMailAccessInstaller(CPSInstaller):
         else:
             self.setupBoxes()
 
+    def upgrade(self, new_version, old_version=None):
+        """ upgrades an existing version of CPSMailAccess
+
+            if old_version is set to None,
+            the upgrader will upgrade from the first existing version
+            to the last one
+        """
+        old_version = self._shorcutName(old_version)
+        new_version = self._shorcutName(new_version)
+
+        if old_version is None:
+            old_version = self._versions[0]
+        if (old_version not in self._versions or
+            new_version not in self._versions):
+            raise Exception('unknown versions')
+
+        if old_version == (1, 0, 0, 'b1') and  new_version == (1, 0, 0, 'b2'):
+            self.upgrade_b1_to_b2()
+
+    def _shorcutName(self, name):
+        if name in ('beta2', 'b2'):
+            return (1, 0, 0, 'b2')
+        elif name in ('beta1', 'b1'):
+            return (1, 0, 0, 'b1')
+        else:
+            return name
+
+    def upgrade_b1_to_b2(self):
+
+        self.log('upgrading portal_webmail to beta 2')
+        wm = self.portal.portal_webmail
+        wm.__version__ = (1, 0, 0, 'b2')
+        params = wm.default_connection_params
+        if not params.has_key('maildir'):
+            params['maildir'] = ('/tmp/maildir', 0)
+        if not params.has_key('direct_smtp'):
+            params['direct_smtp'] = (1, 0)
+        from Products.CPSMailAccess.smtpmailer import SmtpMailer
+        wm._maildeliverer = SmtpMailer('/tmp/maildir', 1)
+
+        self.log('upgrading boxes to beta 2')
+        from BTrees.OOBTree import OOBTree
+
+        for id, box in wm.objectItems():
+            if not isinstance(box, MailBox):
+                continue
+            if not hasattr(box, '__version__'):
+                # beta 1, upgrading to beta 2
+                self.log('upgrading box %s to beta 2' % id)
+                box.__version__ = (1, 0, 0, 'b2')
+                zcat = box._getZemanticCatalog()
+                zcat._message_ids = OOBTree()
+            else:
+                self.log('box %s version ok (%s)' % (id, box.__version__))
+                zcat = box._getZemanticCatalog()
+                if not hasattr(zcat, '_message_ids'):
+                    self.log('old catalog, upgrading')
+                    zcat._message_ids = OOBTree()
+
+            self.log('checking for parameters')
+            wm = self.portal.portal_webmail
+            dp = wm.default_connection_params
+            for id, box in wm.objectItems():
+                for item in dp.keys():
+                    if not hasattr(box, '_connection_params'):
+                        setattr(box, '_connection_params', {})
+                    if not box._connection_params.has_key(item):
+                        box._connection_params[item] = dp[item]
+
 def install(self):
     """Installation is done here.
 
@@ -652,4 +673,10 @@ def install(self):
     """
     installer = CPSMailAccessInstaller(self)
     installer.install()
+    return installer.logResult()
+
+def upgrade(self, new_version, old_version=None):
+    """ upgrades """
+    installer = CPSMailAccessInstaller(self)
+    installer.upgrade(new_version, old_version)
     return installer.logResult()

@@ -68,7 +68,7 @@ class MailTool(Folder): # UniqueObject
 
     def __init__(self):
         Folder.__init__(self)
-        self.__version__ = '1.0'
+        self.__version__ = (1, 0, 0, 'b2')
         self.default_connection_params = PersistentMapping()
         self._initializeParameters()
         self._initializeConnectionList()
