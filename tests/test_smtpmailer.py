@@ -21,7 +21,8 @@ from time import sleep
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct, ZopeTestCase
 
-from Products.CPSMailAccess.smtpmailer import MailWriter, MailSender, \
+from Products.CPSMailAccess import smtpmailer
+from Products.CPSMailAccess.smtpmailer import MailSender, \
                                               setMailElement, SmtpMailer, mail_sender
 from Products.CPSMailAccess.tests import __file__ as landmark
 from Products.CPSMailAccess.mailmessage import MailMessage
@@ -43,13 +44,13 @@ class SMTPMailerTestCase(MailTestCase):
     def test_MailWriter(self):
         self._cleanMaildir()
 
-        writer = MailWriter(maildir_path)
+        writer = SmtpMailer(maildir_path, direct_smtp=0)
 
         # writing a message into the maildir
         msg = self.getMailInstance(7)
         msg = msg.getRawMessage()
-        writer.write('tarek', 'bill', msg, 'cool.smtp.com', 26, 'tarek',
-                     'secret')
+        writer._write('tarek', 'bill', msg, 'cool.smtp.com', 26, 'tarek',
+                      'secret')
 
         # verify that is has been written in the maildir
         tmp_folder = os.path.join(maildir_path, 'new')
@@ -81,7 +82,7 @@ class SMTPMailerTestCase(MailTestCase):
     def test_MailSender(self):
         self.test_MailWriter()
         sender = MailSender(maildir_path)
-        sender._createMailer = self._createMailer
+        smtpmailer._createMailer = self._createMailer
         sender.run(forever=False)
 
         # should be sent now
@@ -100,7 +101,7 @@ class SMTPMailerTestCase(MailTestCase):
 
         # faking
         setMailElement(maildir_path)
-        mail_sender._createMailer = self._createMailer
+        smtpmailer._createMailer = self._createMailer
 
         # starts to listen
         mailer.start_sender()

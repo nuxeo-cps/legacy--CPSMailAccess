@@ -28,6 +28,8 @@ from time import sleep
 import atexit
 from smtplib import SMTPRecipientsRefused
 
+from Persistence import Persistent
+
 from zope.app.mail.mailer import SMTPMailer
 from zope.app.mail.delivery import QueueProcessorThread
 from zope.interface import implements
@@ -46,82 +48,43 @@ and adapted for CPSMailAccess :
 the difference is that this will work for multiple SMTP servers
 """
 
-class MailWriter(object):
-    """ a class that write a mail to a system folder """
-    def __init__(self, maildir_directory):
-        self.maildir_directory = maildir_directory
-        self.maildir = Maildir(self.maildir_directory, True)
+def _parseMessage(message):
+    """ Extract infos from the message """
+    rest = []
 
-    def _string(self, value):
-        if isinstance(value, unicode):
-            return value.encode('ISO-8859-15')
-        return value
+    elements = (('fromaddr', 'X-Zope-From'), ('toaddrs', 'X-Zope-To'),
+                ('hostname', 'X-Zope-Hostname'), ('port', 'X-Zope-Port'),
+                ('username', 'X-Zope-Username'),
+                ('password','X-Zope-Password'))
 
-    def write(self, fromaddr, toaddrs, message, hostname='localhost', port=25,
-              username=None, password=None):
-        """ write the message into the system folder """
-        maildir = self.maildir
-        msg = maildir.newMessage()
+    lines = message.split('\n')
+    values = {}
 
-        # making sure we send strings
-        fromaddr = self._string(fromaddr)
-        toaddrs = self._string(toaddrs)
-        hostname = self._string(hostname)
-        username = self._string(username)
-        password = self._string(password)
+    for element in elements:
+        values[element[0]] = None
 
-        if isinstance(toaddrs, str):
-            toaddrs = (toaddrs,)
-
-        # adding headers that will be used by the sender
-        msg.write('X-Zope-From: %s\n' % fromaddr)
-        msg.write('X-Zope-To: %s\n' % ', '.join(toaddrs))
-        msg.write('X-Zope-Hostname: %s\n' % hostname)
-        msg.write('X-Zope-Port: %d\n' % port)
-        msg.write('X-Zope-Username: %s\n' % username)
-        msg.write('X-Zope-Password: %s\n' % password)
-
-        msg.write(message)
-        msg.commit()
-
-class BaseMailSender:
-    def _parseMessage(self, message):
-        """ Extract infos from the message """
-        rest = []
-
-        elements = (('fromaddr', 'X-Zope-From'), ('toaddrs', 'X-Zope-To'),
-                    ('hostname', 'X-Zope-Hostname'), ('port', 'X-Zope-Port'),
-                    ('username', 'X-Zope-Username'),
-                    ('password','X-Zope-Password'))
-
-        lines = message.split('\n')
-        values = {}
-
+    for line in lines:
+        found = False
         for element in elements:
-            values[element[0]] = None
+            if line.startswith(element[1]):
+                value = line.replace('%s: ' % element[1], '')
+                if value != '' and value != 'None':
+                    values[element[0]] = value
+                found = True
+        if not found:
+            rest.append(line)
 
-        for line in lines:
-            found = False
-            for element in elements:
-                if line.startswith(element[1]):
-                    value = line.replace('%s: ' % element[1], '')
-                    if value != '' and value != 'None':
-                        values[element[0]] = value
-                    found = True
-            if not found:
-                rest.append(line)
+    return values, '\n'.join(rest)
 
-        return values, '\n'.join(rest)
+def _createMailer(hostname, port, username, password):
+    """ creates a mailer
 
-    def _createMailer(self, hostname, port, username, password):
-        """ creates a mailer
-
-        XXX outsourced so we can think of a pool mailer later for optimisation
-        """
-        return SMTPMailer(hostname, port, username, password)
+    XXX outsourced so we can think of a pool mailer later for optimisation
+    """
+    return SMTPMailer(hostname, port, username, password)
 
 
-class MailSender(BaseMailSender, QueueProcessorThread):
+class MailSender(QueueProcessorThread):
     """ a thread class that sends mail found in a system folder
     """
     def __init__(self, maildir_directory, idle_time=1):
@@ -144,7 +107,7 @@ class MailSender(BaseMailSender, QueueProcessorThread):
                     file = open(filename)
                     message = file.read()
                     file.close()
-                    elements, message = self._parseMessage(message)
+                    elements, message = _parseMessage(message)
 
                     fromaddr = elements['fromaddr']
                     toaddrs = elements['toaddrs'].split(', ')
@@ -153,7 +116,7 @@ class MailSender(BaseMailSender, QueueProcessorThread):
                     username = elements['username']
                     password = elements['password']
 
-                    mailer = self._createMailer(hostname, port, username,
+                    mailer = _createMailer(hostname, port, username,
                                                 password)
                     mailer.send(fromaddr, toaddrs, message)
 
@@ -190,7 +153,6 @@ class MailSender(BaseMailSender, QueueProcessorThread):
         return not self.__stopped
 
 mail_sender = None
-mail_writer = None
 
 def setMailElement(maildir):
     global mail_sender
@@ -198,22 +160,18 @@ def setMailElement(maildir):
         mail_sender.maildir_directory != maildir):
         mail_sender = MailSender(maildir)
 
-    global mail_writer
-    if (mail_writer is None or
-        mail_writer.maildir_directory != maildir):
-        mail_writer = MailWriter(maildir)
-
 def removeMailElement():
     global mail_sender
     if mail_sender is not None:
         mail_sender.stop()
 
-class SmtpMailer(BaseMailSender):
+class SmtpMailer(Persistent):
     """ a class that delivers a mail to any SMTP server """
     __version__ = '1.0'
 
     def __init__(self, maildir_directory, direct_smtp):
         self.maildir_directory = maildir_directory
+        self.maildir = Maildir(self.maildir_directory, True)
         self._started = False
         self.direct_smtp = direct_smtp
 
@@ -226,8 +184,8 @@ class SmtpMailer(BaseMailSender):
         # the first sent ever, wakes everything
         if self.direct_smtp:
             self.stop_sender()
-            elements, message = self._parseMessage(message)
-            mailer = self._createMailer(hostname, port, username, password)
+            elements, message = _parseMessage(message)
+            mailer = _createMailer(hostname, port, username, password)
             try:
                 mailer.send(fromaddr, toaddrs, message)
             except SMTPRecipientsRefused, e:
@@ -236,10 +194,8 @@ class SmtpMailer(BaseMailSender):
                 return True, ''
         else:
             self.start_sender()
-
-            global mail_writer
             try:
-                mail_writer.write(fromaddr, toaddrs, message, hostname, port,
+                self._write(fromaddr, toaddrs, message, hostname, port,
                                   username, password, )
             except SMTPRecipientsRefused, e:
                 return False, e.recipients
@@ -261,5 +217,37 @@ class SmtpMailer(BaseMailSender):
         global mail_sender
         if not mail_sender.running():
             mail_sender.start()
+
+    def _string(self, value):
+        if isinstance(value, unicode):
+            return value.encode('ISO-8859-15')
+        return value
+
+    def _write(self, fromaddr, toaddrs, message, hostname='localhost', port=25,
+               username=None, password=None):
+        """ write the message into the system folder """
+        maildir = self.maildir
+        msg = maildir.newMessage()
+
+        # making sure we send strings
+        fromaddr = self._string(fromaddr)
+        toaddrs = self._string(toaddrs)
+        hostname = self._string(hostname)
+        username = self._string(username)
+        password = self._string(password)
+
+        if isinstance(toaddrs, str):
+            toaddrs = (toaddrs,)
+
+        # adding headers that will be used by the sender
+        msg.write('X-Zope-From: %s\n' % fromaddr)
+        msg.write('X-Zope-To: %s\n' % ', '.join(toaddrs))
+        msg.write('X-Zope-Hostname: %s\n' % hostname)
+        msg.write('X-Zope-Port: %d\n' % port)
+        msg.write('X-Zope-Username: %s\n' % username)
+        msg.write('X-Zope-Password: %s\n' % password)
+
+        msg.write(message)
+        msg.commit()
 
 atexit.register(removeMailElement)
