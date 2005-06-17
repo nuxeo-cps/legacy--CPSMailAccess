@@ -97,6 +97,17 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
         self.assertEquals(self.app.portal.portal_webmail.__version__,
                           (1, 0, 0, 'b2'))
 
+    def test_upgrade2(self):
+
+        self._installWebmail()
+        delattr(self.app.portal.portal_webmail, '__version__')
+
+        # updating
+        self.app.portal.cpsmailaccess_upgrader('beta2')
+
+        # checking version
+        self.assertEquals(self.app.portal.portal_webmail.__version__,
+                          (1, 0, 0, 'b2'))
 
 
 class MailInstaller(CPSTestCase.CPSInstaller):

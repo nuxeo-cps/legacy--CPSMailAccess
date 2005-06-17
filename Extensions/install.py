@@ -628,7 +628,7 @@ class CPSMailAccessInstaller(CPSInstaller):
 
         self.log('upgrading portal_webmail to beta 2')
         wm = self.portal.portal_webmail
-        if wm.__version__ !=  (1, 0, 0, 'b2'):
+        if not hasattr(wm, '__version__') or wm.__version__ !=  (1, 0, 0, 'b2'):
             wm.__version__ = (1, 0, 0, 'b2')
             params = wm.default_connection_params
             if not params.has_key('maildir'):
