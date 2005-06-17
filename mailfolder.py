@@ -385,9 +385,13 @@ class MailFolder(BTreeFolder2):
         new_folder = self[new_id]
 
         if server and has_connection:
-            connector = self._getconnector()
-            # todo : look at the result
-            connector.create(new_folder.server_name)
+            try:
+                connector = self._getconnector()
+            except ConnectionError:
+                pass
+            else:
+                # todo : look at the result
+                connector.create(new_folder.server_name)
 
         return new_folder
 
