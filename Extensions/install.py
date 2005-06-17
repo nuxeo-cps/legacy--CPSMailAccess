@@ -628,43 +628,40 @@ class CPSMailAccessInstaller(CPSInstaller):
 
         self.log('upgrading portal_webmail to beta 2')
         wm = self.portal.portal_webmail
-        wm.__version__ = (1, 0, 0, 'b2')
-        params = wm.default_connection_params
-        if not params.has_key('maildir'):
-            params['maildir'] = ('/tmp/maildir', 0)
-        if not params.has_key('direct_smtp'):
-            params['direct_smtp'] = (1, 0)
-        from Products.CPSMailAccess.smtpmailer import SmtpMailer
-        wm._maildeliverer = SmtpMailer('/tmp/maildir', 1)
+        if wm.__version__ !=  (1, 0, 0, 'b2'):
+            wm.__version__ = (1, 0, 0, 'b2')
+            params = wm.default_connection_params
+            if not params.has_key('maildir'):
+                params['maildir'] = ('/tmp/maildir', 0)
+            if not params.has_key('direct_smtp'):
+                params['direct_smtp'] = (1, 0)
+            from Products.CPSMailAccess.smtpmailer import SmtpMailer
+            wm._maildeliverer = SmtpMailer('/tmp/maildir', 1)
 
         self.log('upgrading boxes to beta 2')
         from BTrees.OOBTree import OOBTree
+        dp = wm.default_connection_params
 
         for id, box in wm.objectItems():
             if not isinstance(box, MailBox):
                 continue
-            if not hasattr(box, '__version__'):
+            self.log('checking box: %s' % id)
+            if (not hasattr(box, '__version__') or
+                box.__version__ != (1, 0, 0, 'b2')):
                 # beta 1, upgrading to beta 2
                 self.log('upgrading box %s to beta 2' % id)
                 box.__version__ = (1, 0, 0, 'b2')
-                zcat = box._getZemanticCatalog()
-                zcat._message_ids = OOBTree()
-            else:
-                self.log('box %s version ok (%s)' % (id, box.__version__))
-                zcat = box._getZemanticCatalog()
-                if not hasattr(zcat, '_message_ids'):
-                    self.log('old catalog, upgrading')
-                    zcat._message_ids = OOBTree()
 
-            self.log('checking for parameters')
-            wm = self.portal.portal_webmail
-            dp = wm.default_connection_params
-            for id, box in wm.objectItems():
-                for item in dp.keys():
-                    if not hasattr(box, '_connection_params'):
-                        setattr(box, '_connection_params', {})
-                    if not box._connection_params.has_key(item):
-                        box._connection_params[item] = dp[item]
+            zcat = box._getZemanticCatalog()
+            if not hasattr(zcat, '_message_ids'):
+                self.log('    old catalog, upgrading')
+                zcat._message_ids = OOBTree()
+
+            for item in dp.keys():
+                if not hasattr(box, '_connection_params'):
+                    setattr(box, '_connection_params', {})
+                if not box._connection_params.has_key(item):
+                    box._connection_params[item] = dp[item]
 
 def install(self):
     """Installation is done here.
@@ -680,3 +677,6 @@ def upgrade(self, new_version, old_version=None):
     installer = CPSMailAccessInstaller(self)
     installer.upgrade(new_version, old_version)
     return installer.logResult()
+
+def upgrade_to_beta2(self):
+    return upgrade(self, 'b2')
