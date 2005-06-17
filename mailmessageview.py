@@ -516,3 +516,7 @@ class MailMessageView(BaseMailMessageView):
     def getBackReferences(self):
         """ look in catalog for backreferences """
         return self._getRef(back=True)
+
+    def getRawMessage(self):
+        """ returns the raw message """
+        return self.context.getRawMessage()
