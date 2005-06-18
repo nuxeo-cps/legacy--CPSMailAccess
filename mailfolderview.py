@@ -91,8 +91,10 @@ class MailFolderView(BaseMailMessageView):
 
         try:
             renamed = mailfolder.rename(new_name)
+            if renamed is None:
+                psm = 'cpsma_could_not_perform'
         except ConnectionError:
-            renamed = False
+            renamed = None
             psm = 'cpsma_could_not_perform'
 
         if renamed:
@@ -103,7 +105,7 @@ class MailFolderView(BaseMailMessageView):
 
         if self.request is not None:
             resp = self.request.response
-            if renamed:
+            if renamed is not None:
                 resp.redirect(folder.absolute_url()+'/view')
             else:
                 resp.redirect(folder.absolute_url()+'/view?msm=%s' % psm)
