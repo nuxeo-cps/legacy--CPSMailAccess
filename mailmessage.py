@@ -97,7 +97,8 @@ class MailMessage(Folder):
                            'In-Reply-To', 'Content-Type', 'References',
                            'Disposition-Notification-To')
             for old_header in old_headers:
-                new_store[old_header] = original_store[old_header]
+                for value in original_store.get_all(old_header, []):
+                    new_store[old_header] = value
             self._setStore(new_store)
 
         store = self._getStore()
@@ -131,11 +132,11 @@ class MailMessage(Folder):
             skip_headers = ()
 
         if headers is not None:
-            for key in headers.keys():
+            for key, value in headers:
                 if key.lower() not in skip_headers:
                     if key.lower() == 'subject':
-                        self.title = secureUnicode(decodeHeader(headers[key]))
-                    self._setStoreHeader(key, headers[key])
+                        self.title = secureUnicode(decodeHeader(value))
+                    self.addHeader(key, value)
         if body is None:
             body = ''
 
@@ -268,21 +269,26 @@ class MailMessage(Folder):
 
             if mime_type in ('message/rfc822'):
                 part_file = message_from_string(data)
+                part_file['Content-Type'] = \
+                    'message/rfc822;name="%s"' % file.filename
+                part_file['Content-Transfer-Encoding'] = '7bit'
+                part_file['Content-Disposition'] = 'inline; filename="%s"' % file.filename
+
             else:
                 part_file = Message.Message()
-                part_file['content-disposition'] = 'attachment; filename= %s'\
+                part_file['content-disposition'] = 'attachment; filename= "%s"'\
                                                     % file.filename
                 part_file['content-transfer-encoding'] = 'base64'
                 data = base64MIME.encode(data)
                 data = data.replace('\n', '')
                 part_file.set_payload(data)
-
-                part_file['content-type'] = '%s; name=%s' % (mime_type,
-                                                             file.filename)
-
+                part_file['content-type'] = '%s; name="%s"' % (mime_type,
+                                                               file.filename)
 
             file = {'filename' : file.filename, 'mimetype': mime_type,
-                    'data' : part_file, 'content-transfer-encoding' : 'base64'}
+                    'data' : part_file,
+                    'content-transfer-encoding' :
+                        part_file['Content-Transfer-Encoding']}
 
             files.append(file)
 
@@ -334,21 +340,22 @@ class MailMessage(Folder):
             return ''
         else:
             # creating a multipart message
-            copy = message_from_string(store.as_string())   # making a copy
-            copy['content-type'] = 'text/plain; charset=iso-8859-15'
-            copy['content-transfer-encoding'] = '7bit'
-
             if self._file_list == []:
-                message = copy
+                message = store
             else:
+                copy = message_from_string(store.as_string())   # making a copy
+                copy['content-type'] = 'text/plain; charset=iso-8859-15'
+                copy['content-transfer-encoding'] = '7bit'
+
                 message = Message.Message()
                 for gheader in ('From', 'To', 'Cc', 'BCc', 'Subject', 'Date',
                                 'Return-Path', 'Received', 'Delivered-To',
                                 'Message-ID', 'References'):
                     if gheader in copy:
-                        values = copy.get_all(gheader)
+                        values = copy.get_all(gheader, [])
                         for value in values:
-                            message[gheader] = value
+                            if value.strip() != '':
+                                message[gheader] = value
                         copy.__delitem__(gheader)
 
                 message['content-type'] = \
@@ -363,6 +370,8 @@ class MailMessage(Folder):
                         data = file['data']
                         message._payload.append(data)
 
+            if message.has_key('User-Agent'):
+                del message['User-Agent']
             message['User-Agent'] = 'Nuxeo CPSMailAccess'
 
             return message.as_string()

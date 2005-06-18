@@ -359,6 +359,7 @@ class MailBoxTestCase(MailTestCase):
         # at this time we just calling it
         # to make sure it will raise within the smtplib
         self.assertRaises(AttributeError, mailbox.sendNotification, 'xxxx', msg)
+        self.assertRaises(AttributeError, mailbox.sendNotification, u'xééxxx', msg)
 
 def test_suite():
     return unittest.TestSuite((

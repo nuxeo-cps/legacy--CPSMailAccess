@@ -657,7 +657,7 @@ class IMAPConnection(BaseConnection):
         """ extracts headers retrieved from server """
         raw_parts = raw_headers.split('\r\n')
         i  = 0
-        returned = {}
+        returned = []
         for raw_part in raw_parts:
             raw_part = raw_part.strip()
             if raw_part == '':
@@ -672,7 +672,7 @@ class IMAPConnection(BaseConnection):
             else:
                 raw_name = raw_part
                 raw_data = ''
-            returned[raw_name] = raw_data
+            returned.append((raw_name, raw_data))
             i += 1
         return returned
 
