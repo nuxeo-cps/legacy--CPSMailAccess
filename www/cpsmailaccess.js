@@ -220,8 +220,15 @@ function saveMessageDatas(synced)
     {
       currentXMLObject.open("POST", url, false);
       currentXMLObject.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      currentXMLObject.send(poster);
-      return currentXMLObject.responseText;
+      try
+      {
+        currentXMLObject.send(poster);
+        return currentXMLObject.responseText;
+      }
+      catch (err)
+      {
+        // silently die here
+      }
     }
   }
   else
