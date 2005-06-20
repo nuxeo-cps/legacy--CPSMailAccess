@@ -220,7 +220,7 @@ class MailBox(MailBoxBaseCaching):
         self.search_available = True
         self._filters = ZMailFiltering()
         self._directory_picker = None
-        self._connection_params = SPersistentMapping()
+        self._connection_params = PersistentMapping()
 
     def _setConnectionValue(self, key, value):
         """ avoids zodb extra writes """
