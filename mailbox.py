@@ -61,16 +61,14 @@ from mailfiltering import ZMailFiltering
 _idle_time = 30
 tickers = {}
 
-def getTicker(object, num):
-    id_ = id(object)
-    key = '%s.%d' % (id_, num)
+def getTicker(name, num):
+    key = '%s.%d' % (name, num)
     if not tickers.has_key(key):
-        tickers[key] = _idle_time
+        tickers[key] = 0
     return tickers[key]
 
-def setTicker(object, num, value):
-    id_ = id(object)
-    tickers['%s.%d' % (id_, num)] = value
+def setTicker(name, num, value):
+    tickers['%s.%d' % (name, num)] = value
 
 class MailFolderTicking(MailFolder):
     """ provide a way to protect some synchronization
@@ -86,30 +84,31 @@ class MailFolderTicking(MailFolder):
         if the last tick is younger than 30 seconds,
         we are synchronizing
         """
-        getTickLocker(self).acquire()
+        getTickLocker(self.id).acquire()
         try:
-            LOG('isSynchronizing', INFO, '%d' % num)
-            ticker = getTicker(self, num)
-            return time.time() - ticker < _idle_time
+            ticker = getTicker(self.id, num)
+            if ticker == 0:
+                return False
+            else:
+                return time.time() - ticker < _idle_time
         finally:
-            getTickLocker(self).release()
+            getTickLocker(self.id).release()
 
     def synchroTick(self, num=0):
         """ ticking """
-        getTickLocker(self).acquire()
+        getTickLocker(self.id).acquire()
         try:
-            LOG('synchroTick', INFO, '%d' % num)
-            setTicker(self, num, time.time())
+            setTicker(self.id, num, time.time())
         finally:
-            getTickLocker(self).release()
+            getTickLocker(self.id).release()
 
     def clearSynchro(self, num=0):
         """ ticking """
-        getTickLocker(self).acquire()
+        getTickLocker(self.id).acquire()
         try:
-            setTicker(self, num, _idle_time + 1)
+            setTicker(self.id, num, 0)
         finally:
-            getTickLocker(self).release()
+            getTickLocker(self.id).release()
 
 class MailBoxBaseCaching(MailFolderTicking):
     """ a mailfolder that implements
@@ -221,34 +220,42 @@ class MailBox(MailBoxBaseCaching):
         self.search_available = True
         self._filters = ZMailFiltering()
         self._directory_picker = None
-        self._connection_params = PersistentMapping()
+        self._connection_params = SPersistentMapping()
+
+    def _setConnectionValue(self, key, value):
+        """ avoids zodb extra writes """
+        if self._connection_params.has_key(key):
+            if self._connection_params[key] != value:
+                self._connection_params[key] = value
+        else:
+            self._connection_params[key] = value
 
     def getConnectionParams(self, remove_security=True):
         """ retrieve connection params """
-        getLocker(self).acquire()
+        getLocker(self.id).acquire()
         try:
             portal_webmail = getToolByName(self, 'portal_webmail')
             defaults = portal_webmail.default_connection_params
             if self._connection_params == {}:
                 for key in defaults.keys():
-                    # -1 are notvisible from mailboxes
+                    # -1 are not visible from mailboxes
                     if defaults[key] != -1:
-                        self._connection_params[key] = defaults[key]
+                        self._setConnectionValue(key, defaults[key])
             else:
                 # updating
                 for key in defaults.keys():
                     value = defaults[key]
                     portalwide = value[1] == 1
                     if portalwide or not self._connection_params.has_key(key):
-                        self._connection_params[key] = value
+                        self._setConnectionValue(key, value)
                     elif not portalwide:
                         local_value = self._connection_params[key]
                         if local_value[1] == 1:
-                            self._connection_params[key] = (local_value[0], 0)
+                            self._setConnectionValue(key, (local_value[0], 0))
 
             if not self._connection_params.has_key('uid'):
                 uid = self.id.replace('box_', '')
-                self._connection_params['uid'] = (uid, 0)
+                self._setConnectionValue('uid', (uid, 0))
 
             params = {}
             if remove_security:
@@ -258,12 +265,9 @@ class MailBox(MailBoxBaseCaching):
                 for key in self._connection_params.keys():
                     params[key] = self._connection_params[key]
 
-            get_transaction().commit()
-            get_transaction().begin()
-
             return params
         finally:
-            getLocker(self).release()
+            getLocker(self.id).release()
 
     def getFilters(self):
         return self._filters
@@ -280,12 +284,12 @@ class MailBox(MailBoxBaseCaching):
 
     def setParameters(self, connection_params=None):
         """ sets the parameters """
-        getLocker(self).acquire()
+        getLocker(self.id).acquire()
         try:
             for key in connection_params.keys():
-                self._connection_params[key] = connection_params[key]
+                self._setConnectionValue(key, connection_params[key])
         finally:
-            getLocker(self).release()
+            getLocker(self.id).release()
 
     def synchronize(self, no_log=False, light=1):
         """ see interface """
@@ -336,6 +340,7 @@ class MailBox(MailBoxBaseCaching):
         # now indexing
         get_transaction().commit()
         get_transaction().begin()
+
         self.search_available = False
         i = 0
         y = 0
@@ -1303,21 +1308,19 @@ class MailBoxTraversable(FiveTraversable):
 import thread
 lockers = {}
 
-def getLocker(object):
-    id_ = id(object)
+def getLocker(name):
     global lockers
-    if id_ not in lockers:
-        lockers[id_] = thread.allocate_lock()
-    return lockers[id_]
+    if name not in lockers:
+        lockers[name] = thread.allocate_lock()
+    return lockers[name]
 
 tick_lockers = {}
 
-def getTickLocker(object):
-    id_ = id(object)
+def getTickLocker(name):
     global tick_lockers
-    if id_ not in tick_lockers:
-        tick_lockers[id_] = thread.allocate_lock()
-    return tick_lockers[id_]
+    if name not in tick_lockers:
+        tick_lockers[name] = thread.allocate_lock()
+    return tick_lockers[name]
 
 
 manage_addMailBoxForm = PageTemplateFile(

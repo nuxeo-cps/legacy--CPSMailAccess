@@ -46,11 +46,10 @@ from baseconnection import has_connection, ConnectionError
 folder_locker = {}
 
 def getFolderLocker(mailfolder):
-    id_ = id(mailfolder)
     global folder_locker
-    if id_ not in folder_locker:
-        folder_locker[id_] = thread.allocate_lock()
-    return folder_locker[id_]
+    if mailfolder not in folder_locker:
+        folder_locker[mailfolder] = thread.allocate_lock()
+    return folder_locker[mailfolder]
 
 
 class MailFolder(BTreeFolder2):
@@ -174,7 +173,7 @@ class MailFolder(BTreeFolder2):
         >>> f.getMailMessages()
         []
         """
-        getFolderLocker(self).acquire()
+        getFolderLocker(self.server_name).acquire()
         try:
             results = []
             if list_folder:
@@ -204,7 +203,7 @@ class MailFolder(BTreeFolder2):
 
             return results
         finally:
-            getFolderLocker(self).release()
+            getFolderLocker(self.server_name).release()
 
 
     def getMailMessagesCount(self, count_folder=True,
@@ -761,8 +760,6 @@ class MailFolder(BTreeFolder2):
                     # the synchronize commit will raise
                     # an error so lets pass this commit
                     pass
-
-
             LOG('_synchronizeFolder', DEBUG, 'done fetching')
             #end_time = time.time() - start_time
 
@@ -789,7 +786,6 @@ class MailFolder(BTreeFolder2):
                 # the synchronize commit will raise
                 # an error so lets pass this commit
                 pass
-
         LOG('_synchronizeFolder done for', DEBUG, self.id)
         if return_log:
             return log
