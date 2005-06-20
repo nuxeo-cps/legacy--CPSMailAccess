@@ -58,31 +58,58 @@ from directorypicker import DirectoryPicker
 from baseconnection import has_connection
 from mailfiltering import ZMailFiltering
 
+_idle_time = 30
+tickers = {}
+
+def getTicker(object, num):
+    id_ = id(object)
+    key = '%s.%d' % (id_, num)
+    if not tickers.has_key(key):
+        tickers[key] = _idle_time
+    return tickers[key]
+
+def setTicker(object, num, value):
+    id_ = id(object)
+    tickers['%s.%d' % (id_, num)] = value
 
 class MailFolderTicking(MailFolder):
-
-    _idle_time = 30
+    """ provide a way to protect some synchronization
+        to be launched twice.
+    """
 
     def __init__(self, uid, server_name, **kw):
         MailFolder.__init__(self, uid, server_name, **kw)
-        self._tick = PersistentMapping()
-        self._tick['time'] = self._idle_time + 1
 
-    def isSynchronizing(self):
+    def isSynchronizing(self, num=0):
         """ check if the mailbox is synchronizing
 
         if the last tick is younger than 30 seconds,
         we are synchronizing
         """
-        return time.time() - self._tick['time'] < self._idle_time
+        getTickLocker(self).acquire()
+        try:
+            LOG('isSynchronizing', INFO, '%d' % num)
+            ticker = getTicker(self, num)
+            return time.time() - ticker < _idle_time
+        finally:
+            getTickLocker(self).release()
 
-    def synchroTick(self):
+    def synchroTick(self, num=0):
         """ ticking """
-        self._tick['time'] = time.time()
+        getTickLocker(self).acquire()
+        try:
+            LOG('synchroTick', INFO, '%d' % num)
+            setTicker(self, num, time.time())
+        finally:
+            getTickLocker(self).release()
 
-    def clearSynchro(self):
+    def clearSynchro(self, num=0):
         """ ticking """
-        self._tick['time'] = self._idle_time + 1
+        getTickLocker(self).acquire()
+        try:
+            setTicker(self, num, _idle_time + 1)
+        finally:
+            getTickLocker(self).release()
 
 class MailBoxBaseCaching(MailFolderTicking):
     """ a mailfolder that implements
@@ -197,38 +224,46 @@ class MailBox(MailBoxBaseCaching):
         self._connection_params = PersistentMapping()
 
     def getConnectionParams(self, remove_security=True):
-        """ retrieve connexion params """
-        portal_webmail = getToolByName(self, 'portal_webmail')
-        defaults = portal_webmail.default_connection_params
-        if self._connection_params == {}:
-            for key in defaults.keys():
-                # -1 are notvisible from mailboxes
-                if defaults[key] != -1:
-                    self._connection_params[key] = defaults[key]
-        else:
-            # updating
-            for key in defaults.keys():
-                value = defaults[key]
-                portalwide = value[1] == 1
-                if portalwide or not self._connection_params.has_key(key):
-                    self._connection_params[key] = value
-                elif not portalwide:
-                    local_value = self._connection_params[key]
-                    if local_value[1] == 1:
-                        self._connection_params[key] = (local_value[0], 0)
+        """ retrieve connection params """
+        getLocker(self).acquire()
+        try:
+            portal_webmail = getToolByName(self, 'portal_webmail')
+            defaults = portal_webmail.default_connection_params
+            if self._connection_params == {}:
+                for key in defaults.keys():
+                    # -1 are notvisible from mailboxes
+                    if defaults[key] != -1:
+                        self._connection_params[key] = defaults[key]
+            else:
+                # updating
+                for key in defaults.keys():
+                    value = defaults[key]
+                    portalwide = value[1] == 1
+                    if portalwide or not self._connection_params.has_key(key):
+                        self._connection_params[key] = value
+                    elif not portalwide:
+                        local_value = self._connection_params[key]
+                        if local_value[1] == 1:
+                            self._connection_params[key] = (local_value[0], 0)
 
-        if not self._connection_params.has_key('uid'):
-            uid = self.id.replace('box_', '')
-            self._connection_params['uid'] = (uid, 0)
+            if not self._connection_params.has_key('uid'):
+                uid = self.id.replace('box_', '')
+                self._connection_params['uid'] = (uid, 0)
 
-        params = {}
-        if remove_security:
-            for key in self._connection_params.keys():
-                params[key] = self._connection_params[key][0]
-        else:
-            for key in self._connection_params.keys():
-                params[key] = self._connection_params[key]
-        return params
+            params = {}
+            if remove_security:
+                for key in self._connection_params.keys():
+                    params[key] = self._connection_params[key][0]
+            else:
+                for key in self._connection_params.keys():
+                    params[key] = self._connection_params[key]
+
+            get_transaction().commit()
+            get_transaction().begin()
+
+            return params
+        finally:
+            getLocker(self).release()
 
     def getFilters(self):
         return self._filters
@@ -245,21 +280,28 @@ class MailBox(MailBoxBaseCaching):
 
     def setParameters(self, connection_params=None):
         """ sets the parameters """
-        for key in connection_params.keys():
-            self._connection_params[key] = connection_params[key]
+        getLocker(self).acquire()
+        try:
+            for key in connection_params.keys():
+                self._connection_params[key] = connection_params[key]
+        finally:
+            getLocker(self).release()
 
     def synchronize(self, no_log=False, light=1):
         """ see interface """
         if not has_connection:
             return []
-        if self.isSynchronizing():
+        if self.isSynchronizing(1):
             return []
-        self.synchroTick()
+        self.synchroTick(1)
         start_time = time.time()
         indexStack = []
         # retrieving folder list from server
         LOG('synchronize', DEBUG, 'synchro started light = %s' % str(light))
-        connector = self._getconnector()
+
+        # the synchronization is done in a second connector
+        # thus leaving the first one available for other manipulations
+        connector = self._getconnector(1)
 
         if light == 1:
             server_directory = [{'Name': 'INBOX'}]
@@ -269,11 +311,11 @@ class MailBox(MailBoxBaseCaching):
         if no_log:
             returned = self._syncdirs(server_directories=server_directory,
                                       return_log=False, indexStack=indexStack,
-                                      light=light)
+                                      light=light, connection_number=1)
         else:
             log = self._syncdirs(server_directories=server_directory,
                                  return_log=True, indexStack=indexStack,
-                                 light=light)
+                                 light=light, connection_number=1)
 
             log.insert(0, 'synchronizing mailbox...')
             log.append('... done')
@@ -310,11 +352,11 @@ class MailBox(MailBoxBaseCaching):
         self.search_available = True
         endtime = time.time() - start_time
         LOG('synchro', DEBUG, 'total time : %s seconds' % endtime)
-        self.clearSynchro()
+        self.clearSynchro(1)
         return returned
 
     def _syncdirs(self, server_directories=[], return_log=False,
-                  indexStack=[], light=0):
+                  indexStack=[], light=0, connection_number=0):
         """ syncing dirs """
         log = []
         self.setSyncState(state=False, recursive=True)
@@ -396,10 +438,11 @@ class MailBox(MailBoxBaseCaching):
         for folder in folders:
             # let's synchronize messages now
             if return_log:
-                flog = folder._synchronizeFolder(True, indexStack)
+                flog = folder._synchronizeFolder(True, indexStack,
+                                                 connection_number)
                 log.extend(flog)
             else:
-                folder._synchronizeFolder(False, indexStack)
+                folder._synchronizeFolder(False, indexStack, connection_number)
             folder.setSyncState(state=False)
 
         # if there's still elements in mail_cache,
@@ -411,7 +454,7 @@ class MailBox(MailBoxBaseCaching):
         else:
             return []
 
-    def _getconnector(self):
+    def _getconnector(self, number=0):
         """get mail server connector
         """
         wm_tool = getToolByName(self, 'portal_webmail')
@@ -427,7 +470,7 @@ class MailBox(MailBoxBaseCaching):
         # wraps connection params with uid
         # and make translations
         connection_params = self.wrapConnectionParams(connection_params)
-        connector = wm_tool.getConnection(connection_params)
+        connector = wm_tool.getConnection(connection_params, number)
 
         if connector is None:
             raise ValueError(NO_CONNECTOR)
@@ -479,10 +522,7 @@ class MailBox(MailBoxBaseCaching):
             connector.setFlags(sent_folder.server_name, uid, {'Seen': 1})
 
             # on the zodb, by synchronizing INBOX.Sent folder
-            try:
-                sent_folder._synchronizeFolder(return_log=False)
-            finally:
-                self.clearSynchro()
+            sent_folder._synchronizeFolder(return_log=False)
 
             self.clearEditorMessage()
             return True, 'cpsma_notification_sent'
@@ -1147,8 +1187,8 @@ class MailBox(MailBoxBaseCaching):
         replies = [e.triple()[2] for e in list(res)]
 
         res = cat.make_query((msg_uri, u'thread', None))
-        thread = [e.triple()[2] for e in list(res)]
-        res = union(replies, thread)
+        thread_ = [e.triple()[2] for e in list(res)]
+        res = union(replies, thread_)
         bres = self.getBackReferences(message)
         return [element for element in res if element not in bres]
 
@@ -1209,13 +1249,13 @@ class MailBoxView(MailFolderView):
         LOG('synchro', DEBUG, 'start light:%s' % str(light))
         mailbox = self.context
 
-        if not mailbox.isSynchronizing():
+        if not mailbox.isSynchronizing(1):
             try:
                 mailbox.synchronize(no_log=True, light=light)
                 psm = 'cpsma_synchronized'
             except ConnectionError, e:
                 psm = str(e)
-                mailbox.clearSynchro()
+                mailbox.clearSynchro(1)
         else:
             psm = 'cps_already_synchronizing'
 
@@ -1259,6 +1299,26 @@ class MailBoxTraversable(FiveTraversable):
             return msg
         # let the regular traverser do the job
         return FiveTraversable.traverse(self, path, '')
+
+import thread
+lockers = {}
+
+def getLocker(object):
+    id_ = id(object)
+    global lockers
+    if id_ not in lockers:
+        lockers[id_] = thread.allocate_lock()
+    return lockers[id_]
+
+tick_lockers = {}
+
+def getTickLocker(object):
+    id_ = id(object)
+    global tick_lockers
+    if id_ not in tick_lockers:
+        tick_lockers[id_] = thread.allocate_lock()
+    return tick_lockers[id_]
+
 
 manage_addMailBoxForm = PageTemplateFile(
     "www/zmi_addmailbox", globals())

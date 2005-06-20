@@ -31,6 +31,7 @@ from zope.testing import doctest
 
 from Products.CPSMailAccess.interfaces import IMailBox, IMailFolder
 from Products.CPSMailAccess.mailbox import MailBox, MailFolderTicking
+import Products.CPSMailAccess.mailbox as mailbox
 from basetestcase import MailTestCase
 
 from Products.CPSMailAccess import mailbox
@@ -313,7 +314,7 @@ class MailBoxTestCase(MailTestCase):
     def test_ticking(self):
         folder = MailFolderTicking('ok', 'ok')
         self.assert_(not folder.isSynchronizing())
-        folder._idle_time = 1
+        mailbox._idle_time = 1
         folder.synchroTick()
         self.assert_(folder.isSynchronizing())
         time.sleep(2)
@@ -322,6 +323,19 @@ class MailBoxTestCase(MailTestCase):
         self.assert_(folder.isSynchronizing())
         folder.clearSynchro()
         self.assert_(not folder.isSynchronizing())
+
+    def test_ticking2(self):
+        folder = MailFolderTicking('ok', 'ok')
+        self.assert_(not folder.isSynchronizing(1))
+        mailbox._idle_time = 1
+        folder.synchroTick(1)
+        self.assert_(folder.isSynchronizing(1))
+        time.sleep(2)
+        self.assert_(not folder.isSynchronizing(1))
+        folder.synchroTick(1)
+        self.assert_(folder.isSynchronizing(1))
+        folder.clearSynchro(1)
+        self.assert_(not folder.isSynchronizing(1))
 
     def test_filterapis(self):
         mailbox = self._getMailBox()

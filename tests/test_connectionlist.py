@@ -148,6 +148,28 @@ class ConnectionListTestCase(ZopeTestCase):
             _print ('.')
             sleep(0.1)
 
+    def test_checkMultipleConnectionPerUser(self):
+        my_list = ConnectionList()
+        registerConnections(my_list)
+        connection_params = {'uid' : 'admin', 'connection_type' : 'DUMMY'}
+
+        # regular connector
+        one = my_list.getConnection(connection_params)
+
+        # second connector
+        two = my_list.getConnection(connection_params, 1)
+
+        one_test = my_list.getConnection(connection_params)
+        two_test = my_list.getConnection(connection_params, 1)
+
+        self.assertNotEquals(id(one), id(two))
+        self.assertEquals(id(one), id(one_test))
+        self.assertEquals(id(two), id(two_test))
+
+
+
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ConnectionListTestCase),

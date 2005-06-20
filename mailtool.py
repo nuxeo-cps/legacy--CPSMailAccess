@@ -142,14 +142,16 @@ class MailTool(Folder): # UniqueObject
         self._initialized = 0
         self._initializeConnectionList()
 
-    def getConnection(self, connection_params):
+    def getConnection(self, connection_params, connection_number=0):
         """ see IMailTool """
         try:
-            res = self.getConnectionList().getConnection(connection_params)
+            res = self.getConnectionList().getConnection(connection_params,
+                                                         connection_number)
             return res
         except ValueError:
             self.reloadPlugins()
-        return self.getConnectionList().getConnection(connection_params)
+        return self.getConnectionList().getConnection(connection_params,
+                                                       connection_number)
 
     def killConnection(self, uid, connection_type):
         """ kill someone connections """

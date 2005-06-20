@@ -20,6 +20,7 @@
 from zLOG import LOG, INFO
 from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
+from ZODB.POSException import ReadConflictError
 
 from interfaces import IMailMessage, IMailBox, IMailFolder
 from utils import getToolByName, makeId
@@ -75,7 +76,12 @@ class BaseMailMessageView(BrowserView):
     def createShortTitle(self, object):
         """Create a short title
         """
-        title = object.title
+        try:
+            title = object.title
+        except ReadConflictError:
+            # the folder is probably beeing synchronized
+            title = ''
+
         if title is None or title == '':
             return ''
         titles = title.split('.')

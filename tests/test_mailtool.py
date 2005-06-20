@@ -47,6 +47,24 @@ class MailToolTestCase(ZopeTestCase):
         ob.deleteMailBox('bill')
         self.assert_(not hasattr(ob, 'box_bill'))
 
+    def test_getConnection(self):
+        ob = MailTool()
+        connection_params = {'uid' : 'admin', 'connection_type' : 'DUMMY'}
+
+        # regular connector
+        one = ob.getConnection(connection_params)
+
+        # second connector
+        two = ob.getConnection(connection_params, 1)
+
+        one_test = ob.getConnection(connection_params)
+        two_test = ob.getConnection(connection_params, 1)
+
+        self.assertNotEquals(id(one), id(two))
+        self.assertEquals(id(one), id(one_test))
+        self.assertEquals(id(two), id(two_test))
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailToolTestCase),

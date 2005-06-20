@@ -49,6 +49,7 @@ class BaseConnection:
     connection_type = ''
     connection_params = {}
     connection_timeout = 10
+    connection_number = 0
 
     def __init__(self, connection_params = {}):
 

@@ -74,7 +74,7 @@ class ConnectionList(UserList):
         finally:
             self.lock.release()
 
-    def _getConnectionObject(self, connection_params):
+    def _getConnectionObject(self, connection_params, connection_number=0):
         """ _getConnectionObject """
         # XXXX no lock here beware of the deadlock
         connection_type = connection_params['connection_type']
@@ -85,11 +85,12 @@ class ConnectionList(UserList):
             if new_connection.getState() != 'AUTH':
                 new_connection.login(connection_params['login'],
                     connection_params['password'])
+            new_connection.connection_number = connection_number
             return new_connection
         else:
             raise ValueError("no connector for %s" % connection_type)
 
-    def getConnection(self, connection_params):
+    def getConnection(self, connection_params, connection_number=0):
         """ return connection object """
         result = None
         self.lock.acquire()
@@ -97,26 +98,29 @@ class ConnectionList(UserList):
             uid = connection_params['uid']
             connection_type = connection_params['connection_type']
             for connection in self:
-                if (connection.uid == uid) and \
-                    (connection.connection_type == connection_type):
+                if (connection.uid == uid and
+                    connection.connection_type == connection_type and
+                    connection.connection_number == connection_number):
                     result = connection
                     break
             if not result:
-                newob = self._getConnectionObject(connection_params)
+                newob = self._getConnectionObject(connection_params,
+                                                  connection_number)
                 result = newob
                 self.append(newob)
         finally:
             self.lock.release()
         return result
 
-    def killConnection(self, uid, connection_type):
+    def killConnection(self, uid, connection_type, connection_number=0):
         """ see interface
         """
         self.lock.acquire()
         try:
             for connection in self:
-                if (connection.uid == uid) and \
-                        (connection.connection_type == connection_type):
+                if (connection.uid == uid and
+                    connection.connection_type == connection_type and
+                    connection.connection_number == connection_number):
                     self.remove(connection)
                     connection.logout()
                     #connection.close()

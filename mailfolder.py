@@ -22,13 +22,14 @@
 
 A MailFolder contains mail messages and other mail folders.
 """
-import time
+import time, thread
 from zLOG import LOG, DEBUG, INFO
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
 from Globals import InitializeClass
 from Acquisition import aq_parent, aq_inner, aq_base
 from Products.Five import BrowserView
+from ZODB.POSException import ConflictError
 
 from zope.schema.fieldproperty import FieldProperty
 from zope.app import zapi
@@ -41,6 +42,16 @@ from interfaces import IMailFolder, IMailMessage, IMailBox
 from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder,\
                   AsyncCall, createDigestFromList
 from baseconnection import has_connection, ConnectionError
+
+folder_locker = {}
+
+def getFolderLocker(mailfolder):
+    id_ = id(mailfolder)
+    global folder_locker
+    if id_ not in folder_locker:
+        folder_locker[id_] = thread.allocate_lock()
+    return folder_locker[id_]
+
 
 class MailFolder(BTreeFolder2):
     """A container of mail messages and other mail folders.
@@ -163,33 +174,37 @@ class MailFolder(BTreeFolder2):
         >>> f.getMailMessages()
         []
         """
-        results = []
-        if list_folder:
-            # use btree slices
-            r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
-            r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
-            folders = list(r1) + list(r2)
-            results.extend(folders)
-
-        if list_messages:
-            # use btree slices
-            # catalogs starts with a '.z' and are neither msg nor folder
-            r = self.getValuesSlice('.', '.y')
-            results.extend(list(r))
-
-        if recursive:
-            if not list_folder:
+        getFolderLocker(self).acquire()
+        try:
+            results = []
+            if list_folder:
+                # use btree slices
                 r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
                 r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
                 folders = list(r1) + list(r2)
+                results.extend(folders)
 
-            for folder in folders:
-                subresults = folder.getMailMessages(list_folder,
-                                                    list_messages,
-                                                    recursive)
-                results.extend(subresults)
+            if list_messages:
+                # use btree slices
+                # catalogs starts with a '.z' and are neither msg nor folder
+                r = self.getValuesSlice('.', '.y')
+                results.extend(list(r))
 
-        return results
+            if recursive:
+                if not list_folder:
+                    r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
+                    r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
+                    folders = list(r1) + list(r2)
+
+                for folder in folders:
+                    subresults = folder.getMailMessages(list_folder,
+                                                        list_messages,
+                                                        recursive)
+                    results.extend(subresults)
+
+            return results
+        finally:
+            getFolderLocker(self).release()
 
 
     def getMailMessagesCount(self, count_folder=True,
@@ -595,15 +610,16 @@ class MailFolder(BTreeFolder2):
                     break
         return bloc
 
-    def _synchronizeFolder(self, return_log=False, indexStack=[]):
+    def _synchronizeFolder(self, return_log=False, indexStack=[],
+                           connection_number=0):
         """ See interfaces.IMailFolder """
         LOG('_synchronizeFolder', DEBUG, self.id)
         self._clearCache()
         sync_states = {}
         log = []
         mailbox = self.getMailBox()
-        mailbox.synchroTick()
-        connector = self._getconnector()
+        mailbox.synchroTick(connection_number)
+        connector = self._getconnector(connection_number)
         zodb_messages = self.getMailMessages(list_folder=False,
                                              list_messages=True,
                                              recursive=False)
@@ -649,7 +665,7 @@ class MailFolder(BTreeFolder2):
                 fetched = connector.fetch(self.server_name, uid_sequence,
                                           fetch_str)
                 mailfailed = False
-            except ConnectionError, e:
+            except ConnectionError:
                 fetched = []
                 mailfailed = True
             #end = time.time() - start
@@ -659,7 +675,7 @@ class MailFolder(BTreeFolder2):
                 fetched = {sub_bloc[0] : fetched}
 
             for uid in sub_bloc:
-                mailbox.synchroTick()
+                mailbox.synchroTick(connection_number)
                 if not fetched.has_key(uid):
                     LOG('_synchronizeFolder', DEBUG,
                                'failed to get message %s in %s' % \
@@ -734,8 +750,19 @@ class MailFolder(BTreeFolder2):
                     sync_id = '%s' % msg.digest
                     sync_states[sync_id] = True
 
-            get_transaction().commit()  # implicitly usable without import
-            get_transaction().begin()   # implicitly usable without import
+            # prevent from swapping and
+            # let the user see results as they are fetched
+            if connection_number > 0:
+                try:
+                    get_transaction().commit()
+                    get_transaction().begin()
+                except ConflictError:
+                    # if the user is changing box parameters
+                    # the synchronize commit will raise
+                    # an error so lets pass this commit
+                    pass
+
+
             LOG('_synchronizeFolder', DEBUG, 'done fetching')
             #end_time = time.time() - start_time
 
@@ -751,9 +778,17 @@ class MailFolder(BTreeFolder2):
                 self._deleteMessage(message.uid)
         LOG('_synchronizeFolder', DEBUG, 'done deleting messages')
 
-        # used to prevent swapping
-        get_transaction().commit()    # implicitly usable without import
-        get_transaction().begin()     # implicitly usable without import
+        # prevent from swapping and
+        # let the user see results as they are fetched
+        if connection_number > 0:
+            try:
+                get_transaction().commit()
+                get_transaction().begin()
+            except ConflictError:
+                # if the user is changing box parameters
+                # the synchronize commit will raise
+                # an error so lets pass this commit
+                pass
 
         LOG('_synchronizeFolder done for', DEBUG, self.id)
         if return_log:
@@ -770,7 +805,7 @@ class MailFolder(BTreeFolder2):
         """
         raise NotImplementedError
 
-    def _getconnector(self):
+    def _getconnector(self, number=0):
         """See interfaces.IMailFolder
         """
         current = self
@@ -778,7 +813,7 @@ class MailFolder(BTreeFolder2):
             current = aq_parent(current)
 
         if current is not None:
-            return current._getconnector()
+            return current._getconnector(number)
         else:
             raise MailContainerError('object is not contained in a mailbox')
 
