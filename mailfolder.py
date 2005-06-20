@@ -164,7 +164,7 @@ class MailFolder(BTreeFolder2):
         return folders + [self.getIdFromUid(uid) for uid in uids]
 
     def getMailMessages(self, list_folder=True, list_messages=True,
-                        recursive=False):
+                        recursive=False, depth=0):
         """See interfaces.IMailFolder
 
         >>> from mailbox import MailBox
@@ -173,7 +173,8 @@ class MailFolder(BTreeFolder2):
         >>> f.getMailMessages()
         []
         """
-        getFolderLocker(self.server_name).acquire()
+        if depth == 0:
+            getFolderLocker(self.server_name).acquire()
         try:
             results = []
             if list_folder:
@@ -198,12 +199,14 @@ class MailFolder(BTreeFolder2):
                 for folder in folders:
                     subresults = folder.getMailMessages(list_folder,
                                                         list_messages,
-                                                        recursive)
+                                                        recursive,
+                                                        depth+1)
                     results.extend(subresults)
 
             return results
         finally:
-            getFolderLocker(self.server_name).release()
+            if depth == 0:
+                getFolderLocker(self.server_name).release()
 
 
     def getMailMessagesCount(self, count_folder=True,
