@@ -736,9 +736,10 @@ class MailFolder(BTreeFolder2):
                             LOG('_synchronizeFolder', DEBUG,
                                 'moving message %s in %s' % (uid, self.server_name))
 
-                            log.append('moving message %s in %s' % \
-                                    (uid, self.server_name))
-                            self._setObject(msg.getId(), msg)
+                            if not hasattr(self, uid):
+                                log.append('moving message %s in %s' % \
+                                           (uid, self.server_name))
+                                self._setObject(msg.getId(), msg)
                         else:
                             LOG('_synchronizeFolder', DEBUG,
                                'failed to get message %s in %s' % \
