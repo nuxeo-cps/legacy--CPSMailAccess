@@ -657,9 +657,10 @@ class CPSMailAccessInstaller(CPSInstaller):
                 self.log('    old catalog, upgrading')
                 zcat._message_ids = OOBTree()
 
+            if not hasattr(box, '_connection_params'):
+                setattr(box, '_connection_params', {})
+
             for item in dp.keys():
-                if not hasattr(box, '_connection_params'):
-                    setattr(box, '_connection_params', {})
                 if not box._connection_params.has_key(item):
                     box._connection_params[item] = dp[item]
 
