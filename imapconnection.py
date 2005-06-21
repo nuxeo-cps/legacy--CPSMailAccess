@@ -106,7 +106,7 @@ class IMAPConnection(BaseConnection):
                 else:
                     self._connection = IMAP4(host, port)
                 connected = True
-            except (IMAP4.abort, socket.error):
+            except (IMAP4.abort, socket.error, socket.sslerror):
                 sleep(0.3)
                 failures += 1
 
@@ -426,7 +426,7 @@ class IMAPConnection(BaseConnection):
         self._selectMailBox(mailbox)
         try:
             imap_result =  self._connection.uid('search', charset, *criteria)
-        except self._connection.error, e:
+        except (self._connection.error, socket.error, socket.sslerror), e:
             raise ConnectionError(str(e))
 
         if imap_result[0] == 'NO':
