@@ -65,7 +65,7 @@ class MailActionsView(BaseMailMessageView):
                        'long_title' : 'cpsma_getmessages',
                        'id' : 'synchro',
                        'action' : root + \
-                       '/syncProgress.html?g_user=' + user_name}
+                       '/syncProgress.html?light=1'}
 
             return [[synchro, configure]]
 
@@ -270,7 +270,7 @@ class MailActionsView(BaseMailMessageView):
                    'title' : 'cpsma_getmessages',
                    'long_title' : 'cpsma_getmessages',
                    'id' : 'synchro',
-                   'action' : root + '/syncProgress.html?g_user=' + user_name}
+                   'action' : root + '/syncProgress.html?light=1'}
 
         search = {'icon' : base_url + '/cspma_mail_find.png',
                    'title' : 'cpsma_search_messages',

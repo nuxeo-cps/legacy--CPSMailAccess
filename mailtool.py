@@ -27,6 +27,7 @@ from ZODB.PersistentMapping import PersistentMapping
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Globals import InitializeClass
 from Products.Five import BrowserView
+from AccessControl import Unauthorized
 
 from zope.interface import implements
 
@@ -34,7 +35,7 @@ from interfaces import IMailTool
 from connectionlist import registerConnections, ConnectionList
 from smtpmailer import SmtpMailer
 from mailbox import manage_addMailBox
-from utils import makeId, getMemberById
+from utils import makeId, getMemberById, getToolByName
 
 lock = thread.allocate_lock()
 connector = ConnectionList()
@@ -202,8 +203,7 @@ class MailToolView(BrowserView):
             box = getattr(mailtool, mailbox_name)
             # always synchronize when we get in
             self.request.response.redirect(box.absolute_url()+\
-                                           '/syncProgress.html?g_user='+\
-                                           user_id)
+                                           '/syncProgress.html')
         else:
             box = mailtool.addMailBox(user_id)
             url = '%s/configure.html?first_time=1' % box.absolute_url()

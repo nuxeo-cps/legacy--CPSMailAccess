@@ -1286,6 +1286,59 @@ class MailBoxView(MailFolderView):
                                         'text/plain; charset=utf-8')
         return translate(mailbox, message)
 
+    def background_synchronisation(self, light=1):
+        """ background synchronisation """
+        mailbox = self.context
+        box_name = mailbox.id
+
+        req = self.request
+        res = True
+
+        portal_url = getToolByName(mailbox, 'portal_url')
+        asyncer = getToolByName(mailbox, 'asynchronous_call_manager', None)
+
+        # looking for zasync
+        if asyncer is not None:
+            # XXX need to get feedback in case of failures
+            bckgrd = True
+            root = portal_url.getPortalPath()
+            root = root.replace('/', '.')
+            if root[0] == '.':
+                root = root[1:]
+            asyncer.putCall('zope_exec', '/', {},
+                            'python:home.%s.portal_webmail.%s.synchronize(%s)' \
+                             % (root, box_name, str(light)), {})
+        else:
+            bckgrd = False
+
+            if not mailbox.isSynchronizing(1):
+                try:
+                    mailbox.synchronize(no_log=True, light=light)
+                    psm = 'cpsma_synchronized'
+                    res = True
+                except ConnectionError, e:
+                    psm = str(e)
+                    mailbox.clearSynchro(1)
+                    res = False
+            else:
+                psm = 'cps_already_synchronizing'
+
+        if req is not None:
+            root = portal_url()
+            if res:
+                if bckgrd:
+                    psm = 'cps_synchronizing'
+
+            if hasattr(mailbox, 'INBOX'):
+                page = '%s/portal_webmail/%s/INBOX' %(root, box_name)
+            else:
+                page = '%s/portal_webmail/%s' %(root, box_name)
+
+            if psm is not None:
+                req.response.redirect('%s/view?msm=%s'  % (page, psm))
+            else:
+                req.response.redirect('%s/view'  % page)
+
 class MailBoxTraversable(FiveTraversable):
     """ use to vizualize the mail parts in the mail editor
     >>> f = MailBoxTraversable(None)

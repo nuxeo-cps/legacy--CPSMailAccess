@@ -238,6 +238,14 @@
       permission="zope2.View"
       />
 
+   <browser:page
+      for=".interfaces.IMailBox"
+      class=".mailbox.MailBoxView"
+      name="background_synchronisation.html"
+      attribute="background_synchronisation"
+      permission="cpsmailaccess.ViewMailBox"
+      />
+
   <browser:page
       for=".interfaces.IMailTool"
       class=".mailparameterviews.MailToolParametersView"

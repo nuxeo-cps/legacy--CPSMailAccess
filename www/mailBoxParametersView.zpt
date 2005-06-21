@@ -110,9 +110,8 @@
       </tr>
       <tr>
         <td>
-          <form action="background_synchro">
+          <form action="syncProgress.html">
             <input type="hidden" name="light:int" value="0"/>
-            <input type="hidden" name="user" tal:attributes="value here/getUserName"/>
             <input type="submit" name="reindex"
                    class="standalone"
                    value="cpsma_resync_all"
