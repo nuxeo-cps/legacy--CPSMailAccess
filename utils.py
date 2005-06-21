@@ -297,7 +297,7 @@ class HTMLMailSanitizer(HTMLSanitizer):
         for the mail to render
         like it's intended
     """
-    tags_to_keep = ('a', 'b', 'i', 'strong', 'br', 'p', 'h1', 'h2', 'h3',
+    tags_to_keep = ('b', 'i', 'strong', 'br', 'p', 'h1', 'h2', 'h3',
                     'h4', 'h5', 'div', 'span', 'table', 'tr', 'th', 'td',
                     'font', 'style', 'img')
 

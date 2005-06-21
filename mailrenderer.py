@@ -153,6 +153,8 @@ class MailRenderer:
         html, body = self._extractBodies(part)
         if not html:
             body = HTMLize(body)
+        else:
+            body = body
 
         return shrinkHtml(body)
 
