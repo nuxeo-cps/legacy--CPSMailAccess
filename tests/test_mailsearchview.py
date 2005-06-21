@@ -209,7 +209,7 @@ class MailSearchViewTestCase(MailTestCase):
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = 'ccc*'
-        query['intersection'] = 'store is open'
+        query['intersection'] = 1
         query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
@@ -221,22 +221,34 @@ class MailSearchViewTestCase(MailTestCase):
         query['value_0'] = '*'
         query['relation_1'] = 'subject'        # relations keys are normalized (lower)
         query['value_1'] = 'test'
-        query['intersection'] = 'store is open'
+        query['intersection'] = 1
         query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
         self.assertEquals(len(results), 9)
 
         query = {}
-        query['intersection'] = 'store is open'
+        query['intersection'] = 1
         query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
         self.assertEquals(len(results), 0)
 
-    def test_bodySearch(self):
+    def test_HeaderSearch(self):
         searchview, cat, zcat, box = self._getView(False)
-        res = searchview._bodySearch('test')
-        self.assertEquals(res, [])
+
+        query = {}
+        query['relation_0'] = 'from'        # relations keys are normalized (lower)
+        query['value_0'] = u'Father'
+        query['lazy_search'] = 1
+        results = searchview.zemanticSearchMessages(**query)[0]
+        self.assertEquals(len(results), 1)
+
+        query = {}
+        query['relation_0'] = 'from'        # relations keys are normalized (lower)
+        query['value_0'] = u'"Father Time"'
+        query['lazy_search'] = 1
+        results = searchview.zemanticSearchMessages(**query)[0]
+        self.assertEquals(len(results), 1)
 
 def test_suite():
     return unittest.TestSuite((

@@ -190,7 +190,6 @@ class IOZODBTextIndexBackend(Persistent):
 
     def triples(self, (subject, predicate, object)):
         """A generator over all the triples matching """
-
         si = pi = oi = ois = Any
         if subject is not Any:
             si = self.reverse[subject]
@@ -198,14 +197,13 @@ class IOZODBTextIndexBackend(Persistent):
             pi = self.reverse[predicate]
         if object is not Any:
             if isinstance(object, Literal):
-                ois = self.texti.search_glob(object)
+                ois = self.texti.search_phrase(object)
                 if len(ois) == 0:
                     oi = self.reverse[object]
                     ois = Any
             else:
                 oi = self.reverse[object]
 
-        #import pdb; pdb.set_trace()
         if si!= Any: # subject is given
             spo = self.spo
             if spo.has_key(si):
