@@ -497,3 +497,6 @@ msgstr "Empty folder"
 
 msgid "cpsma_expunged"
 msgstr "Trash expunged."
+
+msgid "cps_already_synchronizing"
+msgstr "The box is already beeing synchronized"

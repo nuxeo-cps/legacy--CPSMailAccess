@@ -498,3 +498,5 @@ msgstr "Dossier vide"
 msgid "cpsma_expunged"
 msgstr "Corbeille vidée."
 
+msgid "cps_already_synchronizing"
+msgstr "La boîte est déjà en cours de synchronisation"
