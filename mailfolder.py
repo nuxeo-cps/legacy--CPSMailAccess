@@ -97,8 +97,17 @@ class MailFolder(BTreeFolder2):
     def getNextMessageUid(self):
         """ retrieves next id for messages """
         if has_connection == 1:
-            connector = self._getconnector()
-            return connector.getNextUid(self.server_name)
+            id_ = -1
+            while id_ == -1 or self.has_key(self.getIdFromUid(id_)):
+                connector = self._getconnector()
+                nid_ = connector.getNextUid(self.server_name)
+                if nid_ == str(id_):
+                    id_ = str(int(nid_)+1)
+                    while self.has_key(self.getIdFromUid(id_)):
+                        id_ = str(int(id_)+1)
+                else:
+                    id_ = nid_
+            return id_
         else:
             return self._localGetNextMessageUid()
 
