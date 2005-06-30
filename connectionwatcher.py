@@ -77,7 +77,8 @@ class ConnectionWatcher(Thread):
                     if connection.idle_time >= self.idle_time:
                         uid = connection.uid
                         type_ = connection.connection_type
-                        connection_list.killConnection(uid, type_)
+                        num = connection.connection_number
+                        connection_list.killConnection(uid, type_, num)
 
             sleep(self.sleep_time)
 
@@ -94,5 +95,5 @@ def cleanThreads():
             if hasattr(thread_instance, 'stop'):
                 thread_instance.stop()
 
-
 atexit.register(cleanThreads)
+
