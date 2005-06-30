@@ -658,6 +658,7 @@ class MailFolder(BTreeFolder2):
             uids = new_list
 
         # treating n by n
+        LOG('_synchronizeFolder', DEBUG, 'uids %s' % str(uids))
         bloc = self._createSubBlocs(uids, self.fetch_size)
 
         # XXX will be in properties later
@@ -667,17 +668,20 @@ class MailFolder(BTreeFolder2):
 
         fetch_str = '(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS(%s)])' \
                      % ' '.join(headers)
+
+        LOG('_synchronizeFolder', DEBUG, 'bloc %s' % str(bloc))
         for sub_bloc in bloc:
             uid_sequence = ','.join(sub_bloc)
             #start = time.time()
             # gets flags, size and headers
-            LOG('_synchronizeFolder', DEBUG, 'fetching %s' % str(uid_sequence))
+            LOG('_synchronizeFolder', DEBUG, 'fetching <%s>' % str(uid_sequence))
             try:
                 fetched = connector.fetch(self.server_name, uid_sequence,
                                           fetch_str)
                 mailfailed = False
-            except ConnectionError:
-                fetched = []
+            except ConnectionError, e:
+                fetched = {}
+                LOG('_synchronizeFolder', DEBUG, 'Connection error %s' % str(e))
                 mailfailed = True
             #end = time.time() - start
             # now syncing each message
