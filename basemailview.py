@@ -17,6 +17,7 @@
 # 02111-1307, USA.
 #
 # $Id$
+import time
 from zLOG import LOG, INFO
 from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
@@ -185,7 +186,28 @@ class BaseMailMessageView(BrowserView):
         short_title = self.createShortTitle(element)
         icon_name = self.getIconName(short_title, selected, root)
 
-        if element.childFoldersCount() == 0:
+        # gathering information on element.
+        # if the box is beeing synchronized, we'll have a ReadConflictError here
+        # let's try 5 times
+        read = False
+        count = 0
+        while not read and count < 5:
+            try:
+                folder_count = element.childFoldersCount()
+                url = element.absolute_url()
+                server_name = element.server_name
+                mail_folder = element.getMailFolder()
+                element_id = element.id
+                read = True
+            except ReadConflictError:
+                time.sleep(0.1)
+                count += 1
+
+        if not read:
+            # failed to read
+            return {}
+
+        if folder_count == 0:
             if index == 0 and length > 1:
                 front_icons = [{'icon': root + '/cma_center_empty.png',
                                 'clickable': False}]
@@ -224,23 +246,14 @@ class BaseMailMessageView(BrowserView):
 
         short_title_id = short_title.replace(' ', '.')
 
-        # todo : see for localhost problems here
-        # all this is done due to python interpreting problems
-        # (should be ok when Five is merged with support Z2 page templates)
-        url = element.absolute_url()
-
-        rename_url = 'rename?fullname=1&new_name=%s.%s' % (element.server_name,
+        rename_url = 'rename?fullname=1&new_name=%s.%s' % (server_name,
             selected_folder.simpleFolderName())
 
-        not_for_move = element.id == selected_folder.id or \
-            element.getMailFolder().id == selected_folder.id or  \
-            element.id in ('Trash', 'Sent', 'Drafts')
+        not_for_move = element_id == selected_folder.id or \
+            mail_folder.id == selected_folder.id or  \
+            element_id in ('Trash', 'Sent', 'Drafts')
 
         short_title_id = 'tree_' + short_title_id
-        if hasattr(element, 'server_name'):
-            server_name = element.server_name
-        else:
-            server_name = ''
 
         return {'object': element,
                 'level': level,
@@ -252,7 +265,7 @@ class BaseMailMessageView(BrowserView):
                 'icon_name': icon_name,
                 'count': length,
                 'index': index,
-                'server_name': element.server_name,
+                'server_name': server_name,
                 'rename_url': rename_url,
                 'short_title_id': short_title_id,
                 'not_for_move': not_for_move,
@@ -300,15 +313,16 @@ class BaseMailMessageView(BrowserView):
             element = self._createTreeViewElement(child, current, index,
                                                   length, level, parent_index,
                                                   parent_length, root)
-            if IMailFolder.providedBy(element['object']):
-                unreads = element['object'].getFlaggedMessageCount(['-seen'])
-            else:
-                unreads = 0
+            if element != {}:
+                if IMailFolder.providedBy(element['object']):
+                    unreads = element['object'].getFlaggedMessageCount(['-seen'])
+                else:
+                    unreads = 0
 
-            child_unreads, element['childs'] = childview._renderTreeView(current, level+1,
-                index, length, root, flags)
-            element['unreads'] =  unreads + child_unreads
-            treeview.append(element)
+                child_unreads, element['childs'] = childview._renderTreeView(current, level+1,
+                    index, length, root, flags)
+                element['unreads'] =  unreads + child_unreads
+                treeview.append(element)
             index += 1
 
         # sort the treeview

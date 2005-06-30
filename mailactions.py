@@ -17,6 +17,8 @@
 # 02111-1307, USA.
 #
 # $Id$
+from ZODB.POSException import ReadConflictError
+
 from Products.CPSMailAccess.interfaces import IMailBox, IMailMessage, \
     IMailFolder
 from Products.Five import BrowserView
@@ -44,6 +46,20 @@ class MailActionsView(BaseMailMessageView):
             return False
 
     def renderActions(self):
+        success = False
+        tries = 0
+        while tries < 5 and not success:
+            try:
+                res = self._renderActions()
+                success = True
+            except ReadConflictError:
+                tries += 1
+        if success:
+            return res
+        else:
+            return []
+
+    def _renderActions(self):
         """ XXX need to use the mapping menuItems in CMFOnFive instead
             XX need to implements zope 3 action providers
         """

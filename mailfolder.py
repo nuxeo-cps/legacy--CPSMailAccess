@@ -219,7 +219,7 @@ class MailFolder(BTreeFolder2):
 
 
     def getMailMessagesCount(self, count_folder=True,
-                             count_messages=True, recursive=False):
+                             count_messages=True, recursive=False, depth=0):
         """ See interfaces.IMailFolder
         >>> from mailbox import MailBox
         >>> mb = MailBox()
@@ -231,25 +231,32 @@ class MailFolder(BTreeFolder2):
         >>> f.getMailMessagesCount(False, True)
         0
         """
-        count = 0
+        if depth == 0:
+            getFolderLocker(self.server_name).acquire()
+        try:
+            count = 0
 
-        if recursive:
-            if count_folder:
+            if recursive:
+                if count_folder:
+                    count += self.folder_count
+                # use btree slices
+                r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
+                r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
+                folders = list(r1) + list(r2)
+                for folder in folders:
+                    subcount = folder.getMailMessagesCount(count_folder,
+                                                           count_messages,
+                                                           recursive,
+                                                           depth+1)
+                    count += subcount
+            elif count_folder:
                 count += self.folder_count
-            # use btree slices
-            r1 = self.getValuesSlice(' ', '-\xff') # '-' is before '.'
-            r2 = self.getValuesSlice('/', '\xff') # '/' is after '.'
-            folders = list(r1) + list(r2)
-            for folder in folders:
-                subcount = folder.getMailMessagesCount(count_folder,
-                                                       count_messages,
-                                                       recursive)
-                count += subcount
-        elif count_folder:
-            count += self.folder_count
-        if count_messages:
-            count += self.message_count
-        return count
+            if count_messages:
+                count += self.message_count
+            return count
+        finally:
+            if depth == 0:
+                getFolderLocker(self.server_name).release()
 
     def _loweritem(self, item):
         return item.lower()
