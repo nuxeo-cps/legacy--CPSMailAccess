@@ -636,7 +636,7 @@ class MailFolder(BTreeFolder2):
                                              recursive=False)
         # now syncing server_folder and current one
         for message in zodb_messages:
-            sync_states['%s' % (message.digest)] = False
+            sync_states['%s' % (message.uid)] = False
 
         try:
             uids = connector.search(self.server_name, None, 'ALL')
@@ -651,7 +651,7 @@ class MailFolder(BTreeFolder2):
             for part in uids:
                 msg = self.findMessageByUid(part)
                 if msg is not None:
-                    sync_id = '%s' % (msg.digest)
+                    sync_id = '%s' % (msg.uid)
                     sync_states[sync_id] = True
                 else:
                     new_list.append(part)
@@ -763,7 +763,7 @@ class MailFolder(BTreeFolder2):
                 #sync_states[sync_id] = True
                 if msg is not None:
                     self._checkFlags(msg, msg_flags)
-                    sync_id = '%s' % msg.digest
+                    sync_id = '%s' % msg.uid
                     sync_states[sync_id] = True
 
             # prevent from swapping and
@@ -784,11 +784,14 @@ class MailFolder(BTreeFolder2):
         # deleted from the directory
         # and put them in the cache
         LOG('_synchronizeFolder', DEBUG, 'deleting messages')
+        LOG('_synchronizeFolder', DEBUG, 'sync states %s' % str(sync_states))
         for message in zodb_messages:
-            if not sync_states['%s' % message.digest]:
-                digest = message.digest
-                mailbox.addMailToCache(message, digest)
+            if not sync_states['%s' % message.uid]:
+                uid = message.uid
+                mailbox.addMailToCache(message, uid)
                 # XXX need to remove for catalogs
+                LOG('_synchronizeFolder', DEBUG,
+                    'deleting message %s' % message.uid)
                 self._deleteMessage(message.uid)
         LOG('_synchronizeFolder', DEBUG, 'done deleting messages')
 
