@@ -462,6 +462,7 @@ class MailBox(MailBoxBaseCaching):
     def _getconnector(self, number=0):
         """get mail server connector
         """
+        LOG('connector', DEBUG, str(number))
         wm_tool = getToolByName(self, 'portal_webmail')
         if wm_tool is None:
             raise ValueError('portal_webmail is missing')
