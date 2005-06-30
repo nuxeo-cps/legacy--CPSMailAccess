@@ -735,6 +735,18 @@ class CachedIMAPConnection(IMAPConnection):
             self._addCache(key, value)
         return value
 
+    def _getLastSelect(self):
+        return self._getCache('SELECT')
+
+    def _setLastSelect(self, value):
+        self._addCache('SELECT', value)
+
+    def _selectMailBox(self, mailbox):
+        last = self._getLastSelect()
+        if last != mailbox:
+            IMAPConnection._selectMailBox(self, mailbox)
+            self._setLastSelect(mailbox)
+
 connection_type = 'IMAP'
 
 def makeMailObject(connection_params):

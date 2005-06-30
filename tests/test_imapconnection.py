@@ -28,7 +28,7 @@ if sys.modules.has_key('imaplib'):
     del sys.modules['imaplib']
 sys.modules['imaplib'] = fakeimaplib
 
-from Products.CPSMailAccess.imapconnection import IMAPConnection
+from Products.CPSMailAccess.imapconnection import makeMailObject, IMAPConnection
 from time import time,sleep
 from basetestcase import MailTestCase
 
@@ -49,7 +49,7 @@ class IMAPConnectionTestCase(MailTestCase):
         my_params['UserID'] = 'tarek'
         my_params['UserPassword'] = 'tarek'
         my_params['TYPE'] = 'IMAP'
-        myconnection = IMAPConnection(my_params)
+        myconnection = makeMailObject(my_params)
         return myconnection
 
     def test_Instance(self):
@@ -274,6 +274,14 @@ class IMAPConnectionTestCase(MailTestCase):
         ob = self.makeConnection()
 
         ob._patch_imap()
+
+    def test_selectMailBox(self):
+        ob = self.makeConnection()
+        self.assertEquals(ob._getLastSelect(), None)
+        ob._selectMailBox('FOO')
+        self.assertEquals(ob._getLastSelect(), 'FOO')
+        ob._selectMailBox('BAR')
+        self.assertEquals(ob._getLastSelect(), 'BAR')
 
 def test_suite():
     return unittest.TestSuite((
