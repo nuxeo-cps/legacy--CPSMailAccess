@@ -631,10 +631,15 @@ class CPSMailAccessInstaller(CPSInstaller):
         if not hasattr(wm, '__version__') or wm.__version__ !=  (1, 0, 0, 'b2'):
             wm.__version__ = (1, 0, 0, 'b2')
             params = wm.default_connection_params
+
+            # XXX need to generalize this mechanism
             if not params.has_key('maildir'):
-                params['maildir'] = ('/tmp/maildir', 0)
+                params['maildir'] = ('/tmp/maildir', 1)
             if not params.has_key('direct_smtp'):
-                params['direct_smtp'] = (1, 0)
+                params['direct_smtp'] = (1, 1)
+            if not params.has_key('addressbook'):
+                params['addressbook'] = ('addressbook', 1)
+
             from Products.CPSMailAccess.smtpmailer import SmtpMailer
             wm._maildeliverer = SmtpMailer('/tmp/maildir', 1)
 

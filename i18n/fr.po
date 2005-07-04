@@ -354,6 +354,9 @@ msgstr "Webmail activé"
 msgid "label_address_book"
 msgstr "Carnet d'adresse"
 
+msgid "addressbook"
+msgstr "Annuaire d'adresse"
+
 msgid "label_personal_addressbook"
 msgstr "Carnet d'adresse personel"
 

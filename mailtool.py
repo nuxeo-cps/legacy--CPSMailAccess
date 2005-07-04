@@ -110,7 +110,8 @@ class MailTool(Folder): # UniqueObject
                     ('Attachments, Icon, From, Date, Subject, Size', 1),
                     'signature' : ('', 0),
                     'maildir' : ('/tmp/maildir', 1),
-                    'direct_smtp' : (1, 1)
+                    'direct_smtp' : (1, 1),
+                    'addressbook' : ('addressbook', 1)
                    }
         for key in default:
             self.default_connection_params[key] = default[key]

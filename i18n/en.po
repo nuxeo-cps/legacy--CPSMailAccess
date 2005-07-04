@@ -357,6 +357,9 @@ msgstr "Address book"
 msgid "label_personal_addressbook"
 msgstr "Personnal address book"
 
+msgid "addressbook"
+msgstr "Addressbook directory"
+
 msgid "cpsma_back_to_folder"
 msgstr "Back to folder"
 
