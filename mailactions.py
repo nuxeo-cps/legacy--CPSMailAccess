@@ -246,13 +246,17 @@ class MailActionsView(BaseMailMessageView):
                              'id' : 'reply_all',
                              'action' : 'replyAll.html'}
 
+                actions.extend([reply, reply_all])
+
+
+            if current_folder.id != trash_name:
                 forward = {'icon' : base_url + '/cpsma_forward.png',
                            'title' : 'cpsma_forward',
                            'long_title' : 'cpsma_forward',
                            'id' : 'forward',
                            'action' : 'forward.html'}
 
-                actions.extend([reply, reply_all, forward])
+                actions.append(forward)
 
             if container.draft:
                 draft = {'icon' : base_url + '/cpsma_reload.png',
