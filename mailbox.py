@@ -904,7 +904,10 @@ class MailBox(MailBoxBaseCaching):
         sorting = []
 
         for item in entries:
-            key = item[1][field]
+            if item[1].has_key(field):
+                key = item[1][field]
+            else:
+                key = ''
             if isinstance(key, unicode):
                 key = key.encode('ISO8859-15')    # forcing str for sorting
             sorting.append((key, item))
@@ -926,12 +929,15 @@ class MailBox(MailBoxBaseCaching):
     # apis that deals with directory manipulations
     #
 
+    def getPublicAdressBookName(self):
+        return self.getConnectionParams()['addressbook']
+
     def searchDirectoryEntries(self, email):
         #
         kw = {'email' : email}
-        adressbook = self._searchEntries('addressbook',
-                                         ['fullname', 'email', 'id',
-                                          'mails_sent'], **kw)
+        addressbook_dir = self.getConnectionParams()['addressbook']
+        adressbook = self._searchEntries(addressbook_dir,
+                                         ['fullname', 'email', 'id'], **kw)
 
 
         try:
@@ -954,11 +960,21 @@ class MailBox(MailBoxBaseCaching):
         Entries are sorted with mails_sent field
         so the UI can show at first the buddies
         """
-        adressbook = self._searchEntries('addressbook',
-                                         ['fullname', 'email', 'id',
-                                          'mails_sent'])
+        addressbook_dir = self.getConnectionParams()['addressbook']
+        adressbook = self._searchEntries(addressbook_dir,
+                                         ['fullname', 'givenName', 'sn',
+                                          'email', 'id'],
+                                         **{'id': '*'})
         adressbook = self._sortDirectorySearchResult(adressbook, 'mails_sent',
                                                      max_entries)
+        # trying to compute fullname
+        for entry in adressbook:
+            if entry[1]['fullname'].strip() == '':
+                givenName = entry[1]['fullname']
+                sn = entry[1]['sn']
+                id = entry[1]['id']
+                entry[1]['fullname'] = ('%s %s' % (givenName, sn)).strip() or id
+
         try:
             private_adressbook = self._searchEntries('.addressbook',
                                                      ['fullname', 'email',

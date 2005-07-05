@@ -375,6 +375,10 @@ class MailBoxTestCase(MailTestCase):
         self.assertRaises(AttributeError, mailbox.sendNotification, 'xxxx', msg)
         self.assertRaises(AttributeError, mailbox.sendNotification, u'xééxxx', msg)
 
+    def test_getPublicAdressBookName(self):
+        mailbox = self._getMailBox()
+        self.assertEquals(mailbox.getPublicAdressBookName(), 'addressbook')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),

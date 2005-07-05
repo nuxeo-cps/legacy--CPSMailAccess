@@ -56,6 +56,10 @@ class DirectoryPicker(object):
 
 class DirectoryPickerView(BrowserView):
 
+    def getPublicAdressBookName(self):
+        """ returns the public adressbook name """
+        return self.context.getPublicAdressBookName()
+
     def getEntries(self):
         """ returns entries """
         entries = self.context.getMailDirectoryEntries()

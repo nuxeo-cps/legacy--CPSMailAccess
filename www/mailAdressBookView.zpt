@@ -13,7 +13,7 @@
   </metal:main>
 
   <metal:block metal:fill-slot="main"
-      tal:define="base_url here/getBaseUrl">
+      tal:define="base_url here/getBaseUrl; ad_book here/getPublicAdressBookName;">
 
     <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div class="spacer">
@@ -74,16 +74,15 @@
                 </a>
                 &#160;
                 <a tal:attributes="href
-                    python:base_url+'/cpsdirectory_entry_view?dirname=.addressbook&id='+id;
-                    title email;
-                    alt email">
+                    python:base_url+'/cpsdirectory_entry_view?dirname=%s&id=%s' %(ad_book, id);
+                    title email;alt email">
                 <span class="truncable" tal:content="msg_to"/>
                 </a>
             </tal:block>
           </div>
           <div style="margin-top:15px">
             <a tal:attributes="href
-                python:base_url+'/cpsdirectory_entry_search_form?dirname=addressbook'">
+                python:'%s/cpsdirectory_entry_search_form?dirname=%s' % (base_url, ad_book)">
             <span i18n:translate="">cpsma_all_entries</span>
             </a>
           </div>
