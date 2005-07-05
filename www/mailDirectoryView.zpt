@@ -133,7 +133,7 @@
       </span>
     <br/>
     <span style="font-size: 12">
-    <form action="selectRecipients.html" m3ethod="post"
+    <form action="selectRecipients.html" method="post"
             name="form" enctype="multipart/form-data">
         <input type="text" tal:attributes="value request/email|nothing" name="email"/>
 
