@@ -379,6 +379,12 @@ class MailBoxTestCase(MailTestCase):
         mailbox = self._getMailBox()
         self.assertEquals(mailbox.getPublicAdressBookName(), 'addressbook')
 
+    def test_indexMails(self):
+        mailbox = self._getMailBox()
+        # simple call
+        mailbox.indexMails([])
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),

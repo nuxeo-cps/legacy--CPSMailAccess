@@ -78,6 +78,9 @@ class MailFolderTicking(MailFolder):
     def __init__(self, uid, server_name, **kw):
         MailFolder.__init__(self, uid, server_name, **kw)
 
+    #
+    # synchro beat
+    #
     def isSynchronizing(self, num=0):
         """ check if the mailbox is synchronizing
 
@@ -109,6 +112,41 @@ class MailFolderTicking(MailFolder):
             setTicker(self.id, num, 0)
         finally:
             getTickLocker(self.id).release()
+
+    #
+    # index beat
+    #
+    def isIndexing(self, num=0):
+        """ check if the mailbox is beeing indexed
+
+        if the last tick is younger than 30 seconds,
+        we are indexing
+        """
+        getTickLocker(self.id+'_index').acquire()
+        try:
+            ticker = getTicker(self.id, num)
+            if ticker == 0:
+                return False
+            else:
+                return time.time() - ticker < _idle_time
+        finally:
+            getTickLocker(self.id+'_index').release()
+
+    def indexTick(self, num=0):
+        """ ticking """
+        getTickLocker(self.id+'_index').acquire()
+        try:
+            setTicker(self.id, num, time.time())
+        finally:
+            getTickLocker(self.id).release()
+
+    def clearIndexLocker(self, num=0):
+        """ ticking """
+        getTickLocker(self.id+'_index').acquire()
+        try:
+            setTicker(self.id+'_index', num, 0)
+        finally:
+            getTickLocker(self.id+'_index').release()
 
 class MailBoxBaseCaching(MailFolderTicking):
     """ a mailfolder that implements
@@ -340,25 +378,48 @@ class MailBox(MailBoxBaseCaching):
         # now indexing
         get_transaction().commit()
         get_transaction().begin()
-
-        self.search_available = False
-        i = 0
-        y = 0
-        len_ = len(indexStack)
-        for item in indexStack:
-            LOG('synchro', DEBUG, 'indexing %d/%d' %(y, len_))
-            self.indexMessage(item)
-            if i == 299:
-                get_transaction().commit(1)     # used to prevent swapping
-                i = 0
-            else:
-                i += 1
-            y += 1
-        self.search_available = True
+        self.indexMails(indexStack, background=False)
         endtime = time.time() - start_time
         LOG('synchro', DEBUG, 'total time : %s seconds' % endtime)
         self.clearSynchro(1)
         return returned
+
+    def indexMails(self, index_stack, background=False):
+        """ indexes mails """
+        if self.isIndexing(1):
+            return None
+        # if backgrounded, tries to put a call
+        if background:
+            portal_url = getToolByName(mailbox, 'portal_url')
+            asyncer = getToolByName(mailbox, 'asynchronous_call_manager', None)
+            if asyncer is not None:
+                root = portal_url.getPortalPath()
+                root = root.replace('/', '.')
+                if root[0] == '.':
+                    root = root[1:]
+                asyncer.putCall('zope_exec', '/', {},
+                                'python:home.%s.portal_webmail.%s.indexMails(%s)' \
+                                % (root, box_name, index_stack), {})
+            else:
+                self.indexMails(index_stack)
+
+        # indexation
+        try:
+            i = 0
+            y = 0
+            len_ = len(index_stack)
+            for item in index_stack:
+                LOG('synchro', DEBUG, 'indexing %d/%d' %(y, len_))
+                self.indexMessage(item)
+                if i == 299:
+                    get_transaction().commit(1)     # used to prevent swapping
+                    i = 0
+                else:
+                    i += 1
+                y += 1
+                self.indexTick(1)
+        finally:
+            self.clearIndexLocker(1)
 
     def _syncdirs(self, server_directories=[], return_log=False,
                   indexStack=[], light=0, connection_number=0):
@@ -502,6 +563,8 @@ class MailBox(MailBoxBaseCaching):
         portal_webmail = getToolByName(self, 'portal_webmail')
         maildeliverer = portal_webmail.getMailDeliverer()
         msg_subject = msg.getHeader('Subject')[0]
+        if isinstance(msg_subject, unicode):
+            msg_subject = msg_subject.encode('ISO-8859-15')
         msg_body  = _notification_template
         msg_body = msg_body.replace('_ORIGINAL_MAIL_SUBJECT_', msg_subject)
         msg_notif = MailMessage()
@@ -745,30 +808,15 @@ class MailBox(MailBoxBaseCaching):
         zemantic_cat = self._getZemanticCatalog()
         zemantic_cat.clear()
 
-    def reindexMailCatalog(self):
+    def reindexMailCatalog(self, background=False):
         """ reindex the catalog """
         zemantic_cat = self._getZemanticCatalog()
         zemantic_cat.clear()
 
         mails = self.getMailMessages(list_folder=False, list_messages=True,
                                      recursive=True)
-        len_ = len(mails)
-        i = 0
-        y = 0
 
-        start_time = time.time()
-        for mail in mails:
-            #cat.indexMessage(mail)
-            LOG('synchro', DEBUG, 'indexing %d/%d' %(i, len_))
-            zemantic_cat.indexMessage(mail)
-            if y == 299:
-                get_transaction().commit(1)     # used to prevent swapping
-                y = 0
-            else:
-                y += 1
-            i += 1
-        endtime = time.time() - start_time
-        LOG('synchro', DEBUG, 'total time : %s seconds' % endtime)
+        self.indexMails(mails, background=background)
 
     def indexMessage(self, msg, index_relations=True):
         """ indexes message """
@@ -872,9 +920,9 @@ class MailBox(MailBoxBaseCaching):
         #return self._getDirectoryPicker().searchEntries(directory_name,
         #    return_fields, **kw)
         results = dir_.searchEntries(return_fields, **kw)
-	if results == [] and kw == {'id': '*'}:
-	    results = dir_.searchEntries(return_fields)
-	return results    
+        if results == [] and kw == {'id': '*'}:
+            results = dir_.searchEntries(return_fields)
+        return results
 
     def _createEntry(self, directory_name, entry):
         """ search for entries """
