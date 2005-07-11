@@ -122,7 +122,8 @@ class MailFolderTicking(MailFolder):
         if the last tick is younger than 30 seconds,
         we are indexing
         """
-        getTickLocker(self.id+'_index').acquire()
+        lock_id = self.id + '_index'
+        getTickLocker(lock_id).acquire()
         try:
             ticker = getTicker(self.id, num)
             if ticker == 0:
@@ -130,23 +131,25 @@ class MailFolderTicking(MailFolder):
             else:
                 return time.time() - ticker < _idle_time
         finally:
-            getTickLocker(self.id+'_index').release()
+            getTickLocker(lock_id).release()
 
     def indexTick(self, num=0):
         """ ticking """
-        getTickLocker(self.id+'_index').acquire()
+        lock_id = self.id + '_index'
+        getTickLocker(lock_id).acquire()
         try:
-            setTicker(self.id, num, time.time())
+            setTicker(lock_id, num, time.time())
         finally:
-            getTickLocker(self.id).release()
+            getTickLocker(lock_id).release()
 
     def clearIndexLocker(self, num=0):
         """ ticking """
-        getTickLocker(self.id+'_index').acquire()
+        lock_id = self.id + '_index'
+        getTickLocker(lock_id).acquire()
         try:
-            setTicker(self.id+'_index', num, 0)
+            setTicker(lock_id, num, 0)
         finally:
-            getTickLocker(self.id+'_index').release()
+            getTickLocker(lock_id).release()
 
 class MailBoxBaseCaching(MailFolderTicking):
     """ a mailfolder that implements
