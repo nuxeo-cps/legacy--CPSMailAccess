@@ -398,16 +398,18 @@ class MailBox(MailBoxBaseCaching):
         """ indexes mails """
         if self.isIndexing(1):
             return None
+
         # if backgrounded, tries to put a call
         if background:
             if can_async:
+                portal_url = getToolByName(self, 'portal_url')
                 root = portal_url.getPortalPath()
                 root = root.replace('/', '.')
                 if root[0] == '.':
                     root = root[1:]
                 asyncedCall(self,
                  'python:home.%s.portal_webmail.%s.indexMails(%s)' \
-                                  % (root, box_name, index_stack))
+                                  % (root, self.id, index_stack))
             else:
                 self.indexMails(index_stack)
 
