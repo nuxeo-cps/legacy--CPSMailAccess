@@ -194,7 +194,9 @@ class MailBoxParametersView(MailParametersView):
     def reindexMailCatalog(self):
         """ calls the catalog indexation """
         box = self.context
-        box.reindexMailCatalog()
+
+        # background reindexing
+        box.reindexMailCatalog(background=True)
 
         if self.request is not None:
             psm = 'All mails are indexed'
