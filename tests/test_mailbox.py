@@ -381,9 +381,9 @@ class MailBoxTestCase(MailTestCase):
 
     def test_indexMails(self):
         mailbox = self._getMailBox()
-        # simple call
+        # simple calls
         mailbox.indexMails([])
-
+        mailbox.indexMails([], background=True)
 
 def test_suite():
     return unittest.TestSuite((

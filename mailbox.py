@@ -393,8 +393,8 @@ class MailBox(MailBoxBaseCaching):
             return None
         # if backgrounded, tries to put a call
         if background:
-            portal_url = getToolByName(mailbox, 'portal_url')
-            asyncer = getToolByName(mailbox, 'asynchronous_call_manager', None)
+            portal_url = getToolByName(self, 'portal_url')
+            asyncer = getToolByName(self, 'asynchronous_call_manager', None)
             if asyncer is not None:
                 root = portal_url.getPortalPath()
                 root = root.replace('/', '.')
