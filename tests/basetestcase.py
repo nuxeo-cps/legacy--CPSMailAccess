@@ -60,6 +60,7 @@ class MailMessageT(MailMessage):
         return str(id(self))
 
 installProduct('Five')
+installProduct('zasyncdispatcher')
 #installProduct('TextIndexNG2')
 
 class FakeDirectory:

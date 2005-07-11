@@ -10,10 +10,11 @@ A - INSTALLATION NOTES
 
 1 - Prerequisites
 2 - rdflib installation
-3 - Zope X3 installation
-4 - Products setup
-5 - Zope 3 <-> Zope 2 path setup
-6 - Webmail installation
+3 - zasyncdispatcher installation
+4 - Zope X3 installation
+5 - Products setup
+6 - Zope 3 <-> Zope 2 path setup
+7 - Webmail installation
 
 ----------
 
@@ -28,6 +29,7 @@ To install CPSMailAccess you will need:
   http://www.dieter.handshake.de/pyprojects/zope/#TrustedExecutables
 - TextIndexNG2 2.2.0 or greater : http://www.zope.org/Members/ajung/TextIndexNG/
 - rdflib 2.0.6 : http://rdflib.net/
+- zasyncdispatcher (optional) http://svn.nuxeo.org/trac/pub/browser/zasyncdispatcher/
 
 2 - rdflib installation
 
@@ -36,7 +38,17 @@ Zope 2.7 actually use with the usual command::
 
   $ python setup.py install
 
-3 - Zope X3 installation
+3 - zasyncdispatcher installation
+
+If you want to do background synchronisation (ie for big intranets setup)
+ CPSMailAccess is compatible with zasyncdispatcher, a small zope product
+  on the top of zasync.
+
+get it on nuxeo svn:
+
+    svn co http://svn.nuxeo.org/pub/zasyncdispatcher/trunk zasyncdispatcher
+
+4 - Zope X3 installation
 
 Please install ZopeX3-3.0.0 on your system (usually in /opt/ZopeX3-3.0.0) with
 the python version you use for Zope2.7 and CPS, e.g.::
@@ -185,9 +197,6 @@ this step.
 
 Another good idea would be to clean up the box before synchronizing it.
 
-The beta 2 version of the product will provide an asynchronous system based on
-zasync to be able to synchronize in the background.
-
 In the Administration panel, click on the "Synchronize the whole box" button.
 This will launch the work. When the box is synchronized, you will be taken in
 your INBOX and will be able to start to use the webmail.
@@ -220,3 +229,8 @@ Trying to work on those "pre-deleted" messages can lead to errors.
 
 Attached files gets scanned when you are viewing the mail, so the attach icon
 won't appear until the mail is viewed.
+
+3 - Using zasyncdispatcher
+
+CPSMailAccess can be used with zasyncdispatcher: if it founds it,
+synchronizations will be sent to background.

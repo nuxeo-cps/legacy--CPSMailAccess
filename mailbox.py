@@ -58,6 +58,13 @@ from directorypicker import DirectoryPicker
 from baseconnection import has_connection
 from mailfiltering import ZMailFiltering
 
+try:
+    from Products.zasyncdispatcher import asyncedCall
+    can_async = True
+except ImportError:
+    can_async = False
+
+
 _idle_time = 30
 tickers = {}
 
@@ -393,16 +400,14 @@ class MailBox(MailBoxBaseCaching):
             return None
         # if backgrounded, tries to put a call
         if background:
-            portal_url = getToolByName(self, 'portal_url')
-            asyncer = getToolByName(self, 'asynchronous_call_manager', None)
-            if asyncer is not None:
+            if can_async:
                 root = portal_url.getPortalPath()
                 root = root.replace('/', '.')
                 if root[0] == '.':
                     root = root[1:]
-                asyncer.putCall('zope_exec', '/', {},
-                                'python:home.%s.portal_webmail.%s.indexMails(%s)' \
-                                % (root, box_name, index_stack), {})
+                asyncedCall(self,
+                 'python:home.%s.portal_webmail.%s.indexMails(%s)' \
+                                  % (root, box_name, index_stack))
             else:
                 self.indexMails(index_stack)
 
@@ -1365,20 +1370,18 @@ class MailBoxView(MailFolderView):
         req = self.request
         res = True
 
-        portal_url = getToolByName(mailbox, 'portal_url')
-        asyncer = getToolByName(mailbox, 'asynchronous_call_manager', None)
-
+        portal_url = getToolByName(self, 'portal_url')
         # looking for zasync
-        if asyncer is not None:
+        if can_async:
             # XXX need to get feedback in case of failures
             bckgrd = True
             root = portal_url.getPortalPath()
             root = root.replace('/', '.')
             if root[0] == '.':
                 root = root[1:]
-            asyncer.putCall('zope_exec', '/', {},
-                            'python:home.%s.portal_webmail.%s.synchronize(%s)' \
-                             % (root, box_name, str(light)), {})
+                asyncedCall(self,
+                        'python:home.%s.portal_webmail.%s.synchronize(light=%s)' \
+                          % (root, box_name, str(light)))
         else:
             bckgrd = False
 
