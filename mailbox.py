@@ -558,7 +558,7 @@ class MailBox(MailBoxBaseCaching):
         _notification_subject = translate(self, 'cpsm_notify_subject')
         _notification_subject = _notification_subject.encode('ISO-8859-15')
         _notification_template = translate(self, 'cpsm_notify_body')
-        _notification_subject = _notification_subject.encode('ISO-8859-15')
+        _notification_template = _notification_template.encode('ISO-8859-15')
 
         portal_webmail = getToolByName(self, 'portal_webmail')
         maildeliverer = portal_webmail.getMailDeliverer()
