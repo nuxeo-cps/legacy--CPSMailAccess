@@ -116,7 +116,7 @@ class FakePortal(Folder):
     portal_webmail.default_connection_params['smtp_host'] = ('localhost',0)
     portal_webmail.default_connection_params['smtp_port'] = (25,0)
     portal_webmail.default_connection_params['email_adress'] = ('tz@nuxeo.com',0)
-    portal_webmail.default_connection_params['max_folder_depth'] = (0,0)
+    portal_webmail.default_connection_params['max_folder_depth'] = (2, 0)
     portal_webmail.default_connection_params['treeview_style'] = ('lotus',0)
     portal_webmail.default_connection_params['message_list_cols'] = (('From', 'Date',
                                                             'Subject', 'Size'),0)

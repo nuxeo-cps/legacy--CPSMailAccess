@@ -163,7 +163,7 @@ class MailFolder(BTreeFolder2):
         # getting folders
         server_directory = connector.list()
         folders = []
-        depth = len(server_name.split('.'))
+        depth = self.depth()
         for directory in server_directory:
             dir_split = directory['Name'].split('.')
             dir_depth = len(dir_split)
@@ -861,6 +861,14 @@ class MailFolder(BTreeFolder2):
             newmailbox = '.'.join(splitted)
         else:
             newmailbox = new_name
+
+        # check that the new name is not deeper than the autorized depth
+        mailbox = self.getMailBox()
+        max_depth = mailbox.getConnectionParams()['max_folder_depth']
+        if max_depth > 0:
+            if len(newmailbox.split('.')) > max_depth:
+                # not allowed
+                return False
 
         if has_connection:
             connector = self._getconnector()

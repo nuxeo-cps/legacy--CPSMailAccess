@@ -250,6 +250,14 @@ class MailFolderTestCase(MailTestCase):
         self.assert_(hasattr(mailbox, 'Done'))
         self.assert_(not hasattr(mailbox, 'Todos'))
 
+    def test_renaming2(self):
+        # controls the depth
+        mailbox = self._getMailBox()
+        Todos = mailbox._addFolder('Todos', 'Todos')
+        self.assertEquals(Todos.server_name, 'Todos')
+        res = Todos.rename('INBOX.Foo.Bar')
+        self.assert_(not res)
+
     def test_simpleFolderName(self):
         mailbox = self._getMailBox()
         ob = MailFolder('Todos')
