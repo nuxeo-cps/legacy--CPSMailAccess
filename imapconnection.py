@@ -572,12 +572,11 @@ class IMAPConnection(BaseConnection):
                 subpart = self._parseIMAPMessage(submessage[1:-1])
                 #
                 # removes submessage
-                message = message.replace(submessage,'')
+                message = message.replace(submessage, '')
 
                 subparts.append(subpart)
 
-
-        message_parts = message.split()
+        message_parts = self._quoteSplitting(message)
         message_parts = map(self._cleanpart, message_parts)
 
         # todo: inserted at the end, should be inserted on the right place
@@ -585,6 +584,33 @@ class IMAPConnection(BaseConnection):
             for subpart in subparts:
                 message_parts.append(subpart)
         return message_parts
+
+    def _quoteSplitting(self, element):
+        """ will split from quote to quote
+
+        without braking quotes, XXX see if regexpr is not simpler
+        """
+        split_points = []
+        index = 0
+        inquote = False
+        while index < len(element):
+            if element[index] == '"':
+                inquote = not inquote
+            elif element[index] == ' ' and not inquote:
+                split_points.append(index)
+            index += 1
+
+        split_points.append(len(element))
+        # now splitting
+        splitted = []
+        current = 0
+        for split_point in split_points:
+            value = element[current:split_point]
+            if value.strip() != '':
+                splitted.append(value)
+            current = split_point + 1
+
+        return splitted
 
     def _cleanpart(self, element):
         """ cleans a word """

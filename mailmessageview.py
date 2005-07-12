@@ -380,8 +380,8 @@ class MailMessageView(BaseMailMessageView):
             file['url'] = '%s/viewFile.html?filename=%s' \
                            % (prefix, str(file['filename']))
             file['icon'] =  mimetype_to_icon_name(file['mimetype'])
-            file['fulltitle'] = file['filename']
-            file['title'] = file['filename']
+            file['fulltitle'] = decodeHeader(file['filename'])
+            file['title'] = decodeHeader(file['filename'])
             file['delete_url'] = ('deleteAttachement.html?filename=' +
                                   file['filename'])
             list_files.append(file)

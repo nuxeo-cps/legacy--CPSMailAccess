@@ -283,6 +283,14 @@ class IMAPConnectionTestCase(MailTestCase):
         ob._selectMailBox('BAR')
         self.assertEquals(ob._getLastSelect(), 'BAR')
 
+    def test_parseImapMessage2(self):
+        # testing file names with spaces and quotes
+        box = self._getMailBox()
+        ob = self.makeConnection()
+        parse = 'BODY (("text" "plain" ("charset" "iso-8859-15") NIL NIL "7bit" 206 7)("unknown" "" ("name" "piece =?x-unknown?Q?attach=E9e.txt?=") NIL NIL "base64"12) "mixed")'
+        res = ob._parseIMAPMessage(parse)
+        self.assertEquals(res, ['body', ['mixed', ['text', 'plain', None, None, '7bit', 206, 7, ['charset', 'iso-8859-15']], ['unknown', '', None, None, '"base64"12', ['name', 'piece =?x-unknown?q?attach=e9e.txt?=']]]])
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(IMAPConnectionTestCase),
