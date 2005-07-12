@@ -535,7 +535,7 @@ class IMAPConnection(BaseConnection):
     def deleteMailBox(self, mailbox):
         """ delete mailbox """
         self._respawn()
-        self._connection.delete(mailbox)
+        return self._connection.delete(mailbox)
 
     def _parseIMAPMessage(self, message):
         """ parses an imap message """

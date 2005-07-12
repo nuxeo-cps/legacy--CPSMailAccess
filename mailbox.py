@@ -765,6 +765,10 @@ class MailBox(MailBoxBaseCaching):
         # delete folder from server at last
         connector = self._getconnector()
 
+        # set selection on trash, to avoid
+        # the cursor to be on folder to be deleted
+        connector.select(trash.server_name)
+
         # sorting, deepest first
         sorter = []
         for folder in folders:
@@ -774,8 +778,8 @@ class MailBox(MailBoxBaseCaching):
 
         sorter.sort()
         sorter.reverse()
-
         for folder in sorter:
+            # XXX should read result here
             connector.deleteMailBox(folder[1])
 
         # low-level deletion
