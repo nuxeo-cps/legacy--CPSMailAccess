@@ -1,0 +1,127 @@
+Subject:
+[Paris-checkins] SVN: paris/jsr170/level More header housekeeping.
+From:
+Tres Seaver <tseaver@palladion.com>
+Date:
+Mon, 11 Jul 2005 14:08:29 -0400 (EDT)
+To:
+paris-checkins@zope.org
+Cc:
+Log message for revision 516:
+  More header housekeeping.
+
+Changed:
+  U   paris/jsr170/level1/__init__.py
+  U   paris/jsr170/level1/credentials.py
+  U   paris/jsr170/level1/exceptions.py
+  U   paris/jsr170/level2/__init__.py
+  U   paris/jsr170/level2/exceptions.py
+  U   paris/jsr170/level2/item.py
+  U   paris/jsr170/level2/namespace_registry.py
+  U   paris/jsr170/level2/node.py
+  U   paris/jsr170/level2/property.py
+
+-=-
+Modified: paris/jsr170/level1/__init__.py
+===================================================================
+--- paris/jsr170/level1/__init__.py     2005-07-11 18:00:47 UTC (rev 515)
++++ paris/jsr170/level1/__init__.py     2005-07-11 18:08:28 UTC (rev 516)
+@@ -1,4 +1,4 @@
+-""" JSR-170 API content repository interfaces, Level 1.
++""" JSR-170 content repository interfaces, Level 1.
+
+ $Id$
+ """
+
+Modified: paris/jsr170/level1/credentials.py
+===================================================================
+--- paris/jsr170/level1/credentials.py  2005-07-11 18:00:47 UTC (rev 515)
++++ paris/jsr170/level1/credentials.py  2005-07-11 18:08:28 UTC (rev 516)
+@@ -1,4 +1,4 @@
+-""" JSR-170 API Credentials interface, Level 1.
++""" JSR-170 Credentials interface, Level 1.
+ """
+ from zope.interface import Interface
+
+
+Modified: paris/jsr170/level1/exceptions.py
+===================================================================
+--- paris/jsr170/level1/exceptions.py   2005-07-11 18:00:47 UTC (rev 515)
++++ paris/jsr170/level1/exceptions.py   2005-07-11 18:08:28 UTC (rev 516)
+@@ -1,4 +1,4 @@
+-""" JSR-170 API content repository exceptions, Level 1.
++""" JSR-170 content repository exceptions, Level 1.
+ """
+
+ class JSR170Exception(Exception):
+
+Modified: paris/jsr170/level2/__init__.py
+===================================================================
+--- paris/jsr170/level2/__init__.py     2005-07-11 18:00:47 UTC (rev 515)
++++ paris/jsr170/level2/__init__.py     2005-07-11 18:08:28 UTC (rev 516)
+@@ -1,4 +1,4 @@
+-""" Zope3 interfaces for JSR-170 API content repository, Level 2.
++""" JSR-170 content repository interfaces, Level 2.
+
+ $Id$
+ """
+
+Modified: paris/jsr170/level2/exceptions.py
+===================================================================
+--- paris/jsr170/level2/exceptions.py   2005-07-11 18:00:47 UTC (rev 515)
++++ paris/jsr170/level2/exceptions.py   2005-07-11 18:08:28 UTC (rev 516)
+@@ -1,4 +1,4 @@
+-""" Exceptions for JSR-170 API content repository, Level 2.
++""" JSR-170 content repository exceptions, Level 2.
+
+ $Id$
+ """
+
+Modified: paris/jsr170/level2/item.py
+===================================================================
+--- paris/jsr170/level2/item.py 2005-07-11 18:00:47 UTC (rev 515)
++++ paris/jsr170/level2/item.py 2005-07-11 18:08:28 UTC (rev 516)
+@@ -1,4 +1,4 @@
+-""" JSR-170 Item interface, level 2
++""" JSR-170 Item interface, Level 2
+
+ $Id$
+ """
+
+Modified: paris/jsr170/level2/namespace_registry.py
+===================================================================
+--- paris/jsr170/level2/namespace_registry.py   2005-07-11 18:00:47 UTC (rev 515)
++++ paris/jsr170/level2/namespace_registry.py   2005-07-11 18:08:28 UTC (rev 516)
+@@ -1,4 +1,4 @@
+-""" JSR-170 NamespaceRegistry interface, level 2
++""" JSR-170 NamespaceRegistry interface, Level 2
+
+ $Id$
+ """
+
+Modified: paris/jsr170/level2/node.py
+===================================================================
+--- paris/jsr170/level2/node.py 2005-07-11 18:00:47 UTC (rev 515)
++++ paris/jsr170/level2/node.py 2005-07-11 18:08:28 UTC (rev 516)
+@@ -1,4 +1,4 @@
+-""" JSR-170 Node interface, level 2
++""" JSR-170 Node interface, Level 2
+
+ $Id$
+ """
+
+Modified: paris/jsr170/level2/property.py
+===================================================================
+--- paris/jsr170/level2/property.py     2005-07-11 18:00:47 UTC (rev 515)
++++ paris/jsr170/level2/property.py     2005-07-11 18:08:28 UTC (rev 516)
+@@ -1,4 +1,4 @@
+-""" JSR-170 Property interface, level 2
++""" JSR-170 Property interface, Level 2
+
+ $Id$
+ """
+
+_______________________________________________
+Paris-checkins mailing list
+Paris-checkins@lists.zope.org
+http://mail.zope.org/mailman/listinfo/paris-checkins
