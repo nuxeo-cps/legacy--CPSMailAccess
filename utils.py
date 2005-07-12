@@ -631,3 +631,37 @@ def shrinkHtml(text, remove_quoted=True):
         i += 1
 
     return ''.join(shrinked)
+
+def divideMailBody(text, level=0):
+    """ returns a tree of divs, according to quoting """
+    text = text.replace('&gt;', '>')
+    text = text.replace('&lt;', '<')
+    text = text.replace('<br/>', '\n')
+    text = text.replace('<br>', '\n')
+    text = text.split('\n')
+    blocs = []
+    inquote = False
+    i = 0
+    while i < len(text):
+
+        if text[i].startswith('>'):
+            end_quote = i + 1
+            while end_quote < len(text):
+                if not text[end_quote].startswith('>'):
+                    break
+                end_quote += 1
+            # we have a bloc
+            bloc = text[i:end_quote]
+            bloc = [line[1:] for line in bloc]
+            bloc = '<br/>'.join(bloc)
+
+            # recursive call
+            bloc = divideMailBody(bloc, level+1)
+
+            blocs.append('<div class="bloc_%s">%s</div>' % (str(level),bloc))
+            i = end_quote
+        else:
+            blocs.append(text[i])
+        i += 1
+
+    return '<br/>'.join(blocs)

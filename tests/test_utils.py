@@ -150,6 +150,15 @@ The CPS Team.
         self.assertEquals(type(res), unicode)
         self.assertEquals(res, u'8\u5343\u4e07\u5186\u306e\u7372\u5f97\u65b9\u6cd5\u30fb\u30e1\u30eb\u30de\u30ac\u30b8\u30f3<delivery@hosyou-r01.mine.nu>')
 
+    def test_decodeHeader2(self):
+        from email.base64MIME import encode
+
+        header = encode('=?iso-2022-jp?Q?8=1B=24B=40iK=7C1=5F=24N3MF=40J=7D=1B=28B?= =?iso-2022-jp?Q?=1B=24BK!!=26=25a=25k=25=5E=25=2C=258=25s=1B=28B?= <delivery@hosyou-r01.mine.nu>',binary=False)
+
+        res = decodeHeader(header)
+        self.assertEquals(res, '')
+
+
     def test_isValidEmail(self):
         self.assert_(isValidEmail('tz@nuxeo.com'))
         self.assert_(isValidEmail('tarek@nuxeo.comfmm'))
@@ -258,6 +267,35 @@ The CPS Team.
         text = 'Joe wrote:\n> ezc\n  > cez\n> dezez\n > errv\n\nHello\n\nWorld\n'
         text = shrinkHtml(text)
         self.assertEquals(text, '<span class="shrinkable not_hidden_part">Joe wrote:<br/></span><span class="shrinkable not_hidden_part">> ezc<br/></span><span class="shrinkable not_hidden_part">  > cez<br/></span><span class="shrinkable not_hidden_part">> dezez<br/></span><span class="shrinkable not_hidden_part"> > errv<br/></span><br/>Hello<br/><br/>World<br/><span class="shrinkable not_hidden_part"><br/></span>')
+
+
+    def test_divideMailBody(self):
+        self.assertEquals(divideMailBody('\nhoih\n<br/>oug'),
+                          '<br/>hoih<br/><br/>oug')
+
+        mail_content = """
+> Untel wrote:
+> ok
+> ok ok
+
+ok then"""
+
+        mail_repr = '<br/><div class="bloc_0"> Untel wrote:<br/> ok<br/> ok ok</div><br/>ok then'
+
+        self.assertEquals(divideMailBody(mail_content), mail_repr)
+
+        mail_content = """
+> Untel wrote:
+> ok
+>> sur ?
+>> oui
+> ok ok
+
+ok then"""
+
+        mail_repr = '<br/><div class="bloc_0"> Untel wrote:<br/> ok<br/><div class="bloc_1"> sur ?<br/> oui</div></div><br/>ok then'
+
+        self.assertEquals(divideMailBody(mail_content), mail_repr)
 
 def test_suite():
     return unittest.TestSuite((
