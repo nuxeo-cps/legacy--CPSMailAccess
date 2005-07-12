@@ -616,3 +616,28 @@ span.button {
   border: 1px solid black;
   padding: 2px;
 }
+
+div.bloc_0 {
+  padding-left: 10px;
+  border-left: 2px solid blue;
+}
+
+div.bloc_1 {
+  padding-left: 10px;
+  border-left: 2px solid red;
+}
+
+div.bloc_2 {
+  padding-left: 10px;
+  border-left: 2px solid blue;
+}
+
+div.bloc_3 {
+  padding-left: 10px;
+  border-left: 2px solid red;
+}
+
+div.bloc_4 {
+  padding-left: 10px;
+  border-left: 2px solid blue;
+}

@@ -67,7 +67,7 @@ class MailRendererTestCase(MailTestCase):
         rendered = ob.renderBody(mail)
         self.assertNotEqual(rendered, '')
         self.assertNotEqual(rendered, None)
-        self.assertEquals(rendered, u'Do you like this message?<br/>')
+        self.assertEquals(rendered, u'Do you like this message?')
 
     def test_allRendering(self):
         # testing all mails with MIME engine

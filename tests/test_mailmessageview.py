@@ -163,7 +163,7 @@ class MailMessageViewTestCase(MailTestCase):
         body = body.split('<br/>')
 
         self.assertEquals(body[0], u'sqdsqd d')
-        self.assertEquals(body[7], u'</span>')
+        self.assertEquals(body[7], u'')
 
         body = view.renderBody()
 
@@ -184,7 +184,7 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_(view)
 
         body = view.renderBody()
-        self.assertEquals(body, u'         ezezf<br/> ezf<br/> <b>ezf</b><br/> ef<br/> <br/> ez<br/> <br/> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> ezf<br/><span class="shrinkable not_hidden_part">  <br/></span>')
+        self.assertEquals(body, u'         ezezf<br/> ezf<br/> <b>ezf</b><br/> ef<br/> <br/> ez<br/> <br/> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> ezf<br/>  ')
 
     def test_renderHeaderList(self):
         # checks unicoding
