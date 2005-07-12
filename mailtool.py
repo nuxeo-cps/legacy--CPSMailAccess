@@ -51,6 +51,30 @@ def getConnection():
     """
     return connector
 
+# XXX might want to externalize it in a file
+default_parameters = {'connection_type' : ('IMAP', 1),
+            'HOST' : ('localhost', 1),
+            'PORT' : (143, 1),
+            'SSL' :  (0, 1),
+            'login' : ('', 0),
+            'password' :('', 0),
+            'smtp_host' : ('localhost', 1),
+            'smtp_port' : (25, 1),
+            'trash_folder_name' : ('INBOX.Trash', 1),
+            'draft_folder_name' : ('INBOX.Drafts', 1),
+            'sent_folder_name' : ('INBOX.Sent', 1),
+            'max_folder_size' : (20, 1),
+            'max_folder_depth' : (2, 1),
+            'treeview_style' : ('lotus', 1),
+            'message_list_cols' :
+            ('Attachments, Icon, From, Date, Subject, Size', 1),
+            'signature' : ('', 0),
+            'maildir' : ('/tmp/maildir', 1),
+            'direct_smtp' : (1, 1),
+            'addressbook' : ('addressbook', 1),
+            'read_only_folders': (('INBOX.Sent', ), 1)
+            }
+
 class MailTool(Folder): # UniqueObject
     """ the portal tool wich holds
         several parameters and connections
@@ -91,30 +115,10 @@ class MailTool(Folder): # UniqueObject
         return self._maildeliverer
 
     def _initializeParameters(self):
-        """ XXX might want to externalize it """
-        default = {'connection_type' : ('IMAP', 1),
-                    'HOST' : ('localhost', 1),
-                    'PORT' : (143, 1),
-                    'SSL' :  (0, 1),
-                    'login' : ('', 0),
-                    'password' :('', 0),
-                    'smtp_host' : ('localhost', 1),
-                    'smtp_port' : (25, 1),
-                    'trash_folder_name' : ('INBOX.Trash', 1),
-                    'draft_folder_name' : ('INBOX.Drafts', 1),
-                    'sent_folder_name' : ('INBOX.Sent', 1),
-                    'max_folder_size' : (20, 1),
-                    'max_folder_depth' : (2, 1),
-                    'treeview_style' : ('lotus', 1),
-                    'message_list_cols' :
-                    ('Attachments, Icon, From, Date, Subject, Size', 1),
-                    'signature' : ('', 0),
-                    'maildir' : ('/tmp/maildir', 1),
-                    'direct_smtp' : (1, 1),
-                    'addressbook' : ('addressbook', 1)
-                   }
-        for key in default:
-            self.default_connection_params[key] = default[key]
+        """ initialize parameters with default ones """
+        global default_parameters
+        for key in default_parameters:
+            self.default_connection_params[key] = default_parameters[key]
 
     def getConnectionParams(self):
         return self.default_connection_params
