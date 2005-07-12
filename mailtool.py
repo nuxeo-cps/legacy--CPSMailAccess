@@ -72,7 +72,7 @@ default_parameters = {'connection_type' : ('IMAP', 1),
             'maildir' : ('/tmp/maildir', 1),
             'direct_smtp' : (1, 1),
             'addressbook' : ('addressbook', 1),
-            'read_only_folders': (('INBOX.Sent', ), 1)
+            'read_only_folders': ('INBOX.Sent', 1)
             }
 
 class MailTool(Folder): # UniqueObject

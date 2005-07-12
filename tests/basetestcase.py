@@ -121,6 +121,7 @@ class FakePortal(Folder):
     portal_webmail.default_connection_params['message_list_cols'] = (('From', 'Date',
                                                             'Subject', 'Size'),0)
     portal_webmail.default_connection_params['maildir'] = (maildir_path, -1)
+    portal_webmail.default_connection_params['read_only_folders'] = ('INBOX.Sent', 1)
 
     def getPhysicalPath(self):
         return ('', 'nowhere')

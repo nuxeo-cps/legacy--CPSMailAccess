@@ -139,7 +139,8 @@ class MailActionsView(BaseMailMessageView):
         elif IMailFolder.providedBy(container):
             mailbox = container.getMailBox()
             root = self.getAbsoluteUrl(mailbox)
-            candelete = not mailbox.elementIsInTrash(container)
+            candelete = (not mailbox.elementIsInTrash(container) and
+                         not container.isReadOnly())
             confirm_msg = translate(mailbox, 'cpsma_confirm_erase')
 
             if container == mailbox.getTrashFolder():
@@ -267,7 +268,8 @@ class MailActionsView(BaseMailMessageView):
                 actions.extend([draft])
 
 
-            if current_folder.id != trash_name:
+            if (current_folder.id != trash_name and
+                not current_folder.isReadOnly()):
                 confirm_msg = translate(mailbox, 'cpsma_confirm_erase')
                 delete = {'icon' : base_url + '/cpsma_delete.png',
                           'title' : 'cpsma_delete_message',

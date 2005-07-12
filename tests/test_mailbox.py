@@ -311,6 +311,28 @@ class MailBoxTestCase(MailTestCase):
         self.assertEquals(folder2.getMailFolder(), folder1)
         self.assertEquals(folder2.server_name, 'INBOX.folder1.folder2')
 
+    def test_moveElementWithReadOnly(self):
+        # make sure the user can't drag'n'drop in read-only folder
+        mailbox = self._getMailBox()
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
+
+        # the user can move a message to another folder
+        # msg_INBOX__950   to_folder_INBOX
+        # msg_INBOX.CVS__950   to_folder_INBOX.LOGS
+        folder1 =  inbox._addFolder('folder1', 'INBOX.folder1')
+        folder1._addMessage('.1', 'message1')
+
+        self.assertEquals(list(folder1.objectIds()), ['.1'])
+
+        folder2 =  inbox._addFolder('Sent', 'INBOX.Sent')
+
+        target = mailbox.moveElement('msg_INBOX.folder1__.1',
+                                     'to_folder_INBOX.Sent')
+
+        self.assertEquals(target, None)
+
+
+
     def test_ticking(self):
         folder = MailFolderTicking('ok', 'ok')
         self.assert_(not folder.isSynchronizing())

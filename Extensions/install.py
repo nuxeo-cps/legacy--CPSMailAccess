@@ -598,7 +598,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         else:
             self.setupBoxes()
 
-    def upgrade(self, new_version, old_version=None):
+    def upgrade(self, new_version, old_version=None, force=False):
         """ upgrades an existing version of CPSMailAccess
 
             if old_version is set to None,
@@ -615,7 +615,7 @@ class CPSMailAccessInstaller(CPSInstaller):
             raise Exception('unknown versions')
 
         if old_version == (1, 0, 0, 'b1') and  new_version == (1, 0, 0, 'b2'):
-            self.upgrade_b1_to_b2()
+            self.upgrade_b1_to_b2(force)
 
     def _shorcutName(self, name):
         if name in ('beta2', 'b2'):
@@ -625,11 +625,12 @@ class CPSMailAccessInstaller(CPSInstaller):
         else:
             return name
 
-    def upgrade_b1_to_b2(self):
+    def upgrade_b1_to_b2(self, force=False):
 
         self.log('upgrading portal_webmail to beta 2')
         wm = self.portal.portal_webmail
-        if not hasattr(wm, '__version__') or wm.__version__ !=  (1, 0, 0, 'b2'):
+        if (not hasattr(wm, '__version__') or wm.__version__ !=  (1, 0, 0, 'b2')
+            or force):
             wm.__version__ = (1, 0, 0, 'b2')
             params = wm.default_connection_params
 
@@ -652,7 +653,7 @@ class CPSMailAccessInstaller(CPSInstaller):
                 continue
             self.log('checking box: %s' % id)
             if (not hasattr(box, '__version__') or
-                box.__version__ != (1, 0, 0, 'b2')):
+                box.__version__ != (1, 0, 0, 'b2') or force):
                 # beta 1, upgrading to beta 2
                 self.log('upgrading box %s to beta 2' % id)
                 box.__version__ = (1, 0, 0, 'b2')
@@ -678,11 +679,14 @@ def install(self):
     installer.install()
     return installer.logResult()
 
-def upgrade(self, new_version, old_version=None):
+def upgrade(self, new_version, old_version=None, force=False):
     """ upgrades """
     installer = CPSMailAccessInstaller(self)
-    installer.upgrade(new_version, old_version)
+    installer.upgrade(new_version, old_version, force)
     return installer.logResult()
 
 def upgrade_to_beta2(self):
     return upgrade(self, 'b2')
+
+def force_to_beta2(self):
+    return upgrade(self, 'b2', force=True)

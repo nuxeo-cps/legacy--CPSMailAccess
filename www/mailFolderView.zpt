@@ -22,7 +22,7 @@
                           add_folder request/add_folder|nothing;
                           move_folder request/move_folder|nothing;
                           keep_last_sort request/keep_last_sort|python:0;
-                          content_managment python:1;
+                          content_managment not:here/isReadOnly|python:1;
                           clipboard not:here/clipBoardEmpty;
                           max_folder_size here/getMaxFolderSize;
                           synchro python:here.getMailBox().isSynchronizing(1);

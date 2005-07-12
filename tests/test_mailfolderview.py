@@ -535,6 +535,19 @@ class MailFolderViewTestCase(MailTestCase):
         rendered_mails = view.renderMailList()[1]
         self.assertEquals(len(rendered_mails), 1)
 
+    def test_isReadOnly(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+        self.assert_(not view.isReadOnly())
+
+        ob2 = ob._addFolder('Sent', 'INBOX.Sent')
+        view = MailFolderView(ob2, self.request)
+        view = view.__of__(ob2)
+        self.assert_(view.isReadOnly())
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailFolderViewTestCase),

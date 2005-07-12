@@ -1202,6 +1202,9 @@ class MailBox(MailBoxBaseCaching):
                     break
                 i += 1
 
+        if to_object.isReadOnly():
+            return None
+
         if from_object is not None and to_object is not None:
             if message_to_folder:
                 # maybe already in ?

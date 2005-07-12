@@ -958,6 +958,8 @@ class MailFolder(BTreeFolder2):
         """ moves the message on the server,
             then on the zodb (no sync)
         """
+        if new_mailbox.isReadOnly():
+            return False
         id = self.getIdFromUid(uid)
         msg = self[id]
 
@@ -1025,6 +1027,8 @@ class MailFolder(BTreeFolder2):
         """ moves the message on the server,
             then on the zodb (no sync)
         """
+        if self.isReadOnly():
+            return False
         mailbox = self.getMailBox()
         trash = mailbox.getTrashFolder()
         return self.moveMessage(uid, trash)
@@ -1096,6 +1100,15 @@ class MailFolder(BTreeFolder2):
         current_number = self.getUidFromId(id)
         next_id = str(int(current_number) + 1)
         return self.getIdFromUid(next_id)
+
+    def isReadOnly(self):
+        """ tells if the current folder is read-only """
+        mailbox = self.getMailBox()
+        if mailbox is None:
+            return False
+        read_only_list = mailbox.getConnectionParams()['read_only_folders']
+        read_only_list = [item.strip() for item in read_only_list.split(',')]
+        return self.server_name in read_only_list
 
 
 """ classic Zope 2 interface for class registering

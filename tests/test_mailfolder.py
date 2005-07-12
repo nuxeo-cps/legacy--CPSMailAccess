@@ -564,6 +564,20 @@ class MailFolderTestCase(MailTestCase):
         folder2.rename('INBOX.with space.folder2', True)
         self.assertEquals(folder1['folder2'], folder2)
 
+    def test_isReadOnlyProtections(self):
+        box = self._getMailBox()
+        ob = box._addFolder('INBOX', 'INBOX')
+        ob2 = ob._addFolder('Sent', 'INBOX.Sent')
+        ob2._addMessage('1', '1')
+        self.assert_(not ob2.deleteMessage('1'))
+
+        ob3 = ob._addFolder('folder', 'INBOX.folder')
+        ob3._addMessage('1', '1')
+
+        self.assert_(not ob3.moveMessage('1', ob2))
+
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailFolderTestCase),

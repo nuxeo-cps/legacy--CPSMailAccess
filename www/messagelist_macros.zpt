@@ -75,7 +75,7 @@
     </metal:block>
 
     <metal:block define-macro="manage_toolbar">
-    <div class="toolbar">
+    <div class="toolbar" tal:condition="not:here/isReadOnly|python:1">
       <table summarize="Managing Content">
         <tr>
            <td class="bold" i18n:translate="cpsma_selection">

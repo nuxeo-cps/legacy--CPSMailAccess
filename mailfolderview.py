@@ -509,3 +509,8 @@ class MailFolderView(BaseMailMessageView):
             # let's go to the mailbox
             url = mailfolder.absolute_url()
             self.request.response.redirect(url+'/view')
+
+    def isReadOnly(self):
+        """ tells if the current folder is read-only """
+        mailfolder = self.context
+        return mailfolder.isReadOnly()
