@@ -834,7 +834,7 @@ function setAck()
     }
     catch(err)
     {
-      alert("setAck: operation not supported");
+      //alert("setAck: operation not supported");
     }
   }
   result = xml.responseText;
