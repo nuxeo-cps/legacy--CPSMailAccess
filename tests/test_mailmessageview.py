@@ -77,10 +77,8 @@ class MailMessageViewTestCase(MailTestCase):
 
         ob = MailMessage()
         view = MailMessageView(ob, None)
-        self.assertEquals(view.renderFromList(),
-                          u'<a href="/writeTo.html?msg_to=%3F">?</a>')
-        self.assertEquals(view.renderToList(),
-                          u'<a href="/writeTo.html?msg_to=%3F">?</a>')
+        self.assertEquals(view.renderFromList(), u'')
+        self.assertEquals(view.renderToList(), u'')
 
     def test_MailMessageparts(self):
         # testing message parts
@@ -424,6 +422,32 @@ class MailMessageViewTestCase(MailTestCase):
         view._getBoxMail = self._getBoxMail
 
         view.prepareReplyRecipient(reply_all=1)
+
+    def test_renderLinkedHeaderList(self):
+        mbox = self._getMailBox()
+        ob = self.getMailInstance(50)
+        ob = ob.__of__(mbox)
+        ob.getPhysicalPath = self.fakePhysicalPath
+        view = MailMessageView(ob, None)
+        rendered = view._renderLinkedHeaderList('Cc')
+        self.assertEquals(rendered, u'')
+
+    def test_headerCountWithEmptyField(self):
+        mbox = self._getMailBox()
+        ob = self.getMailInstance(50)
+        ob = ob.__of__(mbox)
+        ob.getPhysicalPath = self.fakePhysicalPath
+        view = MailMessageView(ob, None)
+        self.assertEquals(view.headerCount('Cc'), 0)
+
+    def test_removeNone(self):
+        view = MailMessageView(None, None)
+        self.assert_(not view._removeNone(None))
+        self.assert_(not view._removeNone(''))
+        self.assert_(not view._removeNone(['           ']))
+        self.assert_(not view._removeNone(['']))
+        self.assert_(not view._removeNone(['           ', '']))
+        self.assert_(view._removeNone(['not_me']))
 
 def test_suite():
     return unittest.TestSuite((

@@ -113,6 +113,8 @@ class MailMessageView(BaseMailMessageView):
         root = self._getBoxRootUrl()
         final = []
         for mail in list_:
+            if mail == '?':
+                continue
             dmail = mail.replace('<', '&lt;')
             dmail = dmail.replace('>', '&gt;')
 
@@ -121,7 +123,10 @@ class MailMessageView(BaseMailMessageView):
                                                                    dmail)
             final.append(hmail)
 
-        return secureUnicode(u' '.join(final))
+        if final == []:
+            return u''
+        else:
+            return secureUnicode(u' '.join(final))
 
     def renderFromList(self):
         """ renders the mail From """
@@ -149,7 +154,17 @@ class MailMessageView(BaseMailMessageView):
 
     def _removeNone(self, item):
         """ removes None """
-        return item is not None
+        if item is None:
+            return False
+        else:
+            if isinstance(item, list):
+                for element in item:
+                    if element.strip() != '':
+                        return True
+                return False
+            elif isinstance(item, (str, unicode)):
+                return item.strip() != ''
+            return True
 
     def headerCount(self, name):
         """ tells the number of elements of a header """
