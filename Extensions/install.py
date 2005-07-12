@@ -30,7 +30,8 @@ from Products.ExternalMethod.ExternalMethod import ExternalMethod
 
 from Products.CPSInstaller.CPSInstaller import CPSInstaller
 
-from Products.CPSMailAccess.mailtool import manage_addMailTool
+from Products.CPSMailAccess.mailtool import manage_addMailTool,\
+                                            default_parameters
 from Products.CPSMailAccess.permissions import permissions
 from Products.CPSMailAccess.mailbox import MailBox
 
@@ -632,13 +633,12 @@ class CPSMailAccessInstaller(CPSInstaller):
             wm.__version__ = (1, 0, 0, 'b2')
             params = wm.default_connection_params
 
-            # XXX need to generalize this mechanism
-            if not params.has_key('maildir'):
-                params['maildir'] = ('/tmp/maildir', 1)
-            if not params.has_key('direct_smtp'):
-                params['direct_smtp'] = (1, 1)
-            if not params.has_key('addressbook'):
-                params['addressbook'] = ('addressbook', 1)
+            # upgrade for new parameters
+            # XXX will not work if existing parameters type change
+            global default_parameters
+            for parameter in default_parameters:
+                if not params.has_key(parameter):
+                    params[parameter] = default_parameters[parameter]
 
             from Products.CPSMailAccess.smtpmailer import SmtpMailer
             wm._maildeliverer = SmtpMailer('/tmp/maildir', 1)
