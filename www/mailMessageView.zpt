@@ -52,8 +52,14 @@
       <metal:block use-macro="here/messagelist_macros/messageheaders"/>
       <metal:block use-macro="here/messagelist_macros/messagetoolbar"/>
     </div>
-    <div id="mailBody">
-      <tal:block tal:replace="structure here/renderBody"/>
+    <div id="mailBody"
+         tal:define="mail_content here/renderBody">
+      <tal:block tal:condition="python:mail_content!='cpsma_structure_unknown'">
+        <tal:block tal:replace="structure mail_content"/>
+      </tal:block>
+      <tal:block tal:condition="python:mail_content=='cpsma_structure_unknown'">
+        <span i18n:translate="" tal:content="mail_content"/>
+      </tal:block>
     </div>
     <div id="references" tal:define="refs here/getBackReferences">
       <div tal:repeat="ref refs" class="mailBackReferences selectable">

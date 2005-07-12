@@ -385,7 +385,7 @@ msgid "cpsma_could_not_send"
 msgstr "Envoi impossible, vérifiez vos paramètres SMTP"
 
 msgid "cpsma_structure_unknown"
-msgstr "Structure de message inconnue"
+msgstr "Structure de message inconnue ou mail déplacé par un autre client mail"
 
 msgid "cpsma_reconnect"
 msgstr "Reconnecter au serveur de messagerie"

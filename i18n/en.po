@@ -385,7 +385,7 @@ msgid "cpsma_could_not_send"
 msgstr "Could not send the message, please check your SMTP configuration"
 
 msgid "cpsma_structure_unknown"
-msgstr "Unknown message structure"
+msgstr "Unknown message structure or mail moved by another mail client"
 
 msgid "cpsma_reconnect"
 msgstr "Reconnect to mail server"
