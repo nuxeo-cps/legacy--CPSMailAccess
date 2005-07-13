@@ -59,7 +59,7 @@ from baseconnection import has_connection
 from mailfiltering import ZMailFiltering
 
 try:
-    from Products.zasyncdispatcher import asyncedCall
+    from Products.zasyncdispatcher import asyncedCall, canAsync
     can_async = True
 except ImportError:
     can_async = False
@@ -401,7 +401,7 @@ class MailBox(MailBoxBaseCaching):
 
         # if backgrounded, tries to put a call
         if background:
-            if can_async:
+            if can_async and canAsync(self):
                 portal_url = getToolByName(self, 'portal_url')
                 root = portal_url.getPortalPath()
                 root = root.replace('/', '.')
@@ -1380,8 +1380,9 @@ class MailBoxView(MailFolderView):
         res = True
 
         portal_url = getToolByName(self, 'portal_url')
+
         # looking for zasync
-        if can_async:
+        if can_async and canAsync(self):
             # XXX need to get feedback in case of failures
             bckgrd = True
             root = portal_url.getPortalPath()
