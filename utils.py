@@ -24,6 +24,7 @@ import string, re, md5
 from sgmllib import SGMLParseError
 from threading import Thread
 from email.Header import decode_header, make_header
+from email.Errors import HeaderParseError
 from exceptions import UnicodeDecodeError
 from datetime import datetime
 from time import strftime, localtime, mktime
@@ -95,10 +96,13 @@ def decodeHeader(header, encoding='ISO8859-15'):
     """ decodes a mail header """
     # python 2.3 email Header.py works with strings
     # we don't !
-    if isinstance(header,unicode):
+    if isinstance(header, unicode):
         header = header.encode(encoding)
 
-    decoded_header = decode_header(header)
+    try:
+        decoded_header = decode_header(header)
+    except HeaderParseError:
+        return header
 
     cdecoded_header = []
     for part in decoded_header:
