@@ -280,7 +280,7 @@ The CPS Team.
 
 ok then"""
 
-        mail_repr = '<br/><div class="bloc_0"> Untel wrote:<br/> ok<br/> ok ok</div><br/>ok then'
+        mail_repr = '<br/><div class="bloc_0"><div class="topicRetractor" onmouseover="setCursor(this)" onclick="toggleElementVisibility(\'topicBloc01\')"><img src="cpsma_retract_topic.png"/></div><div id="topicBloc01"> Untel wrote:<br/> ok<br/> ok ok</div></div><br/>ok then'
 
         self.assertEquals(divideMailBody(mail_content), mail_repr)
 
@@ -293,7 +293,7 @@ ok then"""
 
 ok then"""
 
-        mail_repr = '<br/><div class="bloc_0"> Untel wrote:<br/> ok<br/><div class="bloc_1"> sur ?<br/> oui</div></div><br/>ok then'
+        mail_repr = '<br/><div class="bloc_0"><div class="topicRetractor" onmouseover="setCursor(this)" onclick="toggleElementVisibility(\'topicBloc01\')"><img src="cpsma_retract_topic.png"/></div><div id="topicBloc01"> Untel wrote:<br/> ok<br/><div class="bloc_1"><div id="topicBloc12"> sur ?<br/> oui</div></div></div></div><br/>ok then'
 
         self.assertEquals(divideMailBody(mail_content), mail_repr)
 

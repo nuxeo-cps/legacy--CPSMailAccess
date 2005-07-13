@@ -305,11 +305,6 @@
             <img id="new_page" src="launch.png"/>
             <span i18n:translate="cpsma_detach">Detach</span>
           </a>
-          <span class="block_section"
-                onmouseover="setCursor(this)" onclick="shrinkHtml()">
-            <img id="shrink" src="cpsma_shrink.png"/>
-            <span i18n:translate="cpsma_shrink">Shrink</span>
-          </span>
         <tal:block tal:condition="request/showfolders|python:0">
             <a  i18n:attributes="title"
                 tal:attributes="href python:here.absolute_url()+'/view';

@@ -642,6 +642,7 @@ def divideMailBody(text, level=0):
     blocs = []
     inquote = False
     i = 0
+    id_seed = 'topicBloc'
     while i < len(text):
 
         if text[i].startswith('>'):
@@ -657,8 +658,19 @@ def divideMailBody(text, level=0):
 
             # recursive call
             bloc = divideMailBody(bloc, level+1)
+            id = '%s%d%d' %(id_seed, level, i)
+            if level == 0:
+                retractor = ('<div class="topicRetractor" '
+                             'onmouseover="setCursor(this)" '
+                             'onclick="toggleElementVisibility(\'%s\')"><img '
+                             'src="cpsma_retract_topic.png"/></div>' % id)
 
-            blocs.append('<div class="bloc_%s">%s</div>' % (str(level),bloc))
+                blocs.append('<div class="bloc_%s">%s<div id="%s">%s</div></div>' % \
+                         (str(level), retractor, id, bloc))
+            else:
+                blocs.append('<div class="bloc_%s"><div id="%s">%s</div></div>' % \
+                         (str(level), id, bloc))
+
             i = end_quote
         else:
             blocs.append(text[i])
