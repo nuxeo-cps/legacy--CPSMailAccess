@@ -40,7 +40,7 @@ from Products.CPSMailAccess import mailbox
 installProduct('TextIndexNG2')
 
 class FakeDirectory(Folder):
-    pass
+    id_field = 'i am the id field'
 
 class FakeDirectoryTool(Folder):
 

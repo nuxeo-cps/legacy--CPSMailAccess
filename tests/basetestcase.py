@@ -64,6 +64,8 @@ installProduct('zasyncdispatcher')
 #installProduct('TextIndexNG2')
 
 class FakeDirectory:
+    id_field = 'id'
+
     def searchEntries(self, return_fields=None, **kw):
         return [('tziade', {'email': 'tz@nuxeo.com',
                  'givenName': 'Tarek', 'sn' : 'Ziadé',
@@ -75,6 +77,7 @@ class FakeDirectory:
 
     def createEntry(self, entry):
         pass
+
 
 class FakeDirectories(Folder):
 

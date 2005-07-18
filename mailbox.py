@@ -31,6 +31,9 @@ from OFS.Folder import Folder
 from OFS.ObjectManager import BadRequest
 from ZODB.PersistentMapping import PersistentMapping
 from AccessControl import Unauthorized
+from AccessControl.SecurityManagement import newSecurityManager, \
+                                             noSecurityManager
+from AccessControl.User import User
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.Five import BrowserView
@@ -926,17 +929,29 @@ class MailBox(MailBoxBaseCaching):
         #return self._getDirectoryPicker().listVisibleDirectories()
         return portal_directories.listVisibleDirectories()
 
+    def _createZ2SecurityContext(self, roles=['Manager']):
+        user = User('Security', '', ['Manager'], [])
+        user = user.__of__(self)
+        newSecurityManager(None, user)
+
+    def _removeZ2SecurityContext(self):
+        noSecurityManager()
+
     def _searchEntries(self, directory_name, return_fields=None, **kw):
         """ search for entries """
-        portal_directories = getToolByName(self, 'portal_directories')
-        dir_ = portal_directories[directory_name]
-        # acquisition pb not resolved yet
-        #return self._getDirectoryPicker().searchEntries(directory_name,
-        #    return_fields, **kw)
-        results = dir_.searchEntries(return_fields, **kw)
-        if results == [] and kw == {'id': '*'}:
-            results = dir_.searchEntries(return_fields)
-        return results
+        self._createZ2SecurityContext()
+        try:
+            portal_directories = getToolByName(self, 'portal_directories')
+            dir_ = portal_directories[directory_name]
+            # acquisition pb not resolved yet
+            #return self._getDirectoryPicker().searchEntries(directory_name,
+            #    return_fields, **kw)
+            results = dir_.searchEntries(return_fields, **kw)
+            if results == [] and kw == {'id': '*'}:
+                results = dir_.searchEntries(return_fields)
+            return results
+        finally:
+            self._removeZ2SecurityContext()
 
     def _createEntry(self, directory_name, entry):
         """ search for entries """
@@ -955,6 +970,15 @@ class MailBox(MailBoxBaseCaching):
         #return self._getDirectoryPicker().createEntry(directory_name,
         #    entry)
         return dir_.editEntry(entry)
+
+    def _getDirectoryIdField(self, directory_name):
+        """ search for entries """
+        portal_directories = getToolByName(self, 'portal_directories')
+        dir_ = portal_directories[directory_name]
+        # acquisition pb not resolved yet
+        #return self._getDirectoryPicker().getDirectoryIdField(
+        # directory_name)
+        return dir_.id_field
 
     def _hasEntry(self, directory_name, id):
         """ search for entries """
@@ -1123,7 +1147,8 @@ class MailBox(MailBoxBaseCaching):
             elements = name.split('.')
             directory = elements[0]
             field = elements[1]
-            kw = {'id' : id}
+            directory_identifier = self._getDirectoryIdField(directory)
+            kw = {directory_identifier : id}
             entries = self._searchEntries(directory, [field], **kw)
             if len(entries) > 1:
                 raise Exception('Directory returned more than one entry')
