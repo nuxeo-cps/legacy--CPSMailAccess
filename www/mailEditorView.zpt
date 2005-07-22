@@ -28,7 +28,7 @@
       </noscript>
 
       <div id="attacher"
-       tal:attributes="style python:test(attacher_on==0,'visibility: hidden','visibility: visible');class python:test(attacher_on==0,'hidden_part','')">
+       tal:attributes="style python:attacher_on==0 and 'visibility: hidden' or 'visibility: visible';class python:attacher_on==0 and 'hidden_part'or ''">
         <form class="attach_form"
               action="attachFile.html"
               method="post" enctype="multipart/form-data">
@@ -84,9 +84,11 @@
                                   Bcs python:here.getDestList(type_='BCc');">
 
             <div id="Cc"
-                tal:attributes="style python:test(cc_on==0 and len(Ccs)==0,'visibility:
-                                                  hidden','visibility: visible');
-                                class python:test(cc_on==0  and len(Ccs)==0,'hidden_part','')"
+                tal:attributes="style python:cc_on==0 and len(Ccs)==0 and 
+		                      'visibility: hidden' or 
+				      'visibility: visible';
+                                class python:cc_on==0 and len(Ccs)==0 and
+				      'hidden_part' or ''"
                     tal:define="elements python:'\r\n'.join(Ccs)">
                 <div class="recipient_header"><span i18n:translate="cpsma_cc">Cc</span>:</div>
                 <div  class="recipient">
@@ -97,11 +99,11 @@
 
             <div style="clear: both"/>
             <div id="BCc"
-                    tal:attributes="style python:test(bcc_on==0 and len(Bcs)==0,
-                                                      'visibility: hidden',
-                                                      'visibility: visible');
-                                    class python:test(bcc_on==0 and
-                                    len(Bcs)==0,'hidden_part','')"
+                    tal:attributes="style python:bcc_on==0 and len(Bcs)==0 and
+                                                 'visibility: hidden' or
+                                                 'visibility: visible';
+                                    class python:bcc_on==0 and len(Bcs)==0 and
+				                 'hidden_part' or ''"
                     tal:define="elements Bcs;
                                         elements python:'\r\n'.join(elements)">
                 <div class="recipient_header"><span

@@ -167,21 +167,21 @@
                              sort_with request/sort_with|python:'Date';
                              sort_asc request/sort_asc|python:0;"
                            >
-    <tal:block tal:define="messagesl python:test(keep_last_sort,
-                                                 here.renderMailList(keep_last_sort=1),
-                                                 here.renderMailList(int(page), int(nb_items),
-                                                                     sort_with, int(sort_asc),
-                                                                     keep_last_sort));
+    <tal:block tal:define="messagesl python:keep_last_sort and
+                             here.renderMailList(keep_last_sort=1) or
+                             here.renderMailList(int(page), int(nb_items),
+                                                 sort_with, int(sort_asc),
+                                                 keep_last_sort);
                            messages python:messagesl[1];
                            nbpages python:messagesl[0];
                            last_sort python:here.getLastMailListSortCache();
-                           page python:test(last_sort, last_sort[0], page);
-                           nb_items python:test(last_sort, last_sort[1], nb_items);
-                           sort_with python:test(last_sort, last_sort[2], sort_with);
-                           sort_asc python:test(last_sort, last_sort[3], sort_asc)">
+                           page python:last_sort and last_sort[0] or page;
+                           nb_items python:last_sort and last_sort[1] or nb_items;
+                           sort_with python:last_sort and last_sort[2] or sort_with;
+                           sort_asc python:last_sort and last_sort[3] or sort_asc">
 
        <div tal:attributes="class
-              python:test(is_folder,'folder_msglist','message_msglist')">
+              python:is_folder and 'folder_msglist' or 'message_msglist'">
 
         <tal:block tal:condition="not:messages">
         <div class="emptyFolder" i18n:translate="cpsma_empty_folder">
@@ -199,9 +199,10 @@
             <th class="mailToolBarElement mailToolBarInsideElement"
                 tal:repeat="col cols">
               <tal:block tal:define="sort_order
-                                     python:test(sort_with==col, not int(sort_asc),
-                                     int(sort_asc));
-                                     sort_order python:test(sort_order, 1, 0)">
+                                     python:sort_with==col and 
+				     (not int(sort_asc)) or 
+                                     int(sort_asc);
+                                     sort_order python:sort_order and 1 or 0">
                 <a tal:attributes="href
                 python:here.absolute_url()+'/view?page=%s&nb_items=%s&sort_with=%s&sort_asc=%s'
                 %(page, nb_items, col, sort_order)">
@@ -227,19 +228,19 @@
           <tal:block tal:define="is_current
                 python:here.absolute_url()+'/view'==message['url'];
                 odd repeat/message/odd;
-                class_selected python:test(odd, 'selected_odd', 'selected_even');
-                class_not_selected python:test(odd,
-                    'not_selected_odd', 'not_selected_even');
+                class_selected python:odd and 'selected_odd' or 'selected_even';
+                class_not_selected python:odd and
+                    'not_selected_odd' or 'not_selected_even';
                 gotoUrl python:message['url'];
                 onmouseover python:'setCursor(this)'+chr(59);
                 onclickurl python:'gotoUrl('+chr(34)+gotoUrl+chr(34)+')';
                 base_url here/getBaseUrl;
                 new_message python:message['new'];
-                textstyle python:test(new_message, 'newMessage', 'seenMessage');
-                divclass python:test(is_current, class_selected, class_not_selected)">
+                textstyle python:new_message and 'newMessage' or 'seenMessage';
+                divclass python:is_current and class_selected or class_not_selected">
 
           <tr tal:attributes="class
-              python:test(odd, 'line_selectable_odd', 'line_selectable_even');">
+              python:odd and 'line_selectable_odd' or 'line_selectable_even';">
 
             <td tal:condition="content_managment">
 
@@ -362,8 +363,8 @@
         <div class="batcher" tal:condition="python:nbpages &gt; 1">
           Page <span tal:replace="page" /> of <span tal:replace="nbpages" /><br/>
           <tal:block tal:repeat="i python:range(nbpages)">
-            <tal:block tal:define="label python:test(i==0, '<<', str(i+1));
-                                               label python:test(i==nbpages-1, '>>', label);">
+            <tal:block tal:define="label python:i==0 and '<<' or str(i+1);
+                                   label python:i==nbpages-1 and '>>' or label;">
 
             <tal:block tal:condition="python:i+1==int(page)">
               <span tal:replace="label"/>
