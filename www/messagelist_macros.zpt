@@ -252,7 +252,7 @@
                                   onclick onclickurl;
                                   onmouseover onmouseover">
 
-              <a tal:attributes="href python:#">
+              <a tal:attributes="href string:#">
 
                 <tal:block tal:condition="python:col=='Attachments'">
                   <img src="cpsma_attach_mini.png" tal:condition="python:message[col]==1"/>
