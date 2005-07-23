@@ -893,7 +893,8 @@ class MailBox(MailBoxBaseCaching):
             id=uid, fields=['email', 'givenName', 'sn'])
 
         if results is None:
-            email = self.getConnectionParams()['login']
+            email = \
+              self.wrapConnectionParams(self.getConnectionParams())['login']
             return [{'email' : email, 'fullname' : ''}]
         else:
             email = results['email']
