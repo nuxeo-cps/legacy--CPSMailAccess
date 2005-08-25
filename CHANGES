@@ -3,12 +3,10 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- Simpler install: 
-  under Zope 2.8.x, no need to add a 'path' directive in etc/zope.conf anymore.
-  under Zope 2.7.x, only one path to add
+-
 Bug fixes:
 ~~~~~~~~~~
--
+- French language: corrected some typos. 
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -

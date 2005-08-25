@@ -59,7 +59,7 @@ msgid "cpsma_attach_file"
 msgstr "Attacher un fichier"
 
 msgid "cpsma_make_selection"
-msgstr "Faire une séléction"
+msgstr "Faire une sélection"
 
 msgid "cpsma_messages_in_clipboard"
 msgstr "messages dans le presse-papier"
@@ -71,7 +71,7 @@ msgid "cpsma_subject"
 msgstr "Sujet"
 
 msgid "cpsma_to"
-msgstr "A"
+msgstr "À"
 
 msgid "cpsma_from"
 msgstr "De"
@@ -86,7 +86,7 @@ msgid "cpsma_found"
 msgstr "Trouvé"
 
 msgid "cpsma_results"
-msgstr "résultats"
+msgstr "Résultats"
 
 msgid "cpsma_no_results"
 msgstr "Aucun résultat."
@@ -182,10 +182,10 @@ msgid "cpsma_send_a_message"
 msgstr "Envoyer un message"
 
 msgid "cpsma_to"
-msgstr "A"
+msgstr "À"
 
 msgid "cpsma_bcc"
-msgstr "Bcc"
+msgstr "Cci"
 
 # named parameters
 msgid "HOST"
@@ -201,7 +201,7 @@ msgid "cache_level"
 msgstr "Niveau de cache"
 
 msgid "connection_type"
-msgstr "Type de connection"
+msgstr "Type de connexion"
 
 msgid "draft_folder_name"
 msgstr "Nom du dossier Draft"
@@ -246,7 +246,7 @@ msgid "cpsma_synchronized"
 msgstr "Synchronisé"
 
 msgid "cpsma_failed_synchro"
-msgstr "Impossible de récuperer les messages du serveur"
+msgstr "Impossible de récupérer les messages depuis le serveur"
 
 msgid "cpsma_add"
 msgstr "Ajouter"
@@ -274,7 +274,7 @@ msgid "clear"
 msgstr "effacer"
 
 msgid "cpsma_reindex_mail_catalog"
-msgstr "Rédindexation du catalogue"
+msgstr "Réindexation du catalogue"
 
 msgid "cpsma_objects"
 msgstr "Messages indexés"
@@ -286,7 +286,7 @@ msgid "Filters for incoming messages"
 msgstr "Filtres pour les messages entrants"
 
 msgid "Element"
-msgstr "Elément"
+msgstr "Élément"
 
 msgid "Condition"
 msgstr "Condition"
@@ -322,7 +322,7 @@ msgid "begin with"
 msgstr "commence par"
 
 msgid "ends with"
-msgstr "fini par"
+msgstr "se finit par"
 
 msgid "is"
 msgstr "est"
@@ -352,13 +352,13 @@ msgid "label_webmail_enabled"
 msgstr "Webmail activé"
 
 msgid "label_address_book"
-msgstr "Carnet d'adresse"
+msgstr "Carnet d'adresses"
 
 msgid "addressbook"
-msgstr "Annuaire d'adresse"
+msgstr "Annuaire d'adresses"
 
 msgid "label_personal_addressbook"
-msgstr "Carnet d'adresse personel"
+msgstr "Carnet d'adresses personnel"
 
 msgid "cpsma_back_to_folder"
 msgstr "Retour au dossier"
@@ -367,10 +367,10 @@ msgid "cpsma_detach"
 msgstr "Détacher"
 
 msgid "select all"
-msgstr "tout selectionner"
+msgstr "tout sélectionner"
 
 msgid "deselect all"
-msgstr "tout deselectionner"
+msgstr "tout déselectionner"
 
 msgid "cps_synchronizing"
 msgstr "Synchronisation en cours."
@@ -415,10 +415,10 @@ msgid "cpsma_could_not_perform"
 msgstr "L'opération n'a pas pu être réalisée sur le serveur de mails"
 
 msgid "instant_load"
-msgstr "Le corps du message n'a pas pu être récupéré du serveur"
+msgstr "Le corps du message n'a pas pu être récupéré depuis le serveur"
 
 msgid "cpsma_no_private"
-msgstr "Pas de contacts privés possible."
+msgstr "Pas de contacts privés possibles."
 
 msgid "cpsma_max_size_reached"
 msgstr "Taille maximum autorisée atteinte"
