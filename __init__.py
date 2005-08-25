@@ -16,6 +16,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
+
+import os, sys
+
+# add CPSMailAccess to the python path
+product_dir = os.path.split(__file__)[0]
+sys.path.insert(0, product_dir)
+
 import mailbox, mailfolder, mailmessage, mailtool, mailboxtreeview
 
 ## XXX dependencies introduced by the box creation

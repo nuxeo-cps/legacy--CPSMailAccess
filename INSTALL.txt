@@ -11,20 +11,21 @@ A - INSTALLATION NOTES
 1 - Prerequisites
 2 - rdflib installation
 3 - zasyncdispatcher installation
-4 - Zope X3 installation
+4 - Zope X3 installation (Zope 2.7.x only)
 5 - Products setup
-6 - Zope 3 <-> Zope 2 path setup
+6 - Zope 3 <-> Zope 2 path setup (Zope 2.7.x only)
 7 - Webmail installation
 
 ----------
-
 1- Prerequisites
 
 To install CPSMailAccess you will need:
 
-- a working Zope 2.7.x + CPS 3.3.4 or greater
-- ZopeX3-3.0.0 : http://www.zope.org/Products/ZopeX3
-- Five 1.0.1 or greater : http://codespeak.net/z3/five/
+- a working Zope 2.7.x + CPS 3.3.4 or greater. 
+  The installation procedure is simpler with Zope 2.8.x
+- Zope 2.7.x specifics: 
+   + ZopeX3-3.0.0 : http://www.zope.org/Products/ZopeX3
+   + Five 1.0.1 or greater : http://codespeak.net/z3/five/
 - TrustedExecutables :
   http://www.dieter.handshake.de/pyprojects/zope/#TrustedExecutables
 - TextIndexNG2 2.2.0 or greater : http://www.zope.org/Members/ajung/TextIndexNG/
@@ -48,7 +49,7 @@ get it on nuxeo svn:
 
     svn co http://svn.nuxeo.org/pub/zasyncdispatcher/trunk zasyncdispatcher
 
-4 - Zope X3 installation
+4 - Zope X3 installation (Zope 2.7.x specific)
 
 Please install ZopeX3-3.0.0 on your system (usually in /opt/ZopeX3-3.0.0) with
 the python version you use for Zope2.7 and CPS, e.g.::
@@ -60,22 +61,21 @@ the python version you use for Zope2.7 and CPS, e.g.::
 
 4 - Products setup
 
-Put Five, TrustedExecutables, TextIndexNG2 and CPSMailAccess in your
-$INSTANCE/Products and build TextIndexNG2::
+Put Five (Zope 2.7 users), TrustedExecutables, TextIndexNG2 and CPSMailAccess
+in your $INSTANCE/Products and build TextIndexNG2::
 
   $ cd TextIndexNG2
   $ python setup.py build
   $ python setup.py install
 
-Remove CPSWebmail Product from your instance, this is very important,
-as it might interfer.
+WARNING: You must remove the CPSWebmail Product from your instance,
+this is very important, as it might interfer.
 
-5 - Zope 3 <-> Zope 2 path setup
+5 - Zope 3 <-> Zope 2 path setup (Zope 2.7 specific)
 
-Edit your $INSTANCE/etc/zope.conf to add the following path declarations::
+Edit your $INSTANCE/etc/zope.conf to add the following path declaration::
 
   path /opt/ZopeX3-3.0.0/lib/python
-  path $INSTANCE/Products/CPSMailAccess
 
 6 - Webmail installation
 
