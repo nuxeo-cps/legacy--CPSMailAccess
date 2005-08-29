@@ -407,6 +407,26 @@ class MailBoxTestCase(MailTestCase):
         mailbox.indexMails([])
         mailbox.indexMails([], background=True)
 
+        # try to call it asynced
+        from Products.CPSMailAccess import mailbox as box_module
+        box_module.can_async = True
+
+    def test_indexMails2(self):
+        # check if the indexer is bullet proof when
+        # zasync is not properly configured
+        mailbox = self._getMailBox()
+        def _canAsync(ob):
+            return True
+
+        def _asyncedCall(*args, **kw):
+            raise AttributeError
+
+        import Products.CPSMailAccess.mailbox as box_module
+        box_module.canAsync = _canAsync
+        box_module.asyncedCall = _asyncedCall
+
+        mailbox.indexMails([], background=True)
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),

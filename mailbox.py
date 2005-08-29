@@ -410,10 +410,16 @@ class MailBox(MailBoxBaseCaching):
                 root = root.replace('/', '.')
                 if root[0] == '.':
                     root = root[1:]
-                asyncedCall(self,
-                 'python:home.%s.portal_webmail.%s.indexMails(%s)' \
+                try:
+                    asyncedCall(self,
+                        'python:home.%s.portal_webmail.%s.indexMails(%s)' \
                                   % (root, self.id, index_stack))
+                    fail_async = False
+                except AttributeError:
+                    fail_async = True
             else:
+                fail_async = True
+            if fail_async or not(can_async and canAsync(self)):
                 self.indexMails(index_stack)
 
         # indexation
@@ -1415,10 +1421,17 @@ class MailBoxView(MailFolderView):
             root = root.replace('/', '.')
             if root[0] == '.':
                 root = root[1:]
-                asyncedCall(self,
+                try:
+                    asyncedCall(self,
                         'python:home.%s.portal_webmail.%s.synchronize(light=%s)' \
                           % (root, box_name, str(light)))
+                    fail_async = False
+                except AttributeError:
+                    fail_async = True
         else:
+            fail_async = True
+
+        if fail_async or not (can_async and canAsync(self)):
             bckgrd = False
 
             if not mailbox.isSynchronizing(1):
