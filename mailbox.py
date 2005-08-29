@@ -1158,6 +1158,12 @@ class MailBox(MailBoxBaseCaching):
             kw = {directory_identifier : id}
             entries = self._searchEntries(directory, [field], **kw)
             if len(entries) > 1:
+                # trying to figure out the user, if doable
+                for entry in entries:
+                    if entry[1][directory_identifier] == id:
+                        if not entry[1].has_key(field):
+                            raise Exception("No field '%s' found in %s" % (field, directory))
+                        return entry[1][field]
                 raise Exception('Directory returned more than one entry')
             if len(entries) == 0:
                 raise Exception('No entry found in %s for %s' % (directory, id))
@@ -1166,7 +1172,6 @@ class MailBox(MailBoxBaseCaching):
                 raise Exception("No field '%s' found in %s" % (field, directory))
             return fields[field]
         return value
-
 
     def elementIsInTrash(self, element):
         """ tells if the given element is in trash

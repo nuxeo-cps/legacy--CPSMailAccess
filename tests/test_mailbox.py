@@ -427,6 +427,22 @@ class MailBoxTestCase(MailTestCase):
 
         mailbox.indexMails([], background=True)
 
+    def test_directoryToParam2(self):
+        # sometimes, we get more than
+        # one entry for specific directories, like ldapdirs
+        def _searchEntries(*args, **kw):
+            return [(1, {'id': '_xx'}), (2, {'id': '_xxx'})]
+
+        def _getDirectoryIdField(*args, **kw):
+            return 'id'
+
+        mailbox = self._getMailBox()
+        mailbox.id = 'box__xx'
+        mailbox._getDirectoryIdField = _getDirectoryIdField
+        mailbox._searchEntries = _searchEntries
+        res = mailbox._directoryToParam('${directory.id}')
+        self.assertEquals(res, '_xx')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),
