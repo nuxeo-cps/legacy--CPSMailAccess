@@ -140,6 +140,7 @@ class MailSearchView(BrowserView):
                             value[0] = '_'
                         if not isinstance(value, unicode):
                             value = value.strip().decode('ISO-8859-15')
+                        value = value.strip('"')
                         query = Query(Any, u'<%s>' % relation, u'"%s"' % value)
                     queries.append(query)
 
