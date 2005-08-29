@@ -152,6 +152,9 @@ class IMAP4:
     def response(self, command):
         return (command, [None])
 
+    def logout(self):
+        return ('OK', True)
+
 class IMAP4_SSL(IMAP4):
     pass
 
