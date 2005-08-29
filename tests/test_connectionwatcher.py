@@ -57,7 +57,7 @@ class ConnectionWatcherTestCase(ZopeTestCase):
         my_list.append(new_connection)
 
         self.assertEquals(len(my_list), 1)
-        sleep(1)
+        sleep(2)
         self.assertEquals(my_list, [])
 
 
