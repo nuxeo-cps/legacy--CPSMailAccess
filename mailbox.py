@@ -56,7 +56,7 @@ from mailfolderview import MailFolderView
 from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
 from basemailview import BaseMailMessageView
 from mailmessageview import MailMessageView
-from mailsearch import MailCatalog, ZemanticMailCatalog, get_uri, union
+from mailsearch import ZemanticMailCatalog, get_uri, union
 from directorypicker import DirectoryPicker
 from baseconnection import has_connection
 from mailfiltering import ZMailFiltering
@@ -800,19 +800,6 @@ class MailBox(MailBoxBaseCaching):
         trash.validateChanges()
         self.clearMailBoxTreeViewCache()
 
-    def _getCatalog(self):
-        """ returns the catalog """
-        uid = self.id
-        catalog_id = self.catalog_id
-
-        if hasattr(self, catalog_id):
-            return getattr(self, catalog_id)
-        else:
-            cat = MailCatalog(catalog_id, uid, uid)
-            self._setObject(catalog_id, cat)
-
-        return getattr(self, catalog_id)
-
     def _getZemanticCatalog(self):
         """ returns the catalog """
         zcatalog_id = self.zcatalog_id
@@ -843,15 +830,11 @@ class MailBox(MailBoxBaseCaching):
 
     def indexMessage(self, msg, index_relations=True):
         """ indexes message """
-        #cat = self._getCatalog()
-        #cat.indexMessage(msg)
         zemantic_cat = self._getZemanticCatalog()
         zemantic_cat.indexMessage(msg, index_relations)
 
     def unIndexMessage(self, msg):
         """ unindexes message """
-        #cat = self._getCatalog()
-        #cat.unIndexMessage(msg)
         zemantic_cat = self._getZemanticCatalog()
         zemantic_cat.unIndexMessage(msg)
 

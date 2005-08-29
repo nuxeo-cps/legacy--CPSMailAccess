@@ -76,33 +76,10 @@ class CPSMailAccessInstaller(CPSInstaller):
         method_link()
         self.log(ModuleName+" INSTALL [ STOP ]")
 
-    def installProducts(self):
-        """ install third party products
-        """
-        self.log("Installing TextIndexNG2...")
-        self.installProduct('TextIndexNG2', 'Install')
-        self.checkSkinOrder()
-        self.log("... done")
-
-    def checkSkinOrder(self):
-        """ check skin order """
-        all_skins = self.portal.portal_skins.getSkinPaths()
-        for skin_name, skin_path in all_skins:
-            if skin_name not in ('Basic', 'CPSSkins'):
-                continue
-            path = [x.strip() for x in skin_path.split(',')]
-            if not path[0] == 'custom':
-                if 'custom' in path:
-                    path.remove('custom')
-                path.insert(0, 'custom')
-                npath = ', '.join(path)
-                self.portal.portal_skins.addSkinSelection(skin_name, npath)
-
     def install(self):
         """ make the installation
         """
         self.log("Install/Update : CPSMailAccess Product")
-        self.installProducts()
         self.verifySkins(SKINS)
         self.resetSkinCache()
         self.setupPortalWebMail()

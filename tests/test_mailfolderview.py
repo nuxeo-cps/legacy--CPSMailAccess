@@ -44,8 +44,6 @@ def testGetNextMessageUid(self):
 from mailbox import MailBox
 MailFolder.getNextMessageUid = testGetNextMessageUid
 
-installProduct('TextIndexNG2')
-
 class MailFolderViewTestCase(MailTestCase):
 
     def test_getMailMessagesCountRecursive(self):

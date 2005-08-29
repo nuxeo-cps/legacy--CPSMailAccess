@@ -28,8 +28,6 @@ from Products.CPSMailAccess.mailbox import MailBox
 
 from basetestcase import MailTestCase
 
-installProduct('TextIndexNG2')
-
 class MailSearchViewTestCase(MailTestCase):
 
     count = 0
@@ -43,43 +41,21 @@ class MailSearchViewTestCase(MailTestCase):
             with a few mails indexed
         """
         box = self._getMailBox()
-        cat = box._getCatalog()
         zcat = box._getZemanticCatalog()
 
         for i in range(38):
             ob = self.getMailInstanceT(i)
             #ob.getPhysicalPath = self.fakeGetPhysicalPath
             ob = ob.__of__(self.portal)
-            cat.indexMessage(ob)
             zcat.indexMessage(ob, full_indexation)
 
         searchview = MailSearchView(box, self.request)
         searchview = searchview.__of__(box)
-        return searchview, cat, zcat, box
+        return searchview, None, zcat, box
 
     def test_instanciation(self):
         searchview = self._getView()
         self.assertNotEquals(searchview, None)
-
-    def test_searchs(self):
-        searchview, cat, zcat, box = self._getView()    # also fills cat
-        self.assertEquals(box._getCatalog(), cat)
-        query = {}
-        query['searchable_text'] = u'Lovers'
-
-        res = cat.search(query_request=query)
-        direct_search = []
-        for brain in res:
-            direct_search.append(brain.getPath())
-
-        results = searchview.searchMessages('Dingus Lovers')[0]
-
-        for res in results:
-            self.assert_(res['path'] in direct_search)
-
-    def test_weirdo_searchs(self):
-        searchview, cat, zcat, box = self._getView()    # also fills cat
-        results = searchview.searchMessages('é')
 
     def test_zemanticPredicateList(self):
         searchview, cat, zcat, box = self._getView()    # also fills cat
@@ -106,7 +82,7 @@ class MailSearchViewTestCase(MailTestCase):
 
     def test_zemantic_searchs(self):
         searchview, cat, zcat, box = self._getView()    # also fills cat
-        self.assertEquals(box._getCatalog(), cat)
+
 
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
@@ -157,27 +133,6 @@ class MailSearchViewTestCase(MailTestCase):
         searchview = self._getView(False)
         self.assertNotEquals(searchview, None)
 
-    def test_searchs_light(self):
-        searchview, cat, zcat, box = self._getView(False)
-        self.assertEquals(box._getCatalog(), cat)
-        query = {}
-        query['searchable_text'] = u'Lovers'
-        query['lazy_search'] = 1
-
-        res = cat.search(query_request=query)
-        direct_search = []
-        for brain in res:
-            direct_search.append(brain.getPath())
-
-        results = searchview.searchMessages('Dingus Lovers')[0]
-
-        for res in results:
-            self.assert_(res['path'] in direct_search)
-
-    def test_weirdo_searchs_light(self):
-        searchview, cat, zcat, box = self._getView(False)
-        results = searchview.searchMessages('é')
-
     def test_zemanticPredicateList_light(self):
         searchview, cat, zcat, box = self._getView(False)
         list_ = searchview.zemanticPredicateList()
@@ -186,7 +141,6 @@ class MailSearchViewTestCase(MailTestCase):
 
     def test_zemantic_searchs_light(self):
         searchview, cat, zcat, box = self._getView(False)
-        self.assertEquals(box._getCatalog(), cat)
 
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)

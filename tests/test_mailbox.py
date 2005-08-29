@@ -36,9 +36,6 @@ from basetestcase import MailTestCase
 
 from Products.CPSMailAccess import mailbox
 
-
-installProduct('TextIndexNG2')
-
 class FakeDirectory(Folder):
     id_field = 'i am the id field'
 

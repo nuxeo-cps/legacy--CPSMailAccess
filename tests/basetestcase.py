@@ -61,7 +61,6 @@ class MailMessageT(MailMessage):
 
 installProduct('Five')
 installProduct('zasyncdispatcher')
-#installProduct('TextIndexNG2')
 
 class FakeDirectory:
     id_field = 'id'

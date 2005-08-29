@@ -21,14 +21,13 @@ A - INSTALLATION NOTES
 
 To install CPSMailAccess you will need:
 
-- a working Zope 2.7.x + CPS 3.3.4 or greater. 
+- a working Zope 2.7.x + CPS 3.3.4 or greater.
   The installation procedure is simpler with Zope 2.8.x
-- Zope 2.7.x specifics: 
+- Zope 2.7.x specifics:
    + ZopeX3-3.0.0 : http://www.zope.org/Products/ZopeX3
    + Five 1.0.1 or greater : http://codespeak.net/z3/five/
 - TrustedExecutables :
   http://www.dieter.handshake.de/pyprojects/zope/#TrustedExecutables
-- TextIndexNG2 2.2.0 or greater : http://www.zope.org/Members/ajung/TextIndexNG/
 - rdflib 2.0.6 : http://rdflib.net/
 - zasyncdispatcher (optional) http://svn.nuxeo.org/trac/pub/browser/zasyncdispatcher/
 
@@ -61,12 +60,7 @@ the python version you use for Zope2.7 and CPS, e.g.::
 
 4 - Products setup
 
-Put Five (Zope 2.7 users), TrustedExecutables, TextIndexNG2 and CPSMailAccess
-in your $INSTANCE/Products and build TextIndexNG2::
-
-  $ cd TextIndexNG2
-  $ python setup.py build
-  $ python setup.py install
+Put Five (Zope 2.7 users), TrustedExecutables and CPSMailAccess
 
 WARNING: You must remove the CPSWebmail Product from your instance,
 this is very important, as it might interfer.

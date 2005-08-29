@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
-- French language: corrected some typos. 
+- French language: corrected some typos.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
--
+- Removed TextIndexNG2

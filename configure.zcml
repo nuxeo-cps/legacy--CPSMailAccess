@@ -699,14 +699,6 @@
   <browser:page
       for=".interfaces.IMailBox"
       class=".mailsearchview.MailSearchView"
-      name="searchMessages"
-      attribute="searchMessages"
-      permission="cpsmailaccess.ViewMailBox"
-      />
-
-  <browser:page
-      for=".interfaces.IMailBox"
-      class=".mailsearchview.MailSearchView"
       template="www/mailSearchView.zpt"
       name="searchMessage.html"
       permission="cpsmailaccess.ViewMailBox"

@@ -37,41 +37,6 @@ class MailSearchView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
 
-    def searchMessages(self, searchable_text):
-        """ search the catalog """
-        start = time.time()
-        # XXX encoding in iso8859-15 (today's CPS)
-        searchable_text = searchable_text.strip().decode('ISO-8859-15')
-        if searchable_text == '':
-            return []
-        box = self.context
-        user_id = box.getConnectionParams()['uid']
-        results = []
-        cat = box._getCatalog()
-        msg_viewer = MailMessageView(None, self.request)
-
-        if cat is not None:
-            query = {}
-            query['searchable_text'] = searchable_text
-            raw_results = cat.search(query_request=query)
-            for result in raw_results:
-                current = {}
-                current['path'] = result.getPath()
-                object = traverseToObject(box, current['path'])
-                current['object'] = object
-                current['rid'] = result.getRID()
-                # see if this can be done more quickly
-                msg_viewer.context = object
-                current['From'] = msg_viewer.renderFromList()
-                current['Subject'] = msg_viewer.renderSubject()
-                current['Date'] = msg_viewer.renderDate()
-                results.append(current)
-        else:
-            raise MailCatalogError('No catalog for %s' % user_id)
-
-        dtime = time.time() - start
-        return (results, dtime)
-
     def zemanticPredicateList(self):
         """ retrieves all predicates """
         mailbox = self.context

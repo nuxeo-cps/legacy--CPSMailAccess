@@ -44,8 +44,6 @@ class FakeFieldStorage:
     filename = ''
     headers = []
 
-installProduct('TextIndexNG2')
-
 def openfile(filename, mode='r'):
     path = os.path.join(os.path.dirname(landmark), 'data', filename)
     return open(path, mode)
