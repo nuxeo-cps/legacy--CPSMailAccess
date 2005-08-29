@@ -587,7 +587,7 @@ class MailFolder(BTreeFolder2):
             else:
                 part_infos = part_infos[1]
                 part_num = '%s.1' % part_num
-        elif part_infos[0] in ('relative', 'signed', 'mixed'):
+        elif part_infos[0] in ('relative', 'signed', 'mixed', 'related'):
             part_infos = part_infos[1]
             part_num = '%s.1' % part_num
         else:

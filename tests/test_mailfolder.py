@@ -584,6 +584,28 @@ class MailFolderTestCase(MailTestCase):
 
         self.assert_(not ob3.moveMessage('1', ob2))
 
+    def test_loadMessageStructureFromServer(self):
+        # XXX will be move in imap class
+        def luid(type_, message_number, message_parts):
+            return ('OK', [("""1 (BODY (("text" "plain" ("charset" "iso-8859-1" "format"
+         "flowed") NIL NIL "base64" 100 2)(("text" "html" ("charset" "iso-8859-1") NIL
+         NIL "7bit" 1207 30)("image" "gif" ("name" "logo_bceao.gif")
+          "<part1.01030007.07010309@bceao.lan>" NIL "base64" 4920) "related") "alternative"))""")])
+
+        ob = self.getMailInstance(1)
+        box = self._getMailBox()
+        realconnector = box._getconnector()._connection
+        old = realconnector.uid
+        try:
+            realconnector.uid = luid
+            box._loadMessageStructureFromServer('x', 1, [], {}, 0, ob,
+                                                box._getconnector(), True)
+
+            ct = ob._getStore()['Content-type']
+            self.assertEquals(ct, 'text/html; charset="iso-8859-1"')
+        finally:
+            realconnector.uid = old
+
 
 
 def test_suite():
