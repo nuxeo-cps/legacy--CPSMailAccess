@@ -36,6 +36,11 @@
   />
 
   <adapter
+    for=".interfaces.IMailBox"
+    factory=".mailbox.MailBoxTraversable"
+    provides="zope.app.traversing.interfaces.ITraversable" />
+
+  <adapter
     for=".interfaces.IMailMessage"
     factory=".mailmessageview.MailTraverser"
     provides="zope.app.traversing.interfaces.ITraversable" />
@@ -621,7 +626,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="attachedFiles.html"
       attribute="attached_files"
-      permission="cpsmailaccess.SendMails"
+      permission="zope2.Public"
       />
 
   <browser:page
@@ -629,7 +634,7 @@
       class=".mailmessageeditview.MailMessageEdit"
       name="is_editor"
       attribute="is_editor"
-      permission="cpsmailaccess.SendMails"
+      permission="zope2.Public"
       />
 
   <browser:page
@@ -637,7 +642,7 @@
       class=".mailmessageview.MailMessageView"
       name="attachedFiles.html"
       attribute="attached_files"
-      permission="cpsmailaccess.ViewMailBox"
+      permission="zope2.Public"
       />
 
   <browser:page
