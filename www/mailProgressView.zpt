@@ -18,11 +18,6 @@
         If nothing seems to be loading, click here
         </a>
     </li>
-    <li>
-        <a href="view" i18n:translate="cpsma_browse_while_synchro">
-            While the mailbox is beeing synchronized, you still can browse existing mails, but with restricted features.
-        </a>
-    </li>
     </ul>
   </metal:block>
 </html>
