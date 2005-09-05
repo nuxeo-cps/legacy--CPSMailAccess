@@ -344,7 +344,6 @@ class MailMessageViewTestCase(MailTestCase):
         message = self.getMailInstance(48)
         message = message.__of__(mbox)
         view = MailMessageView(message, None)
-        self.assertRaises(AttributeError, view.notify, 0)
 
     def test_getReferences(self):
         mbox = self._getMailBox()
