@@ -142,7 +142,6 @@ class InformationStoreView:
         dircon =  URIRef(dircon)
         self.context.parse(directory, dircon)
         n = 0
-        import pdb; pdb.set_trace()
         q = Query(Any, u'<http://www.schemaweb.info/schemas/meta/rdf/rdf-meta>', Any, dircon)
         for result in self.context.query(q):
             if result is not None:
