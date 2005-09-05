@@ -455,6 +455,8 @@ class MailFolderViewTestCase(MailTestCase):
 
         # check the view
         rendered_list = view.renderMailList()[1]
+        import time; time.sleep(0.2)
+
         msg1v = rendered_list[0]
         self.assertEquals(msg1v['object'], msg_1)
         self.assertEquals(msg1v['folder_id_uid'], 'INBOX__1')
