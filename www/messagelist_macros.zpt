@@ -199,8 +199,8 @@
             <th class="mailToolBarElement mailToolBarInsideElement"
                 tal:repeat="col cols">
               <tal:block tal:define="sort_order
-                                     python:sort_with==col and 
-				     (not int(sort_asc)) or 
+                                     python:sort_with==col and
+                                     (not int(sort_asc)) or
                                      int(sort_asc);
                                      sort_order python:sort_order and 1 or 0">
                 <a tal:attributes="href
@@ -253,8 +253,6 @@
                                   onclick onclickurl;
                                   onmouseover onmouseover">
 
-              <a tal:attributes="href string:#">
-
                 <tal:block tal:condition="python:col=='Attachments'">
                   <img src="cpsma_attach_mini.png" tal:condition="python:message[col]==1"/>
                 </tal:block>
@@ -270,7 +268,6 @@
                  <span tal:attributes="class python:textstyle+' truncable'"
                        tal:content="python:message[col]"/>
                 </tal:block>
-              </a>
               </div>
               </div>
             </td>
