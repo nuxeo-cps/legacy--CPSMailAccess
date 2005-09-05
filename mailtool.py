@@ -20,6 +20,7 @@
   mailtool contains singleton tool used to
   hold connections and to hold
 """
+import os
 import thread
 
 from OFS.Folder import Folder
@@ -69,7 +70,6 @@ default_parameters = {'connection_type' : ('IMAP', 1),
             'message_list_cols' :
             ('Attachments, Icon, From, Date, Subject, Size', 1),
             'signature' : ('', 0),
-            'maildir' : ('/tmp/maildir', 1),
             'direct_smtp' : (1, 1),
             'addressbook' : ('addressbook', 1),
             'read_only_folders': ('INBOX.Sent', 1)
@@ -97,9 +97,13 @@ class MailTool(Folder): # UniqueObject
         self.default_connection_params = PersistentMapping()
         self._initializeParameters()
         self._initializeConnectionList()
-        mail_dir = self.default_connection_params['maildir'][0]
         direct_smtp = self.default_connection_params['direct_smtp'][0]
-        self._maildeliverer = SmtpMailer(mail_dir, direct_smtp)
+
+        # creating a temporary directory for mail storage
+        temp_dir = os.path.dirname(os.tempnam())
+        temp_dir = os.path.join(temp_dir, 'maildir')
+        self._maildeliverer = SmtpMailer(temp_dir, direct_smtp)
+
 
     def getMailDeliverer(self):
         """ check if _maildeliverer points on the right

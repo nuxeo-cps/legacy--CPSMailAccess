@@ -22,8 +22,8 @@
     utility thru zcml directive
     and get notification when swork is done
 """
+import os
 import socket, threading
-from os import unlink
 from time import sleep
 import atexit
 from smtplib import SMTPRecipientsRefused
@@ -120,7 +120,7 @@ class MailSender(QueueProcessorThread):
                                                 password)
                     mailer.send(fromaddr, toaddrs, message)
 
-                    unlink(filename)
+                    os.unlink(filename)
                     # TODO: maybe log the Message-Id of the message sent
                     self.log.info("Mail from %s to %s sent.",
                                     fromaddr, ", ".join(toaddrs))
@@ -171,9 +171,17 @@ class SmtpMailer(Persistent):
 
     def __init__(self, maildir_directory, direct_smtp):
         self.maildir_directory = maildir_directory
-        self.maildir = Maildir(self.maildir_directory, True)
         self._started = False
         self.direct_smtp = direct_smtp
+        self._createMailDir()
+
+    def _createMailDir(self):
+        """ creates the maildir """
+        if self.direct_smtp != 1:
+            # trying to create the maildir
+            self.maildir = Maildir(self.maildir_directory, True)
+        else:
+            self.maildir = None
 
     def _checkElements(self):
         setMailElement(self.maildir_directory)
@@ -193,6 +201,9 @@ class SmtpMailer(Persistent):
             else:
                 return True, ''
         else:
+            if self.maildir is None:
+                self._createMailDir()
+
             self.start_sender()
             try:
                 self._write(fromaddr, toaddrs, message, hostname, port,

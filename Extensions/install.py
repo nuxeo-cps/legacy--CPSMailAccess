@@ -21,6 +21,7 @@
 """ Zope 2 style installer
 
 """
+import os
 from zLOG import LOG, INFO, DEBUG
 from OFS.ObjectManager import BadRequestException
 
@@ -619,7 +620,11 @@ class CPSMailAccessInstaller(CPSInstaller):
                     params[parameter] = default_parameters[parameter]
 
             from Products.CPSMailAccess.smtpmailer import SmtpMailer
-            wm._maildeliverer = SmtpMailer('/tmp/maildir', 1)
+
+            # creating a temporary directory for mail storage
+            temp_dir = os.path.dirname(os.tempnam())
+            temp_dir = os.path.join(temp_dir, 'maildir')
+            wm._maildeliverer = SmtpMailer(temp_dir, 1)
 
         self.log('upgrading boxes to beta 2')
         from BTrees.OOBTree import OOBTree
