@@ -269,6 +269,7 @@ class MailBoxTestCase(MailTestCase):
                                      'to_folder_INBOX.folder2')
 
         self.assertEquals(target, folder1)
+
         self.assertEquals(list(folder1.objectIds()), [])
         self.assertEquals(list(folder2.objectIds()), ['.1'])
 
@@ -373,26 +374,10 @@ class MailBoxTestCase(MailTestCase):
         self.assertEquals(mail._getStore()._payload, '')
         self.assertEquals(mail._file_list, [])
 
-    def test_sendEditorsMessage(self):
-        mailbox = self._getMailBox()
-        # XXX todo: find out why zopetestcase bust the fakesmtplib
-        # at this time we just calling it
-        # to make sure it will raise within the smtplib
-        self.assertRaises(AttributeError, mailbox.sendEditorsMessage)
-
     def test_searchInConnection(self):
         mailbox = self._getMailBox()
         res= mailbox.searchInConnection('(body test)')
         self.assert_(len(res) > 0)
-
-    def test_sendNotification(self):
-        mailbox = self._getMailBox()
-        msg = self.getMailInstance(4)
-        # XXX todo: find out why zopetestcase bust the fakesmtplib
-        # at this time we just calling it
-        # to make sure it will raise within the smtplib
-        self.assertRaises(AttributeError, mailbox.sendNotification, 'xxxx', msg)
-        self.assertRaises(AttributeError, mailbox.sendNotification, u'xééxxx', msg)
 
     def test_getPublicAdressBookName(self):
         mailbox = self._getMailBox()
@@ -439,6 +424,31 @@ class MailBoxTestCase(MailTestCase):
         mailbox._searchEntries = _searchEntries
         res = mailbox._directoryToParam('${directory.id}')
         self.assertEquals(res, '_xx')
+
+    def test_failedCopyToSend(self):
+
+        class FakeMailer:
+            def send(*arg, **kw):
+                return True, 'OK'
+
+        def _writeMsg(*arg, **kw):
+            return ''
+
+        def _getMailDeliverer(*arg, **kw):
+            return FakeMailer()
+
+        mailbox = self._getMailBox()
+        mailbox.id = 'box__xx'
+        mailbox._getconnector().writeMessage = _writeMsg
+
+        self.portal.portal_webmail.getMailDeliverer = _getMailDeliverer
+
+        ob = self.getMailInstance(6)
+
+        mailbox.sendNotification('me', ob)
+        mailbox.sendEditorsMessage()
+        mailbox.saveEditorMessage()
+
 
 def test_suite():
     return unittest.TestSuite((

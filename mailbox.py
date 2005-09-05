@@ -601,13 +601,17 @@ class MailBox(MailBoxBaseCaching):
 
         result, error = maildeliverer.send(msg_from, recipient, msg_content,
                                            smtp_host, smtp_port, None, None)
+
         if result:
             sent_folder = self.getSentFolder()
             connector = self._getconnector()
 
+
             uid = connector.writeMessage(sent_folder.server_name,
                                          msg_notif.getRawMessage())
-            connector.setFlags(sent_folder.server_name, uid, {'Seen': 1})
+
+            if uid != '':
+                connector.setFlags(sent_folder.server_name, uid, {'Seen': 1})
 
             # on the zodb, by synchronizing INBOX.Sent folder
             sent_folder._synchronizeFolder(return_log=False)
@@ -667,7 +671,9 @@ class MailBox(MailBoxBaseCaching):
 
             uid = connector.writeMessage(sent_folder.server_name,
                                          msg.getRawMessage())
-            connector.setFlags(sent_folder.server_name, uid, {'Seen': 1})
+
+            if uid != '':
+                connector.setFlags(sent_folder.server_name, uid, {'Seen': 1})
 
             # on the zodb, by synchronizing INBOX.Sent folder
             try:
