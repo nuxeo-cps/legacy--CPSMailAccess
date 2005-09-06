@@ -604,6 +604,19 @@ class MailFolderTestCase(MailTestCase):
         finally:
             realconnector.uid = old
 
+    def test_forceDelete(self):
+        # when a folder is placed in the trash
+        # it could fail if the max depth is <= 2
+        # now forces the folder move in renamefolder
+        # if the objective is to send to the trash
+        mailbox = self._getMailBox()
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
+        folder1 = inbox._addFolder('folder 1', 'INBOX.folder 1')
+        trash = inbox._addFolder('Trash', 'INBOX.Trash')
+
+        result = folder1.delete()
+
+        self.assert_(result)
 
 
 def test_suite():

@@ -846,7 +846,7 @@ class MailFolder(BTreeFolder2):
         return self.getMailMessagesCount(count_folder=True, count_messages=True, \
             recursive=False) == 0
 
-    def rename(self, new_name, fullname=False):
+    def rename(self, new_name, fullname=False, force=False):
         """ renames the box """
         self._clearCache()
         self.clearMailBoxTreeViewCache()
@@ -863,12 +863,13 @@ class MailFolder(BTreeFolder2):
             newmailbox = new_name
 
         # check that the new name is not deeper than the autorized depth
-        mailbox = self.getMailBox()
-        max_depth = mailbox.getConnectionParams()['max_folder_depth']
-        if max_depth > 0:
-            if len(newmailbox.split('.')) > max_depth:
-                # not allowed
-                return False
+        if not force:
+            mailbox = self.getMailBox()
+            max_depth = mailbox.getConnectionParams()['max_folder_depth']
+            if max_depth > 0:
+                if len(newmailbox.split('.')) > max_depth:
+                    # not allowed
+                    return False
 
         if has_connection:
             connector = self._getconnector()
@@ -946,7 +947,7 @@ class MailFolder(BTreeFolder2):
             seed += 1
         newmailbox = trash_folder_name + '.' + composed
         self.mailbox = None
-        return self.rename(newmailbox, fullname=True)
+        return self.rename(newmailbox, fullname=True, force=True)
 
     def simpleFolderName(self, server_name=''):
         """ retrieves the simple folder name """
