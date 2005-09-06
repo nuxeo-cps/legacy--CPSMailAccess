@@ -613,11 +613,9 @@ class MailFolderTestCase(MailTestCase):
         inbox = mailbox._addFolder('INBOX', 'INBOX')
         folder1 = inbox._addFolder('folder 1', 'INBOX.folder 1')
         trash = inbox._addFolder('Trash', 'INBOX.Trash')
-
         result = folder1.delete()
 
-        self.assert_(result)
-
+        self.assertNotEquals(result, None)
 
 def test_suite():
     return unittest.TestSuite((
