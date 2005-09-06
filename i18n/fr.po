@@ -522,3 +522,12 @@ msgstr "Sujet"
 
 msgid "Size"
 msgstr "Taille"
+
+msgid "Drafts"
+msgstr "Brouillons"
+
+msgid "Sent"
+msgstr "Envoyés"
+
+msgid "Trash"
+msgstr "Corbeille"

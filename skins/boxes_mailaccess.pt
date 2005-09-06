@@ -21,14 +21,31 @@
             </tal:block>
             <img tal:attributes="src element/icon_name"/>
               <a tal:attributes="href element/url">
-                <tal:block tal:condition="not:unreads">
-                <span tal:replace="element/short_title"/>
+                <tal:block
+                  tal:condition="python:element['short_title'] in ('Drafts', 'Sent', 'Trash')">
+
+                  <tal:block tal:condition="not:unreads">
+                    <tal:block tal:content="element/short_title" i18n:translate=""/>
+                  </tal:block>
+                  <tal:block tal:condition="unreads">
+                    <strong>
+                      <tal:block tal:content="element/short_title" i18n:translate=""/>
+                      (<span tal:replace="unreads"/>)
+                    </strong>
+                  </tal:block>
                 </tal:block>
-                <tal:block tal:condition="unreads">
-                  <strong>
-                    <span tal:content="element/short_title"/>
-                    (<span tal:replace="unreads"/>)
-                  </strong>
+                <tal:block
+                  tal:condition="not:python:element['short_title'] in ('Drafts', 'Sent', 'Trash')">
+
+                  <tal:block tal:condition="not:unreads">
+                    <tal:block tal:content="element/short_title"/>
+                  </tal:block>
+                  <tal:block tal:condition="unreads">
+                    <strong>
+                      <tal:block tal:content="element/short_title"/>
+                      (<span tal:replace="unreads"/>)
+                    </strong>
+                  </tal:block>
                 </tal:block>
               </a>
           </div>

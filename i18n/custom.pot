@@ -514,3 +514,12 @@ msgstr ""
 
 msgid "Size"
 msgstr ""
+
+msgid "Drafts"
+msgstr ""
+
+msgid "Sent"
+msgstr ""
+
+msgid "Trash"
+msgstr ""
