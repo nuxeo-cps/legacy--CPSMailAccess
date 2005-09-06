@@ -228,6 +228,21 @@ class MailMessageEditTestCase(MailTestCase):
         self.assertEquals(msg.getHeader('To'), ['toto'])
         self.assertEquals(msg.getHeader('Cc'), [])
 
+    def test_getredirect(self):
+        mailbox = self._getMailBox()
+        msg = mailbox.getCurrentEditorMessage()
+
+        view = MailMessageEdit(mailbox, None)
+        url = view.getRedirect()
+        self.assertEquals(url, mailbox.absolute_url())
+
+        mailbox = self._getMailBox()
+        view = MailMessageEdit(mailbox, None)
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
+        url = view.getRedirect()
+
+        # XXX in the test data root box is named INBOX
+        self.assertEquals(url, 'nowhere/INBOX/INBOX')
 
 def test_suite():
     return unittest.TestSuite((

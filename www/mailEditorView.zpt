@@ -57,7 +57,8 @@
                       body_value here/getBodyValue;
                       from_indentities here/getIdentitites;">
 
-      <input id="came_from" type="hidden" tal:attributes="value came_from" name="came_from"/>
+      <input id="came_from" type="hidden" tal:attributes="value here/getRedirect"
+              name="came_from"/>
 
       <input id="msg_from" tal:condition="python:len(from_indentities) == 1"
              type="hidden" tal:attributes="value python:'%s <%s>' %
@@ -84,11 +85,11 @@
                                   Bcs python:here.getDestList(type_='BCc');">
 
             <div id="Cc"
-                tal:attributes="style python:cc_on==0 and len(Ccs)==0 and 
-		                      'visibility: hidden' or 
-				      'visibility: visible';
+                tal:attributes="style python:cc_on==0 and len(Ccs)==0 and
+                                      'visibility: hidden' or
+                                      'visibility: visible';
                                 class python:cc_on==0 and len(Ccs)==0 and
-				      'hidden_part' or ''"
+                                      'hidden_part' or ''"
                     tal:define="elements python:'\r\n'.join(Ccs)">
                 <div class="recipient_header"><span i18n:translate="cpsma_cc">Cc</span>:</div>
                 <div  class="recipient">
@@ -103,7 +104,7 @@
                                                  'visibility: hidden' or
                                                  'visibility: visible';
                                     class python:bcc_on==0 and len(Bcs)==0 and
-				                 'hidden_part' or ''"
+                                                 'hidden_part' or ''"
                     tal:define="elements Bcs;
                                         elements python:'\r\n'.join(elements)">
                 <div class="recipient_header"><span

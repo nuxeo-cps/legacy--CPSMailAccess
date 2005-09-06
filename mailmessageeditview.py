@@ -58,6 +58,16 @@ class MailMessageEdit(BrowserView):
         else:
             return value
 
+    def getRedirect(self):
+        """ computes the best pick for redirection after a mail is sent """
+        mailbox = self.context
+        if hasattr(mailbox, 'INBOX'):
+            # XXX Z2 dependant
+            return mailbox.INBOX.absolute_url()
+        else:
+            # XXX Z2 dependant
+            return mailbox.absolute_url()
+
     def initMessage(self):
         """ will init message editor """
         mailbox = self.context
