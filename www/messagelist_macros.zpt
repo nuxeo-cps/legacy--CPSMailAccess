@@ -208,7 +208,7 @@
                 %(page, nb_items, col, sort_order)">
 
                 <tal:block tal:condition="python:col not in ('Attachments', 'Icon')">
-                    <span tal:replace="col"/>
+                    <tal:block i18n:translate="" tal:content="col"/>
                 </tal:block>
                 <tal:block tal:condition="python:col=='Attachments'">
                     A

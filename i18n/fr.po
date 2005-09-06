@@ -503,3 +503,22 @@ msgstr "Corbeille vidée."
 
 msgid "cps_already_synchronizing"
 msgstr "La boîte est déjà en cours de synchronisation"
+
+# specific cases: columns headers
+msgid "Attachments"
+msgstr "Pièces"
+
+msgid "Icon"
+msgstr "Icône"
+
+msgid "From"
+msgstr "De"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Subject"
+msgstr "Sujet"
+
+msgid "Size"
+msgstr "Taille"

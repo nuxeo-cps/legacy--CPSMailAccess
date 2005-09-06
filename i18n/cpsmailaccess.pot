@@ -498,3 +498,22 @@ msgstr ""
 
 msgid "cps_already_synchronizing"
 msgstr ""
+
+# specific cases: columns headers
+msgid "Attachments"
+msgstr ""
+
+msgid "Icon"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Subject"
+msgstr ""
+
+msgid "Size"
+msgstr ""
