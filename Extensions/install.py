@@ -112,9 +112,21 @@ class CPSMailAccessInstaller(CPSInstaller):
             typestool.manage_delObjects(namebox)
             self.log("  Type %s Deleted" % (namebox,))
 
-        typestool.manage_addTypeInformation(id=namebox,
-            add_meta_type='Factory-based Type Information',
-            typeinfo_name='CPSMailAccess: MailBoxTreeView')
+        from zExceptions import BadRequest
+        add_meta_type='Factory-based Type Information'
+        typeinfo_name='CPSMailAccess: MailBoxTreeView'
+
+        try:
+            typestool.manage_addTypeInformation(id=namebox,
+                                                add_meta_type=add_meta_type,
+                                                typeinfo_name=typeinfo_name)
+        except BadRequest:
+            # CMF new-style notation
+            typeinfo_name = \
+                'CPSMailAccess: portal_type_MailBoxTreeView_title(MailBoxTreeView)'
+            typestool.manage_addTypeInformation(id=namebox,
+                                                add_meta_type=add_meta_type,
+                                                typeinfo_name=typeinfo_name)
 
     def setupBoxes(self):
         """ sets up boxes """
