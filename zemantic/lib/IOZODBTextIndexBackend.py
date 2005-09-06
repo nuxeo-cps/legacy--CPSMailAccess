@@ -199,6 +199,8 @@ class IOZODBTextIndexBackend(Persistent):
             if isinstance(object, Literal):
                 ois = self.texti.search_phrase(object)
                 if len(ois) == 0:
+                    ois = self.texti.search_glob(object)
+                if len(ois) == 0:
                     oi = self.reverse[object]
                     ois = Any
             else:
