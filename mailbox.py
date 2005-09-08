@@ -555,7 +555,12 @@ class MailBox(MailBoxBaseCaching):
 
         # wraps connection params with uid
         # and make translations
-        connection_params = self.wrapConnectionParams(connection_params)
+        try:
+            connection_params = self.wrapConnectionParams(connection_params)
+        except Exception, e:
+            # bad configuration
+            raise ValueError('Bad configuration parameter: %s' % str(e))
+
         connector = wm_tool.getConnection(connection_params, number)
 
         if connector is None:
@@ -1277,6 +1282,8 @@ class MailBox(MailBoxBaseCaching):
             return True, None
         except ConnectionError, e:
             return False, e
+        except ValueError, e:
+            return False, e
 
     def searchInConnection(self, query):
         """ sends a query to the connector and mix the results all """
@@ -1433,7 +1440,7 @@ class MailBoxView(MailFolderView):
                     mailbox.synchronize(no_log=True, light=light)
                     psm = 'cpsma_synchronized'
                     res = True
-                except ConnectionError, e:
+                except (ConnectionError, ValueError), e:
                     psm = str(e)
                     mailbox.clearSynchro(1)
                     res = False
