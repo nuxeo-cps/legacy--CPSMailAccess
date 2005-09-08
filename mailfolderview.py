@@ -139,7 +139,13 @@ class MailFolderView(BaseMailMessageView):
             self.request.response.redirect(url+'/view?msm=%s' % psm)
 
     def _sortMessages(self, elements, sort_with, sort_asc):
-        """ sorts a list of messages """
+        """ sorts a list of messages
+
+        XXX we need to add a second sort key
+        for elements that has the same value
+        in order to keep a fixed sorting order
+        (the message complete id should be ok)
+        """
         if sort_with not in ('Attachments', 'Subject', 'From', 'Date',
                              'Size', 'Icon'):
             sort_with = 'Date'
