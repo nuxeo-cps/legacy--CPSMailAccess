@@ -19,7 +19,7 @@
 # 02111-1307, USA.
 #
 # $Id$
-
+import time
 import unittest
 from zope.testing import doctest
 from Testing.ZopeTestCase import installProduct
@@ -44,7 +44,27 @@ def testGetNextMessageUid(self):
 from mailbox import MailBox
 MailFolder.getNextMessageUid = testGetNextMessageUid
 
+import datetime
+
 class MailFolderViewTestCase(MailTestCase):
+
+    month = 1
+    day = 1
+    year = 2005
+
+    def gettime(self):
+        if self.day == 25:
+            if self.month == 12:
+                self.year += 1
+                self.month = 1
+                self.day = 1
+            else:
+                self.month += 1
+                self.day = 1
+        else:
+            self.day +=     1
+
+        return str(datetime.datetime(self.year, self.month, self.day))
 
     def test_getMailMessagesCountRecursive(self):
         # testing getMailMessagesCount with all combos recursively
@@ -57,7 +77,8 @@ class MailFolderViewTestCase(MailTestCase):
             msg = folder._addMessage(key,key)
             msg.addHeader('From', 'Me')
             msg.addHeader('To', 'You')
-            msg.addHeader('Date', 'Now')
+            msg.addHeader('Date', self.gettime())
+
             for y in range(2):
                 subfolder = folder._addFolder()
                 for y in range(5):
@@ -65,14 +86,15 @@ class MailFolderViewTestCase(MailTestCase):
                     msg = subfolder._addMessage(key, key)
                     msg.addHeader('From', 'Me')
                     msg.addHeader('To', 'You')
-                    msg.addHeader('Date', 'Now')
+                    time.sleep(0.01)
+                    msg.addHeader('Date', self.gettime())
 
         for i in range(123):
             key = self.msgKeyGen()
             msg = ob._addMessage(key, key)
             msg.addHeader('From', 'Me')
             msg.addHeader('To', 'You')
-            msg.addHeader('Date', 'Now')
+            msg.addHeader('Date', self.gettime())
 
         count = ob.getMailMessagesCount(True, True, True)
         self.assertEquals(count, 263)
@@ -115,10 +137,11 @@ class MailFolderViewTestCase(MailTestCase):
         ob.getPhysicalPath = self.getPhysicalPath
 
         view = MailFolderView(ob, None)
+
         rendered_list = view.renderMailList()[1]
 
         self.assertEquals(rendered_list[len(rendered_list)-1]['url'],
-                          '.130/view')
+                          '.212/view')
 
         # testing a message
         msg_entry = rendered_list[0]
@@ -436,8 +459,11 @@ class MailFolderViewTestCase(MailTestCase):
         ob._addFolder('Trash', 'Trash')
 
         msg_1 = ob._addMessage('1', '1')
+        msg_1.addHeader('Date', self.gettime())
         msg_2 = ob._addMessage('2', '2')
+        msg_2.addHeader('Date', self.gettime())
         msg_3 = ob._addMessage('3', '3')
+        msg_3.addHeader('Date', self.gettime())
 
         view = MailFolderView(ob, self.request)
         view = view.__of__(ob)
@@ -455,14 +481,12 @@ class MailFolderViewTestCase(MailTestCase):
 
         # check the view
         rendered_list = view.renderMailList()[1]
-        import time; time.sleep(0.2)
-
-        msg1v = rendered_list[0]
+        msg1v = rendered_list[1]
         self.assertEquals(msg1v['object'], msg_1)
         self.assertEquals(msg1v['folder_id_uid'], 'INBOX__1')
         self.assertEquals(msg1v['url'], 'nowhere/INBOX/INBOX/.1/view')
 
-        msg2v = rendered_list[1]
+        msg2v = rendered_list[0]
         self.assertEquals(msg2v['object'], msg_3)
         self.assertEquals(msg2v['folder_id_uid'], 'INBOX__3')
         self.assertEquals(msg2v['url'], 'nowhere/INBOX/INBOX/.3/view')
