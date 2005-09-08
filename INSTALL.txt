@@ -26,8 +26,6 @@ To install CPSMailAccess you will need:
 - Zope 2.7.x specifics:
    + ZopeX3-3.0.0 : http://www.zope.org/Products/ZopeX3
    + Five 1.0.1 or greater : http://codespeak.net/z3/five/
-- TrustedExecutables :
-  http://www.dieter.handshake.de/pyprojects/zope/#TrustedExecutables
 - rdflib 2.0.6 : http://rdflib.net/
 - zasyncdispatcher (optional) http://svn.nuxeo.org/trac/pub/browser/zasyncdispatcher/
 
@@ -60,7 +58,7 @@ the python version you use for Zope2.7 and CPS, e.g.::
 
 4 - Products setup
 
-Put Five (Zope 2.7 users), TrustedExecutables and CPSMailAccess
+Put Five (Zope 2.7 users) and CPSMailAccess
 
 WARNING: You must remove the CPSWebmail Product from your instance,
 this is very important, as it might interfer.
