@@ -441,14 +441,16 @@ class MailBoxTestCase(MailTestCase):
         mailbox.id = 'box__xx'
         mailbox._getconnector().writeMessage = _writeMsg
 
-        self.portal.portal_webmail.getMailDeliverer = _getMailDeliverer
+        old_getMailDeliverer = self.portal.portal_webmail.getMailDeliverer
+        try:
+            self.portal.portal_webmail.getMailDeliverer = _getMailDeliverer
+            ob = self.getMailInstance(6)
 
-        ob = self.getMailInstance(6)
-
-        mailbox.sendNotification('me', ob)
-        mailbox.sendEditorsMessage()
-        mailbox.saveEditorMessage()
-
+            mailbox.sendNotification('me', ob)
+            mailbox.sendEditorsMessage()
+            mailbox.saveEditorMessage()
+        finally:
+            self.portal.portal_webmail.getMailDeliverer = old_getMailDeliverer
 
 def test_suite():
     return unittest.TestSuite((

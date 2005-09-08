@@ -18,14 +18,14 @@
 # 02111-1307, USA.
 import unittest
 from zope.testing import doctest
-from Testing.ZopeTestCase import installProduct
-from Testing.ZopeTestCase import ZopeTestCase
+
+from basetestcase import MailTestCase
+
 from Products.CPSMailAccess.mailtool import MailTool
 from Products.CPSMailAccess.interfaces import IMailTool
 
-installProduct('Five')
 
-class MailToolTestCase(ZopeTestCase):
+class MailToolTestCase(MailTestCase):
     def test_base(self):
         # single instance
         ob = MailTool()
@@ -64,6 +64,12 @@ class MailToolTestCase(ZopeTestCase):
         self.assertEquals(id(one), id(one_test))
         self.assertEquals(id(two), id(two_test))
 
+    def test_getMailDeliverer(self):
+        mailbox = self._getMailBox()
+        portal_webmail = mailbox.portal_webmail
+        del portal_webmail.default_connection_params['maildir']
+        mail_deliverer = portal_webmail.getMailDeliverer()
+        self.assertNotEquals(mail_deliverer, None)
 
 def test_suite():
     return unittest.TestSuite((

@@ -108,8 +108,12 @@ class MailTool(Folder): # UniqueObject
     def getMailDeliverer(self):
         """ check if _maildeliverer points on the right
         folder, if not recreates it"""
-        mail_dir = self.default_connection_params['maildir'][0]
-        direct_smtp = self.default_connection_params['direct_smtp'][0]
+        if self.default_connection_params.has_key('maildir'):
+            mail_dir = self.default_connection_params['maildir'][0]
+            direct_smtp = self.default_connection_params['direct_smtp'][0]
+        else:
+            mail_dir = None
+            direct_smtp = 1
 
         # recreate in case of changes
         if (self._maildeliverer.maildir_directory != mail_dir or
