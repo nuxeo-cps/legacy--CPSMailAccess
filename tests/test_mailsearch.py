@@ -22,7 +22,7 @@ from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase
 import os, sys
 from Products.CPSMailAccess.mailsearch \
-    import ZemanticMailCatalog, ZemanticMessageAdapter
+    import ZemanticMailCatalog, ZemanticMessageAdapter, intersection, union
 
 from Testing.ZopeTestCase import installProduct
 from basetestcase import MailTestCase
@@ -198,6 +198,18 @@ class MailSearchTestCase(MailTestCase):
         res = list(res)
         self.assertEquals(len(res), 0)
 
+    def test_intersection(self):
+        one = ['a', 'a', 'b']
+        two = ['b', 'c', 'b', 'y']
+        inter = intersection(one, two)
+        self.assertEquals(inter, ['b'])
+
+    def test_union(self):
+        one = ['a', 'a', 'b']
+        two = ['b', 'c', 'b', 'y']
+        un = union(one, two)
+        un.sort()
+        self.assertEquals(un, ['a', 'b', 'c', 'y'])
 
 def test_suite():
     return unittest.TestSuite((

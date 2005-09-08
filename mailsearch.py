@@ -45,44 +45,46 @@ from rdflib.Literal import Literal
 
 stop_words_filename = os.path.join(os.path.dirname(landmark), 'stopwords.txt')
 
+
+def _unify(elements):
+
+    def __unify(item):
+        if not type(item) in (str, URIRef):
+            return item.triple()[0]
+        else:
+            return item
+
+    elements[:] = map(__unify, elements)
+
 def intersection(x, y):
     """ intersect triples, strings,unicode and URIRef """
+    _unify(x)
+    _unify(y)
     result = []
-    for e in x:
-        for item in y:
-            if not type(e) in (str, URIRef):
-                e = e.triple()[0]
-            if not type(item) in (str, URIRef):
-                item = item.triple()[0]
-            if e == item:
-                result.append(e)
+
+    for item in x:
+        if item in y and item not in result:
+            result.append(item)
+
     return result
 
 def union(x, y):
-    """ intersect triples, strings,unicode and URIRef """
+    """ unions triples, strings, unicode and URIRef """
+    _unify(x)
+    _unify(y)
     result = []
+    both = x + y
 
-    for e in y:
-        if not type(e) in (str, URIRef):
-            e = e.triple()[0]
-        result.append(e)
-
-    for e in x:
-        if not type(e) in (str, URIRef):
-            e = e.triple()[0]
-        if e not in result:
-            result.append(e)
+    for item in both:
+        if item not in result:
+            result.append(item)
 
     return result
 
 def unifyList(list_):
     """ returns unified list """
-    unified = []
-    for item in list_:
-        if not type(item) in (str, URIRef):
-            item = item.triple()[0]
-        unified.append(item)
-    return unified
+    _unify(list_)
+    return list_
 
 def get_uri(portal_object):
     return URIRef(unicode(portal_object.absolute_url())) # zope 2 dependant

@@ -45,7 +45,7 @@ class MailSearchViewTestCase(MailTestCase):
 
         for i in range(38):
             ob = self.getMailInstanceT(i)
-            #ob.getPhysicalPath = self.fakeGetPhysicalPath
+            ob.getPhysicalPath = self.fakeGetPhysicalPath
             ob = ob.__of__(self.portal)
             zcat.indexMessage(ob, full_indexation)
 
@@ -121,7 +121,7 @@ class MailSearchViewTestCase(MailTestCase):
         query['lazy_search'] = 1
         results = searchview.zemanticSearchMessages(**query)[0]
 
-        self.assertEquals(len(results), 9)
+        self.assertEquals(len(results), 1)
 
         query = {}
         query['intersection'] = 'store is open'
@@ -177,9 +177,10 @@ class MailSearchViewTestCase(MailTestCase):
         query['value_1'] = 'test'
         query['intersection'] = 1
         query['lazy_search'] = 1
+
         results = searchview.zemanticSearchMessages(**query)[0]
 
-        self.assertEquals(len(results), 9)
+        self.assertEquals(len(results), 1)
 
         query = {}
         query['intersection'] = 1

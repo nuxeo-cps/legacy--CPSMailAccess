@@ -165,6 +165,7 @@ class MailSearchView(BrowserView):
 
         results = []
         msg_viewer = MailMessageView(None, self.request)
+
         for result in raw_results:
             object = traverseToObject(mailbox, result)
             # if object is None, it means
