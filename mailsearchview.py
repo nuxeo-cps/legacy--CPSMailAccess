@@ -29,7 +29,7 @@ from mailsearch import intersection  as z_intersection
 from mailsearch import unifyList as z_unifyList
 
 # XXXX todo: outsource ALL zemantic related stuff into mailsearch
-from zemantic.public import *
+from zemantic.public import Any, Query
 from zemantic.query import UnionChain
 
 class MailSearchView(BrowserView):

@@ -37,7 +37,7 @@ from interfaces import IMailCatalog
 
 from zemantic.triplestore import TripleStore
 from zemantic.interfaces import IRDFThreeTuples
-from zemantic.public import *
+from zemantic.public import Any
 from zemantic.query import Query
 
 from rdflib.URIRef import URIRef
