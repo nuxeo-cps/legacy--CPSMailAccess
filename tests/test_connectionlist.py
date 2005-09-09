@@ -166,9 +166,13 @@ class ConnectionListTestCase(ZopeTestCase):
         self.assertEquals(id(one), id(one_test))
         self.assertEquals(id(two), id(two_test))
 
+    def test_closingOrder(self):
+        my_list = ConnectionList()
+        registerConnections(my_list)
 
-
-
+        # this was generating an exception in case
+        # the thread was stopped *after* the object deletion
+        del my_list
 
 def test_suite():
     return unittest.TestSuite((
