@@ -168,10 +168,12 @@
                  <tal:block tal:repeat="attached_file attached_file_pack">
                    <td class="selectable">
                      <div style="float:right" tal:condition="mailedit">
-                       <a onclick="return window.confirm('Are you sure?');"
-                          tal:attributes="href attached_file/delete_url">
-                         <img src="cpsma_delete_file.png"/>
-                       </a>
+                       <tal:block tal:define="msg python:locale('cpsma_confirm_erase')">
+                         <a tal:attributes="href attached_file/delete_url;
+                                            onclick python:'return window.confirm(%s)' % msg">
+                           <img src="cpsma_delete_file.png"/>
+                         </a>
+                       </tal:block>
                       </div>
                      <a tal:attributes="href attached_file/url" target="_blank">
                        <center>
