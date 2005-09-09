@@ -162,6 +162,7 @@ The CPS Team.
         self.assert_(not isValidEmail('tarek_AT_nuxeo.commm'))
         self.assert_(not isValidEmail('fezefz'))
         self.assert_(not isValidEmail(''))
+        self.assert_(isValidEmail('gracinet@nuxeo-tests.com'))
         self.assert_(isValidEmail('tdddd.dddddd.ddd@nu.x.eo.com'))
 
     def test_parseDateStringWeirdCases(self):
