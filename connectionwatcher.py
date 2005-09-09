@@ -68,7 +68,7 @@ class ConnectionWatcher(Thread):
         1
         """
         while self.running:
-            if self.parent:
+            if self.parent is not None:
                 connection_list = self.parent
                 for connection in connection_list:
                     connection.idle_time += self.sleep_time
@@ -80,7 +80,7 @@ class ConnectionWatcher(Thread):
                         num = connection.connection_number
                         connection_list.killConnection(uid, type_, num)
 
-            sleep(self.sleep_time)
+                sleep(self.sleep_time)
 
 # thread cleaning
 thread_instances = []
