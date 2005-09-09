@@ -531,3 +531,6 @@ msgstr "Envoyés"
 
 msgid "Trash"
 msgstr "Corbeille"
+
+msgid "INBOX"
+msgstr "Courrier en entrée"

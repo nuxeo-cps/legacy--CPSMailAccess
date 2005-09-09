@@ -526,3 +526,6 @@ msgstr ""
 
 msgid "Trash"
 msgstr ""
+
+msgid "INBOX"
+msgstr ""
