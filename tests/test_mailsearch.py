@@ -211,6 +211,11 @@ class MailSearchTestCase(MailTestCase):
         un.sort()
         self.assertEquals(un, ['a', 'b', 'c', 'y'])
 
+        one = ['a', 'a', 'b']
+        un = union(one)
+        un.sort()
+        self.assertEquals(un, ['a', 'b'])
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailSearchTestCase),
