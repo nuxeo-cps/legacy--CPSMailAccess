@@ -83,7 +83,6 @@ class MailSearchViewTestCase(MailTestCase):
     def test_zemantic_searchs(self):
         searchview, cat, zcat, box = self._getView()    # also fills cat
 
-
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = '*'    # all
@@ -91,7 +90,7 @@ class MailSearchViewTestCase(MailTestCase):
         results = searchview.zemanticSearchMessages(**query)[0]
 
         # results order won't be known
-        self.assertEquals(len(results), 3)
+        self.assertEquals(len(results), 1)
 
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
@@ -146,10 +145,11 @@ class MailSearchViewTestCase(MailTestCase):
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)
         query['value_0'] = '*'    # all
         query['lazy_search'] = 1
+
         results = searchview.zemanticSearchMessages(**query)[0]
 
         # results order won't be known
-        self.assertEquals(len(results), 3)
+        self.assertEquals(len(results), 1)
 
         query = {}
         query['relation_0'] = 'cc'        # relations keys are normalized (lower)

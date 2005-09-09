@@ -27,6 +27,7 @@ from mailexceptions import MailCatalogError
 from mailmessageview import MailMessageView
 from mailsearch import intersection  as z_intersection
 from mailsearch import unifyList as z_unifyList
+from mailsearch import union as z_union
 
 # XXXX todo: outsource ALL zemantic related stuff into mailsearch
 from zemantic.public import Any, Query
@@ -119,7 +120,7 @@ class MailSearchView(BrowserView):
             for query in queries:
                 union.add(query)
             raw_results = cat.query(union)
-            raw_results = list(raw_results)
+            raw_results = z_union(list(raw_results))
         else:
             # doing queries one by one
             # and intersect them one by one

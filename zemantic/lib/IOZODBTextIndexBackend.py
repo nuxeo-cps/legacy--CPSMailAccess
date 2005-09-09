@@ -197,13 +197,14 @@ class IOZODBTextIndexBackend(Persistent):
             pi = self.reverse[predicate]
         if object is not Any:
             if isinstance(object, Literal):
-                try:
-                    ois = self.texti.search_phrase(object)
-                except ZeroDivisionError:
-                    ois = []
+                ois = self.texti.search_glob(object)
 
                 if len(ois) == 0:
-                    ois = self.texti.search_glob(object)
+                    try:
+                        ois = self.texti.search_phrase(object)
+                    except ZeroDivisionError:
+                        ois = []
+
                 if len(ois) == 0:
                     oi = self.reverse[object]
                     ois = Any

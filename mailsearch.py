@@ -45,7 +45,6 @@ from rdflib.Literal import Literal
 
 stop_words_filename = os.path.join(os.path.dirname(landmark), 'stopwords.txt')
 
-
 def _unify(elements):
 
     def __unify(item):
@@ -68,12 +67,16 @@ def intersection(x, y):
 
     return result
 
-def union(x, y):
+def union(x, y=[]):
     """ unions triples, strings, unicode and URIRef """
     _unify(x)
-    _unify(y)
     result = []
-    both = x + y
+
+    if y != []:
+        _unify(y)
+        both = x + y
+    else:
+        both = x
 
     for item in both:
         if item not in result:
