@@ -86,14 +86,22 @@ class ConnectionWatcher(Thread):
 thread_instances = []
 
 def registerThreadInstance(thread_instance):
-    if thread_instances.index < 0:
+    global thread_instances
+    if thread_instance not in thread_instances:
         thread_instances.append(thread_instance)
 
 def cleanThreads():
-    if thread_instances:
+    global thread_instances
+    if thread_instances != []:
         for thread_instance in thread_instances:
             if hasattr(thread_instance, 'stop'):
-                thread_instance.stop()
+                try:
+                    thread_instance.stop()
+                except AssertionError:
+                    # not started
+                    pass
+
+        thread_instances = []
 
 atexit.register(cleanThreads)
 

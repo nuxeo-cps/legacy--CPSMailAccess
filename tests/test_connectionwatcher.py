@@ -60,7 +60,25 @@ class ConnectionWatcherTestCase(ZopeTestCase):
         sleep(2)
         self.assertEquals(my_list, [])
 
+    def test_register_threads(self):
 
+        class FakeThread:
+            def stop(self):
+                pass
+
+        fake_1 = FakeThread()
+        fake_2 = FakeThread()
+
+        from Products.CPSMailAccess import connectionwatcher
+        connectionwatcher.cleanThreads()
+
+        self.assertEquals(connectionwatcher.thread_instances, [])
+        connectionwatcher.registerThreadInstance(fake_1)
+        connectionwatcher.registerThreadInstance(fake_2)
+
+        self.assertEquals(len(connectionwatcher.thread_instances), 2)
+        connectionwatcher.cleanThreads()
+        self.assertEquals(connectionwatcher.thread_instances, [])
 
 def test_suite():
     return unittest.TestSuite((
