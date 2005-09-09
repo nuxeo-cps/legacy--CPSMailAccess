@@ -19,7 +19,7 @@
     <div class="spacer">
     </div>
     <tal:block define="publics python:here.getEntries()[0];
-                       privates python:here.getEntries()[1];">
+                        privates python:here.getEntries()[1];">
     <div style="width :100%">
       <div style="clear:both"/>
         <div class="privateBook">
@@ -53,11 +53,17 @@
             </a>
           </div>
           </tal:block>
-          <tal:block tal:condition="not:privates">
+          <!--tal:block tal:condition="not:privates">
             <div style="margin-top:15px;margin-left: 4px" i18n:translate="cpsma_no_private">
             No private adress book.
             </div>
-          </tal:block>
+          </tal:block-->
+          <div style="margin-top:15px">
+            <a tal:attributes="href
+                python:'%s/cpsdirectory_entry_search_form?dirname=%s' % (base_url, ad_book)">
+            <span i18n:translate="">cpsma_all_entries</span>
+            </a>
+          </div>
         </div>
         <div class="publicBook">
 

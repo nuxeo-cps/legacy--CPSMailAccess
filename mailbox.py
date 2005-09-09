@@ -930,29 +930,17 @@ class MailBox(MailBoxBaseCaching):
         #return self._getDirectoryPicker().listVisibleDirectories()
         return portal_directories.listVisibleDirectories()
 
-    def _createZ2SecurityContext(self, roles=['Manager']):
-        user = User('Security', '', ['Manager'], [])
-        user = user.__of__(self)
-        newSecurityManager(None, user)
-
-    def _removeZ2SecurityContext(self):
-        noSecurityManager()
-
     def _searchEntries(self, directory_name, return_fields=None, **kw):
         """ search for entries """
-        self._createZ2SecurityContext()
-        try:
-            portal_directories = getToolByName(self, 'portal_directories')
-            dir_ = portal_directories[directory_name]
-            # acquisition pb not resolved yet
-            #return self._getDirectoryPicker().searchEntries(directory_name,
-            #    return_fields, **kw)
-            results = dir_.searchEntries(return_fields, **kw)
-            if results == [] and kw == {'id': '*'}:
-                results = dir_.searchEntries(return_fields)
-            return results
-        finally:
-            self._removeZ2SecurityContext()
+        portal_directories = getToolByName(self, 'portal_directories')
+        dir_ = portal_directories[directory_name]
+        # acquisition pb not resolved yet
+        #return self._getDirectoryPicker().searchEntries(directory_name,
+        #    return_fields, **kw)
+        results = dir_.searchEntries(return_fields, **kw)
+        if results == [] and kw == {'id': '*'}:
+            results = dir_.searchEntries(return_fields)
+        return results
 
     def _createEntry(self, directory_name, entry):
         """ search for entries """
@@ -1023,7 +1011,7 @@ class MailBox(MailBoxBaseCaching):
         return self.getConnectionParams()['addressbook']
 
     def searchDirectoryEntries(self, email):
-        #
+        """ search directory entries """
         kw = {'email' : email}
         addressbook_dir = self.getConnectionParams()['addressbook']
         adressbook = self._searchEntries(addressbook_dir,
