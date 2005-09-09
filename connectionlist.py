@@ -57,25 +57,6 @@ class ConnectionList(UserList):
         self.connection_guard = ConnectionWatcher(self)
         self.connection_guard.start()
 
-    """
-    def __del__(self):
-        "" when the list is removed, we need to check
-        if a thread is running, to stop it
-        ""
-        if self.connection_guard.isAlive():
-            self.connection_guard.stop()
-
-        for base in self.__class__.__bases__:
-            # Avoid problems with diamond inheritance.
-            basekey = 'del_' + str(base)
-            if not hasattr(self, basekey):
-                setattr(self, basekey, 1)
-            else:
-                continue
-            # Call this base class' destructor if it has one.
-            if hasattr(base, "__del__"):
-                base.__del__(self)
-    """
     def listConnectionTypes(self):
         types = []
         self.lock.acquire()
