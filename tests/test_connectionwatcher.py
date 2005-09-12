@@ -47,7 +47,7 @@ class ConnectionWatcherTestCase(ZopeTestCase):
     def test_ListWatching(self):
         # checking that silent connection get removed
         my_list = ConnectionList()
-        my_list.connection_guard.sleep_time = 0.5
+        my_list.connection_guard.sleep_time = 0.1
         my_list.connection_guard.idle_time = 0.1
 
         connection_params = {'uid' : 'admin', 'connection_type' : 'DUMMY'}
@@ -57,10 +57,8 @@ class ConnectionWatcherTestCase(ZopeTestCase):
         my_list.append(new_connection)
 
         self.assertEquals(len(my_list), 1)
-        # FIXME: skip this test because it sometimes work and sometimes
-        # fails.
-        #sleep(2)
-        #self.assertEquals(my_list, [])
+        sleep(3)
+        self.assertEquals(my_list, [])
 
     def test_register_threads(self):
 
