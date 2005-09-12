@@ -532,3 +532,6 @@ msgstr ""
 
 msgid "attach"
 msgstr ""
+
+msgid "cpsma_ack"
+msgstr ""

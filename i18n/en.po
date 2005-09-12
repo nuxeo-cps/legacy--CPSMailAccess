@@ -503,3 +503,6 @@ msgstr "Trash expunged."
 
 msgid "cps_already_synchronizing"
 msgstr "The box is already beeing synchronized"
+
+msgid "cpsma_ack"
+msgstr "Ask for return receipt"

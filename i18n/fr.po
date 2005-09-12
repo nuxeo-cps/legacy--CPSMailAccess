@@ -537,3 +537,6 @@ msgstr "Courrier en entrée"
 
 msgid "attach"
 msgstr "attacher"
+
+msgid "cpsma_ack"
+msgstr "Demander un accusé de réception"
