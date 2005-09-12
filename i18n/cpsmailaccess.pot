@@ -529,3 +529,6 @@ msgstr ""
 
 msgid "INBOX"
 msgstr ""
+
+msgid "attach"
+msgstr ""

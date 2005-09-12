@@ -41,6 +41,7 @@
               <td>
                 <input class="attach_button" type="submit" name="submit"
                     value="attach"
+                    i18n:attributes="value"
                     onmouseover="setCursor(this);"
                     onclick="saveMessageDatas()"/>
               </td>

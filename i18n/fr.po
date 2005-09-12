@@ -534,3 +534,6 @@ msgstr "Corbeille"
 
 msgid "INBOX"
 msgstr "Courrier en entrée"
+
+msgid "attach"
+msgstr "attacher"
