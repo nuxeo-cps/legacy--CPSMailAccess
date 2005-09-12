@@ -520,3 +520,9 @@ class MailFolderView(BaseMailMessageView):
         """ tells if the current folder is read-only """
         mailfolder = self.context
         return mailfolder.isReadOnly()
+
+    def isTrash(self):
+        """ tells if the current folder is read-only """
+        mailfolder = self.context
+        mailbox = mailfolder.getMailBox()
+        return mailbox.getTrashFolder() == mailfolder

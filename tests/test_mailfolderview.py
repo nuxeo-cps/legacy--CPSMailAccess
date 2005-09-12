@@ -571,6 +571,18 @@ class MailFolderViewTestCase(MailTestCase):
         view = view.__of__(ob2)
         self.assert_(view.isReadOnly())
 
+    def test_isTrash(self):
+        box = self._getMailBox(True)
+        ob = box._addFolder('NotTrash', 'INBOX')
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+        self.assert_(not view.isTrash())
+
+        ob2 = box.INBOX.Trash
+        view = MailFolderView(ob2, self.request)
+        view = view.__of__(ob2)
+        self.assert_(view.isTrash())
+
 
 def test_suite():
     return unittest.TestSuite((
