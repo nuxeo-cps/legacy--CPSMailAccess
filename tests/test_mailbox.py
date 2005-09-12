@@ -251,6 +251,12 @@ class MailBoxTestCase(MailTestCase):
         results = mailbox.searchDirectoryEntries('tarek')
         self.assertEquals(len(results), 2)
 
+        results = mailbox.searchDirectoryEntries('tarek@nuxeo.com')
+        self.assertEquals(len(results), 2)
+
+        results = mailbox.searchDirectoryEntries('tarek z')
+        self.assertEquals(len(results), 2)
+
     def test_moveElement(self):
         mailbox = self._getMailBox()
         inbox = mailbox._addFolder('INBOX', 'INBOX')

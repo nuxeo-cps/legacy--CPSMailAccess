@@ -1013,10 +1013,29 @@ class MailBox(MailBoxBaseCaching):
     def searchDirectoryEntries(self, email):
         """ search directory entries """
         kw = {'email' : email}
+
+        if not '@' in email:
+            multiple_search = True
+            sub_searches = {'id': email,
+                            'givenName': email,
+                            'sn': email}
+        else:
+            multiple_search = False
+
         addressbook_dir = self.getConnectionParams()['addressbook']
         adressbook = self._searchEntries(addressbook_dir,
                                          ['fullname', 'email', 'id'], **kw)
 
+
+        if multiple_search:
+            for sub_key in sub_searches:
+                sub_search = self._searchEntries(addressbook_dir,
+                                ['fullname', 'email', 'id'],
+                                **{sub_key: sub_searches[sub_key]})
+
+                for entry in sub_search:
+                    if entry not in adressbook:
+                        adressbook.append(entry)
 
         try:
             private_adressbook = self._searchEntries('.addressbook',
