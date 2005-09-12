@@ -604,6 +604,27 @@ class MailFolderTestCase(MailTestCase):
         finally:
             realconnector.uid = old
 
+    def test_loadMessageStructureFromServer2(self):
+        # XXX will be move in imap class
+        def get_struct(*args, **kw):
+            struct = ['report', ['text', 'plain', None, None, 'notification', '8bit', 505, 14], ['message', 'delivery-status', None, None, 'delivery report', '8bit', 369], ['message', 'rfc822', None, None, 'undelivered message', '8bit', 101221, 28, ['fri, 09 sep 2005 06:45:29 -0000', 'test retour', None, None, None, '<71803504.71803504>', [['basicuser', None, 'xxxx1', 'xxxx.com']], [[None, None, 'inexistant.sdflk', 'free.fr']]], ['mixed', ['text', 'plain', None, None, '7bit', 38, 3, ['charset','iso-8859-15']], ['image', 'jpeg', None, None, 'base64', 100352, ['name', 'a broken moment - hommage a la folie pure....1.0.jpg']]]]]
+
+            return struct
+
+        ob = self.getMailInstance(1)
+        box = self._getMailBox(True)
+        old = box._getconnector().getMessageStructure
+        try:
+            box._getconnector().getMessageStructure = get_struct
+
+            box._loadMessageStructureFromServer('x', 1, [], {}, 0, ob,
+                                                box._getconnector(), True)
+
+            ct = ob._getStore()['Content-type']
+            self.assertEquals(ct, 'text/plain; charset="ISO8859-15"')
+        finally:
+            box._getconnector().getMessageStructure = old
+
     def test_forceDelete(self):
         # when a folder is placed in the trash
         # it could fail if the max depth is <= 2

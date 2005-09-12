@@ -580,6 +580,14 @@ class MailFolder(BTreeFolder2):
                     part_infos = part_infos[1]
                     part_num = '1'
 
+        if part_infos[0] == 'report':
+            # report structure, the body is in part 1
+            part_num = '1'
+            i = 1
+            # now browsing for attachment
+            # XXX todo: add other parts as attached files
+            part_infos = part_infos[1]
+
         if part_infos[0] == 'alternative':
             if len(part_infos) > 2:
                 part_infos = part_infos[2]

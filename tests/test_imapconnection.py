@@ -291,6 +291,19 @@ class IMAPConnectionTestCase(MailTestCase):
         res = ob._parseIMAPMessage(parse)
         self.assertEquals(res, ['body', ['mixed', ['text', 'plain', None, None, '7bit', 206, 7, ['charset', 'iso-8859-15']], ['unknown', '', None, None, '"base64"12', ['name', 'piece =?x-unknown?q?attach=e9e.txt?=']]]])
 
+
+    def test_extractResult2(self):
+        ob = self.makeConnection()
+
+        raw_imap = '(BODY (("text" "plain" NIL NIL "Notification" "8bit" 505 14)("message" "delivery-status" NIL NIL "Delivery report" "8bit" 369)("message" "rfc822" NIL NIL "Undelivered Message" "8bit" 101221 ("Fri, 09 Sep 2005 06:45:29 -0000" "test retour" (("basicuser" NIL "xxxx1" "xxxx.com")) (("basicuser" NIL "xxxx1" "xxxx.com")) (("basicuser" NIL "xxxx1" "xxxx.com")) ((NIL NIL "inexistant.sdflk" "free.fr")) NIL NIL NIL "<71803504.71803504>") (("text" "plain" ("charset" "iso-8859-15") NIL NIL "7bit" 38 3)("image" "jpeg" ("name" "a broken moment - hommage a la folie pure....1.0.jpg") NIL NIL "base64" 100352) "mixed") 28) "report"))'
+
+        extracted = ob._extractResult('BODY', raw_imap)
+
+        waited = ['report', ['text', 'plain', None, None, 'notification', '8bit', 505, 14], ['message', 'delivery-status', None, None, 'delivery report', '8bit', 369], ['message', 'rfc822', None, None, 'undelivered message', '8bit', 101221, 28, ['fri, 09 sep 2005 06:45:29 -0000', 'test retour', None, None, None, '<71803504.71803504>', [['basicuser', None, 'xxxx1', 'xxxx.com']], [[None, None, 'inexistant.sdflk', 'free.fr']]], ['mixed', ['text', 'plain', None, None, '7bit', 38, 3, ['charset','iso-8859-15']], ['image', 'jpeg', None, None, 'base64', 100352, ['name', 'a broken moment - hommage a la folie pure....1.0.jpg']]]]]
+
+        self.assertEquals(extracted, waited)
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(IMAPConnectionTestCase),
