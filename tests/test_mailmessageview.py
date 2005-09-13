@@ -270,7 +270,7 @@ class MailMessageViewTestCase(MailTestCase):
         # need to set up context and request object here
         view = MailMessageView(ob, None)
         rendered_to = view.renderToList()
-        self.assertEquals(len(rendered_to.split(',\n')), 3)
+        self.assertEquals(len(rendered_to.split(',\n')), 1)
 
     def test_charmap_errors(self):
         mbox = self._getMailBox()
@@ -427,7 +427,24 @@ class MailMessageViewTestCase(MailTestCase):
         ob.getPhysicalPath = self.fakePhysicalPath
         view = MailMessageView(ob, None)
         rendered = view._renderLinkedHeaderList('Cc')
-        self.assertEquals(rendered, u'')
+        self.assertEquals(rendered, u'<a href="http://xxx//http://xxx/nowhere/INBOX/writeTo.html?msg_to=Log%20message%20for%20revision%20516%3A%20More%20header%20housekeeping.">Log message for revision 516: More header housekeeping.</a>')
+
+    def test_renderLinkedHeaderList2(self):
+        def renderHeaderList(*args, **kw):
+            return ['mail1@com.com, mail2@com.com']
+
+        mbox = self._getMailBox()
+        ob = self.getMailInstance(50)
+        ob = ob.__of__(mbox)
+        ob.getPhysicalPath = self.fakePhysicalPath
+        view = MailMessageView(ob, None)
+        old = view.renderHeaderList
+        view.renderHeaderList = renderHeaderList
+        try:
+            rendered = view._renderLinkedHeaderList('Cc')
+            self.assertEquals(rendered, u'<a href="http://xxx//http://xxx/nowhere/INBOX/writeTo.html?msg_to=mail1%40com.com">mail1@com.com</a> <a href="http://xxx//http://xxx/nowhere/INBOX/writeTo.html?msg_to=mail2%40com.com">mail2@com.com</a>')
+        finally:
+            view.renderHeaderList = old
 
     def test_headerCountWithEmptyField(self):
         mbox = self._getMailBox()
@@ -435,7 +452,8 @@ class MailMessageViewTestCase(MailTestCase):
         ob = ob.__of__(mbox)
         ob.getPhysicalPath = self.fakePhysicalPath
         view = MailMessageView(ob, None)
-        self.assertEquals(view.headerCount('Cc'), 0)
+        self.assertEquals(view.headerCount('Cc'), 1)
+        self.assertEquals(view.headerCount('Bcc'), 0)
 
     def test_removeNone(self):
         view = MailMessageView(None, None)

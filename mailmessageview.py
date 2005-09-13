@@ -113,15 +113,17 @@ class MailMessageView(BaseMailMessageView):
         root = self._getBoxRootUrl()
         final = []
         for mail in list_:
-            if mail == '?':
-                continue
-            dmail = mail.replace('<', '&lt;')
-            dmail = dmail.replace('>', '&gt;')
+            mail = mail.split(',')
+            for mail_element in mail:
+                mail_element = mail_element.strip()
+                if mail_element == '?':
+                    continue
+                dmail = mail_element.replace('<', '&lt;')
+                dmail = dmail.replace('>', '&gt;')
 
-            hmail = '<a href="%s/writeTo.html?msg_to=%s">%s</a>' %(root,
-                                                                   quote(mail),
-                                                                   dmail)
-            final.append(hmail)
+                hmail = '<a href="%s/writeTo.html?msg_to=%s">%s</a>' \
+                    %(root, quote(mail_element), dmail)
+                final.append(hmail)
 
         if final == []:
             return u''

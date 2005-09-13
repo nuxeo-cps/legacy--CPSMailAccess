@@ -1,14 +1,9 @@
-Subject:
-[Paris-checkins] SVN: paris/jsr170/level More header housekeeping.
-From:
-Tres Seaver <tseaver@palladion.com>
-Date:
-Mon, 11 Jul 2005 14:08:29 -0400 (EDT)
-To:
-paris-checkins@zope.org
-Cc:
-Log message for revision 516:
-  More header housekeeping.
+Subject: [Paris-checkins] SVN: paris/jsr170/level More header housekeeping.
+From: Tres Seaver <tseaver@palladion.com>
+Date: Mon, 11 Jul 2005 14:08:29 -0400 (EDT)
+To: paris-checkins@zope.org
+To: paris-checkins2@zope.org
+Cc: Log message for revision 516: More header housekeeping.
 
 Changed:
   U   paris/jsr170/level1/__init__.py

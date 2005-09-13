@@ -449,8 +449,7 @@ class MailFolderViewTestCase(MailTestCase):
         # DELETE
         kw = {'msg_1': 'on', 'msg_2': 'on'}
         view.manageContent(action='delete', **kw)
-
-        self.assertEquals(len(ob.objectIds()), 2)
+        self.assertEquals(len(ob.objectIds()), 4)
 
     def test_manageContent_delete_check_ids(self):
         # test content manipulations
@@ -566,7 +565,7 @@ class MailFolderViewTestCase(MailTestCase):
         view = view.__of__(ob)
         self.assert_(not view.isReadOnly())
 
-        ob2 = ob._addFolder('Sent', 'INBOX.Sent')
+        ob2 = ob.Sent
         view = MailFolderView(ob2, self.request)
         view = view.__of__(ob2)
         self.assert_(view.isReadOnly())
