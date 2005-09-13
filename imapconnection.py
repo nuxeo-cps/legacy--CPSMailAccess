@@ -519,7 +519,10 @@ class IMAPConnection(BaseConnection):
         _flags = '(%s)' % ' '.join(_flags)
 
         # we want to do this asynced
-        self._connection.uid('store', message_number, 'FLAGS', _flags)
+        try:
+            self._connection.uid('store', message_number, 'FLAGS', _flags)
+        except (IMAP4.error, IndexError), e:
+            raise ConnectionError(str(e))
 
     def expunge(self):
         """ expunge and instantly relog """

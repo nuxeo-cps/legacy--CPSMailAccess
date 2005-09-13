@@ -769,8 +769,13 @@ class MailBox(MailBoxBaseCaching):
                 self._serverEmptyTrashElement(sitem, folders_to_delete)
         else:
             folder = element.getMailFolder()
-            connector.setFlags(folder.server_name,
-                                element.uid, {'Deleted': 1})
+            try:
+                connector.setFlags(folder.server_name,
+                                   element.uid, {'Deleted': 1})
+            except ConnectionError, e:
+                # XXX need to understand why we get illegal
+                # calls in AUTH state here
+                pass
 
     def emptyTrashFolder(self):
         """ empty the trash """
