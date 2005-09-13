@@ -1038,9 +1038,18 @@ class MailBox(MailBoxBaseCaching):
                         adressbook.append(entry)
 
         try:
-            private_adressbook = self._searchEntries('.addressbook',
-                                                  ['fullname', 'email',
-                                                   'id', 'mails_sent'], **kw)
+            fields = ['fullname', 'email', 'id', 'mails_sent']
+            private_adressbook = self._searchEntries('.addressbook', fields,
+                                                     **kw)
+
+            if multiple_search:
+                for sub_key in sub_searches:
+                    sub_search = self._searchEntries('.addressbook', fields,
+                                            **{sub_key: sub_searches[sub_key]})
+
+                    for entry in sub_search:
+                        if entry not in adressbook:
+                            private_adressbook.append(entry)
 
         except Unauthorized:
             private_adressbook = []
