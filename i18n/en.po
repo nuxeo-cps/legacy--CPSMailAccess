@@ -173,7 +173,7 @@ msgid "cpsma_write_message"
 msgstr "Compose"
 
 msgid "cpsma_address_books"
-msgstr "Address book"
+msgstr "Address books"
 
 msgid "cpsma_all_entries"
 msgstr "All entries"
@@ -377,6 +377,9 @@ msgstr "Synchronizing."
 
 msgid "cpsma_clear_mail_catalog"
 msgstr "Clear mail catalog"
+
+msgid "cpsma_submit"
+msgstr "Submit"
 
 msgid "cpsma_resync_all"
 msgstr "Synchronize the whole box."

@@ -136,8 +136,10 @@
                     </span>
                     </span>
                     |
-                <span class="link" onmouseover="setCursor(this);"
-                    onclick="popupRecipientPicker()">Directories</span>
+                <span class="link" 
+		      onmouseover="setCursor(this);"
+                      onclick="popupRecipientPicker()"
+		      i18n:translate="cpsma_address_books">Address books</span>
             </div>
         </td>
 

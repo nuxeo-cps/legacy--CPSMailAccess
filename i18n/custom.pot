@@ -379,6 +379,9 @@ msgstr ""
 msgid "cpsma_clear_mail_catalog"
 msgstr ""
 
+msgid "cpsma_submit"
+msgstr ""
+
 msgid "cpsma_resync_all"
 msgstr ""
 
