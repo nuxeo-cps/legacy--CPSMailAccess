@@ -506,3 +506,15 @@ msgstr "The box is already beeing synchronized"
 
 msgid "cpsma_ack"
 msgstr "Ask for return receipt"
+
+msgid "cpsma_search_submitted"
+msgstr "Search more recipients"
+
+msgid "cpsma_close"
+msgstr "Update"
+
+msgid "cpsma_add_users"
+msgstr "Add recipients"
+
+msgid "cpsma_recipients"
+msgstr "Recipients"

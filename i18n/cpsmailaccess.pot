@@ -535,3 +535,15 @@ msgstr ""
 
 msgid "cpsma_ack"
 msgstr ""
+
+msgid "cpsma_search_submitted"
+msgstr ""
+
+msgid "cpsma_close"
+msgstr ""
+
+msgid "cpsma_add_users"
+msgstr ""
+
+msgid "cpsma_recipients"
+msgstr ""

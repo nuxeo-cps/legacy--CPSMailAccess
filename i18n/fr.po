@@ -540,3 +540,15 @@ msgstr "attacher"
 
 msgid "cpsma_ack"
 msgstr "Demander un accusé de réception"
+
+msgid "cpsma_search_submitted"
+msgstr "Chercher plus d'entrées"
+
+msgid "cpsma_close"
+msgstr "Mettre à jour"
+
+msgid "cpsma_add_users"
+msgstr "Ajouter des destinataires"
+
+msgid "cpsma_recipients"
+msgstr "Destinataires"

@@ -23,22 +23,25 @@
                          BCcs containers/BCc|python:[]">
     <span style="font-size: 12">
       <input style="float:right"
-               class="standalone" type="button" onclick="closeDirectoryPicker()" value="Fermer"/>
+               class="standalone" type="button" onclick="closeDirectoryPicker()"
+               value="cpsma_close"
+               i18n:attributes="value"/>
       <h4>
-        <img src="cpsma_users.png"/>&#160;Recipients
+        <img src="cpsma_users.png"/>&#160;
+        <tal:block i18n:translate="cpsma_recipients">Recipients</tal:block>
 
       </h4>
 
     <table>
     <tr class="containersHeader">
       <td class="tr_title">
-        <h3>To</h3>
+        <h3><tal:block i18n:translate="cpsma_to">To</tal:block></h3>
       </td>
       <td class="tr_title">
-        <h3>Cc</h3>
+        <h3><tal:block i18n:translate="cpsma_cc">Cc</tal:block></h3>
       </td>
       <td class="tr_title">
-        <h3>BCc</h3>
+        <h3><tal:block i18n:translate="cpsma_bcc">BCc</tal:block></h3>
       </td>
     </tr>
     <tr class="containers">
@@ -82,7 +85,8 @@
   <div class="adders">
     <span style="font-size: 12">
         <h4>
-        <img src="cpsma_users.png"/>&#160;add users
+        <img src="cpsma_users.png"/>&#160;
+        <tal:block i18n:translate="cpsma_add_users">Add recpients</tal:block>
         </h4>
         <div tal:define="public python:here.getEntries()[0];
                     private python:here.getEntries()[1]">
@@ -115,15 +119,15 @@
               <span tal:replace="user/fullname"/>&#160;&lt;<span tal:replace="user/email"/>&gt;
               <a tal:attributes="href python:'addRecipient?content=%s&type=To&redirect=%s'
                                               % (user['email'], 'selectRecipients.html')">
-              To
+              <tal:block i18n:translate="cpsma_to">To</tal:block>
               </a>&#160;
               <a tal:attributes="href python:'addRecipient?content=%s&type=Cc&redirect=%s'
                                               % (user['email'], 'selectRecipients.html')">
-              Cc
+              <tal:block i18n:translate="cpsma_cc">Cc</tal:block>
               </a>&#160;
               <a tal:attributes="href python:'addRecipient?content=%s&type=BCc&redirect=%s'
                                               % (user['email'], 'selectRecipients.html')">
-               BCc
+               <tal:block i18n:translate="cpsma_bcc">BCc</tal:block>
               </a>
             </div>
           </tal:block>
@@ -137,7 +141,8 @@
             name="form" enctype="multipart/form-data">
         <input type="text" tal:attributes="value request/email|nothing" name="email"/>
 
-        <input class="standalone" type="submit" value="Search more" name="search_submitted"/>
+        <input class="standalone" type="submit" value="cpsma_search_submitted"
+                i18n:attributes="value" name="search_submitted"/>
     </form>
     <tal:block tal:condition="request/search_submitted|python:0">
 
