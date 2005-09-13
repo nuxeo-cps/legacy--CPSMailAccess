@@ -56,6 +56,14 @@ class MailFolderTestCase(MailTestCase):
         folder = mailbox.folder
         self.assertEquals(folder.getMailBox(), mailbox)
 
+    def test_getMailBox2(self):
+        mailbox = self._getMailBox()
+        mailbox._addFolder('folder')
+        o = self
+        folder = mailbox.folder
+        self.myfolder = folder
+        self.assertEquals(self.myfolder.getMailBox(), mailbox)
+
     def test_getServerName(self):
         # testing getServerName and setServerName
         # this is trivial but will be very useful

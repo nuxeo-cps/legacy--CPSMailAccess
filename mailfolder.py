@@ -142,7 +142,7 @@ class MailFolder(BTreeFolder2):
         """
         current = self
         while current is not None and not IMailBox.providedBy(current):
-            current = aq_inner(aq_parent(current))
+            current = aq_parent(aq_inner(current))
 
         if current is None or not IMailBox.providedBy(current):
             return None
