@@ -165,7 +165,8 @@
                  tal:define="page request/page|python:1;
                              nb_items request/nb_items|python:20;
                              sort_with request/sort_with|python:'Date';
-                             sort_asc request/sort_asc|python:0;"
+                             sort_asc request/sort_asc|python:0;
+                             keep_last_sort request/keep_last_sort|python:0"
                            >
     <tal:block tal:define="messagesl python:keep_last_sort and
                              here.renderMailList(keep_last_sort=1) or
@@ -176,8 +177,12 @@
                            nbpages python:messagesl[0];
                            last_sort python:here.getLastMailListSortCache();
                            page python:last_sort and last_sort[0] or page;
-                           nb_items python:last_sort and last_sort[1] or nb_items;
-                           sort_with python:last_sort and last_sort[2] or sort_with">
+                           nb_items python:(keep_last_sort and last_sort and last_sort[1])
+                                            or nb_items;
+                           sorted_with python:(keep_last_sort and last_sort and last_sort[2])
+                                            or sort_with;
+                           sorted_asc python:(keep_last_sort and last_sort and last_sort[3])
+                                            or sort_asc;">
        <div tal:attributes="class
               python:is_folder and 'folder_msglist' or 'message_msglist'">
 
@@ -196,7 +201,7 @@
             </th>
             <th class="mailToolBarElement mailToolBarInsideElement"
                 tal:repeat="col cols">
-              <tal:block tal:define="sort_order not:python:int(sort_asc);">
+           <tal:block tal:define="sort_order python:int(int(sorted_asc)!=1);">
                 <a tal:attributes="href
                 python:here.absolute_url()+'/view?page=%s&nb_items=%s&sort_with=%s&sort_asc=%s'
                 %(page, nb_items, col, sort_order)">
@@ -210,7 +215,7 @@
                 <tal:block tal:condition="python:col=='Icon'">
                     I
                 </tal:block>
-                <tal:block tal:condition="python:sort_with==col">
+                <tal:block tal:condition="python:sorted_with==col">
                   <tal:block tal:condition="python:int(sort_asc)==0">^</tal:block>
                   <tal:block tal:condition="python:int(sort_asc)==1">v</tal:block>
                 </tal:block>

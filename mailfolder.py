@@ -1091,6 +1091,7 @@ class MailFolder(BTreeFolder2):
 
         page_id = '%d.%d.%s.%d' % (page, nb_items, sort_with, sort_asc)
         elements = self._cache.query(page_id)
+        self._cache.set((page, nb_items, sort_with, sort_asc), 'last_sort')
         return elements
 
     def getLastMailListSortCache(self):

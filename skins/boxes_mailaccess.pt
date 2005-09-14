@@ -20,7 +20,7 @@
             </tal:block>
             </tal:block>
             <img tal:attributes="src element/icon_name"/>
-              <a tal:attributes="href element/url">
+              <a tal:attributes="href python:element['url']+'?keep_last_sort=1'">
                 <tal:block
                   tal:condition="python:element['short_title'] in ('Drafts', 'Sent', 'Trash')">
 

@@ -426,8 +426,13 @@ class MailFolderTestCase(MailTestCase):
         cached = folder1.getMailListFromCache(3, 387, 'yo', True)
         self.assertEquals(cached, 'more data')
 
+        self.assertEquals((3, 387, 'yo', True),
+                          folder1.getLastMailListSortCache())
+
         cached = folder1.getMailListFromCache(1, 383, 'yo', True)
         self.assertEquals(cached, 'dadddta')
+        self.assertEquals((1, 383, 'yo', True),
+                          folder1.getLastMailListSortCache())
 
         infos = folder1.getLastMailListSortCache()
         self.assertEquals(infos, (1, 383, 'yo', True))
