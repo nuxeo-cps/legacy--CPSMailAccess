@@ -198,6 +198,8 @@ class SmtpMailer(Persistent):
                 mailer.send(fromaddr, toaddrs, message)
             except SMTPRecipientsRefused, e:
                 return False, e.recipients
+            except socket.error, e:
+                return False, str(e)
             else:
                 return True, ''
         else:
