@@ -46,21 +46,10 @@
                 </a>
             </tal:block>
           </div>
+          </tal:block>
           <div style="margin-top:15px;margin-left: 4px">
             <a tal:attributes="href
                 python:base_url+'/cpsdirectory_entry_search_form?dirname=.addressbook'">
-            <span i18n:translate="">cpsma_all_entries</span>
-            </a>
-          </div>
-          </tal:block>
-          <!--tal:block tal:condition="not:privates">
-            <div style="margin-top:15px;margin-left: 4px" i18n:translate="cpsma_no_private">
-            No private adress book.
-            </div>
-          </tal:block-->
-          <div style="margin-top:15px">
-            <a tal:attributes="href
-                python:'%s/cpsdirectory_entry_search_form?dirname=%s' % (base_url, ad_book)">
             <span i18n:translate="">cpsma_all_entries</span>
             </a>
           </div>
