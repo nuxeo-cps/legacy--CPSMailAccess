@@ -555,3 +555,6 @@ msgstr "Ajouter des destinataires"
 
 msgid "cpsma_recipients"
 msgstr "Destinataires"
+
+msgid "cpsma_of"
+msgstr "de"
