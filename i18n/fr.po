@@ -558,3 +558,6 @@ msgstr "Destinataires"
 
 msgid "cpsma_of"
 msgstr "de"
+
+msgid "cpsma_send_message"
+msgstr "Envoyer le message"

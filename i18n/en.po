@@ -521,3 +521,6 @@ msgstr "Add recipients"
 
 msgid "cpsma_recipients"
 msgstr "Recipients"
+
+msgid "cpsma_send_message"
+msgstr "Send the message"

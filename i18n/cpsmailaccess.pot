@@ -553,3 +553,6 @@ msgstr ""
 
 msgid "cpsma_of"
 msgstr ""
+
+msgid "cpsma_send_message"
+msgstr ""

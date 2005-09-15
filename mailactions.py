@@ -116,7 +116,7 @@ class MailActionsView(BaseMailMessageView):
 
                 send = {'icon' : base_url + '/cpsma_sendmsg.png',
                         'title' : 'send message',
-                        'long_title' : 'send the message',
+                        'long_title' : 'cpsma_send_message',
                         'action' : '',
                         'id' : 'send',
                         'onclick' : 'sendMessage();'}
