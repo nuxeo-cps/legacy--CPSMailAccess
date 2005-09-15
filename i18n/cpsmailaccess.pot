@@ -556,3 +556,6 @@ msgstr ""
 
 msgid "cpsma_send_message"
 msgstr ""
+
+msgid "cpsma_moved"
+msgstr ""

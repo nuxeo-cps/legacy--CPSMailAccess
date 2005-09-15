@@ -524,3 +524,9 @@ msgstr "Recipients"
 
 msgid "cpsma_send_message"
 msgstr "Send the message"
+
+msgid "cpsma_renamed"
+msgstr "Element renamed"
+
+msgid "cpsma_moved"
+msgstr "Element moved"

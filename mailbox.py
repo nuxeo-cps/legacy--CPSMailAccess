@@ -1415,8 +1415,10 @@ class MailBoxView(MailFolderView):
         """ moves an element """
         mailbox = self.context
         target = mailbox.moveElement(from_place, to_place)
+        psm = 'cpsma_moved'
         if self.request is not None and target is not None:
-            self.request.response.redirect(target.absolute_url()+ '/view')
+            self.request.response.redirect(target.absolute_url() + \
+                                           '/view?msm=%s' % psm)
 
     def getunicodetext(self, message):
         """ retrieves a translation in a full unicode response """

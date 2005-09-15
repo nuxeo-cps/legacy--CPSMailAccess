@@ -106,7 +106,8 @@ class MailFolderView(BaseMailMessageView):
         if self.request is not None:
             resp = self.request.response
             if renamed is not None:
-                resp.redirect(folder.absolute_url()+'/view')
+                psm = 'cpsma_renamed'
+                resp.redirect(folder.absolute_url()+'/view?msm=%s' % psm)
             else:
                 resp.redirect(folder.absolute_url()+'/view?msm=%s' % psm)
             return None

@@ -561,3 +561,9 @@ msgstr "de"
 
 msgid "cpsma_send_message"
 msgstr "Envoyer le message"
+
+msgid "cpsma_renamed"
+msgstr "Element renommé"
+
+msgid "cpsma_moved"
+msgstr "Element déplacé"
