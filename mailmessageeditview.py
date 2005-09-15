@@ -108,8 +108,7 @@ class MailMessageEdit(BrowserView):
             if kw[key] == EMPTY:
                 kw[key] = ''
 
-        if msg_from == EMPTY:
-            msg_from = ''
+        msg_from = self._identyToMsgHeader()
 
         if msg_subject == EMPTY:
             msg_subject = ''
