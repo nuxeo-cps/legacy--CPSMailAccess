@@ -64,20 +64,33 @@ class MailFolderView(BaseMailMessageView):
 
     def rename(self, new_name):
         """ action called to rename the current folder """
+        fullname = new_name.find('.') != -1
+        parts_name = new_name.split('.')
+
         mailfolder = self.context
         mailbox = mailfolder.getMailBox()
         max_folder_size = self.getMaxFolderSize()
-        if len(new_name) > max_folder_size:
-            new_name = new_name[:max_folder_size]
+        if len(parts_name[-1]) > max_folder_size:
+            parts_name[-1] = parts_name[-1][:max_folder_size]
 
-        if mailfolder.title == new_name:
+        if ((fullname and mailfolder.server_name == new_name)
+            or (not fullname and mailfolder.title == new_name)):
             if self.request is not None:
                 self.request.response.redirect(
                     mailfolder.absolute_url()+'/view')
             return None
 
-        parent = mailfolder.getMailFolder()
-        if parent is not None and hasattr(parent, new_name):
+        if fullname:
+            existing_folder = getFolder(mailfolder, new_name)
+            if existing_folder is not None:
+                existing_folder = existing_folder.server_name == new_name
+            else:
+                existing_folder = False
+        else:
+            parent = mailfolder.getMailFolder()
+            existing_folder = parent is not None and hasattr(parent, new_name)
+
+        if existing_folder:
             if self.request is not None:
                 psm  = '%s already exists' % new_name
                 self.request.response.redirect(
@@ -85,12 +98,12 @@ class MailFolderView(BaseMailMessageView):
                     '/view?edit_name=1&msm=%s' % psm)
             return None
 
-        # truncates the name in case it's bigger than 20
-        if len(new_name) > max_folder_size:
-            new_name = new_name[:max_folder_size]
-
         try:
-            renamed = mailfolder.rename(new_name)
+            if fullname:
+                renamed = mailfolder.rename(new_name, fullname=True)
+            else:
+                renamed = mailfolder.rename(parts_name[-1])
+
             if renamed is None:
                 psm = 'cpsma_could_not_perform'
         except ConnectionError:
@@ -215,7 +228,7 @@ class MailFolderView(BaseMailMessageView):
         uses a batch
         """
         if self._last_error is not None:
-            return []
+            return 0, []
 
         mailfolder = self.context
         if int(keep_last_sort) == 1:

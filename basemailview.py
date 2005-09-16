@@ -246,7 +246,7 @@ class BaseMailMessageView(BrowserView):
 
         short_title_id = short_title.replace(' ', '.')
 
-        rename_url = 'rename?fullname=1&new_name=%s.%s' % (server_name,
+        rename_url = 'rename.html?fullname=1&new_name=%s.%s' % (server_name,
             selected_folder.simpleFolderName())
 
         not_for_move = element_id == selected_folder.id or \
