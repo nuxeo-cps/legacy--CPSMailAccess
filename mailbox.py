@@ -920,6 +920,8 @@ class MailBox(MailBoxBaseCaching):
 
     def readDirectoryValue(self, dirname, id, fields):
         """ see interface
+
+        XXXX need to be in mailtool
         """
         kw = {'id' : id}
         results = self._searchEntries(dirname, return_fields=fields, **kw)
@@ -936,7 +938,10 @@ class MailBox(MailBoxBaseCaching):
         return portal_directories.listVisibleDirectories()
 
     def _searchEntries(self, directory_name, return_fields=None, **kw):
-        """ search for entries """
+        """ search for entries
+
+        XXXX need to be in mailtool
+        """
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
         # acquisition pb not resolved yet
@@ -948,7 +953,10 @@ class MailBox(MailBoxBaseCaching):
         return results
 
     def _createEntry(self, directory_name, entry):
-        """ search for entries """
+        """ search for entries
+
+        XXXX need to be in mailtool
+        """
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
         # acquisition pb not resolved yet
@@ -957,7 +965,10 @@ class MailBox(MailBoxBaseCaching):
         return dir_.createEntry(entry)
 
     def _editEntry(self, directory_name, entry):
-        """ edit entry"""
+        """ edit entry
+
+        XXXX need to be in mailtool
+        """
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
         # acquisition pb not resolved yet
@@ -966,7 +977,10 @@ class MailBox(MailBoxBaseCaching):
         return dir_.editEntry(entry)
 
     def _getDirectoryIdField(self, directory_name):
-        """ search for entries """
+        """ search for entries
+
+        XXXX need to be in mailtool
+        """
         portal_directories = getToolByName(self, 'portal_directories')
         dir_ = portal_directories[directory_name]
         # acquisition pb not resolved yet
