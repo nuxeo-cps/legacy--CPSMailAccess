@@ -69,6 +69,7 @@ class FakeDirectory:
         return [('tziade', {'email': 'tz@nuxeo.com',
                  'givenName': 'Tarek', 'sn' : 'Ziadé',
                  'webmail_login' : 'tziade',
+                 'webmail_enabled' :1,
                  'webmail_password' : 'do_not_reveal_it_please'})]
 
     def hasEntry(self, id):

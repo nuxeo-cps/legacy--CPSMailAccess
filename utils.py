@@ -681,3 +681,9 @@ def divideMailBody(text, level=0):
         i += 1
 
     return '<br/>'.join(blocs)
+
+def getAuthenticatedMember(context):
+    if hasattr(context, 'portal_membership'):
+        return context.portal_membership.getAuthenticatedMember()
+    else:
+        return None

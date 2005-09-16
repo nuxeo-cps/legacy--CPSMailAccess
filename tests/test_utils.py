@@ -295,6 +295,13 @@ ok then"""
 
         self.assertEquals(divideMailBody(mail_content), mail_repr)
 
+    def test_getAuthenticatedMember(self):
+        class FakeMemberShip:
+            def getAuthenticatedMember(self):
+                return None
+
+        self.portal.portal_membership = FakeMemberShip()
+        self.assertEquals(getAuthenticatedMember(self.portal), None)
 
 def test_suite():
     return unittest.TestSuite((

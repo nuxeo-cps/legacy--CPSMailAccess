@@ -29,6 +29,7 @@ import atexit
 from smtplib import SMTPRecipientsRefused
 
 from Persistence import Persistent
+import Acquisition
 
 from zope.app.mail.mailer import SMTPMailer
 from zope.app.mail.delivery import QueueProcessorThread
@@ -36,6 +37,7 @@ from zope.interface import implements
 from zope.app.mail.maildir import Maildir
 
 from baseconnection import ConnectionError
+from utils import getToolByName
 
 """
 Asynchronous mail sender system taken from Zope 3
@@ -165,15 +167,18 @@ def removeMailElement():
     if mail_sender is not None:
         mail_sender.stop()
 
-class SmtpMailer(Persistent):
+class SmtpMailer(Persistent, Acquisition.Implicit):
     """ a class that delivers a mail to any SMTP server """
     __version__ = (1, 0)
 
-    def __init__(self, maildir_directory, direct_smtp):
+    def __init__(self, maildir_directory, direct_smtp,
+                 on_send_mail=''):
         self.maildir_directory = maildir_directory
         self._started = False
         self.direct_smtp = direct_smtp
         self._createMailDir()
+        self.mail_trigger = on_send_mail
+        self.id = 'smtp_mailer'
 
     def _createMailDir(self):
         """ creates the maildir """
@@ -189,6 +194,16 @@ class SmtpMailer(Persistent):
     def send(self, fromaddr, toaddrs, message, hostname='localhost', port=25,
              username=None, password=None):
         """ writes the mail mails """
+        # XXX security check to avoid a non authoized user
+        # to send mails, this will move away when a complete
+        # security startegy will be settled
+        # (ie: a user loose the right to use his webmail
+        # the box stays in the portal, etc..)
+        if self.mail_trigger != '':
+            # XXX Z2
+            pwm = Acquisition.aq_parent(Acquisition.aq_inner(self))
+            getattr(pwm, self.mail_trigger)()
+
         # the first sent ever, wakes everything
         if self.direct_smtp:
             self.stop_sender()

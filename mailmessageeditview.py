@@ -26,6 +26,7 @@ from utils import getToolByName, decodeHeader, verifyBody,\
 import thread
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Folder import Folder
+from AccessControl import Unauthorized
 from Products.Five import BrowserView
 
 from zope.schema.fieldproperty import FieldProperty
@@ -186,7 +187,9 @@ class MailMessageEdit(BrowserView):
         except ConnectionError, e:
             result = False
             error = str(e)
-            #error = 'cpsma_failed_send'
+        except Unauthorized, e:
+            result = False
+            error = str(e)
 
         if self.request is not None:
             if result:

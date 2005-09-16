@@ -36,7 +36,7 @@ from interfaces import IMailTool
 from connectionlist import registerConnections, ConnectionList
 from smtpmailer import SmtpMailer
 from mailbox import manage_addMailBox
-from utils import makeId, getMemberById, getToolByName
+from utils import makeId, getMemberById, getToolByName, getAuthenticatedMember
 
 lock = thread.allocate_lock()
 connector = ConnectionList()
@@ -102,8 +102,14 @@ class MailTool(Folder): # UniqueObject
         # creating a temporary directory for mail storage
         temp_dir = os.path.dirname(os.tempnam())
         temp_dir = os.path.join(temp_dir, 'maildir')
-        self._maildeliverer = SmtpMailer(temp_dir, direct_smtp)
+        self._maildeliverer = SmtpMailer(temp_dir, direct_smtp,
+                                         on_send_mail = '_checkCanSendMails')
 
+    def _checkCanSendMails(self):
+        if not self.canHaveMailBox():
+            # XXX Z2
+            from AccessControl import Unauthorized
+            raise Unauthorized('Cannot send mails from this account')
 
     def getMailDeliverer(self):
         """ check if _maildeliverer points on the right
@@ -118,7 +124,8 @@ class MailTool(Folder): # UniqueObject
         # recreate in case of changes
         if (self._maildeliverer.maildir_directory != mail_dir or
             self._maildeliverer.direct_smtp != direct_smtp):
-            self._maildeliverer = SmtpMailer(mail_dir, direct_smtp)
+            self._maildeliverer = SmtpMailer(mail_dir, direct_smtp,
+                                             '_checkCanSendMails')
 
         return self._maildeliverer
 
@@ -197,6 +204,40 @@ class MailTool(Folder): # UniqueObject
         """ creates a mailbox for a given user """
         mailbox_name = makeId('box_%s' % user_id)
         return hasattr(self, mailbox_name)
+
+    def _searchEntries(self, directory_name, return_fields=None, **kw):
+        """ search for entries
+        """
+        portal_directories = getToolByName(self, 'portal_directories')
+        dir_ = portal_directories[directory_name]
+        # acquisition pb not resolved yet
+        #return self._getDirectoryPicker().searchEntries(directory_name,
+        #    return_fields, **kw)
+        results = dir_.searchEntries(return_fields, **kw)
+        if results == [] and kw == {'id': '*'}:
+            results = dir_.searchEntries(return_fields)
+        return results
+
+    def canHaveMailBox(self, user_id=None):
+        """ check wheter the user can use the webmail """
+        if user_id is None:
+            user = getAuthenticatedMember(self)
+        else:
+            user = getMemberById(self, user_id)
+
+        if user is None:
+            return False
+        else:
+            # XXX Z2:
+            kw = {'id': user.getId()}
+            dir_results = self._searchEntries('members', ['webmail_enabled'],
+                                              **kw)
+            if len(dir_results) != 1:
+                return False
+            webmail_enabled = dir_results[0][1]['webmail_enabled']
+
+            return webmail_enabled == 1
+
 
 """ classic Zope 2 interface for class registering
 """

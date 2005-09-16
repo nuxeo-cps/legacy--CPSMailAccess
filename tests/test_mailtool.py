@@ -71,6 +71,54 @@ class MailToolTestCase(MailTestCase):
         mail_deliverer = portal_webmail.getMailDeliverer()
         self.assertNotEquals(mail_deliverer, None)
 
+    def test_canHaveMailBox(self):
+        class FakeUser:
+            def __init__(self, uid):
+                self.uid = uid
+
+            def getProperty(self, *args, **kw):
+                if self.uid == 'CPSTestCase':
+                    return 1
+                else:
+                    return 0
+
+            def getId(self):
+                return self.uid
+
+        class FakeMemberShip:
+            def getMemberById(self, uid):
+                if uid not in ('CPSTestCase', 'CPSTestCase2'):
+                    return None
+                else:
+                    return FakeUser(uid)
+
+        mailbox = self._getMailBox()
+        self.portal.portal_membership = FakeMemberShip()
+
+        portal_webmail = mailbox.portal_webmail
+        self.assert_(portal_webmail.canHaveMailBox('CPSTestCase'))
+        self.assert_(not portal_webmail.canHaveMailBox('IDONTEXIST'))
+
+    def test_secu(self):
+        def canHaveMailBox(*args, **kw):
+            return True
+
+        class FakeMemberShip:
+            def getAuthenticatedMember(self):
+                return None
+
+        self.portal.portal_membership = FakeMemberShip()
+        mailbox = self._getMailBox()
+        portal_webmail = mailbox.portal_webmail
+        checker = portal_webmail._checkCanSendMails
+        from AccessControl import Unauthorized
+        self.assertRaises(Unauthorized, checker)
+
+        portal_webmail.canHaveMailBox = canHaveMailBox
+
+        # should be fine now
+        checker
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailToolTestCase),

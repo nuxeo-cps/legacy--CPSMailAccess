@@ -128,7 +128,6 @@ class SMTPMailerTestCase(MailTestCase):
         # stop the thread now
         mailer.stop_sender()
 
-
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(SMTPMailerTestCase),
