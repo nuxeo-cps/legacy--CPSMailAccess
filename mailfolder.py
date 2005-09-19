@@ -697,10 +697,18 @@ class MailFolder(BTreeFolder2):
             except ConnectionError, e:
                 fetched = {}
                 LOG('_synchronizeFolder', DEBUG, 'Connection error %s' % str(e))
+                LOG('_synchronizeFolder', DEBUG,
+                  'could not fetch emails box:%s, uid_sequence:%s, fetch_str:%s' % \
+                      (self.server_name, str(uid_sequence), fetch_str))
+
                 mailfailed = True
             #end = time.time() - start
             # now syncing each message
             # start_time = time.time()
+            if mailfailed:
+                LOG('_synchronizeFolder', DEBUG, 'mailed, continue to next sequence')
+                continue
+
             if len(sub_bloc) == 1:
                 fetched = {sub_bloc[0] : fetched}
 
