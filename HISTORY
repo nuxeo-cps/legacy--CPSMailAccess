@@ -1,4 +1,20 @@
 *******************************************
+** CPSMailAccess V1.1.0 [R1 build 2005/09/21-15:29 by fguillaume]
+** SVN URL: https://svn.nuxeo.org/pub/CPSMailAccess/trunk Revision: 27405
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+- French language: corrected some typos.
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- Removed TextIndexNG2
+
+*******************************************
 ** CPSMailAccess V1.0.0 [R1 build 2005/06/03-14:28 by tziade]
 ** SVN URL: https://svn.nuxeo.org/priv/CPSMailAccess/trunk Revision: 22714
 Requires:
