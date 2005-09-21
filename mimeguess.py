@@ -10,8 +10,6 @@
 
 import re, struct, string
 
-__version__ = '$Revision$'[11:-2]
-
 magic = [
 
     [0L, 'string', '=', '%PDF-', 'application/pdf'],
