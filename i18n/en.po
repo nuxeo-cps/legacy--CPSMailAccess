@@ -522,6 +522,9 @@ msgstr "Add recipients"
 msgid "cpsma_recipients"
 msgstr "Recipients"
 
+msgid "${from} cpsma_of ${of}"
+msgstr "Page ${from} of ${of}"
+
 msgid "cpsma_send_message"
 msgstr "Send the message"
 

@@ -556,8 +556,8 @@ msgstr "Ajouter des destinataires"
 msgid "cpsma_recipients"
 msgstr "Destinataires"
 
-msgid "cpsma_of"
-msgstr "de"
+msgid "${from} cpsma_of ${of}"
+msgstr "Page ${from} sur ${of}"
 
 msgid "cpsma_send_message"
 msgstr "Envoyer le message"

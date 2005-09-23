@@ -357,7 +357,12 @@
 
       <metal:block define-macro="batcher">
         <div class="batcher" tal:condition="python:nbpages &gt; 1">
-          Page <span tal:replace="page" /> <tal:block i18n:translate="cpsma_of">of</tal:block> <span tal:replace="nbpages" /><br/>
+          <tal:block i18n:translate="">
+            <tal:block tal:content="page" i18n:name="from"/>
+            cpsma_of
+            <tal:block tal:content="nbpages" i18n:name="of"/>
+          </tal:block>
+          <br/>
           <tal:block tal:repeat="i python:range(nbpages)">
             <tal:block tal:define="label python:i==0 and '<<' or str(i+1);
                                    label python:i==nbpages-1 and '>>' or label;">

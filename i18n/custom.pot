@@ -548,7 +548,7 @@ msgstr ""
 msgid "cpsma_recipients"
 msgstr ""
 
-msgid "cpsma_of"
+msgid "${from} cpsma_of ${of}"
 msgstr ""
 
 msgid "cpsma_send_message"
