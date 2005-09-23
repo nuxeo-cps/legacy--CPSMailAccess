@@ -651,6 +651,16 @@ class MailFolderTestCase(MailTestCase):
 
         self.assertNotEquals(result, None)
 
+    def test_isSpecialFolder(self):
+
+        mailbox = self._getMailBox()
+        inbox = mailbox._addFolder('INBOX', 'INBOX')
+        folder1 = inbox._addFolder('folder 1', 'INBOX.folder 1')
+        trash = inbox._addFolder('Trash', 'INBOX.Trash')
+
+        self.assert_(not folder1.isSpecialFolder())
+        self.assert_(trash.isSpecialFolder())
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailFolderTestCase),

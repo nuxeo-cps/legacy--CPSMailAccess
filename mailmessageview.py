@@ -456,11 +456,17 @@ class MailMessageView(BaseMailMessageView):
         return message.getMailFolder()
 
     def notificationEmail(self):
-        """ returns notification email if exists folder """
+        """ returns notification email if exists,
+        and if email is not located in special folder
+        """
         rendered = self.renderHeaderList('Disposition-Notification-To')
         if rendered == u'?':
             return None
         else:
+            folder = self.getMailFolder()
+            if folder is not None:
+                if folder.isSpecialFolder():
+                    return None
             return rendered
 
     def notify(self, just_remove):

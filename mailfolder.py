@@ -1136,6 +1136,13 @@ class MailFolder(BTreeFolder2):
         read_only_list = [item.strip() for item in read_only_list.split(',')]
         return self.server_name in read_only_list
 
+    def isSpecialFolder(self):
+        """ tells if the folder is a special one (mailbox point of view)"""
+        mailbox = self.getMailBox()
+        if mailbox is None:
+            return False
+        return mailbox.isSpecialFolder(self)
+
 
 """ classic Zope 2 interface for class registering
 """

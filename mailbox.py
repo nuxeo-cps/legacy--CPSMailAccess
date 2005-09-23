@@ -1361,7 +1361,13 @@ class MailBox(MailBoxBaseCaching):
         thread = [e.triple()[2] for e in list(res)]
         return union(replies, thread)
 
-    def isSpecialFolder(self, folder):
+    def isSpecialFolder(self, folder=None):
+        """ returns True if folder is None
+            (mailbox *is* a specialfolder)
+            otherwise checks it in list
+        """
+        if folder is None:
+            return True
         special_folders = (self.getDraftFolderName(),
                            self.getTrashFolderName(), self.getSentFolderName())
 

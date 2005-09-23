@@ -329,15 +329,26 @@ class MailMessageViewTestCase(MailTestCase):
     def test_notificationEmail(self):
         mbox = self._getMailBox()
 
-        message = self.getMailInstance(43)
-        view = MailMessageView(message, None)
+        # checking that notificatoion does not pop
+        # if the message is located in special folders
+        # (INBOX is mailbox here)
+        drafts = mbox.INBOX._addFolder('Drafts', 'INBOX.Drafts')
+        message = drafts._addMessage('msg', 'msg')
+        message = message.__of__(drafts)
 
+        message.setHeader('Disposition-Notification-To',
+                          u'Tarek Ziadé<tziade@xxxx.xxx>')
+        view = MailMessageView(message, None)
         self.assertEquals(view.notificationEmail(), None)
 
-        message = self.getMailInstance(48)
-        view = MailMessageView(message, None)
+        folder1 =  mbox.INBOX._addFolder('folder1', 'INBOX.folder1')
 
-        self.assertEquals(view.notificationEmail(), u'Tarek Ziadé<tziade@xxxx.xxx>')
+        message =  folder1._addMessage('msg', 'msg')
+        message.setHeader('Disposition-Notification-To',
+                          u'Tarek Ziadé<tziade@xxxx.xxx>')
+        view = MailMessageView(message, None)
+        self.assertEquals(view.notificationEmail(),
+                          u'Tarek Ziadé<tziade@xxxx.xxx>')
 
     def test_notify(self):
         mbox = self._getMailBox()
