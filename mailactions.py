@@ -153,9 +153,8 @@ class MailActionsView(BaseMailMessageView):
                 actions.append(empty_trash)
 
             elif container == mailbox.getDraftFolder():
+                ##
                 pass
-            #elif container == mailbox.getSentFolder():
-            #    pass
             else:
                 if container.canCreateSubFolder():
 
@@ -259,15 +258,6 @@ class MailActionsView(BaseMailMessageView):
 
                 actions.append(forward)
 
-            if container.draft:
-                draft = {'icon' : base_url + '/cpsma_reload.png',
-                         'title' : 'cpsma_load_message',
-                         'long_title' : 'cpsma_load_message',
-                         'id' : 'draft',
-                         'action' : 'reload.html'}
-                actions.extend([draft])
-
-
             if (current_folder.id != trash_name and
                 not current_folder.isReadOnly()):
                 confirm_msg = translate(mailbox, 'cpsma_confirm_erase')
@@ -279,6 +269,14 @@ class MailActionsView(BaseMailMessageView):
                           'action' : 'delete.html'}
 
                 actions.append(delete)
+
+            if (current_folder.id == draft_name):
+                draft = {'icon' : base_url + '/cpsma_reload.png',
+                            'title' : 'cpsma_load_message',
+                            'long_title' : 'cpsma_load_message',
+                            'id' : 'draft',
+                            'action' : 'reload.html'}
+                actions.append(draft)
         else:
             return []
 
