@@ -87,7 +87,8 @@ class MailMessageView(BaseMailMessageView):
                 date = decodeHeader(date[0])
         else:
             date = u'?'
-        date = localizeDateString(date)
+        lang = getPortalLang(context)
+        date = localizeDateString(date, lang=lang)
         return date
 
     def renderSmallDate(self):

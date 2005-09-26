@@ -177,6 +177,14 @@ The CPS Team.
         date = parseDateString('Mon 04/04/05 13:29')
         self.assertEquals(date, datetime(2005, 4, 4, 13, 29, 0))
 
+    def test_localizeDateString(self):
+        self.assertEquals(localizeDateString('Sat, 04 Dec 2004'),
+                          'Sat 04/12/04 00:00')
+
+        self.assertEquals(localizeDateString('Sat, 04 Dec 2004', lang='fr'),
+                          'Sam 04/12/04 00:00')
+
+
     def test_asynCall(self):
         caller = AsyncCall(self.method, 1, 3)
         caller.start()

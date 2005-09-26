@@ -144,9 +144,8 @@ def parseDateString(date_string):
                      localized[3], localized[4], localized[5])
 
 
-def localizeDateString(date_string, format=0):
-    """ normalizes renders a localized date string
-    """
+def localizeDateString(date_string, format=0, lang='en'):
+    """ normalizes renders a localized date string """
     date = parseDateString(date_string)
     if format == 1:
         return date.strftime('%H:%M')
@@ -155,7 +154,23 @@ def localizeDateString(date_string, format=0):
     elif format == 3:
         return date.strftime('%d/%m/%y')
     else:
-        return date.strftime('%a %d/%m/%y %H:%M')
+        import locale
+        # save current locale
+        lang = '%s_%s' %(lang, lang.upper())
+        old_local = locale.getlocale(locale.LC_TIME)
+        if old_local != lang:
+            try:
+                locale.setlocale(locale.LC_TIME, lang)
+            except locale.Error:
+                lang = old_local
+        try:
+            return date.strftime('%a %d/%m/%y %H:%M').title()
+        finally:
+            if old_local != lang:
+                if old_local != (None, None):
+                    locale.setlocale(locale.LC_TIME, old_local)
+                else:
+                    locale.setlocale(locale.LC_TIME, '')
 
 def isToday(date_string):
     """ tells if the given string represents today's date
@@ -687,3 +702,11 @@ def getAuthenticatedMember(context):
         return context.portal_membership.getAuthenticatedMember()
     else:
         return None
+
+def getPortalLang(context):
+    if hasattr(context, 'Localizer'):
+        return context.Localizer.get_selected_language()
+    else:
+        return 'en'
+
+
