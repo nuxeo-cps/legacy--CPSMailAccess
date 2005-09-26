@@ -677,7 +677,7 @@ class MailFolder(BTreeFolder2):
         bloc = self._createSubBlocs(uids, self.fetch_size)
 
         # XXX will be in properties later
-        headers = ['From', 'To', 'Cc', 'Subject', 'Date', 'Message-ID',
+        headers = ['From', 'To', 'Cc', 'BCc', 'Subject', 'Date', 'Message-ID',
                    'In-Reply-To', 'Content-Type', 'References',
                    'Disposition-Notification-To']
 

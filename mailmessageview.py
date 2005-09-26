@@ -142,6 +142,10 @@ class MailMessageView(BaseMailMessageView):
         """ renders the mail list """
         return self._renderLinkedHeaderList('Cc')
 
+    def renderBCcList(self):
+        """ renders the mail list """
+        return self._renderLinkedHeaderList('BCc')
+
     def toCount(self):
         """ returns number of To recipients """
         return self.headerCount('To')
@@ -149,6 +153,10 @@ class MailMessageView(BaseMailMessageView):
     def ccCount(self):
         """ returns number of Cc recipients """
         return self.headerCount('Cc')
+
+    def bccCount(self):
+        """ returns number of Cc recipients """
+        return self.headerCount('BCc')
 
     def fromCount(self):
         """ returns number of From recipients """

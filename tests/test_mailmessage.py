@@ -332,6 +332,15 @@ class MailMessageTestCase(MailTestCase):
         ob.loadMessage(headers=headers)
         self.assertEquals(ob.getHeader('cc'), ['toto', 'toti'])
 
+    def test_BCcLoose(self):
+        # we have to be able to keep BCc headers
+        ob = self.getMailInstance(43)
+        headers = [('bcc', 'toto'), ('bcc', 'toti')]
+        ob.loadMessage(headers=headers)
+        raw_msg = ob.getRawMessage()
+        self.assertNotEquals(raw_msg.find('toto'), -1)
+        self.assertNotEquals(raw_msg.find('toti'), -1)
+
 
 def test_suite():
     return unittest.TestSuite((

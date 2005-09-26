@@ -352,6 +352,12 @@
               <tal:block tal:replace="structure here/renderCcList" />
             </b>
           </div>
+          <div id="mailBCc" tal:condition="python:here.bccCount()>0">
+            <b>
+              <tal:block i18n:translate="cpsma_bcc">Cc :</tal:block>
+              <tal:block tal:replace="structure here/renderBCcList" />
+            </b>
+          </div>
         </div>
       </metal:block>
 

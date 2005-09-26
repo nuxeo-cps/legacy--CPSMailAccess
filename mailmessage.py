@@ -93,9 +93,9 @@ class MailMessage(Folder):
             # getting back headers
             original_store = self._getStore()
             new_store = Message.Message()
-            old_headers = ('From', 'To', 'Cc', 'Subject', 'Date', 'Message-ID',
-                           'In-Reply-To', 'Content-Type', 'References',
-                           'Disposition-Notification-To')
+            old_headers = ('From', 'To', 'BCc', 'Cc', 'Subject', 'Date',
+                           'Message-ID', 'In-Reply-To', 'Content-Type',
+                           'References', 'Disposition-Notification-To')
             for old_header in old_headers:
                 for value in original_store.get_all(old_header, []):
                     new_store[old_header] = value

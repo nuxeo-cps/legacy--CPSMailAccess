@@ -484,6 +484,7 @@ class MailMessageEdit(BrowserView):
             self.saveMessageForm(**self.request.form)
 
         msg = mailbox.getCurrentEditorMessage()
+
         Tos = msg.getHeader('To')
         if Tos == [] or Tos == ['']:
             result = False
