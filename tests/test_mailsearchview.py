@@ -60,11 +60,13 @@ class MailSearchViewTestCase(MailTestCase):
     def test_zemanticPredicateList(self):
         searchview, cat, zcat, box = self._getView()    # also fills cat
         list_ = searchview.zemanticPredicateList()
+        list_.sort()
         self.assertEquals(list_, [u'body', u'cc', u'content-description',
                                   u'content-disposition',
                                   u'content-transfer-encoding',
                                   u'content-type', u'date', u'delivered-to',
-                                  u'errors-to', u'from', u'list-archive',
+                                  u'errors-to', u'folder', u'from',
+                                  u'list-archive',
                                   u'list-help', u'list-id', u'list-post',
                                   u'list-subscribe', u'list-unsubscribe',
                                   u'message-id', u'mime-version',
@@ -135,8 +137,9 @@ class MailSearchViewTestCase(MailTestCase):
     def test_zemanticPredicateList_light(self):
         searchview, cat, zcat, box = self._getView(False)
         list_ = searchview.zemanticPredicateList()
-        self.assertEquals(list_, [u'cc', u'date', u'from', u'message-id',
-                                  u'sender', u'subject', u'to'])
+        list_.sort()
+        self.assertEquals(list_, [u'cc', u'date', u'folder', u'from',
+                                  u'message-id', u'sender', u'subject', u'to'])
 
     def test_zemantic_searchs_light(self):
         searchview, cat, zcat, box = self._getView(False)

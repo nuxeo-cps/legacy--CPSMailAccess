@@ -81,7 +81,7 @@ class MailSearchTestCase(MailTestCase):
         message.getPhysicalPath = self.fakeGetPhysicalPath
         adapted_message = ZemanticMessageAdapter(message, None)
         tuples = adapted_message.threeTuples()
-        self.assertEquals(len(tuples), 3)
+        self.assertEquals(len(tuples), 4)
         self.assertEquals(tuples[0], (u'nowere/my_message_2',
                                       u'from', u'bperson@dom.ain'))
         self.assertEquals(tuples[1], (u'nowere/my_message_2',
@@ -101,7 +101,7 @@ class MailSearchTestCase(MailTestCase):
             messages.append(message)
 
         res = ob.query(Query(Any, Any, Any))
-        self.assertEquals(len(list(res)),  46)
+        self.assertEquals(len(list(res)),  56)
 
         subjects_ = list(ob.subjects())
         c_subjects_ = []
@@ -190,7 +190,7 @@ class MailSearchTestCase(MailTestCase):
 
         res = ob.query(Query(Any, Any, Any))
         res = list(res)
-        self.assertEquals(len(res), 6)
+        self.assertEquals(len(res), 7)
 
         ob.clear()
 
@@ -215,6 +215,26 @@ class MailSearchTestCase(MailTestCase):
         un = union(one)
         un.sort()
         self.assertEquals(un, ['a', 'b'])
+
+    def test_folder_indexing(self):
+
+        box = self._getMailBox()
+        folder = box._addFolder('fol', 'INBOX.fol')
+        msg = folder._addMessage('1', 'INBOX.fol.1')
+
+        orphan_message = self.getMailInstanceT(1)
+
+        ob = ZemanticMailCatalog()
+
+        ob.indexMessage(msg)
+        ob.indexMessage(orphan_message)
+
+        res = ob.query(Query(Any, URIRef(u'folder'), Any))
+        self.assertEquals(len(list(res)), 2)
+
+        res = ob.query(Query(Any, URIRef(u'folder'), URIRef(u'INBOX.fol')))
+        self.assertEquals(len(list(res)), 1)
+
 
 def test_suite():
     return unittest.TestSuite((

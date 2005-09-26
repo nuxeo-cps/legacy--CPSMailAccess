@@ -33,7 +33,7 @@ from BTrees.OOBTree import OOBTree
 
 from configuration import __file__ as landmark
 from utils import makeId, parseDateString, removeHTML, decodeHeader, parseRefs
-from interfaces import IMailCatalog
+from interfaces import IMailCatalog, IMailFolder
 
 from zemantic.triplestore import TripleStore
 from zemantic.interfaces import IRDFThreeTuples
@@ -172,6 +172,15 @@ class ZemanticMessageAdapter:
 
             body = Literal(body)
             triples.append((ob_uri, URIRef(u'body'), body))
+
+        # a triple for folder
+        folder = message.getMailFolder()
+        if folder is None or not IMailFolder.providedBy(folder):
+            folder_name = URIRef(u'_#_orphan_#_')
+        else:
+            folder_name = URIRef(unicode(folder.server_name))
+
+        triples.append((ob_uri, URIRef(u'folder'), folder_name))
 
         # relations with other mails
         if index_relations:
