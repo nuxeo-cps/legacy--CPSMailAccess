@@ -303,6 +303,10 @@ class IMAPConnectionTestCase(MailTestCase):
 
         self.assertEquals(extracted, waited)
 
+    def test_getState(self):
+        ob = self.makeConnection()
+        state = ob.getState()
+        self.assertEquals(state, 'NOAUTH')
 
 def test_suite():
     return unittest.TestSuite((
