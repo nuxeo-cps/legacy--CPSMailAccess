@@ -92,7 +92,7 @@ class MailMessageEdit(BrowserView):
             values = msg.getHeader(field)
             for value in values:
                 if not isValidEmail(value):
-                    return '%s cpsm_not_valid_mail' % value
+                    return 'cpsm_not_valid_mail'
         return None
 
     def sendMessage(self, msg_from, msg_subject=None, msg_body=None,

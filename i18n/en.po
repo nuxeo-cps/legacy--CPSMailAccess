@@ -1,4 +1,4 @@
-# translation of fr.po to francais
+# # translation of fr.po to francais
 # Gettext Message File for default.
 # Your Name <your@email>, Year
 # emmanuel <tziade@nuxeo.com>, 2004.
@@ -463,7 +463,7 @@ msgid "cpsma_message_saving"
 msgstr "Saving the message..."
 
 msgid "cpsm_not_valid_mail"
-msgstr "is not a valid email"
+msgstr "Invalid email address"
 
 msgid "cpsm_empty_subjet_body"
 msgstr "both subject and body are empty"

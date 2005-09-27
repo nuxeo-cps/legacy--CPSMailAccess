@@ -463,7 +463,7 @@ msgid "cpsma_message_saving"
 msgstr "Sauvegarde en cours..."
 
 msgid "cpsm_not_valid_mail"
-msgstr "n'est pas un email valide"
+msgstr "Address mail invalide"
 
 msgid "cpsm_empty_subjet_body"
 msgstr "Sujet et corps du message sont vides"
