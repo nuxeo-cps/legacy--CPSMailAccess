@@ -133,7 +133,7 @@ class MailFolderView(BaseMailMessageView):
         title = mailfolder.title
         try:
             deleted = mailfolder.delete()
-            psm = 'Folder %s sent to the trash.' % title
+            psm = 'cpsma_folder_sent_to_trash'
         except ConnectionError:
             deleted = None
             psm = 'cpsma_could_not_perform'

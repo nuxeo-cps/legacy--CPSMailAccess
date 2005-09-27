@@ -432,6 +432,9 @@ msgstr "Messages sent to Trash."
 msgid "cpsma_msg_sent_to_trash"
 msgstr "Message sent to Trash."
 
+msgid "cpsma_folder_sent_to_trash"
+msgstr "Folder sent to the Trash."
+
 msgid "cpsma_message_sent"
 msgstr "Message sent."
 

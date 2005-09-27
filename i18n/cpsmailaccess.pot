@@ -430,6 +430,9 @@ msgstr ""
 msgid "cpsma_msg_sent_to_trash"
 msgstr ""
 
+msgid "cpsma_folder_sent_to_trash"
+msgstr ""
+
 msgid "cpsma_message_sent"
 msgstr ""
 

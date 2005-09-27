@@ -429,6 +429,9 @@ msgstr "Taille maximum autorisée atteinte"
 msgid "cpsma_msgs_sent_to_trash"
 msgstr "Messages envoyés à la corbeille"
 
+msgid "cpsma_folder_sent_to_trash"
+msgstr "Dossier envoyé à la corbeille"
+
 msgid "cpsma_msg_sent_to_trash"
 msgstr "Message envoyé à la corbeille."
 
