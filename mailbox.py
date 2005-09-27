@@ -262,9 +262,6 @@ class MailBox(MailBoxBaseCaching):
 
     implements(IMailBox)
 
-    zcatalog_id = '.zemantic_catalog'
-    catalog_id = '.zcatalog'
-
     def __init__(self, uid=None, server_name='', **kw):
         __version__ = (1, 0, 0, 'b2')
         MailBoxBaseCaching.__init__(self, uid, server_name, **kw)
@@ -272,6 +269,7 @@ class MailBox(MailBoxBaseCaching):
         self._filters = ZMailFiltering()
         self._directory_picker = None
         self._connection_params = PersistentMapping()
+        self._zcatalog_id = ZemanticMailCatalog()
 
     def _setConnectionValue(self, key, value):
         """ avoids zodb extra writes """
@@ -818,16 +816,7 @@ class MailBox(MailBoxBaseCaching):
 
     def _getZemanticCatalog(self):
         """ returns the catalog """
-        zcatalog_id = self.zcatalog_id
-
-        if hasattr(self, zcatalog_id):
-            return getattr(self, zcatalog_id)
-        else:
-            cat = ZemanticMailCatalog()
-            #self._setObject(zcatalog_id, cat)
-            setattr(self, zcatalog_id, cat)
-
-        return getattr(self, zcatalog_id)
+        return self._zcatalog_id
 
     def clearMailCatalog(self):
         """ clears the catalog """

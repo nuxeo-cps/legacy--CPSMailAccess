@@ -83,6 +83,34 @@
   <div class="dragBox" id="drag-feedback-box"></div>
 </metal:block>
 
+<metal:block define-macro="basebox_selectfolders_view">
+  <tal:block tal:define="treeview here/treeview.html|nothing">
+    <tal:block tal:condition="treeview">
+      <div class="folderSelector">
+        <tal:block tal:repeat="element treeview">
+          <metal:block use-macro="here/boxes_mailaccess/macros/folder_node"/>
+        </tal:block>
+      </div>
+    </tal:block>
+  </tal:block>
+</metal:block>
+
+<metal:block define-macro="folder_node">
+  <div>
+    <tal:block tal:repeat="icon_ob element/front_icons">
+      &#160;&#160;&#160;
+    </tal:block>
+    <input type="checkbox" name="folders:list"
+            tal:attributes="value element/server_name"/>
+    <span tal:replace="element/short_title"/>
+    <div tal:attributes="id element/short_title_id">
+      <tal:block tal:repeat="element element/childs">
+        <metal:block use-macro="here/boxes_mailaccess/macros/folder_node"/>
+      </tal:block>
+    </div>
+  </div>
+</metal:block>
+
 <metal:block define-macro="basebox_moveview">
   <tal:block tal:define="treeview here/treeview.html|nothing">
     <tal:block tal:condition="treeview">

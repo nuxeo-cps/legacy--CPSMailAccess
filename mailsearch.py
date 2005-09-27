@@ -226,6 +226,8 @@ class ZemanticMailCatalog(TripleStore):
         self._message_ids = OOBTree()
 
     def clear(self):
+        from zLOG import INFO, LOG
+        LOG('clear catalog', INFO, '')
         TripleStore.clear(self)
         self._message_ids = OOBTree()
 
@@ -241,6 +243,9 @@ class ZemanticMailCatalog(TripleStore):
     def indexMessage(self, message, full_indexation=False,
                      index_relations=True):
         """ index message """
+        from zLOG import INFO, LOG
+        LOG('indexMessage', INFO, str(message))
+        LOG('indexMessage', INFO, 'current catalog size: %d' % len(self))
         zmessage = ZemanticMessageAdapter(message, self, full_indexation)
         tuples = zmessage.threeTuples(index_relations)
 

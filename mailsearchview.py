@@ -46,22 +46,37 @@ class MailSearchView(BrowserView):
         list_.sort()
         return list_
 
-    def _bodySearch(self, query):
-        """ makes an IMAP search and translate UIDS results in URIS """
+    def _bodySearch(self, query, folders=None):
+        """ makes an IMAP search and translate UIDS results in URIS
+
+        if folders is given, it's a list of server folder
+        names where we want to search
+        """
         mailbox = self.context
         results = mailbox.searchInConnection('(body "%s")' % query)
+
+        # filtering
+        if folders is not None:
+            filtered_folder_list = []
+            for folder, uids in results:
+                if folder in folders:
+                    filtered_folder_list.append((folder, uids))
+
+            results = filtered_folder_list
+
+        if results == []:
+            return []
+
+        # now searching in each folder
         uris = []
-        for server_res in results:
-            server_folder = server_res[0]
-            server_uids = server_res[1]
-            server_ob = getFolder(mailbox, server_folder)
+        for folder, uids in results:
+            server_ob = getFolder(mailbox, folder)
             if server_ob is not None:
-                for uid in server_uids:
-                    # uids are given in a tuple (server_dir, uid)
+                for uid in uids:
                     ob = server_ob.findMessageByUid(uid)
                     if ob is not None:
                         uris.append(ob.absolute_url())
-            return uris
+        return uris
 
     def zemanticSearchMessages(self, **kw):
         """ zemantic query """
@@ -110,6 +125,13 @@ class MailSearchView(BrowserView):
                         query = Query(Any, u'<%s>' % relation, u'"%s"' % value)
                     queries.append(query)
 
+
+        # looking if the user has selected subfolders
+        if 'folders' in kw:
+            folders = kw['folders']
+        else:
+            folders = None
+
         cat = mailbox._getZemanticCatalog()
 
         intersection = kw.has_key('intersection')
@@ -152,7 +174,11 @@ class MailSearchView(BrowserView):
         # after zemantic has done its works,
         # we might sub-search bodies on IMAP
         if body_search:
-            body_search_results = self._bodySearch(body_search_query)
+            # computing search folders
+            search_folders = folders
+
+            body_search_results = self._bodySearch(body_search_query,
+                                                   search_folders)
             if not intersection:
                 raw_results.append(body_search_results)
             else:
@@ -169,10 +195,17 @@ class MailSearchView(BrowserView):
 
         for result in raw_results:
             object = traverseToObject(mailbox, result)
+            # now removing elements that are not in folders
+            # XXX: will integrate this in query in sparql
             # if object is None, it means
             # that the catalog holds deprecated entries
             # we don't want to see here
             if object is not None or kw.has_key('lazy_search'):
+                if object is not None:
+                    folder = object.getMailFolder()
+                    if (folders is not None and
+                        folder.server_name not in folders):
+                            continue
                 current = {}
                 current['path'] = result
                 current['object'] = object

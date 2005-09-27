@@ -130,6 +130,18 @@ class MailSearchViewTestCase(MailTestCase):
         results = searchview.zemanticSearchMessages(**query)[0]
         self.assertEquals(len(results), 0)
 
+        # trying out with folders
+        query = {}
+        query['relation_0'] = 'cc'        # relations keys are normalized (lower)
+        query['value_0'] = '*'
+        query['relation_1'] = 'subject'        # relations keys are normalized (lower)
+        query['value_1'] = 'test'
+        query['folders'] = ['INBOX']
+        query['intersection'] = 'store is open'
+
+        results = searchview.zemanticSearchMessages(**query)[0]
+
+
     def test_instanciation_light(self):
         searchview = self._getView(False)
         self.assertNotEquals(searchview, None)

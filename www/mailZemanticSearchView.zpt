@@ -125,6 +125,24 @@
             </script>
           </td>
         </tr>
+        <tr>
+          <td align="right">
+            <div class="dlabel" i18n:translate="cpsma_folders">
+            Folders
+            </div>
+          </td>
+          <td>
+            <i i18n:translate="cpsma_choose_folders"
+                   onmouseover="setCursor(this)"
+                   onclick="toggleElementVisibility('selectFolder')">
+               Pick-up folder to search in (not recursive)...
+            </i>
+            <div id="selectFolder" class="hidden_part">
+              <metal:block
+               use-macro="here/boxes_mailaccess/macros/basebox_selectfolders_view"/>
+            </div>
+          </td>
+        </tr>
       </table>
       </div>
       <!--
