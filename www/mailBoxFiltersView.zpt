@@ -35,7 +35,7 @@
                    value="Activate adaptive anti-spam"/>
     </div>
     <h3>
-      <span i18n:translate="">
+      <span i18n:translate="cpsma_userdefined_filters">
         User defined filters
       </span>
     </h3>

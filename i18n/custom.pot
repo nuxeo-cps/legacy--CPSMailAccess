@@ -562,3 +562,6 @@ msgstr "Element renamed"
 
 msgid "cpsma_moved"
 msgstr ""
+
+msgid "cpsma_userdefined_filters"
+msgstr ""

@@ -570,3 +570,6 @@ msgstr "Element renommé"
 
 msgid "cpsma_moved"
 msgstr "Element déplacé"
+
+msgid "cpsma_userdefined_filters"
+msgstr "Filtres utilisateur"
