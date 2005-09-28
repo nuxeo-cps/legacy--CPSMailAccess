@@ -3,10 +3,21 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
--
+- protected folders
+- added folder selection in search screen
+
 Bug fixes:
 ~~~~~~~~~~
 -
+- Synchronisation, sometime failed on a non AUTH status
+- checkboxes on webmail configuration screen were persistent
+- translations for mail dates
+- the return receipt was poping up in drafts
+- could not reload mails from drafts
+- Bcc field was not saved in drafts
+- the column sort cache was persistent: new sorts were not applied
+- double-click was necessary to see a message
+
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
