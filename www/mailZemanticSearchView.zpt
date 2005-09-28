@@ -135,7 +135,7 @@
             <i i18n:translate="cpsma_choose_folders"
                    onmouseover="setCursor(this)"
                    onclick="toggleElementVisibility('selectFolder')">
-               Pick-up folder to search in (not recursive)...
+               Pick-up folders to search in (not recursive)...
             </i>
             <div id="selectFolder" class="hidden_part">
               <metal:block

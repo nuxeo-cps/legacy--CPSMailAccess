@@ -539,3 +539,9 @@ msgstr "Element moved"
 
 msgid "cpsma_userdefined_filters"
 msgstr "User defined filters"
+
+msgid "cpsma_folders"
+msgstr "Folders"
+
+msgid "cpsma_choose_folders"
+msgstr "Pick-up folders to search in (not recursive)..."

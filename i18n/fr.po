@@ -573,3 +573,9 @@ msgstr "Element déplacé"
 
 msgid "cpsma_userdefined_filters"
 msgstr "Filtres utilisateur"
+
+msgid "cpsma_folders"
+msgstr "Répertoires"
+
+msgid "cpsma_choose_folders"
+msgstr "Choisir des répertoires de recherche (non récursif)..."

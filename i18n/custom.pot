@@ -565,3 +565,9 @@ msgstr ""
 
 msgid "cpsma_userdefined_filters"
 msgstr ""
+
+msgid "cpsma_folders"
+msgstr ""
+
+msgid "cpsma_choose_folders"
+msgstr ""

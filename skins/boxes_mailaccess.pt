@@ -22,7 +22,7 @@
             <img tal:attributes="src element/icon_name"/>
               <a tal:attributes="href python:element['url']+'?keep_last_sort=1'">
                 <tal:block
-                  tal:condition="python:element['short_title'] in ('Drafts', 'Sent', 'Trash')">
+                  tal:condition="python:element['short_title'] in ('Drafts', 'Sent', 'Trash', 'INBOX')">
 
                   <tal:block tal:condition="not:unreads">
                     <tal:block tal:content="element/short_title" i18n:translate=""/>
@@ -35,7 +35,7 @@
                   </tal:block>
                 </tal:block>
                 <tal:block
-                  tal:condition="not:python:element['short_title'] in ('Drafts', 'Sent', 'Trash')">
+                  tal:condition="not:python:element['short_title'] in ('Drafts', 'Sent', 'Trash', 'INBOX')">
 
                   <tal:block tal:condition="not:unreads">
                     <tal:block tal:content="element/short_title"/>
@@ -102,7 +102,12 @@
     </tal:block>
     <input type="checkbox" name="folders:list"
             tal:attributes="value element/server_name"/>
-    <span tal:replace="element/short_title"/>
+    <tal:block tal:condition="python:element['short_title'] in ('Drafts', 'Sent', 'Trash', 'INBOX')">
+      <tal:block i18n:translate="" tal:content="element/short_title"/>
+    </tal:block>
+    <tal:block tal:condition="not:python:element['short_title'] in ('Drafts', 'Sent', 'Trash', 'INBOX')">
+      <tal:block tal:content="element/short_title"/>
+    </tal:block>
     <div tal:attributes="id element/short_title_id">
       <tal:block tal:repeat="element element/childs">
         <metal:block use-macro="here/boxes_mailaccess/macros/folder_node"/>
