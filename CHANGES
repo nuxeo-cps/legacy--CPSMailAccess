@@ -17,6 +17,7 @@ Bug fixes:
 - Bcc field was not saved in drafts
 - the column sort cache was persistent: new sorts were not applied
 - double-click was necessary to see a message
+- attached files with accents were breaking mail editor
 
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~

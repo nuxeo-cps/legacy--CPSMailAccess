@@ -388,12 +388,17 @@ class MailMessageView(BaseMailMessageView):
         list_files = []
 
         for file in files:
-            file['url'] = '%s/viewFile.html?filename=%s' \
-                           % (prefix, str(file['filename']))
+            # we want to render element in unicode
+            for key in file:
+                if isinstance(file[key], str):
+                    file[key] = file[key].decode('ISO-8859-15')
+
+            file['url'] = u'%s/viewFile.html?filename=%s' \
+                           % (prefix, file['filename'])
             file['icon'] =  mimetype_to_icon_name(file['mimetype'])
             file['fulltitle'] = decodeHeader(file['filename'])
             file['title'] = decodeHeader(file['filename'])
-            file['delete_url'] = ('deleteAttachement.html?filename=' +
+            file['delete_url'] = (u'deleteAttachement.html?filename=' +
                                   file['filename'])
             list_files.append(file)
         return list_files
