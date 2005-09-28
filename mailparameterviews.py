@@ -81,8 +81,12 @@ class MailParametersView(BrowserView):
         to all existing mailboxes, wich means, they will upgrade
         their own parameters in the next parameter use
         """
+        if self.request is not None:
+            params = self.request.form
+
         params = self._computeRequest(params)
         self.context.setParameters(params)
+
         if self.request is not None:
             self.request.response.redirect('configure.html')
 
