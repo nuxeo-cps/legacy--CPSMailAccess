@@ -534,6 +534,9 @@ msgstr "Send the message"
 msgid "cpsma_renamed"
 msgstr "Element renamed"
 
+msgid "cpsma_could_not_rename"
+msgstr "Could not rename"
+
 msgid "cpsma_moved"
 msgstr "Element moved"
 

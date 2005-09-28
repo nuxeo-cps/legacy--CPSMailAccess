@@ -560,6 +560,12 @@ msgstr ""
 msgid "cpsma_send_message"
 msgstr ""
 
+msgid "cpsma_renamed"
+msgstr ""
+
+msgid "cpsma_could_not_rename"
+msgstr ""
+
 msgid "cpsma_moved"
 msgstr ""
 

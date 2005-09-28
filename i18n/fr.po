@@ -568,6 +568,9 @@ msgstr "Envoyer le message"
 msgid "cpsma_renamed"
 msgstr "Element renommé"
 
+msgid "cpsma_could_not_rename"
+msgstr "Impossible de renommer l'élément"
+
 msgid "cpsma_moved"
 msgstr "Element déplacé"
 
