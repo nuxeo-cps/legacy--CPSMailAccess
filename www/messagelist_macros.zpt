@@ -92,7 +92,7 @@
              onmouseover="setCursor(this)"
              i18n:attributes="value"/>
            </td>
-           <td class="selectableButton">
+           <td class="selectableButton" tal:condition="not:here/isProtected|python:1">
             <input class="manage_paste" type="submit" name="action_paste" value="paste"
              onmouseover="setCursor(this)"
              i18n:attributes="value"/>

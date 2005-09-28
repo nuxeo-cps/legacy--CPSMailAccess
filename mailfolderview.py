@@ -460,28 +460,32 @@ class MailFolderView(BaseMailMessageView):
                         else:
                             psm = 'cpsma_msg_sent_to_trash'
         if action == 'paste':
-            mailbox = mailfolder.getMailBox()
-            past_action, ids = mailbox.getClipboard()
-            if ids is not None:
-                try:
-                    if past_action == 'cut':
-                        # it's a cut'n'paste
-                        for id in ids:
-                            folder, uid = self.getMessageUidAndFolder(id)
-                            res = folder.moveMessage(uid, mailfolder)
-                            if not res:
-                                psm = 'cpsma_could_not_perform'
-                                break
-                    else:
-                        # it's a copy
-                        for id in ids:
-                            folder, uid = self.getMessageUidAndFolder(id)
-                            res = folder.copyMessage(uid, mailfolder)
-                            if not res:
-                                psm = 'cpsma_could_not_perform'
-                                break
-                finally:
-                    mailbox.clearClipboard()
+            if self.isProtected():
+                # not allowed
+                psm = 'cpsma_could_not_perform'
+            else:
+                mailbox = mailfolder.getMailBox()
+                past_action, ids = mailbox.getClipboard()
+                if ids is not None:
+                    try:
+                        if past_action == 'cut':
+                            # it's a cut'n'paste
+                            for id in ids:
+                                folder, uid = self.getMessageUidAndFolder(id)
+                                res = folder.moveMessage(uid, mailfolder)
+                                if not res:
+                                    psm = 'cpsma_could_not_perform'
+                                    break
+                        else:
+                            # it's a copy
+                            for id in ids:
+                                folder, uid = self.getMessageUidAndFolder(id)
+                                res = folder.copyMessage(uid, mailfolder)
+                                if not res:
+                                    psm = 'cpsma_could_not_perform'
+                                    break
+                    finally:
+                        mailbox.clearClipboard()
 
         if self.request is not None:
             # let's go to the mailbox
@@ -534,6 +538,11 @@ class MailFolderView(BaseMailMessageView):
         """ tells if the current folder is read-only """
         mailfolder = self.context
         return mailfolder.isReadOnly()
+
+    def isProtected(self):
+        """ tells if the current folder is protected """
+        mailfolder = self.context
+        return mailfolder.isProtected()
 
     def isTrash(self):
         """ tells if the current folder is read-only """

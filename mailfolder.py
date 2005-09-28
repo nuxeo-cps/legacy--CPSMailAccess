@@ -983,7 +983,7 @@ class MailFolder(BTreeFolder2):
         """ moves the message on the server,
             then on the zodb (no sync)
         """
-        if new_mailbox.isReadOnly():
+        if new_mailbox.isReadOnly() or new_mailbox.isProtected():
             return False
         id = self.getIdFromUid(uid)
         msg = self[id]
@@ -1142,6 +1142,21 @@ class MailFolder(BTreeFolder2):
         if mailbox is None:
             return False
         return mailbox.isSpecialFolder(self)
+
+    def isProtected(self):
+        """ tells if the current folder is protected
+
+        A protected folder is a folder where users cannot paste
+        elements from other folders.
+
+        ie: the Sent Folder for instance
+        """
+        mailbox = self.getMailBox()
+        if mailbox is None:
+            return False
+        protected_list = mailbox.getConnectionParams()['protected_folders']
+        protected_list = [item.strip() for item in protected_list.split(',')]
+        return self.server_name in protected_list
 
 
 """ classic Zope 2 interface for class registering

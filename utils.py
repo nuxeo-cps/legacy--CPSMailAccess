@@ -168,7 +168,10 @@ def localizeDateString(date_string, format=0, lang='en'):
         finally:
             if old_local != lang:
                 if old_local != (None, None):
-                    locale.setlocale(locale.LC_TIME, old_local)
+                    try:
+                        locale.setlocale(locale.LC_TIME, old_local)
+                    except locale.Error:
+                        locale.setlocale(locale.LC_TIME, '')
                 else:
                     locale.setlocale(locale.LC_TIME, '')
 

@@ -585,6 +585,9 @@ class MailFolderTestCase(MailTestCase):
 
     def test_isReadOnlyProtections(self):
         box = self._getMailBox()
+        box._connection_params['protected_folders'] = ('', 1)
+        box._connection_params['read_only_folders'] = \
+            ('INBOX.Sent', 1)
         ob = box._addFolder('INBOX', 'INBOX')
         ob2 = ob._addFolder('Sent', 'INBOX.Sent')
         ob2._addMessage('1', '1')
@@ -594,6 +597,20 @@ class MailFolderTestCase(MailTestCase):
         ob3._addMessage('1', '1')
 
         self.assert_(not ob3.moveMessage('1', ob2))
+
+    def test_isProtectedProtections(self):
+        box = self._getMailBox()
+        box._connection_params['protected_folders'] = \
+            ('INBOX.Sent', 1)
+        box._connection_params['read_only_folders'] = ('', 1)
+
+        ob = box._addFolder('INBOX', 'INBOX')
+        ob2 = ob._addFolder('Sent', 'INBOX.Sent')
+        ob2._addMessage('1', '1')
+        ob3 = ob._addFolder('folder', 'INBOX.folder')
+        ob3._addMessage('1', '1')
+        self.assert_(not ob3.moveMessage('1', ob2))
+
 
     def test_loadMessageStructureFromServer(self):
         # XXX will be move in imap class

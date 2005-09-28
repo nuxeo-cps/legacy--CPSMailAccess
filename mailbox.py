@@ -1261,7 +1261,7 @@ class MailBox(MailBoxBaseCaching):
                     break
                 i += 1
 
-        if to_object.isReadOnly():
+        if to_object.isReadOnly() or to_object.isProtected():
             return None
 
         if from_object is not None and to_object is not None:

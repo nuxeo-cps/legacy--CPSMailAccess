@@ -1,3 +1,4 @@
+
 #!/usr/bin/python
 # -*- encoding: iso-8859-15 -*-
 # Copyright (C) 2004 Nuxeo SARL <http://nuxeo.com>
@@ -318,6 +319,13 @@ class MailBoxTestCase(MailTestCase):
     def test_moveElementWithReadOnly(self):
         # make sure the user can't drag'n'drop in read-only folder
         mailbox = self._getMailBox()
+        portal_webmail = self.portal.portal_webmail
+        portal_webmail.default_connection_params['protected_folders'] = ('', 1)
+        portal_webmail.default_connection_params['read_only_folders'] = \
+            ('INBOX.Sent', 1)
+        mailbox._connection_params['protected_folders'] = ('', 1)
+        mailbox._connection_params['read_only_folders'] = \
+            ('INBOX.Sent', 1)
         inbox = mailbox._addFolder('INBOX', 'INBOX')
 
         # the user can move a message to another folder

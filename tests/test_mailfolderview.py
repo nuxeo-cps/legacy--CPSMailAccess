@@ -560,6 +560,14 @@ class MailFolderViewTestCase(MailTestCase):
 
     def test_isReadOnly(self):
         box = self._getMailBox()
+        box._connection_params['protected_folders'] = ('', 1)
+        box._connection_params['read_only_folders'] = \
+            ('INBOX.Sent', 1)
+        portal_webmail = self.portal.portal_webmail
+        portal_webmail.default_connection_params['protected_folders'] = ('', 1)
+        portal_webmail.default_connection_params['read_only_folders'] = \
+            ('INBOX.Sent', 1)
+
         ob = box._addFolder('INBOX', 'INBOX')
         view = MailFolderView(ob, self.request)
         view = view.__of__(ob)
@@ -569,6 +577,26 @@ class MailFolderViewTestCase(MailTestCase):
         view = MailFolderView(ob2, self.request)
         view = view.__of__(ob2)
         self.assert_(view.isReadOnly())
+
+    def test_isProtected(self):
+        box = self._getMailBox()
+        box._connection_params['protected_folders'] = \
+            ('INBOX.Sent', 1)
+        box._connection_params['read_only_folders'] = ('', 1)
+        portal_webmail = self.portal.portal_webmail
+        portal_webmail.default_connection_params['protected_folders'] = \
+            ('INBOX.Sent', 1)
+        portal_webmail.default_connection_params['read_only_folders'] = ('', 1)
+
+        ob = box._addFolder('INBOX', 'INBOX')
+        view = MailFolderView(ob, self.request)
+        view = view.__of__(ob)
+        self.assert_(not view.isProtected())
+
+        ob2 = ob.Sent
+        view = MailFolderView(ob2, self.request)
+        view = view.__of__(ob2)
+        self.assert_(view.isProtected())
 
     def test_isTrash(self):
         box = self._getMailBox(True)
