@@ -176,7 +176,7 @@ class CPSMailAccessInstaller(CPSInstaller):
                 'acl_entry_edit_roles': 'Manager',
                 'id_field': 'id',
                 'title_field': 'fullname',
-                'search_substring_fields': ['fullname', 'email'],
+                'search_substring_fields': ['fullname', 'email', 'id', 'sn'],
                 },
             }
 
@@ -195,7 +195,7 @@ class CPSMailAccessInstaller(CPSInstaller):
                 'acl_entry_edit_roles': 'Manager; Member',
                 'id_field': 'id',
                 'title_field': 'fullname',
-                'search_substring_fields': ['fullname', 'email'],
+                'search_substring_fields': ['fullname', 'email', 'id', 'sn'],
                 'directory_ids': [],
                 'directory_type': 'CPS ZODB Directory',
                 },
