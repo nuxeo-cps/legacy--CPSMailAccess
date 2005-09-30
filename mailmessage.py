@@ -350,7 +350,8 @@ class MailMessage(Folder):
                 message = Message.Message()
                 for gheader in ('From', 'To', 'Cc', 'BCc', 'Subject', 'Date',
                                 'Return-Path', 'Received', 'Delivered-To',
-                                'Message-ID', 'References'):
+                                'Message-ID', 'References',
+                                'Disposition-Notification-To'):
                     if gheader in copy:
                         values = copy.get_all(gheader, [])
                         for value in values:
