@@ -1,0 +1,448 @@
+# translation of fr.po to francais
+# Gettext Message File for default.
+# Your Name <your@email>, Year
+# emmanuel <tziade@nuxeo.com>, 2004.
+msgid ""
+msgstr ""
+"Project-Id-Version: pt_BR\n"
+"POT-Creation-Date: 2005-03-26 17:25default\n"
+"PO-Revision-Date: 2005-09-29 14:53-0300\n"
+"Last-Translator: Mario Olimpio de Menezes <mario@ipen.br>\n"
+"Language-Team: portuguese <pt@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-code: LL\n"
+"Language-name: Language\n"
+"Preferred-encodings: utf-8 latin1\n"
+"Domain: default\n"
+"X-Generator: Emacs\n"
+
+msgid "cpsma_personal_address_book"
+msgstr "Livro de endereços pessoal"
+
+msgid "cpsma_global_address_book"
+msgstr "Livro de endereços público"
+
+msgid "cpsma_send_a_message"
+msgstr "Enviar uma mensagem"
+
+msgid "cpsma_mailbox_configuration"
+msgstr "Configurar"
+
+msgid "cpsma_mailbox_parameters"
+msgstr "Parâmetros da caixa postal"
+
+msgid "cpsma_mailbox_managment_tasks"
+msgstr "Administração"
+
+msgid "cpsma_address_book"
+msgstr "Livro de Endereços"
+
+msgid "cpsma_configure_mailbox"
+msgstr "Configurar Caixa Postal"
+
+msgid "cpsma_search_message"
+msgstr "Buscar mensagens"
+
+msgid "cpsma_write_message"
+msgstr "Compor"
+
+msgid "cpsma_synchronize_mailbox"
+msgstr "Sincronizar com Servidor"
+
+msgid "cpsma_js_disabled"
+msgstr "Javascript não está ativado; você perderá algumas características ergonômicas."
+
+msgid "cpsma_attach_file"
+msgstr "Anexar um arquivo"
+
+msgid "cpsma_make_selection"
+msgstr "Fazer uma seleção"
+
+msgid "cpsma_messages_in_clipboard"
+msgstr "Mensagens na área de transferência"
+
+msgid "cpsma_message_in_clipboard"
+msgstr "Mensagem na área de transferência."
+
+msgid "cpsma_subject"
+msgstr "Assunto"
+
+msgid "cpsma_to"
+msgstr "Para"
+
+msgid "cpsma_from"
+msgstr "De"
+
+msgid "cpsma_mailbox_beeing_synchronized"
+msgstr "Caixa Postal está sendo sincronizada"
+
+msgid "cpsma_mailbox_force_synchronize"
+msgstr "Se nada parece acontecer, force a sincronização por este link."
+
+msgid "cpsma_found"
+msgstr "Encontrado"
+
+msgid "cpsma_results"
+msgstr "Resultados"
+
+msgid "cpsma_no_results"
+msgstr "Nenhum resultado."
+
+msgid "cpsma_search_message_subject"
+msgstr "Assunto"
+
+msgid "cpsma_search_message_from"
+msgstr "Autor"
+
+msgid "cpsma_search_message_cc"
+msgstr "Cc"
+
+msgid "cpsma_search_message_contains"
+msgstr "Corpo"
+
+msgid "cpsma_search_message_date"
+msgstr "Data"
+
+msgid "cpsma_search_message_intersection"
+msgstr "Intersecção"
+
+msgid "cpsma_results_in"
+msgstr "resulta em"
+
+msgid "cpsma_seconds"
+msgstr "segundos"
+
+msgid "cpsma_date"
+msgstr "Data"
+
+msgid "cpsma_cc"
+msgstr "Cc"
+
+msgid "cpsma_save_message"
+msgstr "Salvar"
+
+msgid "cpsma_init_editor"
+msgstr "Cancelar"
+
+msgid "cpsma_empty_trash"
+msgstr "Esvaziar lixeira"
+
+msgid "cpsma_add_subfolder"
+msgstr "Adcionar uma subpastas"
+
+msgid "cpsma_move_folder"
+msgstr "Mover pasta"
+
+msgid "cpsma_rename_folder"
+msgstr "Renomear folder"
+
+msgid "cpsma_delete_folder"
+msgstr "Remover Pasta"
+
+msgid "cpsma_manage_content"
+msgstr "Administrar conteúndo"
+
+msgid "cpsma_reply"
+msgstr "Responder"
+
+msgid "cpsma_reply_all"
+msgstr "Responder a todos"
+
+msgid "cpsma_forward"
+msgstr "Repassar"
+
+msgid "cpsma_load_message"
+msgstr "Carregar mensagem"
+
+msgid "cpsma_delete_message"
+msgstr "Remover mensagem"
+
+msgid "cpsma_configure"
+msgstr "Configurar"
+
+msgid "cpsma_getmessages"
+msgstr "Pegar mensagens."
+
+msgid "cpsma_search_messages"
+msgstr "Buscar"
+
+
+msgid "cpsma_address_books"
+msgstr "Livro de Endereços."
+
+msgid "cpsma_all_entries"
+msgstr "Todas as entradas."
+
+
+msgid "cpsma_bcc"
+msgstr "Bcc"
+
+# named parameters
+msgid "HOST"
+msgstr "Servidor"
+
+msgid "PORT"
+msgstr "Porta"
+
+msgid "SSL"
+msgstr "SSL ?"
+
+msgid "cache_level"
+msgstr "Nível de Cache"
+
+msgid "connection_type"
+msgstr "Tipo de Conexão"
+
+msgid "draft_folder_name"
+msgstr "Nome da pasta de rascunhos"
+
+msgid "login"
+msgstr "Login"
+
+msgid "max_folder_depth"
+msgstr "Profundidade máxima na criação de pastas."
+
+msgid "max_folder_size"
+msgstr "Comprimento máximo para nomes das pastas."
+
+msgid "message_list_cols"
+msgstr "Colunas mostradas."
+
+msgid "password"
+msgstr "Senha"
+
+msgid "sent_folder_name"
+msgstr "Nome da pasta de Enviadas"
+
+msgid "smtp_host"
+msgstr "Servidor SMTP"
+
+msgid "smtp_port"
+msgstr "Porta SMTP"
+
+msgid "trash_folder_name"
+msgstr "Nome da pasta Lixeira"
+
+msgid "treeview_style"
+msgstr "Estilo visão em árvore."
+
+msgid "cpsma_synchronized"
+msgstr "Sincronizado"
+
+msgid "cpsma_failed_synchro"
+msgstr "Não foi possível sincronizar a caixa postal. Verifique os seus parâmetros."
+
+msgid "cpsma_add"
+msgstr "Adicionar"
+
+msgid "cpsma_change"
+msgstr "Mudar"
+
+msgid "cpsma_choose_new_folder"
+msgstr "Escolha um novo nome para a pasta...."
+
+# content toolbar action
+msgid "copy"
+msgstr "copiar"
+
+msgid "cut"
+msgstr "cortar"
+
+msgid "paste"
+msgstr "colar"
+
+msgid "delete"
+msgstr "remover"
+
+msgid "clear"
+msgstr "limpar"
+
+msgid "cpsma_reindex_mail_catalog"
+msgstr "Reindexar o cátalogo de mensagens."
+
+msgid "cpsma_objects"
+msgstr "Mensagens Indexadas."
+
+msgid "cpsma_filter"
+msgstr "Filtro"
+
+msgid "Filters for incoming messages"
+msgstr "Filtros para mensagens chegando."
+
+msgid "Element"
+msgstr "Elementos"
+
+msgid "Condition"
+msgstr "Condição"
+
+msgid "Value"
+msgstr "Valor"
+
+msgid "Action"
+msgstr "Ação"
+
+msgid "Action param"
+msgstr "Parâmetro"
+
+msgid "Subject"
+msgstr "Assunto"
+
+msgid "Sender"
+msgstr "Remetente"
+
+msgid "To"
+msgstr "Para"
+
+msgid "Cc"
+msgstr "Cc"
+
+msgid "contains"
+msgstr "contém"
+
+msgid "does not contains"
+msgstr "não contém."
+
+msgid "begins with"
+msgstr "começa com"
+
+msgid "ends with"
+msgstr "termina com"
+
+msgid "is"
+msgstr "é"
+
+msgid "isn't"
+msgstr "não é"
+
+msgid "move to"
+msgstr "mover para"
+
+msgid "copy to"
+msgstr "copiar para"
+
+msgid "label with"
+msgstr "rotular com"
+
+msgid "set junk status"
+msgstr "lixo ?"
+
+msgid "Need an action param"
+msgstr "Esta ação precisa um parâmetro."
+
+msgid "_list_mail_"
+msgstr "Meus emails"
+
+msgid "label_webmail_enabled"
+msgstr "Webmail ativado"
+
+msgid "label_address_book"
+msgstr "Livro de Endereços"
+
+msgid "label_personal_addressbook"
+msgstr "Livro de endereços pessoal"
+
+msgid "cpsma_back_to_folder"
+msgstr "Voltar para pasta"
+
+msgid "cpsma_detach"
+msgstr "Desanexar"
+
+msgid "select all"
+msgstr "selecionar tudo"
+
+msgid "deselect all"
+msgstr "deselecionar tudo"
+
+msgid "cps_synchronizing"
+msgstr "Sincronizando"
+
+msgid "cpsma_clear_mail_catalog"
+msgstr "Limpar catálogo de mensagens"
+
+msgid "cpsma_resync_all"
+msgstr "Sincronizar toda a caixa."
+
+msgid "cpsma_could_not_send"
+msgstr "Não foi possível enviar a mensagem; por favor verifique a configuração do SMTP."
+
+msgid "cpsma_structure_unknown"
+msgstr "Estrutura de mensagem não conhecida."
+
+msgid "cpsma_reconnect"
+msgstr "Reconectar ao servidor de email."
+
+msgid "cpsma_clear_mail_bodies"
+msgstr "Mensagens (corpo) cacheadas removidas."
+
+msgid "cpsma_failed_send"
+msgstr "Não foi possível enviar mensagem."
+
+msgid "cpsma_first_time"
+msgstr "Esta é a primeira vez que você inicia o webmail. Por favor, configure seus parâmetros. <br/>Em caso de dúvida, por favor refira-se à documentação."
+
+msgid "cpsma_configure_mailtool"
+msgstr "Configurar webmail"
+
+msgid "cpsma_mailtool_parameters"
+msgstr "Configuração do Webmail."
+
+msgid "cpsma_portal_wide"
+msgstr "Para todo o portal."
+
+msgid "cpsma_could_not_perform"
+msgstr "A operação não pode ser realizada no servidor de email."
+
+msgid "instant_load"
+msgstr "Não foi possível pegar o corpo da mensagem."
+
+msgid "cpsma_no_private"
+msgstr "Nenhum particular permitido."
+
+msgid "cpsma_max_size_reached"
+msgstr "Tamanho máximo atingido"
+
+msgid "cpsma_msgs_sent_to_trash"
+msgstr "Mensagens enviadas para o lixo."
+
+msgid "cpsma_msg_sent_to_trash"
+msgstr "Mensagem enviada para o lixo."
+
+msgid "cpsma_message_sent"
+msgstr "Mensagem enviada."
+
+msgid "cpsma_confirm_erase"
+msgstr "Tem certeza ?"
+
+msgid "cpsma_confirm_erase_folder"
+msgstr "Você tem certeza que quer remover a pasta ?"
+
+msgid "cpsma_webmail_navigation"
+msgstr "Navegador de mensagens."
+
+msgid "cpsma_attached_files"
+msgstr "Arquivos anexados."
+
+msgid "cpsma_message_saved"
+msgstr "Mensagem salva nos rascunhos."
+
+msgid "cpsma_message_saved_no_subject"
+msgstr "O campo 'Assunto' é necessário para salvar a mensagem."
+
+msgid "cpsma_message_saved_no_recipient"
+msgstr "O campo 'Para' é necessário para salvar a mensagem."
+
+msgid "cpsma_message_sending"
+msgstr "Enviando a mensagem...."
+
+msgid "cpsma_message_saving"
+msgstr "Salvando a mensagem...."
+
+msgid "cpsm_not_valid_mail"
+msgstr "não é um email válido."
+
+msgid "cpsm_empty_subjet_body"
+msgstr "tanto o assunto como o corpo estão vazio."
+
