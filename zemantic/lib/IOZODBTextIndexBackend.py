@@ -23,7 +23,7 @@ from zemantic.index.text.okapiindex import OkapiIndex as TextIndex
 from zemantic.index.text.lexicon import Lexicon
 from zemantic.index.text.lexicon import Splitter, CaseNormalizer, StopWordRemover
 
-from rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
 
 class IOZODBTextIndexBackend(Persistent):
     """\
@@ -46,6 +46,8 @@ class IOZODBTextIndexBackend(Persistent):
     """
 
     def __init__(self):
+        from zLOG import INFO, LOG
+        LOG('IOZODBTextIndexBackend', INFO, 'INIT')
 
         # indexed by [subject][predicate][object] = 1
         self.spo = IOBTree()
@@ -94,7 +96,9 @@ class IOZODBTextIndexBackend(Persistent):
         """\
         Add a triple to the store.
         """
-
+        from zLOG import INFO, LOG
+        LOG('add', INFO, str(predicate))
+        LOG('actual size', INFO, str(self.count))
         f = self.forward
         r = self.reverse
 
@@ -190,6 +194,9 @@ class IOZODBTextIndexBackend(Persistent):
 
     def triples(self, (subject, predicate, object)):
         """A generator over all the triples matching """
+        from zLOG import INFO, LOG
+        LOG('actual size', INFO, str(self.count))
+
         si = pi = oi = ois = Any
         if subject is not Any:
             si = self.reverse[subject]
@@ -298,7 +305,7 @@ class IOZODBTextIndexBackend(Persistent):
 
     def __len__(self):
         #@@ optimize
-        return self.count
+        #return self.count
         i = 0
         for triple in self.triples((None, None, None)):
             i += 1

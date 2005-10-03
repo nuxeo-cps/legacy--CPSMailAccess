@@ -27,7 +27,7 @@ from Testing.ZopeTestCase import ZopeTestCase, _print
 from zope.testing import doctest
 from zope.publisher.browser import FileUpload
 
-from rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
 
 from Products.CPSMailAccess.mailmessage import MailMessage
 from Products.CPSMailAccess.mailmessageview import MailMessageView

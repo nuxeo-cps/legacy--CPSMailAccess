@@ -31,8 +31,8 @@ from mailmessage import MailMessage
 
 from zemantic.public import *
 from zemantic.query import Query
-from rdflib.URIRef import URIRef
-from rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
 
 class MailSearchTestCase(MailTestCase):
 
@@ -45,7 +45,6 @@ class MailSearchTestCase(MailTestCase):
         return ('', 'nowere/i_am_not_moving')
 
     def test_ZemanticInstanciation(self):
-
         ob = ZemanticMailCatalog()
         ob.add((URIRef(u'Tarek'), URIRef(u'likes'), URIRef(u'Pizza')))
         res = ob.query(Query(Any, u'<likes>', Any))

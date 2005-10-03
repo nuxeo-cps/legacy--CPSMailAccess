@@ -38,10 +38,10 @@ from zope.security.proxy import removeSecurityProxy
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined, CompilerError
 from zope.tales.interfaces import ITALESExpression, ITALESFunctionNamespace
 
-from rdflib.URIRef import URIRef
-from rdflib.BNode import BNode
-from rdflib.Literal import Literal
-from rdflib.Identifier import Identifier
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.BNode import BNode
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.Identifier import Identifier
 
 from interfaces import *
 from query import Query, UnionChain
@@ -91,7 +91,7 @@ Zemantic query expressions.
         self._name = name
         self.engine = engine
         self.expr = self._compile(expr)
-                
+
     def _compile(self, expression):
         m = _parse_expr(expression)
         if m:
@@ -111,7 +111,7 @@ Zemantic query expressions.
 
         c = zapi.queryUtility(ITripleStore)
         o = zapi.queryUtility(IInformationStore)
-        
+
         # eval each expression, stuffing the result in a Query object.
         # Query will raise an error if the argument is not proper
         # like.
@@ -142,7 +142,7 @@ Zemantic query expressions.
                               "3 element tuple or provide IQuery"
         else:
             q = removeSecurityProxy(q)
-            
+
         for result in c.query(q):
             yield result
 
@@ -166,7 +166,7 @@ class RDFExpr(object):
         self._name = name
         self.engine = engine
         self.expr = self._compile(expr)
-                
+
     def _compile(self, expression):
         m = _parse_expr(expression)
         if m:
@@ -186,8 +186,8 @@ class RDFExpr(object):
 
         c = zapi.queryUtility(ITripleStore)
         o = zapi.queryUtility(IInformationStore)
-        
-        if c is not None:        
+
+        if c is not None:
             econtext.setLocal('zem', c)
         if o is not None:
             econtext.setLocal('zon', o)
@@ -201,7 +201,7 @@ class RDFExpr(object):
         # eval each expression, stuffing the result in a Query object.
         # Query will raise an error if the argument is not proper
         # like.
-        
+
         return ResultSet(self.expr(econtext)).rdfxml()
 
     def __str__(self):
@@ -211,21 +211,21 @@ class RDFExpr(object):
         return '<RDFExpr %s>' % self._s
 
 def eval(expr, context=None):
-    
+
     c = zapi.queryUtility(ITripleStore, context=context)
     o = zapi.queryUtility(IInformationStore, context=context)
-    
+
     econtext = Context(Engine, {})
-    
-    if c is not None:        
+
+    if c is not None:
         econtext.setLocal('zem', c)
     if o is not None:
         econtext.setLocal('zon', o)
-            
+
     econtext.setLocal('Any', None)
     econtext.setLocal('URIRef', URIRef)
     econtext.setLocal('BNode', BNode)
     econtext.setLocal('Literal', Literal)
-    
+
     bytecode = Engine.compile(expr)
     return bytecode(econtext)

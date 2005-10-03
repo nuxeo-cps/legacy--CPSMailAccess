@@ -38,8 +38,8 @@ from zope.interface import implements
 from zope.security.proxy import removeSecurityProxy
 
 from BTrees.OOBTree import OOSet
-from rdflib.TripleStore import TripleStore
-from rdflib.backends.InMemoryBackend import InMemoryBackend
+from Products.CPSMailAccess.zemantic.rdflib.TripleStore import TripleStore
+from Products.CPSMailAccess.zemantic.rdflib.backends.InMemoryBackend import InMemoryBackend
 
 class Result(object):
 
@@ -74,4 +74,4 @@ class ResultSet(object):
         return self.data.serialize()
 
     def rdfnt(self):
-        return self.data.serialize("nt") 
+        return self.data.serialize("nt")

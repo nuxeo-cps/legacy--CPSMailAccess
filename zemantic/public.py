@@ -3,10 +3,10 @@ Any = None
 
 from interfaces import *
 
-from rdflib.URIRef import URIRef
-from rdflib.BNode import BNode
-from rdflib.Literal import Literal
-from rdflib.Identifier import Identifier
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.BNode import BNode
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.Identifier import Identifier
 
 from triplestore import TripleStore
 from informationstore import InformationStore

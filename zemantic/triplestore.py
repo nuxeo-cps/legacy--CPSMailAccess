@@ -33,11 +33,11 @@ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 from persistent import Persistent
 from persistent.dict import PersistentDict
 
-from rdflib.TripleStore import TripleStore as rdflibTripleStore     # not pickleable
-from rdflib.URIRef import URIRef
-from rdflib.BNode import BNode
-from rdflib.Literal import Literal
-from rdflib.Identifier import Identifier
+from Products.CPSMailAccess.zemantic.rdflib.TripleStore import TripleStore as rdflibTripleStore     # not pickleable
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.BNode import BNode
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.Identifier import Identifier
 
 from query import Query
 from result import Result
@@ -169,8 +169,8 @@ class TripleStore(Persistent):
         >>> c = TripleStore()
         >>> len(allTriples(c))
         0
-        >>> from rdflib.URIRef import URIRef
-        >>> from rdflib.URIRef import Literal
+        >>> from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+        >>> from Products.CPSMailAccess.zemantic.rdflib.URIRef import Literal
         >>> c.add((URIRef('http://zope.org'), \
                     URIRef('http://purl.org/dc/1.1/#Title'), \
                     Literal('Zope Community Site')))
@@ -196,8 +196,8 @@ class TripleStore(Persistent):
         >>> c = TripleStore()
         >>> len(allTriples(c))
         0
-        >>> from rdflib.URIRef import URIRef
-        >>> from rdflib.URIRef import Literal
+        >>> from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+        >>> from Products.CPSMailAccess.zemantic.rdflib.URIRef import Literal
         >>> c.addTriples( \
                [(URIRef('http://zope.org'), \
                  URIRef('http://purl.org/dc/1.1/#Title'), \
@@ -225,8 +225,8 @@ class TripleStore(Persistent):
         Remove a triple from the storage.
 
         >>> c = TripleStore()
-        >>> from rdflib.URIRef import URIRef
-        >>> from rdflib.URIRef import Literal
+        >>> from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+        >>> from Products.CPSMailAccess.zemantic.rdflib.URIRef import Literal
         >>> c.add((URIRef('http://zope.org'), \
                     URIRef('http://purl.org/dc/1.1/#Title'), \
                     Literal('Zope Community Site')))

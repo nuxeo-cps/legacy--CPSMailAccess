@@ -73,7 +73,7 @@ class IRDAbout(Interface):
         """ Return the RDF XML description of this component. """
 
 class IQuery(Interface):
-    
+
     """ Any callable.  Returns a result set or None (no results) or
     throws an exception. """
 
@@ -83,7 +83,7 @@ class IQuery(Interface):
 
 
 class IQueryChain(IQuery):
-    
+
     """ Abstract class to combine a "chain" of queries into one result
     set.  QueryChains are themselves Queries, and can be nested. """
 
@@ -150,7 +150,7 @@ class ITripleStore(IQueryable):
     object that provide zemantic.interfaces.IQuery.  See
     zemantic.query.Query for an example of such an object or the
     zemantic.expressions modules for example of query expressions.
-    
+
     '''
 
     def notifyOn():
@@ -179,7 +179,7 @@ class ITripleStore(IQueryable):
 
     def subjects(predicate=None, object=None):
         """ Return all subjects.  Optionally provide qualifying predicate and object. """
-        
+
     def predicates(subject=None, object=None):
         """ Return all predicates. Optionally provide qualifying subject and object. """
 
@@ -188,10 +188,10 @@ class ITripleStore(IQueryable):
 
     def subject_predicates(object=None):
         """ """
-            
+
     def subject_objects(predicate=None):
         """ """
-        
+
     def predicate_objects(subject=None):
         """ """
 
@@ -200,7 +200,7 @@ class ITripleStore(IQueryable):
 
     def transitive_subjects(predicate, object, remember=None):
         """ """
-        
+
     def uniqueSubjects():
         """ All unique subjects. """
 
@@ -225,7 +225,7 @@ class IContext(ITripleStore):
 
     def __str__():
         """ Returns context as string. """
-    
+
 
 class IInformationStore(IQueryable):
     """ An rdflib-style information store. """
@@ -262,13 +262,13 @@ class IInformationStore(IQueryable):
 
     def __len__():
         """ Return number of contexts in store. """
-        
+
 # we have to assert all of these interfaces here so that they work with Zope 3
 
-from rdflib.URIRef import URIRef
-from rdflib.BNode import BNode
-from rdflib.Literal import Literal
-from rdflib.Identifier import Identifier
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.BNode import BNode
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.Identifier import Identifier
 
 class IIdentifier(Interface):
 
@@ -301,5 +301,5 @@ class IResultSet(Interface):
 
     def rdfnt():
         """ Return nt format of result set. """
-    
-    
+
+

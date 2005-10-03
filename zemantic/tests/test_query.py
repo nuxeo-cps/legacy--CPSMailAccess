@@ -13,8 +13,8 @@
 ##############################################################################
 import unittest
 
-from rdflib.URIRef import URIRef
-from rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
 
 from zope.testing.doctestunit import DocTestSuite
 

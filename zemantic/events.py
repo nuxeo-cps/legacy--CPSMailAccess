@@ -32,10 +32,10 @@ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 </rdf:RDF>
 '''
 
-from rdflib.URIRef import URIRef
-from rdflib.BNode import BNode
-from rdflib.Literal import Literal
-from rdflib.Identifier import Identifier
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.BNode import BNode
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.Identifier import Identifier
 
 from query import Query
 from interfaces import IZemanticEvent, ITripleAfterAddEvent, ITripleBeforeRemoveEvent
@@ -58,12 +58,12 @@ class ZemanticEvent(object):
 
 
 class TripleAfterAddEvent(ZemanticEvent):
-    
+
     implements(ITripleAfterAddEvent)
 
 
 class TripleBeforeRemoveEvent(ZemanticEvent):
-    
+
     implements(ITripleBeforeRemoveEvent)
 
 
@@ -72,4 +72,4 @@ def afterAdd(data):
 
 
 def beforeRemove(data):
-    notify(TripleBeforeRemoveEvent(data))    
+    notify(TripleBeforeRemoveEvent(data))

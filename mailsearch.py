@@ -40,8 +40,8 @@ from zemantic.interfaces import IRDFThreeTuples
 from zemantic.public import Any
 from zemantic.query import Query
 
-from rdflib.URIRef import URIRef
-from rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
 
 stop_words_filename = os.path.join(os.path.dirname(landmark), 'stopwords.txt')
 

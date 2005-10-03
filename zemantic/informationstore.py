@@ -34,12 +34,12 @@ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 from persistent import Persistent
 from persistent.dict import PersistentDict
 
-from rdflib.InformationStore import InformationStore as rdflibInformationStore     # not pickleable
-from rdflib.InformationStore import ContextBackend
-from rdflib.URIRef import URIRef
-from rdflib.BNode import BNode
-from rdflib.Literal import Literal
-from rdflib.Identifier import Identifier
+from Products.CPSMailAccess.zemantic.rdflib.InformationStore import InformationStore as rdflibInformationStore     # not pickleable
+from Products.CPSMailAccess.zemantic.rdflib.InformationStore import ContextBackend
+from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
+from Products.CPSMailAccess.zemantic.rdflib.BNode import BNode
+from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
+from Products.CPSMailAccess.zemantic.rdflib.Identifier import Identifier
 import urllib
 
 from query import Query
@@ -138,7 +138,7 @@ class InformationStore(Persistent):
         which can contain a valid value or None to indicate any value
         is desired.
         """
-        
+
         for triple in self.store.triples((subject, predicate, object), context):
             yield triple
 
