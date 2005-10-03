@@ -67,6 +67,7 @@ class MailActionsView(BaseMailMessageView):
         container = self.context
         base_url = self.getBaseUrl()
         box = container.getMailBox()
+        box_url = self.getAbsoluteUrl(box)
         user_name = box.getConnectionParams()['uid']
 
         if self._last_error is not None:
@@ -75,12 +76,12 @@ class MailActionsView(BaseMailMessageView):
                          'title' : 'cpsma_configure',
                          'id' : 'configure',
                          'long_title' : 'cpsma_configure',
-                         'action' : root + '/configure.html'}
+                         'action' : box_url + '/configure.html'}
             synchro = {'icon' : base_url + '/cpsma_getmails.png',
                        'title' : 'cpsma_getmessages',
                        'long_title' : 'cpsma_getmessages',
                        'id' : 'synchro',
-                       'action' : root + \
+                       'action' : box_url + \
                        '/syncProgress.html?light=1'}
 
             return [[synchro, configure]]
@@ -132,7 +133,7 @@ class MailActionsView(BaseMailMessageView):
                              'title' : 'cpsma_configure',
                              'long_title' : 'cpsma_configure',
                              'id' : 'configure',
-                             'action' : root + '/configure.html'}
+                             'action' : box_url + '/configure.html'}
 
                 return [[send, save], [ack, init], [configure]]
 
@@ -284,13 +285,13 @@ class MailActionsView(BaseMailMessageView):
                      'title' : 'cpsma_configure',
                      'long_title' : 'cpsma_configure',
                      'id' : 'configure',
-                     'action' : root + '/configure.html'}
+                     'action' : box_url + '/configure.html'}
 
         synchro = {'icon' : base_url + '/cpsma_getmails.png',
                    'title' : 'cpsma_getmessages',
                    'long_title' : 'cpsma_getmessages',
                    'id' : 'synchro',
-                   'action' : root + '/syncProgress.html?light=1'}
+                   'action' : box_url + '/syncProgress.html?light=1'}
 
         search = {'icon' : base_url + '/cspma_mail_find.png',
                    'title' : 'cpsma_search_messages',
