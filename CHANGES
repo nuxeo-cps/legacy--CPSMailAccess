@@ -22,4 +22,4 @@ Bug fixes:
 
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
--
+- removed rdflib 2.0.6 dependency: integrated within the product

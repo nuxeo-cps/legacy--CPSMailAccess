@@ -9,12 +9,11 @@ A - INSTALLATION NOTES
 ======================
 
 1 - Prerequisites
-2 - rdflib installation
-3 - zasyncdispatcher installation
-4 - Zope X3 installation (Zope 2.7.x only)
-5 - Products setup
-6 - Zope 3 <-> Zope 2 path setup (Zope 2.7.x only)
-7 - Webmail installation
+2 - zasyncdispatcher installation
+3 - Zope X3 installation (Zope 2.7.x only)
+4 - Products setup
+5 - Zope 3 <-> Zope 2 path setup (Zope 2.7.x only)
+6 - Webmail installation
 
 ----------
 1- Prerequisites
@@ -29,14 +28,7 @@ To install CPSMailAccess you will need:
 - rdflib 2.0.6 : http://rdflib.net/
 - zasyncdispatcher (optional) http://svn.nuxeo.org/trac/pub/browser/zasyncdispatcher/
 
-2 - rdflib installation
-
-Install the python package rdflib on your python installation, ie the one
-Zope 2.7 actually use with the usual command::
-
-  $ python setup.py install
-
-3 - zasyncdispatcher installation
+2 - zasyncdispatcher installation
 
 If you want to do background synchronisation (ie for big intranets setup)
  CPSMailAccess is compatible with zasyncdispatcher, a small zope product
@@ -46,7 +38,7 @@ get it on nuxeo svn:
 
     svn co http://svn.nuxeo.org/pub/zasyncdispatcher/trunk zasyncdispatcher
 
-4 - Zope X3 installation (Zope 2.7.x specific)
+3 - Zope X3 installation (Zope 2.7.x specific)
 
 Please install ZopeX3-3.0.0 on your system (usually in /opt/ZopeX3-3.0.0) with
 the python version you use for Zope2.7 and CPS, e.g.::
