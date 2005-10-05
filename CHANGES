@@ -9,7 +9,8 @@ New features:
   <mario [at] curiango.ipen.br>)
 Bug fixes:
 ~~~~~~~~~~
--
+- 
+- Bad redirection after rename if not a drag'n drop
 - Synchronisation, sometime failed on a non AUTH status
 - checkboxes on webmail configuration screen were persistent
 - translations for mail dates
