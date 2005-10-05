@@ -130,13 +130,16 @@
     <metal:block define-macro="search_messagelist">
         <table id="tableMessageList" summarize="Search results" width="100%">
           <tr class="mailHeaders">
-            <th class="mailToolBarElement mailToolBarInsideElement">
+            <th class="mailToolBarElement mailToolBarInsideElement"
+		i18n:translate="cpsma_search_message_subject">
                   Subject
             </th>
-            <th class="mailToolBarElement mailToolBarInsideElement">
+            <th class="mailToolBarElement mailToolBarInsideElement"
+		i18n:translate="cpsma_search_message_from">
               Sender
             </th>
-            <th class="mailToolBarElement mailToolBarInsideElement">
+            <th class="mailToolBarElement mailToolBarInsideElement"
+		       i18n:translate="cpsma_search_message_date">
               Date
             </th>
           </tr>

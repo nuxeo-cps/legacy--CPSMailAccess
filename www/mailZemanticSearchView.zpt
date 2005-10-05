@@ -157,7 +157,12 @@
         <input type="text" tal:attributes="name python:'value_'+str(bloc)"/>
       </div>
       -->
-      <input type="submit" class="standalone" name="search_submitted" value="search"/>
+      <input type="submit" 
+	     class="standalone" 
+	     name="search_submitted" 
+	     value="cpsma_search_messages"
+	     i18n:attributes="value"
+	     />
 
      </form>
     <tal:block tal:condition="request/search_submitted|python:0">
