@@ -40,7 +40,7 @@ from mailmessage import MailMessage
 from mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder,\
-                  AsyncCall, createDigestFromList
+                  AsyncCall, createDigestFromList, translate
 from baseconnection import has_connection, ConnectionError
 
 folder_locker = {}
@@ -82,6 +82,16 @@ class MailFolder(BTreeFolder2):
         self.title = self.simpleFolderName()
         self._cache = RAMCache()
         self._mailbox = None
+        self._translate = 1 #XXX GR: should be true only for INBOX.Drafts etc
+
+    def title_or_id(self):
+        """ Translatable title or id. """
+
+        if not self.title: # GR: happens if this is the root mailbox
+            return self.id #     on a default site.
+        if self._translate:
+            return translate(self, self.title).encode('iso-8859-15')
+        
 
     def _localGetNextMessageUid(self):
         """ retrieves next id based on local calculation """
