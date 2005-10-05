@@ -816,6 +816,7 @@ function refreshAck()
       // alert("refreshAck: operation not supported");
     }
     result = xml.responseText;
+    result = translate(result)
     setMessage(result);
   }
 }
