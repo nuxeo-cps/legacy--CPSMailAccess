@@ -46,12 +46,13 @@ MailFolder.getNextMessageUid = testGetNextMessageUid
 
 import datetime
 
-class FakeRequest:
+# XXX GR: should be imported from basetestcase, but didn't want to change
+# them: no break
+class ThisFakeRequest:
     def __init__(self):
-        self.response = FakeResponse(self)
+        self.response = ThisFakeResponse(self)
 
-
-class FakeResponse:
+class ThisFakeResponse:
     def __init__(self, request):
         self._request = request
     
@@ -300,7 +301,7 @@ class MailFolderViewTestCase(MailTestCase):
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
-        view.request = FakeRequest()
+        view.request = ThisFakeRequest()
         new_name = 'safariii'
         view.rename('INBOX.' + new_name)
         expected_url = '/'.join((inbox.absolute_url(),
