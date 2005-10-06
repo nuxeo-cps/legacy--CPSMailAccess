@@ -99,10 +99,20 @@ class FakePortalUrl:
     def __call__(self):
         return 'http://xxx/'
 
+
+class FakeTranslator:
+    def gettext(self, msg):
+        return 'translated:' + msg
+
+class FakeLocalizer:
+    default = FakeTranslator() 
+
+
 class FakePortal(Folder):
 
     portal_directories = FakeDirectories('portal_directories')
     portal_url = FakePortalUrl()
+    Localizer = FakeLocalizer()
     portal_webmail = MailTool()
     maildir_path = os.path.join(os.path.dirname(landmark), 'maildir')
 

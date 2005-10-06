@@ -50,6 +50,14 @@ MailFolder.getNextMessageUid = testGetNextMessageUid
 
 class MailFolderTestCase(MailTestCase):
 
+    def test_title_or_id(self):
+        mailbox = self._getMailBox()
+        self.assertEquals(mailbox.title_or_id(), mailbox.id)
+        mailbox._addFolder('folder')
+        folder = mailbox.folder
+        self.assertEquals(folder.title_or_id(), 'translated:folder')
+        self.assertEquals(mailbox.title_or_id(), mailbox.id)
+
     def test_getMailBox(self):
         mailbox = self._getMailBox()
         mailbox._addFolder('folder')
