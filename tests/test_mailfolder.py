@@ -53,10 +53,15 @@ class MailFolderTestCase(MailTestCase):
     def test_title_or_id(self):
         mailbox = self._getMailBox()
         self.assertEquals(mailbox.title_or_id(), mailbox.id)
-        mailbox._addFolder('folder')
-        folder = mailbox.folder
-        self.assertEquals(folder.title_or_id(), 'translated:folder')
-        self.assertEquals(mailbox.title_or_id(), mailbox.id)
+
+        folder = mailbox._addFolder('mbox')
+        self.assertEquals(folder.title_or_id(), 'mbox')
+
+        inbox = mailbox._addFolder('INBOX')
+        self.assertEquals(inbox.title_or_id(), 'translated:INBOX')
+
+        folder = inbox._addFolder('Drafts', 'INBOX.Drafts')
+        self.assertEquals(folder.title_or_id(), 'translated:Drafts')
 
     def test_getMailBox(self):
         mailbox = self._getMailBox()

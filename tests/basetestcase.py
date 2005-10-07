@@ -102,7 +102,7 @@ class FakePortalUrl:
 
 class FakeTranslator:
     def gettext(self, msg):
-        return 'translated:' + msg
+        return ('translated:' + msg).decode('iso-8859-15')
 
 class FakeLocalizer:
     default = FakeTranslator() 

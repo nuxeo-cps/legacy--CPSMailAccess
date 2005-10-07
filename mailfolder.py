@@ -82,15 +82,20 @@ class MailFolder(BTreeFolder2):
         self.title = self.simpleFolderName()
         self._cache = RAMCache()
         self._mailbox = None
-        self._translate = 1 #XXX GR: should be true only for INBOX.Drafts etc
 
     def title_or_id(self):
-        """ Translatable title or id. """
+        """ Translated title or id for special folders.
 
-        if not self.title: # GR: happens if this is the root mailbox
-            return self.id #     on a default site.
-        if self._translate:
+        Shows up in breadcrumbs."""
+
+        # GR: title is void if this is the MailBox object on CPSDefault
+        if not self.title: 
+            return self.id 
+        # GR: 'INBOX' is hardcoded in several other places. 
+        if self.server_name == 'INBOX' or self.isSpecialFolder():
             return translate(self, self.title).encode('iso-8859-15')
+        else:
+            return self.title
         
 
     def _localGetNextMessageUid(self):
