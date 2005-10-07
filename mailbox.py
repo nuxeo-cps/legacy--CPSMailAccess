@@ -135,7 +135,7 @@ class MailFolderTicking(MailFolder):
         lock_id = self.id + '_index'
         getTickLocker(lock_id).acquire()
         try:
-            ticker = getTicker(self.id, num)
+            ticker = getTicker(lock_id, num)
             if ticker == 0:
                 return False
             else:
