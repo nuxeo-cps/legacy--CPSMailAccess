@@ -311,6 +311,11 @@ ok then"""
         self.portal.portal_membership = FakeMemberShip()
         self.assertEquals(getAuthenticatedMember(self.portal), None)
 
+    def test_getHumanReadableSize(self):
+        self.assertEquals((-1, ''), getHumanReadableSize(''))
+        self.assertEquals((300, 'o'), getHumanReadableSize(300))
+        self.assertEquals((2, 'ko'), getHumanReadableSize(3000))
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(UtilsTestCase),
