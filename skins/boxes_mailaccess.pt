@@ -136,7 +136,12 @@
     </tal:block>
     <a tal:attributes="href element/rename_url">
       <img src="cpsma_selectfolder.png"/>
-      <span tal:replace="element/short_title"/>
+      <tal:block define="isINBOX python:element['short_title']=='INBOX'">
+	<tal:block condition="isINBOX" i18n:translate="">INBOX</tal:block>
+	<tal:block condition="python:not isINBOX">
+	  <span tal:replace="element/short_title" />
+	</tal:block>
+      </tal:block>
     </a>
     <div tal:attributes="id element/short_title_id">
       <tal:block tal:repeat="element element/childs">
