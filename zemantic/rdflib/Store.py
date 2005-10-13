@@ -25,19 +25,16 @@ from Products.CPSMailAccess.zemantic.rdflib.exceptions import ObjectTypeError
 
 def check_subject(s):
     if not (isinstance(s, URIRef) or isinstance(s, BNode)):
-        import pdb;pdb.set_trace()
         raise SubjectTypeError(s)
 
 def check_predicate(p):
     if not isinstance(p, URIRef):
-        import pdb;pdb.set_trace()
         raise PredicateTypeError(p)
 
 def check_object(o):
     if not (isinstance(o, URIRef) or \
        isinstance(o, Literal) or \
        isinstance(o, BNode)):
-        import pdb;pdb.set_trace()
         raise ObjectTypeError(o)
 
 
