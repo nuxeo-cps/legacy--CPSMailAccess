@@ -13,7 +13,7 @@
   </metal:main>
 
   <metal:block metal:fill-slot="main"
-      tal:define="base_url here/getBaseUrl; ad_book here/getPublicAdressBookName;">
+      tal:define="base_url here/getBaseUrl; ad_book view/getPublicAdressBookName;">
 
     <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div class="spacer">

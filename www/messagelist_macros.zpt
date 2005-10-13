@@ -6,7 +6,7 @@
                                 clipboard clipboard|nothing;">
        <div class="clipboardContent" tal:condition="python:clipboard or msm">
           <metal:block tal:condition="clipboard">
-            <tal:block tal:define="count here/clipBoardCount">
+            <tal:block tal:define="count view/clipBoardCount">
             <tal:block tal:condition="python:count &gt; 1">
             <span tal:replace="count"/>
                 <span i18n:translate="cpsma_messages_in_clipboard">
@@ -75,7 +75,7 @@
     </metal:block>
 
     <metal:block define-macro="manage_toolbar">
-    <div class="toolbar" tal:condition="not:here/isReadOnly|python:1">
+    <div class="toolbar" tal:condition="not:view/isReadOnly|python:1">
       <table summarize="Managing Content">
         <tr>
            <td class="bold" i18n:translate="cpsma_selection">
@@ -92,12 +92,12 @@
              onmouseover="setCursor(this)"
              i18n:attributes="value"/>
            </td>
-           <td class="selectableButton" tal:condition="not:here/isProtected|python:1">
+           <td class="selectableButton" tal:condition="not:view/isProtected|python:1">
             <input class="manage_paste" type="submit" name="action_paste" value="paste"
              onmouseover="setCursor(this)"
              i18n:attributes="value"/>
            </td>
-           <td class="selectableButton" tal:condition="not:here/isTrash">
+           <td class="selectableButton" tal:condition="not:view/isTrash">
              <input class="manage_delete" type="submit" name="action_delete" value="delete"
              onmouseover="setCursor(this)"
              i18n:attributes="value"/>
@@ -172,13 +172,13 @@
                              keep_last_sort request/keep_last_sort|python:0"
                            >
     <tal:block tal:define="messagesl python:keep_last_sort and
-                             here.renderMailList(keep_last_sort=1) or
-                             here.renderMailList(int(page), int(nb_items),
+                             view.renderMailList(keep_last_sort=1) or
+                             view.renderMailList(int(page), int(nb_items),
                                                  sort_with, int(sort_asc),
                                                  keep_last_sort);
                            messages python:messagesl[1];
                            nbpages python:messagesl[0];
-                           last_sort python:here.getLastMailListSortCache();
+                           last_sort python:view.getLastMailListSortCache();
                            page python:last_sort and last_sort[0] or page;
                            nb_items python:(keep_last_sort and last_sort and last_sort[1])
                                             or nb_items;
@@ -196,7 +196,7 @@
         </tal:block>
 
         <table id="tableMessageList" tal:condition="messages"
-               tal:define="cols here/getMessageListCols"
+               tal:define="cols view/getMessageListCols"
                class="messageList" summarize="Message list">
           <tr class="mailHeaders">
             <th tal:condition="content_managment">
@@ -289,7 +289,7 @@
                               no_shortcuts no_shortcuts|nothing">
       <div class="mailToolBar"
            tal:condition="not:no_shortcuts"
-           tal:define="folder python:here.getMailFolder()">
+           tal:define="folder python:view.getMailFolder()">
           <a class="block_section"
              i18n:attributes="title"
              tal:attributes="href python:folder.absolute_url()+'/view?keep_last_sort=1';
@@ -325,7 +325,7 @@
           <div id="mailSubject">
             <b>
               <tal:block i18n:translate="cpsma_subject">Subject :</tal:block>
-              <tal:block tal:replace="structure here/renderSubject" />
+              <tal:block tal:replace="structure view/renderSubject" />
             </b>
           </div>
         </div>
@@ -334,31 +334,31 @@
           <div id="mailDate">
             <b>
               <tal:block i18n:translate="cpsma_date">Date :</tal:block>
-              <tal:block tal:replace="here/renderDate" />
+              <tal:block tal:replace="view/renderDate" />
             </b>
           </div>
-          <div id="mailFrom" tal:condition="python:here.fromCount()>0">
+          <div id="mailFrom" tal:condition="python:view.fromCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_from">From :</tal:block>
-              <tal:block tal:replace="structure here/renderFromList" />
+              <tal:block tal:replace="structure view/renderFromList" />
             </b>
           </div>
-          <div id="mailTo" tal:condition="python:here.toCount()>0">
+          <div id="mailTo" tal:condition="python:view.toCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_to">To :</tal:block>
-              <tal:block tal:replace="structure here/renderToList" />
+              <tal:block tal:replace="structure view/renderToList" />
             </b>
           </div>
-          <div id="mailCc" tal:condition="python:here.ccCount()>0">
+          <div id="mailCc" tal:condition="python:view.ccCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_cc">Cc :</tal:block>
-              <tal:block tal:replace="structure here/renderCcList" />
+              <tal:block tal:replace="structure view/renderCcList" />
             </b>
           </div>
-          <div id="mailBCc" tal:condition="python:here.bccCount()>0">
+          <div id="mailBCc" tal:condition="python:view.bccCount()>0">
             <b>
               <tal:block i18n:translate="cpsma_bcc">Cc :</tal:block>
-              <tal:block tal:replace="structure here/renderBCcList" />
+              <tal:block tal:replace="structure view/renderBCcList" />
             </b>
           </div>
         </div>

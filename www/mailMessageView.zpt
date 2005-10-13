@@ -53,7 +53,7 @@
       <metal:block use-macro="here/messagelist_macros/messagetoolbar"/>
     </div>
     <div id="mailBody"
-         tal:define="mail_content here/renderBody">
+         tal:define="mail_content view/renderBody">
       <tal:block tal:condition="python:mail_content!='cpsma_structure_unknown'">
         <tal:block tal:replace="structure mail_content"/>
       </tal:block>
@@ -74,7 +74,7 @@
         </div>
       </div>
     </div>
-    <tal:block tal:condition="python:here.notificationEmail() is not None">
+    <tal:block tal:condition="python:view.notificationEmail() is not None">
       <script langage="javascript">
         notifySender();
       </script>

@@ -168,7 +168,7 @@
     <tal:block tal:condition="request/search_submitted|python:0">
         <hr/>
         <tal:block tal:define="form request/form;
-                               results python:here.zemanticSearchMessages(**form);
+                               results python:view.zemanticSearchMessages(**form);
                                num_results python:len(results[0]);
                                time python:'%0.2f' % results[1];
                                nbitems python:results[2];

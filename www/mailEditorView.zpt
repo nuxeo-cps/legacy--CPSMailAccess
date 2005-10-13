@@ -15,9 +15,9 @@
   </metal:main>
   <metal:block metal:fill-slot="main"
                tal:define="attaching request/attach|nothing;
-                           cc_on python:here.getFlag('cc_on');
-                           bcc_on python:here.getFlag('bcc_on');
-                           attacher_on python:here.getFlag('attacher_on')">
+                           cc_on python:view.getFlag('cc_on');
+                           bcc_on python:view.getFlag('bcc_on');
+                           attacher_on python:view.getFlag('attacher_on')">
     <metal:block use-macro="here/messagelist_macros/mailbox_warning"/>
     <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div class="spacer"></div>
@@ -53,12 +53,12 @@
       <form action="editAction.html"
             method="post"
             enctype="multipart/form-data"
-            tal:define="dummy here/initMessage;
+            tal:define="dummy view/initMessage;
                       came_from request/came_from|nothing;
-                      body_value here/getBodyValue;
-                      from_indentities here/getIdentitites;">
+                      body_value view/getBodyValue;
+                      from_indentities view/getIdentitites;">
 
-      <input id="came_from" type="hidden" tal:attributes="value here/getRedirect"
+      <input id="came_from" type="hidden" tal:attributes="value view/getRedirect"
               name="came_from"/>
 
       <input id="msg_from" tal:condition="python:len(from_indentities) == 1"
@@ -72,7 +72,7 @@
          <td colspan="3"><div class="clipboardContent hidden_part"
                                i18n:translate=""
                                id="message_headers_msm"></div>
-           <div id="To" tal:define="elements python:here.getDestList(type_='To');
+           <div id="To" tal:define="elements python:view.getDestList(type_='To');
                                     elements python:'\r\n'.join(elements)">
              <div class="recipient_header"><span i18n:translate="cpsma_to">To</span>:</div>
              <div  class="recipient">
@@ -82,8 +82,8 @@
            </div>
            <div style="clear: both"/>
 
-           <tal:block tal:define="Ccs python:here.getDestList(type_='Cc');
-                                  Bcs python:here.getDestList(type_='BCc');">
+           <tal:block tal:define="Ccs python:view.getDestList(type_='Cc');
+                                  Bcs python:view.getDestList(type_='BCc');">
 
             <div id="Cc"
                 tal:attributes="style python:cc_on==0 and len(Ccs)==0 and
@@ -151,7 +151,7 @@
           <div class="message_edit_input">
             <input class="message_edit_input" type="text" name="msg_subject"
                 id="msg_subject"
-                tal:attributes="value here/getSubject" />
+                tal:attributes="value view/getSubject" />
           </div>
           </td>
         </tr>

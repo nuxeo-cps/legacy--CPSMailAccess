@@ -18,7 +18,7 @@
      </form>
     <tal:block tal:condition="request/search_submitted|python:0">
         <hr/>
-        <tal:block tal:define="results python:here.searchMessages(searchable_text);
+        <tal:block tal:define="results python:view.searchMessages(searchable_text);
                                num_results python:len(results)">
             <tal:block tal:condition="python:num_results>0">
               <div>
