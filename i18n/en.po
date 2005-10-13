@@ -548,3 +548,6 @@ msgstr "Folders"
 
 msgid "cpsma_choose_folders"
 msgstr "Pick-up folders to search in (not recursive)..."
+
+msgid "index_relations"
+msgstr "Index threading"

@@ -400,6 +400,7 @@ class MailBox(MailBoxBaseCaching):
         if self.isIndexing(1):
             return None
 
+        index_relations = self.getConnectionParams()['index_relations'] == 1
         # if backgrounded, tries to put a call
         if background:
             if can_async and canAsync(self):
@@ -418,7 +419,7 @@ class MailBox(MailBoxBaseCaching):
             else:
                 fail_async = True
             if fail_async or not(can_async and canAsync(self)):
-                self.indexMails(index_stack)
+                self.indexMails(index_stack, index_relations)
 
         # indexation
         try:
@@ -427,7 +428,7 @@ class MailBox(MailBoxBaseCaching):
             len_ = len(index_stack)
             for item in index_stack:
                 LOG('synchro', DEBUG, 'indexing %d/%d' %(y, len_))
-                self.indexMessage(item)
+                self.indexMessage(item, index_relations)
                 if i == 299:
                     get_transaction().commit(1)     # used to prevent swapping
                     i = 0
@@ -836,7 +837,7 @@ class MailBox(MailBoxBaseCaching):
     def indexMessage(self, msg, index_relations=True):
         """ indexes message """
         zemantic_cat = self._getZemanticCatalog()
-        zemantic_cat.indexMessage(msg, index_relations)
+        zemantic_cat.indexMessage(msg, index_relations=index_relations)
 
     def unIndexMessage(self, msg):
         """ unindexes message """

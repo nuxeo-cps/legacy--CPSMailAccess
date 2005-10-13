@@ -270,7 +270,7 @@ class ZemanticMailCatalog(TripleStore):
         for tuple_ in tuples:
             try:
                 self.remove(tuple_)
-            except (KeyError, sre_constants.error):
+            except (ZeroDivisionError, KeyError, sre_constants.error):
                 pass
 
     def make_query(self, query_tuple):

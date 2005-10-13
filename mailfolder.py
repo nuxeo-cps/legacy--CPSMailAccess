@@ -409,7 +409,9 @@ class MailFolder(BTreeFolder2):
     def _indexMessage(self, msg):
         """ indexes message """
         mailbox = self.getMailBox()
-        index_relations = not mailbox.isSpecialFolder(self)
+        index_relations = mailbox.getConnectionParams()['index_relations'] == 1
+        if index_relations:
+            index_relations = not mailbox.isSpecialFolder(self)
         mailbox.indexMessage(msg, index_relations=index_relations)
 
     def _unIndexMessage(self, msg):

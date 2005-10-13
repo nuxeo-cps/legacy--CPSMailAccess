@@ -73,6 +73,15 @@ class MailSearchTestCase(MailTestCase):
             adapted_message = ZemanticMessageAdapter(message, None)
             tuple_ = adapted_message.threeTuples()
 
+    def test_ZemanticMessageAdapterWithRelations(self):
+        for i in range(37):
+            message = self.getMailInstance(i)
+            message = message.__of__(self.portal)
+            message.getPhysicalPath = self.fakeGetPhysicalPath
+
+            adapted_message = ZemanticMessageAdapter(message, None)
+            tuple_ = adapted_message.threeTuples(index_relations=True)
+
     def test_ZemanticMessageAdapterThreeTuples(self):
 
         message = self.getMailInstance(23)
