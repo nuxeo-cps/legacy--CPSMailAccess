@@ -585,3 +585,9 @@ msgstr "Choisir des répertoires de recherche (non récursif)..."
 
 msgid "index_relations"
 msgstr "Indexer les relations entre mails"
+
+msgid "protected_folders"
+msgstr "Dossiers protégés"
+
+msgid "read_only_folders"
+msgstr "Dossiers en lecture seule"

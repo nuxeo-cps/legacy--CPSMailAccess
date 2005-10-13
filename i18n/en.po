@@ -551,3 +551,9 @@ msgstr "Pick-up folders to search in (not recursive)..."
 
 msgid "index_relations"
 msgstr "Index threading"
+
+msgid "protected_folders"
+msgstr "Protected folders"
+
+msgid "read_only_folders"
+msgstr "Read-only folders"

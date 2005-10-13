@@ -577,3 +577,9 @@ msgstr ""
 
 msgid "index_relations"
 msgstr ""
+
+msgid "protected_folders"
+msgstr ""
+
+msgid "read_only_folders"
+msgstr ""
