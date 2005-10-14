@@ -431,8 +431,7 @@ def sameMail(mail1, mail2):
 
 def getHumanReadableSize(octet_size):
     """ returns a human readable file size """
-    if ((not isinstance(octet_size, int) and not isinstance(octet_size, long))
-        or octet_size is None or octet_size < 0 ):
+    if (octet_size is None or octet_size == ''):
         return (-1, '')
 
     if not isinstance(octet_size, int):
