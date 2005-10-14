@@ -212,13 +212,13 @@ The CPS Team.
         self.assertEquals(result, res)
 
         body = ' ftygu tz@nuxeo.com uig'
-        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=$1">$1</a>')
+        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=\3">\3</a>')
         res = ' ftygu <a href="http://xxx/sendmail?mail=tz@nuxeo.com">tz@nuxeo.com</a> uig'
         self.assertEquals(result, res)
 
         # try with sticked tag
         body = ' <br>ftygu http://gyuhji</br>'
-        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=$1">$1</a>')
+        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=\3">\3</a>')
         res = ' <br>ftygu <a href="http://gyuhji" target="_blank">http://gyuhji</a></br>'
         self.assertEquals(result, res)
 
@@ -228,44 +228,6 @@ The CPS Team.
         result = linkifyMailBody(body)
         self.assertEquals(result, res)
 
-        result = linkifyMailBody(result)
-        self.assertEquals(result, res)
-
-        result = linkifyMailBody('\n        http://www.nuxeo.com\n')
-        self.assertEquals(result, ('\n        <a href="http://www.nuxeo.com" '
-                                   'target="_blank">http://www.nuxeo.com</a>\n'))
-
-        result = linkifyMailBody('\nhttp://www.nuxeo.com\n')
-        self.assertEquals(result, ('\n<a href="http://www.nuxeo.com" '
-                                   'target="_blank">http://www.nuxeo.com</a>\n'))
-
-        result = linkifyMailBody("""
-        http://www.nuxeo.com
-        """)
-        self.assertEquals(result, """
-        <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>
-        """)
-
-        mail_body = """
-        http://www.nuxeo.com
-        --
-        Tarek Ziadé | Nuxeo R&D (Paris, France)
-        CPS Plateform : http://www.cps-project.org
-        mail: <a href="mailto:tziade@nuxeo.com">tziade@nuxeo.com</a> | tel: +33 (0) 6 30 37 02 63
-        You need Zope 3 - http://www.z3lab.org/
-        """
-        result = linkifyMailBody(mail_body)
-        wanted_result = """
-        <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>
-        --
-        Tarek Ziadé | Nuxeo R&D (Paris, France)
-        CPS Plateform : <a href="http://www.cps-project.org" target="_blank">http://www.cps-project.org</a>
-        mail: <a href="mailto:tziade@nuxeo.com">tziade@nuxeo.com</a> | tel: +33 (0) 6 30 37 02 63
-        You need Zope 3 - <a href="http://www.z3lab.org/" target="_blank">http://www.z3lab.org/</a>
-        """
-
-        self.assertEquals(result, wanted_result)
-
         mail_body = """
         http://www.nuxeo.com
         --
@@ -274,6 +236,7 @@ The CPS Team.
         mail: tziade@nuxeo.com | tel: +33 (0) 6 30 37 02 63
         You need Zope 3 - http://www.z3lab.org/
         """
+        
         result = linkifyMailBody(mail_body)
         wanted_result = """
         <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>
@@ -283,8 +246,6 @@ The CPS Team.
         mail: <a href="mailto:tziade@nuxeo.com">tziade@nuxeo.com</a> | tel: +33 (0) 6 30 37 02 63
         You need Zope 3 - <a href="http://www.z3lab.org/" target="_blank">http://www.z3lab.org/</a>
         """
-
-        self.assertEquals(result, wanted_result)
 
         result = linkifyMailBody("""
         <http://www.nuxeo.com>
@@ -334,7 +295,18 @@ The CPS Team.
 
         result = linkifyMailBody('<img src="cid:some@source"/>')
         self.assertEquals(result, '<img src="cid:some@source"/>')
+
+        result = linkifyMailBody('http://some@source')
+        self.assertEquals(result, '<a href="http://some@source" target="_blank">http://some@source</a>')
         
+
+        result = linkifyMailBody('http://so:me@sou:rce')
+        self.assertEquals(result, '<a href="http://so:me@sou:rce" target="_blank">http://so:me@sou:rce</a>')
+
+        result = linkifyMailBody('http://so:me@sou:rce http://so:me@sou:rce')
+        self.assertEquals(result, ('<a href="http://so:me@sou:rce" target="_blank">http://so:me@sou:rce</a> '
+                                   '<a href="http://so:me@sou:rce" target="_blank">http://so:me@sou:rce</a>'))
+
 
     def test_answerSubject(self):
 

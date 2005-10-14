@@ -532,18 +532,26 @@ def Utf8ToIso(value, codec='ISO-8859-15'):
     else:
         return value
 
-def linkifyMailBody(body, email_sub=r'<a href="mailto:$1">$1</a>'):
+def linkifyMailBody(body, email_sub=r'<a href="mailto:\3">\3</a>'):
     """ replace mails and urls by links
 
     if mail_sub is given, it's used for replacement,
     so it can be set to link to an internal mail editor
     """
     changed = False
-    linkificators = ((r'(<|^|\b|\(|\()(https|ftp|http)://[^ \b\n<>]*(>|$|\b)?',
-                      '<a href="$1" target="_blank">$1</a>'),
-                     (r'(<)?[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}(>)?',
+    linkificators = ((r'(<|^|\b|\(|\()(https|ftp|http)(://)([^ \b\n<>]*)(>|$|\b)?',
+                      r'<a href="\2\3\4" target="_blank">\2\3\4</a>'),
+                     (r'((?<=[\s])(<)?)([\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4})(>)?',
                       email_sub))
 
+    for pattern, replacer in linkificators:
+        try:
+            body = re.sub(pattern, replacer, body)
+        except:
+            raise pattern
+
+    return body
+        
     # first we need to find already link parts to avoid to relink them
     http_links = r'(<a.*?>).*?(</a>)|(<img.*?>)'
     http_links = re.compile(http_links, re.MULTILINE and re.I)
