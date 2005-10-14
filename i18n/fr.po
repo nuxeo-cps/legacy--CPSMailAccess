@@ -22,7 +22,7 @@ msgstr ""
 #.   <block condition="isINBOX">INBOX</block>
 #: from ../skins/boxes_mailaccess.pt
 msgid "INBOX"
-msgstr "Courrier en entrÃ©e"
+msgstr "Courrier en entrée"
 
 #.   <div class="title2">
 #.                   Webmail Actions
@@ -36,7 +36,7 @@ msgstr ""
 #.               </div>
 #: from ../skins/boxes_mailaccess.pt
 msgid "cpsma_attached_files"
-msgstr "PiÃšces jointes"
+msgstr "Pièces jointes"
 
 #.   <div class="form_title">
 #.           Choose a new parent folder
@@ -60,7 +60,7 @@ msgid "cpsma_webmail_navigation"
 msgstr "Dossiers de mails"
 
 msgid "cpsma_personal_address_book"
-msgstr "Contacts privÃ©s"
+msgstr "Contacts privés"
 
 msgid "cpsma_global_address_book"
 msgstr "Contacts publics"
@@ -69,7 +69,7 @@ msgid "cpsma_mailbox_configuration"
 msgstr "Configurer"
 
 msgid "cpsma_mailbox_parameters"
-msgstr "ParamÃštres de la boÃ®te"
+msgstr "Paramètres de la boîte"
 
 msgid "cpsma_mailbox_managment_tasks"
 msgstr "Administration"
@@ -78,7 +78,7 @@ msgid "cpsma_address_book"
 msgstr "Contacts"
 
 msgid "cpsma_configure_mailbox"
-msgstr "Configurer la boÃ®te"
+msgstr "Configurer la boîte"
 
 msgid "cpsma_search_message"
 msgstr "Rechercher"
@@ -87,16 +87,16 @@ msgid "cpsma_write_message"
 msgstr "Composer"
 
 msgid "cpsma_synchronize_mailbox"
-msgstr "RÃ©cupÃ©rer les messages du serveur"
+msgstr "Récupérer les messages du serveur"
 
 msgid "cpsma_js_disabled"
-msgstr "Le javascript n'est pas activÃ©. L'ergonomie s'en ressentira."
+msgstr "Le javascript n'est pas activé. L'ergonomie s'en ressentira."
 
 msgid "cpsma_attach_file"
 msgstr "Attacher un fichier"
 
 msgid "cpsma_make_selection"
-msgstr "Faire une sÃ©lection"
+msgstr "Faire une sélection"
 
 msgid "cpsma_messages_in_clipboard"
 msgstr "messages dans le presse-papier"
@@ -111,19 +111,19 @@ msgid "cpsma_from"
 msgstr "De"
 
 msgid "cpsma_mailbox_beeing_synchronized"
-msgstr "La boÃ®te est en train d'Ãªtre mise Ã  jour"
+msgstr "La boîte est en train d'être mise à jour"
 
 msgid "cpsma_mailbox_force_synchronize"
-msgstr "Si rien ne se passe, forcer la mise Ã Â  jour par ce lien."
+msgstr "Si rien ne se passe, forcer la mise à jour par ce lien."
 
 msgid "cpsma_found"
-msgstr "TrouvÃ©"
+msgstr "Trouvé"
 
 msgid "cpsma_results"
-msgstr "RÃ©sultats"
+msgstr "Résultats"
 
 msgid "cpsma_no_results"
-msgstr "Aucun rÃ©sultat."
+msgstr "Aucun résultat."
 
 msgid "cpsma_search_message_subject"
 msgstr "Sujet"
@@ -144,7 +144,7 @@ msgid "cpsma_search_message_intersection"
 msgstr "Intersection"
 
 msgid "cpsma_results_in"
-msgstr "rÃ©sultats en"
+msgstr "résultats en"
 
 msgid "cpsma_seconds"
 msgstr "secondes"
@@ -168,7 +168,7 @@ msgid "cpsma_add_subfolder"
 msgstr "Ajouter un sous-dossier"
 
 msgid "cpsma_move_folder"
-msgstr "DÃ©placer le dossier"
+msgstr "Déplacer le dossier"
 
 msgid "cpsma_rename_folder"
 msgstr "Renommer le dossier"
@@ -177,13 +177,13 @@ msgid "cpsma_delete_folder"
 msgstr "Supprimer le dossier"
 
 msgid "cpsma_manage_content"
-msgstr "GÃ©rer le contenu"
+msgstr "Gérer le contenu"
 
 msgid "cpsma_reply"
-msgstr "RÃ©pondre"
+msgstr "Répondre"
 
 msgid "cpsma_reply_all"
-msgstr "RÃ©pondre Ã Â  tous"
+msgstr "Répondre àà tous"
 
 msgid "cpsma_forward"
 msgstr "Faire suivre"
@@ -198,7 +198,7 @@ msgid "cpsma_configure"
 msgstr "Configurer"
 
 msgid "cpsma_getmessages"
-msgstr "RÃ©cupÃ©rer"
+msgstr "Récupérer"
 
 msgid "cpsma_search_messages"
 msgstr "Rechercher"
@@ -213,14 +213,14 @@ msgid "cpsma_send_a_message"
 msgstr "Envoyer un message"
 
 msgid "cpsma_to"
-msgstr "Ã"
+msgstr "A "
 
 msgid "cpsma_bcc"
 msgstr "Cci"
 
 # named parameters
 msgid "HOST"
-msgstr "HÃŽte"
+msgstr "Hôte"
 
 msgid "PORT"
 msgstr "Port"
@@ -241,13 +241,13 @@ msgid "login"
 msgstr "Login"
 
 msgid "max_folder_depth"
-msgstr "Profondeur maximum de crÃ©ation de dossier"
+msgstr "Profondeur maximum de création de dossier"
 
 msgid "max_folder_size"
 msgstr "Taille maximum des noms de dossier"
 
 msgid "message_list_cols"
-msgstr "Colonnes affichÃ©es"
+msgstr "Colonnes affichées"
 
 msgid "password"
 msgstr "Mot de passe"
@@ -256,13 +256,13 @@ msgid "sent_folder_name"
 msgstr "Nom du dossier Sent"
 
 msgid "smtp_host"
-msgstr "HÃŽte SMTP"
+msgstr "Hôte SMTP"
 
 msgid "smtp_port"
 msgstr "Port SMTP"
 
 msgid "maildir"
-msgstr "RÃ©pertoire SMTP"
+msgstr "Répertoire SMTP"
 
 msgid "direct_smtp"
 msgstr "Envoi SMTP direct ?"
@@ -274,10 +274,10 @@ msgid "treeview_style"
 msgstr "Style de l'arbre"
 
 msgid "cpsma_synchronized"
-msgstr "SynchronisÃ©"
+msgstr "Synchronisé"
 
 msgid "cpsma_failed_synchro"
-msgstr "Impossible de rÃ©cupÃ©rer les messages depuis le serveur"
+msgstr "Impossible de récupérer les messages depuis le serveur"
 
 msgid "cpsma_add"
 msgstr "Ajouter"
@@ -302,16 +302,16 @@ msgid "clear"
 msgstr "effacer"
 
 msgid "move"
-msgstr "dÃ©placer"
+msgstr "déplacer"
 
 msgid "close"
 msgstr "fermer"
 
 msgid "cpsma_reindex_mail_catalog"
-msgstr "RÃ©indexation du catalogue"
+msgstr "Réindexation du catalogue"
 
 msgid "cpsma_objects"
-msgstr "Messages indexÃ©s"
+msgstr "Messages indexés"
 
 msgid "cpsma_filter"
 msgstr "Filtrer"
@@ -320,7 +320,7 @@ msgid "Filters for incoming messages"
 msgstr "Filtres pour les messages entrants"
 
 msgid "Element"
-msgstr "ÃlÃ©ment"
+msgstr "Elément"
 
 msgid "Condition"
 msgstr "Condition"
@@ -332,10 +332,10 @@ msgid "Action"
 msgstr "Action"
 
 msgid "Action param"
-msgstr "ParamÃštre"
+msgstr "Paramètre"
 
 msgid "Sender"
-msgstr "ExpÃ©diteur"
+msgstr "Expéditeur"
 
 msgid "To"
 msgstr "A"
@@ -362,25 +362,25 @@ msgid "isn't"
 msgstr "n'est pas"
 
 msgid "move to"
-msgstr "dÃ©placer dans"
+msgstr "déplacer dans"
 
 msgid "copy to"
 msgstr "copier dans"
 
 msgid "label with"
-msgstr "Ã©tiqueter"
+msgstr "étiqueter"
 
 msgid "set junk status"
 msgstr "pourriel ?"
 
 msgid "Need an action param"
-msgstr "L'action demande un paramÃštre"
+msgstr "L'action demande un paramètre"
 
 msgid "_list_mail_"
 msgstr "Mes mails"
 
 msgid "label_webmail_enabled"
-msgstr "Webmail activÃ©"
+msgstr "Webmail activé"
 
 msgid "label_address_book"
 msgstr "Carnet d'adresses"
@@ -395,13 +395,13 @@ msgid "cpsma_back_to_folder"
 msgstr "Retour au dossier"
 
 msgid "cpsma_detach"
-msgstr "DÃ©tacher"
+msgstr "Détacher"
 
 msgid "select all"
-msgstr "tout sÃ©lectionner"
+msgstr "tout sélectionner"
 
 msgid "deselect all"
-msgstr "tout dÃ©selectionner"
+msgstr "tout déselectionner"
 
 msgid "cps_synchronizing"
 msgstr "Synchronisation en cours."
@@ -413,73 +413,73 @@ msgid "cpsma_submit"
 msgstr "Soumettre"
 
 msgid "cpsma_resync_all"
-msgstr "Resynchroniser toute la boÃ®te"
+msgstr "Resynchroniser toute la boîte"
 
 msgid "cpsma_could_not_send"
-msgstr "Envoi impossible, vÃ©rifiez vos paramÃštres SMTP"
+msgstr "Envoi impossible, vérifiez vos paramètres SMTP"
 
 msgid "cpsma_structure_unknown"
-msgstr "Structure de message inconnue ou mail dÃ©placÃ© par un autre client mail"
+msgstr "Structure de message inconnue ou mail déplacé par un autre client mail"
 
 msgid "cpsma_reconnect"
 msgstr "Reconnecter au serveur de messagerie"
 
 msgid "cpsma_clear_mail_bodies"
-msgstr "Supprimer les corps de messages emmagasinÃ©s"
+msgstr "Supprimer les corps de messages emmagasinés"
 
 msgid "cpsma_failed_send"
 msgstr "Impossible d'envoyer le message"
 
 msgid "cpsma_first_time"
 msgstr ""
-"C'est la premiÃšre fois que vous lancez le webmail. Veuillez configurer vos "
-"paramÃštres de connexions.<br/>En cas de doute, rÃ©fÃ©rez vous Ã Â  la "
+"C'est la première fois que vous lancez le webmail. Veuillez configurer vos "
+"paramètres de connexions.<br/>En cas de doute, référez vous àà la "
 "documentation."
 
 msgid "cpsma_mailtool_parameters"
 msgstr "Configuration du webmail"
 
 msgid "cpsma_portal_wide"
-msgstr "GÃ©nÃ©ralisÃ©"
+msgstr "Généralisé"
 
 msgid "cpsma_could_not_perform"
-msgstr "L'opÃ©ration n'a pas pu Ãªtre rÃ©alisÃ©e sur le serveur de mails"
+msgstr "L'opération n'a pas pu être réalisée sur le serveur de mails"
 
 msgid "instant_load"
-msgstr "Le corps du message n'a pas pu Ãªtre rÃ©cupÃ©rÃ© depuis le serveur"
+msgstr "Le corps du message n'a pas pu être récupéré depuis le serveur"
 
 msgid "cpsma_no_private"
-msgstr "Pas de contacts privÃ©s possibles."
+msgstr "Pas de contacts privés possibles."
 
 msgid "cpsma_max_size_reached"
-msgstr "Taille maximum autorisÃ©e atteinte"
+msgstr "Taille maximum autorisée atteinte"
 
 msgid "cpsma_msgs_sent_to_trash"
-msgstr "Messages envoyÃ©s Ã  la corbeille"
+msgstr "Messages envoyés à la corbeille"
 
 msgid "cpsma_msg_sent_to_trash"
-msgstr "Message envoyÃ© Ã  la corbeille."
+msgstr "Message envoyé à la corbeille."
 
 msgid "cpsma_folder_sent_to_trash"
-msgstr "Dossier envoyÃ© Ã  la corbeille"
+msgstr "Dossier envoyé à la corbeille"
 
 msgid "cpsma_message_sent"
-msgstr "Message envoyÃ©."
+msgstr "Message envoyé."
 
 msgid "cpsma_confirm_erase"
-msgstr "Etes vous sÃ»r ?"
+msgstr "Etes vous sûr ?"
 
 msgid "cpsma_confirm_erase_folder"
-msgstr "Etes vous sÃ»r de vouloir effacer le dossier ?"
+msgstr "Etes vous sûr de vouloir effacer le dossier ?"
 
 msgid "cpsma_message_saved"
-msgstr "Message enregistrÃ© dans les brouillons"
+msgstr "Message enregistré dans les brouillons"
 
 msgid "cpsma_message_saved_no_subject"
-msgstr "Le sujet est nÃ©cessaire Ã  la sauvegarde"
+msgstr "Le sujet est nécessaire à la sauvegarde"
 
 msgid "cpsma_message_saved_no_recipient"
-msgstr "Le destinataire est nÃ©cessaire Ã  la sauvegarde"
+msgstr "Le destinataire est nécessaire à la sauvegarde"
 
 msgid "cpsma_message_sending"
 msgstr "Envoi en cours..."
@@ -497,27 +497,27 @@ msgid "cpsm_notify_subject"
 msgstr "Notification de lecture"
 
 msgid "cpsm_notify_body"
-msgstr "Votre message '_ORIGINAL_MAIL_SUBJECT_' a bien Ã©tÃ© lu."
+msgstr "Votre message '_ORIGINAL_MAIL_SUBJECT_' a bien été lu."
 
 msgid "cpsma_notify_ask"
 msgstr ""
-"L'expÃ©diteur souhaite une notification de lecture, voulez vous l'envoyer ?"
+"L'expéditeur souhaite une notification de lecture, voulez vous l'envoyer ?"
 
 msgid "cpsma_notify_remove"
 msgstr ""
-"Voulez vous supprimer dÃ©finitivement de ce message la demande de notification"
+"Voulez vous supprimer définitivement de ce message la demande de notification"
 
 msgid "cpsma_notify_processing"
 msgstr "Notification en cours..."
 
 msgid "cpsma_notification_sent"
-msgstr "Notification envoyÃ©e..."
+msgstr "Notification envoyée..."
 
 msgid "cpsma_notified"
-msgstr "Notification envoyÃ©e..."
+msgstr "Notification envoyée..."
 
 msgid "cpsma_bodysearch_warning"
-msgstr "*les recherches dans le corps peuvent Ãªtre lentes"
+msgstr "*les recherches dans le corps peuvent être lentes"
 
 msgid "cpsma_shrink"
 msgstr "Condenser"
@@ -526,17 +526,17 @@ msgid "cpsma_empty_folder"
 msgstr "Dossier vide"
 
 msgid "cpsma_expunged"
-msgstr "Corbeille vidÃ©e."
+msgstr "Corbeille vidée."
 
 msgid "cps_already_synchronizing"
-msgstr "La boÃ®te est dÃ©jÃ Â en cours de synchronisation"
+msgstr "La boîte est déjàen cours de synchronisation"
 
 # specific cases: columns headers
 msgid "Attachments"
-msgstr "PiÃšces"
+msgstr "Pièces"
 
 msgid "Icon"
-msgstr "IcÃŽne"
+msgstr "Icône"
 
 msgid "From"
 msgstr "De"
@@ -554,7 +554,7 @@ msgid "Drafts"
 msgstr "Brouillons"
 
 msgid "Sent"
-msgstr "EnvoyÃ©s"
+msgstr "Envoyés"
 
 msgid "Trash"
 msgstr "Corbeille"
@@ -563,13 +563,13 @@ msgid "attach"
 msgstr "attacher"
 
 msgid "cpsma_ack"
-msgstr "Demander un accusÃ© de rÃ©ception"
+msgstr "Demander un accusé de réception"
 
 msgid "cpsma_search_submitted"
-msgstr "Chercher plus d'entrÃ©es"
+msgstr "Chercher plus d'entrées"
 
 msgid "cpsma_close"
-msgstr "Mettre Ã  jour"
+msgstr "Mettre à jour"
 
 msgid "cpsma_add_users"
 msgstr "Ajouter des destinataires"
@@ -584,28 +584,28 @@ msgid "cpsma_send_message"
 msgstr "Envoyer le message"
 
 msgid "cpsma_renamed"
-msgstr "Element renommÃ©"
+msgstr "Element renommé"
 
 msgid "cpsma_could_not_rename"
-msgstr "Impossible de renommer l'Ã©lÃ©ment"
+msgstr "Impossible de renommer l'élément"
 
 msgid "cpsma_moved"
-msgstr "Element dÃ©placÃ©"
+msgstr "Element déplacé"
 
 msgid "cpsma_userdefined_filters"
 msgstr "Filtres utilisateur"
 
 msgid "cpsma_folders"
-msgstr "RÃ©pertoires"
+msgstr "Répertoires"
 
 msgid "cpsma_choose_folders"
-msgstr "Choisir des rÃ©pertoires de recherche (non rÃ©cursif)..."
+msgstr "Choisir des répertoires de recherche (non récursif)..."
 
 msgid "index_relations"
 msgstr "Indexer les relations entre mails"
 
 msgid "protected_folders"
-msgstr "Dossiers protÃ©gÃ©s"
+msgstr "Dossiers protégés"
 
 msgid "read_only_folders"
 msgstr "Dossiers en lecture seule"
@@ -614,7 +614,7 @@ msgid "cpsma_configure_mailtool"
 msgstr "Configurer le webmail"
 
 msgid "cpsma_return_receipt"
-msgstr "Demander un accusÃ© de lecture"
+msgstr "Demander un accusé de lecture"
 
 msgid "cpsma_search_message_to"
-msgstr "Message envoyÃ© Ã "
+msgstr "Message envoyé A "
