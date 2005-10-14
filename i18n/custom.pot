@@ -583,3 +583,6 @@ msgstr ""
 
 msgid "cpsma_return_receipt"
 msgstr ""
+
+msgid "cpsma_search_message_to"
+msgstr ""

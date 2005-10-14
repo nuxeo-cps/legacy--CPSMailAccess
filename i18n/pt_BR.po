@@ -61,22 +61,22 @@ msgid "cpsma_webmail_navigation"
 msgstr "Navegador de mensagens."
 
 msgid "cpsma_personal_address_book"
-msgstr "Livro de endereÁos pessoal"
+msgstr "Livro de endere√ßos pessoal"
 
 msgid "cpsma_global_address_book"
-msgstr "Livro de endereÁos p˙blico"
+msgstr "Livro de endere√ßos p√∫blico"
 
 msgid "cpsma_mailbox_configuration"
 msgstr "Configurar"
 
 msgid "cpsma_mailbox_parameters"
-msgstr "Par‚metros da caixa postal"
+msgstr "Par√¢metros da caixa postal"
 
 msgid "cpsma_mailbox_managment_tasks"
-msgstr "AdministraÁ„o"
+msgstr "Administra√ß√£o"
 
 msgid "cpsma_address_book"
-msgstr "Livro de EndereÁos"
+msgstr "Livro de Endere√ßos"
 
 msgid "cpsma_configure_mailbox"
 msgstr "Configurar Caixa Postal"
@@ -92,20 +92,20 @@ msgstr "Sincronizar com Servidor"
 
 msgid "cpsma_js_disabled"
 msgstr ""
-"Javascript n„o est· ativado; vocÍ perder· algumas caracterÌsticas "
-"ergonÙmicas."
+"Javascript n√£o est√° ativado; voc√™ perder√° algumas caracter√≠sticas "
+"ergon√¥micas."
 
 msgid "cpsma_attach_file"
 msgstr "Anexar um arquivo"
 
 msgid "cpsma_make_selection"
-msgstr "Fazer uma seleÁ„o"
+msgstr "Fazer uma sele√ß√£o"
 
 msgid "cpsma_messages_in_clipboard"
-msgstr "Mensagens na ·rea de transferÍncia"
+msgstr "Mensagens na √°rea de transfer√™ncia"
 
 msgid "cpsma_message_in_clipboard"
-msgstr "Mensagem na ·rea de transferÍncia."
+msgstr "Mensagem na √°rea de transfer√™ncia."
 
 msgid "cpsma_subject"
 msgstr "Assunto"
@@ -114,10 +114,10 @@ msgid "cpsma_from"
 msgstr "De"
 
 msgid "cpsma_mailbox_beeing_synchronized"
-msgstr "Caixa Postal est· sendo sincronizada"
+msgstr "Caixa Postal est√° sendo sincronizada"
 
 msgid "cpsma_mailbox_force_synchronize"
-msgstr "Se nada parece acontecer, force a sincronizaÁ„o por este link."
+msgstr "Se nada parece acontecer, force a sincroniza√ß√£o por este link."
 
 msgid "cpsma_found"
 msgstr "Encontrado"
@@ -144,7 +144,7 @@ msgid "cpsma_search_message_date"
 msgstr "Data"
 
 msgid "cpsma_search_message_intersection"
-msgstr "IntersecÁ„o"
+msgstr "Intersec√ß√£o"
 
 msgid "cpsma_results_in"
 msgstr "resulta em"
@@ -180,7 +180,7 @@ msgid "cpsma_delete_folder"
 msgstr "Remover Pasta"
 
 msgid "cpsma_manage_content"
-msgstr "Administrar conte˙ndo"
+msgstr "Administrar conte√∫ndo"
 
 msgid "cpsma_reply"
 msgstr "Responder"
@@ -207,7 +207,7 @@ msgid "cpsma_search_messages"
 msgstr "Buscar"
 
 msgid "cpsma_address_books"
-msgstr "Livro de EndereÁos."
+msgstr "Livro de Endere√ßos."
 
 msgid "cpsma_all_entries"
 msgstr "Todas as entradas."
@@ -232,10 +232,10 @@ msgid "SSL"
 msgstr "SSL ?"
 
 msgid "cache_level"
-msgstr "NÌvel de Cache"
+msgstr "N√≠vel de Cache"
 
 msgid "connection_type"
-msgstr "Tipo de Conex„o"
+msgstr "Tipo de Conex√£o"
 
 msgid "draft_folder_name"
 msgstr "Nome da pasta de rascunhos"
@@ -244,10 +244,10 @@ msgid "login"
 msgstr "Login"
 
 msgid "max_folder_depth"
-msgstr "Profundidade m·xima na criaÁ„o de pastas."
+msgstr "Profundidade m√°xima na cria√ß√£o de pastas."
 
 msgid "max_folder_size"
-msgstr "Comprimento m·ximo para nomes das pastas."
+msgstr "Comprimento m√°ximo para nomes das pastas."
 
 msgid "message_list_cols"
 msgstr "Colunas mostradas."
@@ -274,14 +274,14 @@ msgid "trash_folder_name"
 msgstr "Nome da pasta Lixeira"
 
 msgid "treeview_style"
-msgstr "Estilo vis„o em ·rvore."
+msgstr "Estilo vis√£o em √°rvore."
 
 msgid "cpsma_synchronized"
 msgstr "Sincronizado"
 
 msgid "cpsma_failed_synchro"
 msgstr ""
-"N„o foi possÌvel sincronizar a caixa postal. Verifique os seus par‚metros."
+"N√£o foi poss√≠vel sincronizar a caixa postal. Verifique os seus par√¢metros."
 
 msgid "cpsma_add"
 msgstr "Adicionar"
@@ -313,7 +313,7 @@ msgid "close"
 msgstr ""
 
 msgid "cpsma_reindex_mail_catalog"
-msgstr "Reindexar o c·talogo de mensagens."
+msgstr "Reindexar o c√°talogo de mensagens."
 
 msgid "cpsma_objects"
 msgstr "Mensagens Indexadas."
@@ -328,16 +328,16 @@ msgid "Element"
 msgstr "Elementos"
 
 msgid "Condition"
-msgstr "CondiÁ„o"
+msgstr "Condi√ß√£o"
 
 msgid "Value"
 msgstr "Valor"
 
 msgid "Action"
-msgstr "AÁ„o"
+msgstr "A√ß√£o"
 
 msgid "Action param"
-msgstr "Par‚metro"
+msgstr "Par√¢metro"
 
 msgid "Sender"
 msgstr "Remetente"
@@ -349,22 +349,22 @@ msgid "Cc"
 msgstr "Cc"
 
 msgid "contains"
-msgstr "contÈm"
+msgstr "cont√©m"
 
 msgid "does not contains"
-msgstr "n„o contÈm."
+msgstr "n√£o cont√©m."
 
 msgid "begins with"
-msgstr "comeÁa com"
+msgstr "come√ßa com"
 
 msgid "ends with"
 msgstr "termina com"
 
 msgid "is"
-msgstr "È"
+msgstr "√©"
 
 msgid "isn't"
-msgstr "n„o È"
+msgstr "n√£o √©"
 
 msgid "move to"
 msgstr "mover para"
@@ -379,7 +379,7 @@ msgid "set junk status"
 msgstr "lixo ?"
 
 msgid "Need an action param"
-msgstr "Esta aÁ„o precisa um par‚metro."
+msgstr "Esta a√ß√£o precisa um par√¢metro."
 
 msgid "_list_mail_"
 msgstr "Meus emails"
@@ -388,10 +388,10 @@ msgid "label_webmail_enabled"
 msgstr "Webmail ativado"
 
 msgid "label_address_book"
-msgstr "Livro de EndereÁos"
+msgstr "Livro de Endere√ßos"
 
 msgid "label_personal_addressbook"
-msgstr "Livro de endereÁos pessoal"
+msgstr "Livro de endere√ßos pessoal"
 
 #, fuzzy
 msgid "addressbook"
@@ -413,7 +413,7 @@ msgid "cps_synchronizing"
 msgstr "Sincronizando"
 
 msgid "cpsma_clear_mail_catalog"
-msgstr "Limpar cat·logo de mensagens"
+msgstr "Limpar cat√°logo de mensagens"
 
 #, fuzzy
 msgid "cpsma_submit"
@@ -424,11 +424,11 @@ msgstr "Sincronizar toda a caixa."
 
 msgid "cpsma_could_not_send"
 msgstr ""
-"N„o foi possÌvel enviar a mensagem; por favor verifique a configuraÁ„o do "
+"N√£o foi poss√≠vel enviar a mensagem; por favor verifique a configura√ß√£o do "
 "SMTP."
 
 msgid "cpsma_structure_unknown"
-msgstr "Estrutura de mensagem n„o conhecida."
+msgstr "Estrutura de mensagem n√£o conhecida."
 
 msgid "cpsma_reconnect"
 msgstr "Reconectar ao servidor de email."
@@ -437,30 +437,30 @@ msgid "cpsma_clear_mail_bodies"
 msgstr "Mensagens (corpo) cacheadas removidas."
 
 msgid "cpsma_failed_send"
-msgstr "N„o foi possÌvel enviar mensagem."
+msgstr "N√£o foi poss√≠vel enviar mensagem."
 
 msgid "cpsma_first_time"
 msgstr ""
-"Esta È a primeira vez que vocÍ inicia o webmail. Por favor, configure seus "
-"par‚metros. <br/>Em caso de d˙vida, por favor refira-se ‡ documentaÁ„o."
+"Esta √© a primeira vez que voc√™ inicia o webmail. Por favor, configure seus "
+"par√¢metros. <br/>Em caso de d√∫vida, por favor refira-se √† documenta√ß√£o."
 
 msgid "cpsma_mailtool_parameters"
-msgstr "ConfiguraÁ„o do Webmail."
+msgstr "Configura√ß√£o do Webmail."
 
 msgid "cpsma_portal_wide"
 msgstr "Para todo o portal."
 
 msgid "cpsma_could_not_perform"
-msgstr "A operaÁ„o n„o pode ser realizada no servidor de email."
+msgstr "A opera√ß√£o n√£o pode ser realizada no servidor de email."
 
 msgid "instant_load"
-msgstr "N„o foi possÌvel pegar o corpo da mensagem."
+msgstr "N√£o foi poss√≠vel pegar o corpo da mensagem."
 
 msgid "cpsma_no_private"
 msgstr "Nenhum particular permitido."
 
 msgid "cpsma_max_size_reached"
-msgstr "Tamanho m·ximo atingido"
+msgstr "Tamanho m√°ximo atingido"
 
 msgid "cpsma_msgs_sent_to_trash"
 msgstr "Mensagens enviadas para o lixo."
@@ -479,16 +479,16 @@ msgid "cpsma_confirm_erase"
 msgstr "Tem certeza ?"
 
 msgid "cpsma_confirm_erase_folder"
-msgstr "VocÍ tem certeza que quer remover a pasta ?"
+msgstr "Voc√™ tem certeza que quer remover a pasta ?"
 
 msgid "cpsma_message_saved"
 msgstr "Mensagem salva nos rascunhos."
 
 msgid "cpsma_message_saved_no_subject"
-msgstr "O campo 'Assunto' È necess·rio para salvar a mensagem."
+msgstr "O campo 'Assunto' √© necess√°rio para salvar a mensagem."
 
 msgid "cpsma_message_saved_no_recipient"
-msgstr "O campo 'Para' È necess·rio para salvar a mensagem."
+msgstr "O campo 'Para' √© necess√°rio para salvar a mensagem."
 
 msgid "cpsma_message_sending"
 msgstr "Enviando a mensagem...."
@@ -497,10 +497,10 @@ msgid "cpsma_message_saving"
 msgstr "Salvando a mensagem...."
 
 msgid "cpsm_not_valid_mail"
-msgstr "n„o È um email v·lido."
+msgstr "n√£o √© um email v√°lido."
 
 msgid "cpsm_empty_subjet_body"
-msgstr "tanto o assunto como o corpo est„o vazio."
+msgstr "tanto o assunto como o corpo est√£o vazio."
 
 #, fuzzy
 msgid "cpsm_notify_subject"

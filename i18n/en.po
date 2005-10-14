@@ -614,3 +614,6 @@ msgstr "Configure webmail"
 
 msgid "cpsma_return_receipt"
 msgstr "Ask for a read receipt"
+
+msgid "cpsma_search_message_to"
+msgstr "Message sent to"

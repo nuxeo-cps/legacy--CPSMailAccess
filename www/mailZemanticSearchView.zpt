@@ -41,6 +41,7 @@
                   value_2 request/value_2|python:'';
                   value_3 request/value_3|python:'';
                   value_4 request/value_4|python:'';
+                  value_5 request/value_5|python:'';
                   intersection request/intersection|python:'';
                   numblocs request/numblocs|python:1;
                   numblocs python:range(int(numblocs))">
@@ -74,6 +75,17 @@
           <td>
             <input type="hidden" name="relation_1" value="from"/>
             <input class="fullwidth" type="text" name="value_1" tal:attributes="value value_1"/>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <div class="dlabel" i18n:translate="cpsma_search_message_to">
+            Message To :
+            </div>
+          </td>
+          <td>
+            <input type="hidden" name="relation_5" value="to"/>
+            <input class="fullwidth" type="text" name="value_5" tal:attributes="value value_5"/>
           </td>
         </tr>
         <tr>
