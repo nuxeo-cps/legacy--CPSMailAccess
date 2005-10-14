@@ -20,7 +20,6 @@
 import unittest
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import user_name, folder_name
-from Testing.ZopeTestCase import installProduct
 
 class MailBoxTest(FunctionalTestCase):
 

@@ -315,6 +315,7 @@ ok then"""
         self.assertEquals((-1, ''), getHumanReadableSize(''))
         self.assertEquals((300, 'o'), getHumanReadableSize(300))
         self.assertEquals((2, 'ko'), getHumanReadableSize(3000))
+        self.assertEquals((-1, ''), getHumanReadableSize(None))
 
 def test_suite():
     return unittest.TestSuite((

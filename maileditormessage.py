@@ -21,8 +21,6 @@
     A message with a few more things for editor's view
 """
 from email import Message
-
-from interfaces import IMailMessage, IMailPart
 from zope.app.cache.ram import RAMCache
 from mailmessage import MailMessage
 

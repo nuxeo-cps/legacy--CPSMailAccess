@@ -17,35 +17,13 @@
 # 02111-1307, USA.
 #
 # $Id$
-from zLOG import LOG, DEBUG, INFO
-from Globals import InitializeClass
-import sys
-from smtplib import SMTP
-from utils import getToolByName, decodeHeader, verifyBody,\
-                  cleanUploadedFileName, Utf8ToIso
-import thread
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from OFS.Folder import Folder
 from AccessControl import Unauthorized
 from Products.Five import BrowserView
 
-from zope.schema.fieldproperty import FieldProperty
-from zope.app import zapi
-from zope.interface import implements
-from zope.schema.fieldproperty import FieldProperty
-from zope.publisher.browser import FileUpload
-
-
-from utils import uniqueId, makeId, getFolder, isValidEmail
-from interfaces import IMailBox, IMailMessage, IMailFolder
-from mailmessage import MailMessage
-from mailfolder import MailFolder, manage_addMailFolder
-from mailfolderview import MailFolderView
-from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
-
-from basemailview import BaseMailMessageView
+from utils import decodeHeader, verifyBody, isValidEmail, \
+                  cleanUploadedFileName, Utf8ToIso
+from baseconnection import ConnectionError
 from mailmessageview import MailMessageView
-from email import base64MIME
 
 class MailMessageEdit(BrowserView):
 

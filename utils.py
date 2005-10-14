@@ -19,7 +19,6 @@
 # $Id$
 """ a few utilities
 """
-import os, time
 import string, re, md5
 from sgmllib import SGMLParseError
 from threading import Thread
@@ -27,12 +26,10 @@ from email.Header import decode_header, make_header
 from email.Errors import HeaderParseError
 from exceptions import UnicodeDecodeError
 from datetime import datetime
-from time import strftime, localtime, mktime
+from time import localtime
 from random import randrange
 from email.Utils import fix_eols, parsedate_tz, mktime_tz
 from encodings import exceptions as encoding_exceptions
-
-from zLOG import LOG, INFO
 from DateTime import DateTime
 from Acquisition import aq_get
 
@@ -435,7 +432,7 @@ def sameMail(mail1, mail2):
 def getHumanReadableSize(octet_size):
     """ returns a human readable file size """
     if ((not isinstance(octet_size, int) and not isinstance(octet_size, long))
-        or octet_size < 0):
+        or octet_size is None or octet_size < 0 ):
         return (-1, '')
 
     if not isinstance(octet_size, int):

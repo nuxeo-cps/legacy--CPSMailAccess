@@ -22,25 +22,22 @@
 
 A MailFolder contains mail messages and other mail folders.
 """
-import time, thread
-from zLOG import LOG, DEBUG, INFO
+import thread
+
+from zLOG import LOG, DEBUG
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
 from Globals import InitializeClass
 from Acquisition import aq_parent, aq_inner, aq_base
-from Products.Five import BrowserView
 from ZODB.POSException import ConflictError
 
-from zope.schema.fieldproperty import FieldProperty
-from zope.app import zapi
 from zope.interface import implements
 from zope.app.cache.ram import RAMCache
 
 from mailmessage import MailMessage
 from mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
-from utils import uniqueId, makeId, md5Hash, decodeHeader, getFolder,\
-                  AsyncCall, createDigestFromList, translate
+from utils import uniqueId, makeId, createDigestFromList, translate
 from baseconnection import has_connection, ConnectionError
 
 folder_locker = {}

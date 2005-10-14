@@ -19,9 +19,6 @@
 # $Id$
 from math import ceil
 
-from zLOG import LOG, INFO, DEBUG
-
-from zope.app.cache.ram import RAMCache
 from zope.interface import directlyProvides, directlyProvidedBy
 
 from basemailview import BaseMailMessageView

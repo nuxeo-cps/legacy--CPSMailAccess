@@ -25,25 +25,15 @@ import re
 import time
 from email.Utils import parseaddr, formatdate
 
-from zLOG import LOG, DEBUG, INFO
+from zLOG import LOG, DEBUG
 from Globals import InitializeClass
-from OFS.Folder import Folder
-from OFS.ObjectManager import BadRequest
 from ZODB.PersistentMapping import PersistentMapping
 from AccessControl import Unauthorized
-from AccessControl.SecurityManagement import newSecurityManager, \
-                                             noSecurityManager
-from AccessControl.User import User
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from Products.Five import BrowserView
 from Products.Five.traversable import FiveTraversable
 
-from zope.schema.fieldproperty import FieldProperty
-from zope.app import zapi
 from zope.interface import implements
-from zope.schema.fieldproperty import FieldProperty
-from zope.publisher.browser import FileUpload
 from zope.app.cache.ram import RAMCache
 
 from utils import getToolByName, decodeHeader, uniqueId, makeId, getFolder,\
@@ -53,9 +43,7 @@ from mailfolder import MailFolder, manage_addMailFolder
 from maileditormessage import MailEditorMessage
 from mailmessage import MailMessage
 from mailfolderview import MailFolderView
-from baseconnection import ConnectionError, BAD_LOGIN, NO_CONNECTOR
-from basemailview import BaseMailMessageView
-from mailmessageview import MailMessageView
+from baseconnection import ConnectionError, NO_CONNECTOR
 from mailsearch import ZemanticMailCatalog, get_uri, union
 from directorypicker import DirectoryPicker
 from baseconnection import has_connection

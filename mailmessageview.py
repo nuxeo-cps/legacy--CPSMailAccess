@@ -17,29 +17,21 @@
 # 02111-1307, USA.
 #
 # $Id$
-from email import message_from_string
 import thread
 from urllib import quote
 from StringIO import StringIO
 
-from zLOG import LOG, DEBUG, INFO
-from Globals import InitializeClass
 from Products.Five import BrowserView
 from Products.Five.traversable import FiveTraversable
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from OFS.Folder import Folder
-from OFS.SimpleItem import SimpleItem
 
-from zope.interface import implements
-from zope.schema.fieldproperty import FieldProperty
 from zope.publisher.browser import FileUpload
 
-from interfaces import IMailMessage, IMailFolder, IMailBox
+from interfaces import IMailFolder
 from baseconnection import ConnectionError
 from mailrenderer import MailRenderer
 from basemailview import BaseMailMessageView
 from mailfolderview import MailFolderView
-from mailexceptions import MailPartError
+
 from utils import *
 
 traverser_locker = thread.allocate_lock()

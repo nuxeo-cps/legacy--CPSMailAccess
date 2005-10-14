@@ -18,7 +18,6 @@
 #
 # $Id$
 import time
-from zLOG import LOG, INFO
 from Acquisition import aq_parent, aq_inner
 from Products.Five import BrowserView
 from ZODB.POSException import ReadConflictError

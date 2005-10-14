@@ -18,13 +18,10 @@
 # 02111-1307, USA.
 #
 # $Id$
-
 from zope.interface import Interface
-from zope.interface.common.mapping import IMapping
-from zope.app.container.interfaces import IContained, IContainer
-from zope.app.container.constraints import ContainerTypesConstraint
+from zope.app.container.interfaces import IContainer
 from zope.app.traversing.interfaces import ITraverser
-from zope.schema import Field, Text, List, Dict
+from zope.schema import Field, List, Dict
 
 class IMailFolder(IContainer):
     """A container of mail messages and other mail folders.

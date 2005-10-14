@@ -24,7 +24,6 @@
 """
 import os
 import socket, threading
-from time import sleep
 import atexit
 from smtplib import SMTPRecipientsRefused
 
@@ -33,11 +32,8 @@ import Acquisition
 
 from zope.app.mail.mailer import SMTPMailer
 from zope.app.mail.delivery import QueueProcessorThread
-from zope.interface import implements
 from zope.app.mail.maildir import Maildir
 
-from baseconnection import ConnectionError
-from utils import getToolByName
 
 """
 Asynchronous mail sender system taken from Zope 3

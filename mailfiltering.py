@@ -65,7 +65,7 @@ from ZODB.PersistentList import PersistentList
 
 from zope.interface import implements
 
-from utils import md5Hash, getFolder, extractMailParts, decodeHeader
+from utils import getFolder, extractMailParts, decodeHeader
 from interfaces import IMailFilteringBackEnd
 
 class NormalBackEnd(UserList):

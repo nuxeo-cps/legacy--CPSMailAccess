@@ -18,12 +18,9 @@
 #
 # $Id$
 from ZODB.POSException import ReadConflictError
-
 from Products.CPSMailAccess.interfaces import IMailBox, IMailMessage, \
-    IMailFolder
-from Products.Five import BrowserView
-
-from utils import getToolByName, translate
+                                              IMailFolder
+from utils import translate
 from basemailview import BaseMailMessageView
 
 """ XXXX using a view to retrieve actions

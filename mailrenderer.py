@@ -17,29 +17,11 @@
 # 02111-1307, USA.
 #
 # $Id$
-from zLOG import LOG, INFO, DEBUG
-
-import time
-from StringIO import StringIO
-from types import StringType, ListType
-
-from email.MIMEAudio import MIMEAudio
-from email.MIMEText import MIMEText
-from email.MIMEImage import MIMEImage
-from email.MIMEBase import MIMEBase
-from email.MIMEMessage import MIMEMessage
-from email.MIMEMultipart import MIMEMultipart
-from email import Iterators, Message
-from email import Parser
 import mimetools
-from mimetools import decode
-
+from StringIO import StringIO
 from zope.interface import implements
-
-from utils import decodeHeader, HTMLize, sanitizeHTML,\
-                  secureUnicode, divideMailBody
+from utils import HTMLize, sanitizeHTML, secureUnicode, divideMailBody
 from interfaces import IMailRenderer
-
 
 EMPTYSTRING = ''
 

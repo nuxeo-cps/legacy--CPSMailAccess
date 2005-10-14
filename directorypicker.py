@@ -28,7 +28,6 @@
 from zope.interface import implements
 from Products.Five import BrowserView
 from interfaces import IDirectoryPicker
-from utils import getToolByName
 
 class DirectoryPicker(object):
     """ the main container

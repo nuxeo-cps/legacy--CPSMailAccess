@@ -17,13 +17,10 @@
 # 02111-1307, USA.
 #
 # $Id$
-import os
 import time
 
 from Products.Five import BrowserView
-from utils import getToolByName, parseDateString, decodeHeader, getFolder, \
-                  traverseToObject
-from mailexceptions import MailCatalogError
+from utils import parseDateString, decodeHeader, getFolder, traverseToObject
 from mailmessageview import MailMessageView
 from mailsearch import intersection  as z_intersection
 from mailsearch import unifyList as z_unifyList

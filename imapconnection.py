@@ -23,22 +23,14 @@
 """
 import re
 import socket
-from time import sleep, time
+from time import sleep
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
-
-from zLOG import LOG,INFO, DEBUG
 
 from zope.interface import implements
 from zope.app.cache.ram import RAMCache
 
 from interfaces import IConnection
-from baseconnection import BaseConnection
-from baseconnection import LOGIN_FAILED
-from baseconnection import ConnectionError
-from baseconnection import ConnectionParamsError
-from baseconnection import CANNOT_SEARCH_MAILBOX, MAILBOX_INDEX_ERROR, \
-    CANNOT_READ_MESSAGE, SOCKET_ERROR
-from utils import AsyncCall
+from baseconnection import BaseConnection, ConnectionError, SOCKET_ERROR
 
 def patch_open(self, host = '', port = IMAP4_SSL_PORT):
     """ protects webmails from:

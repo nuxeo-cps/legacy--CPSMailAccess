@@ -19,20 +19,17 @@
 """
   mailsearch holds all mail searches
 """
-import os, time, sre_constants
+import os
+import sre_constants
 from encodings import exceptions as encoding_exceptions
 
-from zLOG import LOG, INFO, DEBUG
-from OFS.Folder import Folder
-from OFS.SimpleItem import SimpleItem
-from ZODB.PersistentMapping import PersistentMapping
 from Globals import InitializeClass
 
 from zope.interface import implements
 from BTrees.OOBTree import OOBTree
 
 from configuration import __file__ as landmark
-from utils import makeId, parseDateString, removeHTML, decodeHeader, parseRefs
+from utils import parseDateString, removeHTML, decodeHeader, parseRefs
 from interfaces import IMailCatalog, IMailFolder
 
 from zemantic.triplestore import TripleStore
@@ -205,7 +202,6 @@ class ZemanticMessageAdapter:
                         uri = self.catalog._message_ids[ref]
                         if uri in uris:
                             continue
-                        LOG('related', INFO, str(uri))
                         relation_object = unicode(relation_object)
                         relation_ref = URIRef(relation_object)
                         relation = (ob_uri, relation_ref, uri)
@@ -226,8 +222,6 @@ class ZemanticMailCatalog(TripleStore):
         self._message_ids = OOBTree()
 
     def clear(self):
-        from zLOG import INFO, LOG
-        LOG('clear catalog', INFO, '')
         TripleStore.clear(self)
         self._message_ids = OOBTree()
 
@@ -243,9 +237,6 @@ class ZemanticMailCatalog(TripleStore):
     def indexMessage(self, message, full_indexation=False,
                      index_relations=True):
         """ index message """
-        from zLOG import INFO, LOG
-        LOG('indexMessage', INFO, str(message))
-        LOG('indexMessage', INFO, 'current catalog size: %d' % len(self))
         zmessage = ZemanticMessageAdapter(message, self, full_indexation)
         tuples = zmessage.threeTuples(index_relations)
 

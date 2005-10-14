@@ -28,7 +28,6 @@ from ZODB.PersistentMapping import PersistentMapping
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Globals import InitializeClass
 from Products.Five import BrowserView
-from AccessControl import Unauthorized
 
 from zope.interface import implements
 

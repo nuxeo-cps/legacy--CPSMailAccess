@@ -6,9 +6,7 @@
     Thu Oct 16 23:00:03 CEST 2003
     with magic data from gnome-vfs-mime-magic
 """
-
-
-import re, struct, string
+import struct
 
 magic = [
 

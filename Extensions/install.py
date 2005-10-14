@@ -22,15 +22,10 @@
 
 """
 import os
-from zLOG import LOG, INFO, DEBUG
 from OFS.ObjectManager import BadRequestException
 
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
-
 from Products.CPSInstaller.CPSInstaller import CPSInstaller
-
 from Products.CPSMailAccess.mailtool import manage_addMailTool,\
                                             default_parameters
 from Products.CPSMailAccess.permissions import permissions

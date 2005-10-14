@@ -16,12 +16,13 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+import atexit
+from time import sleep
+from threading import Thread
+
 from zope.schema.fieldproperty import FieldProperty
 from zope.interface import implements
-from interfaces import IConnectionWatcher
-from threading import Thread
-from time import sleep
-import atexit
+
 from Products.CPSMailAccess.interfaces import IConnectionWatcher
 
 class ConnectionWatcher(Thread):
