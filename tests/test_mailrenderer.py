@@ -64,7 +64,7 @@ class MailRendererTestCase(MailTestCase):
         box._setObject('mail', mail)
         mail = box.mail
         ob = MailRenderer()
-        rendered = ob.renderBody(mail)
+        rendered, html = ob.renderBody(mail)
         self.assertNotEqual(rendered, '')
         self.assertNotEqual(rendered, None)
         self.assertEquals(rendered, u'Do you like this message?')
@@ -119,7 +119,7 @@ class MailRendererTestCase(MailTestCase):
         container = self._getMailBox()
         container._setObject('my_mail', mail)
         mail = getattr(container, 'my_mail')
-        rendered = ob.renderBody(mail)
+        rendered, html = ob.renderBody(mail)
         self.assertNotEquals(rendered.find(u'Le but \xe9tant effectivement'),
                              -1)
 

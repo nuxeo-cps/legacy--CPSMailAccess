@@ -157,7 +157,7 @@ class MailMessageViewTestCase(MailTestCase):
         view = MailMessageView(ob, None)
         self.assert_(view)
 
-        body = view._bodyRender(ob)
+        body, html = view._bodyRender(ob)
         body = body.split('<br/>')
 
         self.assertEquals(body[0], u'sqdsqd d')

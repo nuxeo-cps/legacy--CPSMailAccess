@@ -139,7 +139,7 @@ class MailRenderer:
             body = body
 
         #return shrinkHtml(body)
-        return divideMailBody(body)
+        return divideMailBody(body), html
 
     def _stringToUnicode(self, string, charset='ISO-8859-15'):
         """ safe string to unicode """

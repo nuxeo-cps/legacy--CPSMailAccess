@@ -222,9 +222,10 @@ class MailMessageView(BaseMailMessageView):
             mail = self.context
             try:
                 root = self._getBoxRootUrl()
-                body = self._bodyRender(mail)
-                mail_sub = r'<a href="%s/writeTo.html?msg_to=$1">$1</a>' % root
-                body = linkifyMailBody(body, mail_sub)
+                body, html = self._bodyRender(mail)
+                if not html:
+                    mail_sub = r'<a href="%s/writeTo.html?msg_to=\3">\3</a>' % root
+                    body = linkifyMailBody(body, mail_sub)
             except NotImplementedError:
                 body = 'cpsma_structure_unknown'
         else:
