@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: en\n"
-"POT-Creation-Date: 2005-03-26 17:25default\n"
+"POT-Creation-Date: 2005-10-14 14:24default\n"
 "PO-Revision-Date: 2005-03-26 17:26+0200\n"
 "Last-Translator: tarek <tziade@nuxeo.com>\n"
 "Language-Team: francais <fr@li.org>\n"
@@ -13,20 +13,57 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"Language-code: LL\n"
-"Language-name: Language\n"
-"Preferred-encodings: utf-8 latin1\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-encodings: latin9 utf-8 latin1\n"
 "Domain: default\n"
 "X-Generator: KBabel 1.3.1\n"
+
+#.   <block condition="isINBOX">INBOX</block>
+#: from ../skins/boxes_mailaccess.pt
+msgid "INBOX"
+msgstr ""
+
+#.   <div class="title2">
+#.                   Webmail Actions
+#.              </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "Webmail Actions"
+msgstr ""
+
+#.   <div class="title2">
+#.               Attached files
+#.               </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "cpsma_attached_files"
+msgstr "Attached files"
+
+#.   <div class="form_title">
+#.           Choose a new parent folder
+#.         </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "cpsma_choose_new_folder"
+msgstr "Choose a new parent folder"
+
+#.   <div class="form_title">
+#.           Pickup a folder
+#.         </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "cpsma_pickup_new_folder"
+msgstr "Pick up a new folder name"
+
+#.   <div class="title2">
+#.               Webmail Navigation
+#.               </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "cpsma_webmail_navigation"
+msgstr "Dossiers de mails"
 
 msgid "cpsma_personal_address_book"
 msgstr "Personal address book"
 
 msgid "cpsma_global_address_book"
 msgstr "Public address book"
-
-msgid "cpsma_send_a_message"
-msgstr "Send a message"
 
 msgid "cpsma_mailbox_configuration"
 msgstr "Configure"
@@ -44,7 +81,7 @@ msgid "cpsma_configure_mailbox"
 msgstr "Configure mailbox"
 
 msgid "cpsma_search_message"
-msgstr "Search messages"
+msgstr "Search"
 
 msgid "cpsma_write_message"
 msgstr "Compose"
@@ -69,9 +106,6 @@ msgstr "message in clipboard"
 
 msgid "cpsma_subject"
 msgstr "Subject"
-
-msgid "cpsma_to"
-msgstr "To"
 
 msgid "cpsma_from"
 msgstr "From"
@@ -169,9 +203,6 @@ msgstr "Get messages"
 msgid "cpsma_search_messages"
 msgstr "Search"
 
-msgid "cpsma_write_message"
-msgstr "Compose"
-
 msgid "cpsma_address_books"
 msgstr "Address books"
 
@@ -254,9 +285,6 @@ msgstr "Add"
 msgid "cpsma_change"
 msgstr "Change"
 
-msgid "cpsma_choose_new_folder"
-msgstr "Pick up a new folder name"
-
 # content toolbar action
 msgid "copy"
 msgstr "copy"
@@ -272,6 +300,12 @@ msgstr "delete"
 
 msgid "clear"
 msgstr "clear"
+
+msgid "move"
+msgstr "move"
+
+msgid "close"
+msgstr "close"
 
 msgid "cpsma_reindex_mail_catalog"
 msgstr "Reindex mail catalog"
@@ -299,9 +333,6 @@ msgstr "Action"
 
 msgid "Action param"
 msgstr "Parameter"
-
-msgid "Subject"
-msgstr "Subject"
 
 msgid "Sender"
 msgstr "Sender"
@@ -401,12 +432,8 @@ msgstr "Could not send the message"
 
 msgid "cpsma_first_time"
 msgstr ""
-"It's the first time you launched the webmail. "
-"Please set your parameters.<br/>"
-"On any doubts, please refer to the documentation."
-
-msgid "cpsma_configure_mailtool"
-msgstr "Configure webmail"
+"It's the first time you launched the webmail. Please set your parameters.<br/"
+">On any doubts, please refer to the documentation."
 
 msgid "cpsma_mailtool_parameters"
 msgstr "Webmail configuration"
@@ -444,12 +471,6 @@ msgstr "Are you sure ?"
 msgid "cpsma_confirm_erase_folder"
 msgstr "Are you sure you want to erase the folder ?"
 
-msgid "cpsma_webmail_navigation"
-msgstr "Dossiers de mails"
-
-msgid "cpsma_attached_files"
-msgstr "Attached files"
-
 msgid "cpsma_message_saved"
 msgstr "Message saved in drafts"
 
@@ -478,7 +499,9 @@ msgid "cpsm_notify_body"
 msgstr "Your message '_ORIGINAL_MAIL_SUBJECT_' has been read"
 
 msgid "cpsma_notify_ask"
-msgstr "The sender asked to be notified when you read this mail, do you want to notify him or her ?"
+msgstr ""
+"The sender asked to be notified when you read this mail, do you want to "
+"notify him or her ?"
 
 msgid "cpsma_notify_remove"
 msgstr "Do you want to definitly remove the notification flag from this mail ?"
@@ -491,9 +514,6 @@ msgstr "Notification sent."
 
 msgid "cpsma_notified"
 msgstr "Notification sent."
-
-msgid "cpsma_return_receipt"
-msgstr "Ask for a read receipt"
 
 msgid "cpsma_bodysearch_warning"
 msgstr "*body search is mail server-side and thus very slow"
@@ -509,6 +529,37 @@ msgstr "Trash expunged."
 
 msgid "cps_already_synchronizing"
 msgstr "The box is already beeing synchronized"
+
+# specific cases: columns headers
+msgid "Attachments"
+msgstr ""
+
+msgid "Icon"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "Size"
+msgstr ""
+
+msgid "Drafts"
+msgstr ""
+
+msgid "Sent"
+msgstr ""
+
+msgid "Trash"
+msgstr ""
+
+msgid "attach"
+msgstr ""
 
 msgid "cpsma_ack"
 msgstr "Ask for return receipt"
@@ -557,3 +608,9 @@ msgstr "Protected folders"
 
 msgid "read_only_folders"
 msgstr "Read-only folders"
+
+msgid "cpsma_configure_mailtool"
+msgstr "Configure webmail"
+
+msgid "cpsma_return_receipt"
+msgstr "Ask for a read receipt"

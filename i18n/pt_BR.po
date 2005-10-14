@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
-"POT-Creation-Date: 2005-03-26 17:25default\n"
+"POT-Creation-Date: 2005-10-14 14:24default\n"
 "PO-Revision-Date: 2005-09-29 14:53-0300\n"
 "Last-Translator: Mario Olimpio de Menezes <mario@ipen.br>\n"
 "Language-Team: portuguese <pt@li.org>\n"
@@ -13,20 +13,58 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"Language-code: LL\n"
-"Language-name: Language\n"
+"Language-Code: pt_BR\n"
+"Language-Name: Portuguese/Brazil\n"
 "Preferred-encodings: utf-8 latin1\n"
 "Domain: default\n"
 "X-Generator: Emacs\n"
+
+#.   <block condition="isINBOX">INBOX</block>
+#: from ../skins/boxes_mailaccess.pt
+msgid "INBOX"
+msgstr ""
+
+#.   <div class="title2">
+#.                   Webmail Actions
+#.              </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "Webmail Actions"
+msgstr ""
+
+#.   <div class="title2">
+#.               Attached files
+#.               </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "cpsma_attached_files"
+msgstr "Arquivos anexados."
+
+#.   <div class="form_title">
+#.           Choose a new parent folder
+#.         </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "cpsma_choose_new_folder"
+msgstr "Escolha um novo nome para a pasta...."
+
+#.   <div class="form_title">
+#.           Pickup a folder
+#.         </div>
+#: from ../skins/boxes_mailaccess.pt
+#, fuzzy
+msgid "cpsma_pickup_new_folder"
+msgstr "Pick up a new folder name"
+
+#.   <div class="title2">
+#.               Webmail Navigation
+#.               </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "cpsma_webmail_navigation"
+msgstr "Navegador de mensagens."
 
 msgid "cpsma_personal_address_book"
 msgstr "Livro de endereços pessoal"
 
 msgid "cpsma_global_address_book"
 msgstr "Livro de endereços público"
-
-msgid "cpsma_send_a_message"
-msgstr "Enviar uma mensagem"
 
 msgid "cpsma_mailbox_configuration"
 msgstr "Configurar"
@@ -53,7 +91,9 @@ msgid "cpsma_synchronize_mailbox"
 msgstr "Sincronizar com Servidor"
 
 msgid "cpsma_js_disabled"
-msgstr "Javascript não está ativado; você perderá algumas características ergonômicas."
+msgstr ""
+"Javascript não está ativado; você perderá algumas características "
+"ergonômicas."
 
 msgid "cpsma_attach_file"
 msgstr "Anexar um arquivo"
@@ -69,9 +109,6 @@ msgstr "Mensagem na área de transferência."
 
 msgid "cpsma_subject"
 msgstr "Assunto"
-
-msgid "cpsma_to"
-msgstr "Para"
 
 msgid "cpsma_from"
 msgstr "De"
@@ -169,13 +206,17 @@ msgstr "Pegar mensagens."
 msgid "cpsma_search_messages"
 msgstr "Buscar"
 
-
 msgid "cpsma_address_books"
 msgstr "Livro de Endereços."
 
 msgid "cpsma_all_entries"
 msgstr "Todas as entradas."
 
+msgid "cpsma_send_a_message"
+msgstr "Enviar uma mensagem"
+
+msgid "cpsma_to"
+msgstr "Para"
 
 msgid "cpsma_bcc"
 msgstr "Bcc"
@@ -223,6 +264,12 @@ msgstr "Servidor SMTP"
 msgid "smtp_port"
 msgstr "Porta SMTP"
 
+msgid "maildir"
+msgstr ""
+
+msgid "direct_smtp"
+msgstr ""
+
 msgid "trash_folder_name"
 msgstr "Nome da pasta Lixeira"
 
@@ -233,16 +280,14 @@ msgid "cpsma_synchronized"
 msgstr "Sincronizado"
 
 msgid "cpsma_failed_synchro"
-msgstr "Não foi possível sincronizar a caixa postal. Verifique os seus parâmetros."
+msgstr ""
+"Não foi possível sincronizar a caixa postal. Verifique os seus parâmetros."
 
 msgid "cpsma_add"
 msgstr "Adicionar"
 
 msgid "cpsma_change"
 msgstr "Mudar"
-
-msgid "cpsma_choose_new_folder"
-msgstr "Escolha um novo nome para a pasta...."
 
 # content toolbar action
 msgid "copy"
@@ -259,6 +304,13 @@ msgstr "remover"
 
 msgid "clear"
 msgstr "limpar"
+
+#, fuzzy
+msgid "move"
+msgstr "move to"
+
+msgid "close"
+msgstr ""
 
 msgid "cpsma_reindex_mail_catalog"
 msgstr "Reindexar o cátalogo de mensagens."
@@ -286,9 +338,6 @@ msgstr "Ação"
 
 msgid "Action param"
 msgstr "Parâmetro"
-
-msgid "Subject"
-msgstr "Assunto"
 
 msgid "Sender"
 msgstr "Remetente"
@@ -344,6 +393,10 @@ msgstr "Livro de Endereços"
 msgid "label_personal_addressbook"
 msgstr "Livro de endereços pessoal"
 
+#, fuzzy
+msgid "addressbook"
+msgstr "Addressbook directory"
+
 msgid "cpsma_back_to_folder"
 msgstr "Voltar para pasta"
 
@@ -362,11 +415,17 @@ msgstr "Sincronizando"
 msgid "cpsma_clear_mail_catalog"
 msgstr "Limpar catálogo de mensagens"
 
+#, fuzzy
+msgid "cpsma_submit"
+msgstr "Submit"
+
 msgid "cpsma_resync_all"
 msgstr "Sincronizar toda a caixa."
 
 msgid "cpsma_could_not_send"
-msgstr "Não foi possível enviar a mensagem; por favor verifique a configuração do SMTP."
+msgstr ""
+"Não foi possível enviar a mensagem; por favor verifique a configuração do "
+"SMTP."
 
 msgid "cpsma_structure_unknown"
 msgstr "Estrutura de mensagem não conhecida."
@@ -381,10 +440,9 @@ msgid "cpsma_failed_send"
 msgstr "Não foi possível enviar mensagem."
 
 msgid "cpsma_first_time"
-msgstr "Esta é a primeira vez que você inicia o webmail. Por favor, configure seus parâmetros. <br/>Em caso de dúvida, por favor refira-se à documentação."
-
-msgid "cpsma_configure_mailtool"
-msgstr "Configurar webmail"
+msgstr ""
+"Esta é a primeira vez que você inicia o webmail. Por favor, configure seus "
+"parâmetros. <br/>Em caso de dúvida, por favor refira-se à documentação."
 
 msgid "cpsma_mailtool_parameters"
 msgstr "Configuração do Webmail."
@@ -410,6 +468,10 @@ msgstr "Mensagens enviadas para o lixo."
 msgid "cpsma_msg_sent_to_trash"
 msgstr "Mensagem enviada para o lixo."
 
+#, fuzzy
+msgid "cpsma_folder_sent_to_trash"
+msgstr "Folder sent to the Trash."
+
 msgid "cpsma_message_sent"
 msgstr "Mensagem enviada."
 
@@ -418,12 +480,6 @@ msgstr "Tem certeza ?"
 
 msgid "cpsma_confirm_erase_folder"
 msgstr "Você tem certeza que quer remover a pasta ?"
-
-msgid "cpsma_webmail_navigation"
-msgstr "Navegador de mensagens."
-
-msgid "cpsma_attached_files"
-msgstr "Arquivos anexados."
 
 msgid "cpsma_message_saved"
 msgstr "Mensagem salva nos rascunhos."
@@ -446,3 +502,151 @@ msgstr "não é um email válido."
 msgid "cpsm_empty_subjet_body"
 msgstr "tanto o assunto como o corpo estão vazio."
 
+#, fuzzy
+msgid "cpsm_notify_subject"
+msgstr "Read notification"
+
+#, fuzzy
+msgid "cpsm_notify_body"
+msgstr "Your message '_ORIGINAL_MAIL_SUBJECT_' has been read"
+
+#, fuzzy
+msgid "cpsma_notify_ask"
+msgstr ""
+"The sender asked to be notified when you read this mail, do you want to "
+"notify him or her ?"
+
+#, fuzzy
+msgid "cpsma_notify_remove"
+msgstr "Do you want to definitly remove the notification flag from this mail ?"
+
+#, fuzzy
+msgid "cpsma_notify_processing"
+msgstr "Notification in process..."
+
+#, fuzzy
+msgid "cpsma_notification_sent"
+msgstr "Notification sent."
+
+#, fuzzy
+msgid "cpsma_notified"
+msgstr "Notification sent."
+
+#, fuzzy
+msgid "cpsma_bodysearch_warning"
+msgstr "*body search is mail server-side and thus very slow"
+
+#, fuzzy
+msgid "cpsma_shrink"
+msgstr "Shrink"
+
+#, fuzzy
+msgid "cpsma_empty_folder"
+msgstr "Empty folder"
+
+#, fuzzy
+msgid "cpsma_expunged"
+msgstr "Trash expunged."
+
+#, fuzzy
+msgid "cps_already_synchronizing"
+msgstr "The box is already beeing synchronized"
+
+# specific cases: columns headers
+msgid "Attachments"
+msgstr ""
+
+msgid "Icon"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+#, fuzzy
+msgid "Date"
+msgstr "paste"
+
+msgid "Subject"
+msgstr "Assunto"
+
+msgid "Size"
+msgstr ""
+
+msgid "Drafts"
+msgstr ""
+
+msgid "Sent"
+msgstr ""
+
+msgid "Trash"
+msgstr ""
+
+msgid "attach"
+msgstr ""
+
+#, fuzzy
+msgid "cpsma_ack"
+msgstr "Ask for return receipt"
+
+#, fuzzy
+msgid "cpsma_search_submitted"
+msgstr "Search more recipients"
+
+#, fuzzy
+msgid "cpsma_close"
+msgstr "Update"
+
+#, fuzzy
+msgid "cpsma_add_users"
+msgstr "Add recipients"
+
+#, fuzzy
+msgid "cpsma_recipients"
+msgstr "Recipients"
+
+msgid "${from} cpsma_of ${of}"
+msgstr ""
+
+#, fuzzy
+msgid "cpsma_send_message"
+msgstr "Send the message"
+
+#, fuzzy
+msgid "cpsma_renamed"
+msgstr "Element renamed"
+
+#, fuzzy
+msgid "cpsma_could_not_rename"
+msgstr "Could not rename"
+
+#, fuzzy
+msgid "cpsma_moved"
+msgstr "Element moved"
+
+#, fuzzy
+msgid "cpsma_userdefined_filters"
+msgstr "User defined filters"
+
+#, fuzzy
+msgid "cpsma_folders"
+msgstr "Folders"
+
+#, fuzzy
+msgid "cpsma_choose_folders"
+msgstr "Pick-up folders to search in (not recursive)..."
+
+msgid "index_relations"
+msgstr ""
+
+#, fuzzy
+msgid "protected_folders"
+msgstr "Protected folders"
+
+msgid "read_only_folders"
+msgstr ""
+
+msgid "cpsma_configure_mailtool"
+msgstr "Configurar webmail"
+
+msgid "cpsma_return_receipt"
+msgstr "Ask for a read receipt"

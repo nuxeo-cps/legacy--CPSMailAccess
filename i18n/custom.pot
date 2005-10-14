@@ -25,9 +25,6 @@ msgstr ""
 msgid "cpsma_global_address_book"
 msgstr ""
 
-msgid "cpsma_send_a_message"
-msgstr ""
-
 msgid "cpsma_mailbox_configuration"
 msgstr ""
 
@@ -68,9 +65,6 @@ msgid "cpsma_message_in_clipboard"
 msgstr ""
 
 msgid "cpsma_subject"
-msgstr ""
-
-msgid "cpsma_to"
 msgstr ""
 
 msgid "cpsma_from"
@@ -167,9 +161,6 @@ msgid "cpsma_getmessages"
 msgstr ""
 
 msgid "cpsma_search_messages"
-msgstr ""
-
-msgid "cpsma_write_message"
 msgstr ""
 
 msgid "cpsma_address_books"
@@ -274,6 +265,12 @@ msgstr ""
 msgid "clear"
 msgstr ""
 
+msgid "move"
+msgstr ""
+
+msgid "close"
+msgstr ""
+
 msgid "cpsma_reindex_mail_catalog"
 msgstr ""
 
@@ -299,9 +296,6 @@ msgid "Action"
 msgstr ""
 
 msgid "Action param"
-msgstr ""
-
-msgid "Subject"
 msgstr ""
 
 msgid "Sender"
@@ -488,7 +482,7 @@ msgid "cpsma_notified"
 msgstr ""
 
 msgid "cpsma_bodysearch_warning"
-msgid ""
+msgstr ""
 
 msgid "cpsma_shrink"
 msgstr ""
@@ -582,4 +576,10 @@ msgid "protected_folders"
 msgstr ""
 
 msgid "read_only_folders"
+msgstr ""
+
+msgid "cpsma_configure_mailtool"
+msgstr ""
+
+msgid "cpsma_return_receipt"
 msgstr ""
