@@ -332,6 +332,10 @@ The CPS Team.
 
         self.assertEquals(result, wanted_result)
 
+        result = linkifyMailBody('<img src="cid:some@source"/>')
+        self.assertEquals(result, '<img src="cid:some@source"/>')
+        
+
     def test_answerSubject(self):
 
         res = answerSubject('Re: ytfuygiujoipok')

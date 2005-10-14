@@ -318,7 +318,7 @@ class HTMLMailSanitizer(HTMLSanitizer):
     """
     tags_to_keep = ('b', 'i', 'strong', 'br', 'p', 'h1', 'h2', 'h3',
                     'h4', 'h5', 'div', 'span', 'table', 'tr', 'th', 'td',
-                    'font', 'style', 'img')
+                    'font', 'style', 'img', 'ul', 'li', 'hr')
 
     tolerant_tags = ('br', 'p')
     attributes_to_keep = ('size', 'face', 'class', 'src', 'href', 'type', 'border')
@@ -545,7 +545,7 @@ def linkifyMailBody(body, email_sub=r'<a href="mailto:$1">$1</a>'):
                       email_sub))
 
     # first we need to find already link parts to avoid to relink them
-    http_links = r'(<a.*?>).*?(</a>)'
+    http_links = r'(<a.*?>).*?(</a>)|(<img.*?>)'
     http_links = re.compile(http_links, re.MULTILINE and re.I)
 
     changes = []
