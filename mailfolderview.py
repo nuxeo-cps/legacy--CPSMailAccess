@@ -124,7 +124,6 @@ class MailFolderView(BaseMailMessageView):
     def delete(self):
         """ action called to rename the current folder """
         mailfolder = self.context
-        title = mailfolder.title
         try:
             deleted = mailfolder.delete()
             psm = 'cpsma_folder_sent_to_trash'

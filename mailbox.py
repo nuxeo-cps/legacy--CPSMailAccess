@@ -759,7 +759,7 @@ class MailBox(MailBoxBaseCaching):
             try:
                 connector.setFlags(folder.server_name,
                                    element.uid, {'Deleted': 1})
-            except ConnectionError, e:
+            except ConnectionError:
                 # XXX need to understand why we get illegal
                 # calls in AUTH state here
                 pass
@@ -1336,8 +1336,8 @@ class MailBox(MailBoxBaseCaching):
         replies = [e.triple()[2] for e in list(res)]
 
         res = cat.make_query((msg_uri, u'back-thread', None))
-        thread = [e.triple()[2] for e in list(res)]
-        return union(replies, thread)
+        thread_ = [e.triple()[2] for e in list(res)]
+        return union(replies, thread_)
 
     def isSpecialFolder(self, folder=None):
         """ returns True if folder is None

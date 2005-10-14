@@ -660,7 +660,6 @@ def divideMailBody(text, level=0):
     text = text.replace('<br>', '\n')
     text = text.split('\n')
     blocs = []
-    inquote = False
     i = 0
     id_seed = 'topicBloc'
     while i < len(text):

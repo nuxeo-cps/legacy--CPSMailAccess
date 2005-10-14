@@ -65,7 +65,6 @@ class MailActionsView(BaseMailMessageView):
         base_url = self.getBaseUrl()
         box = container.getMailBox()
         box_url = self.getAbsoluteUrl(box)
-        user_name = box.getConnectionParams()['uid']
 
         if self._last_error is not None:
             root = self.getAbsoluteUrl(container)
