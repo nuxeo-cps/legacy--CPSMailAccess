@@ -212,20 +212,125 @@ The CPS Team.
         self.assertEquals(result, res)
 
         body = ' ftygu tz@nuxeo.com uig'
-        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=\1">\1</a>')
+        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=$1">$1</a>')
         res = ' ftygu <a href="http://xxx/sendmail?mail=tz@nuxeo.com">tz@nuxeo.com</a> uig'
         self.assertEquals(result, res)
 
         # try with sticked tag
         body = ' <br>ftygu http://gyuhji</br>'
-        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=\1">\1</a>')
+        result = linkifyMailBody(body, r'<a href="http://xxx/sendmail?mail=$1">$1</a>')
         res = ' <br>ftygu <a href="http://gyuhji" target="_blank">http://gyuhji</a></br>'
         self.assertEquals(result, res)
 
         body = 'http://nuxeo.com/<br>Nuxeo Collaborative Portal Server'
-        res = '<a href="http://nuxeo.com/" target="_blank">http://nuxeo.com/</a><br>Nuxeo Collaborative Portal Server'
+        res = ('<a href="http://nuxeo.com/" target="_blank">http://nuxeo.com/</a><br>Nu'
+               'xeo Collaborative Portal Server')
         result = linkifyMailBody(body)
         self.assertEquals(result, res)
+
+        result = linkifyMailBody(result)
+        self.assertEquals(result, res)
+
+        result = linkifyMailBody('\n        http://www.nuxeo.com\n')
+        self.assertEquals(result, ('\n        <a href="http://www.nuxeo.com" '
+                                   'target="_blank">http://www.nuxeo.com</a>\n'))
+
+        result = linkifyMailBody('\nhttp://www.nuxeo.com\n')
+        self.assertEquals(result, ('\n<a href="http://www.nuxeo.com" '
+                                   'target="_blank">http://www.nuxeo.com</a>\n'))
+
+        result = linkifyMailBody("""
+        http://www.nuxeo.com
+        """)
+        self.assertEquals(result, """
+        <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>
+        """)
+
+        mail_body = """
+        http://www.nuxeo.com
+        --
+        Tarek Ziadé | Nuxeo R&D (Paris, France)
+        CPS Plateform : http://www.cps-project.org
+        mail: <a href="mailto:tziade@nuxeo.com">tziade@nuxeo.com</a> | tel: +33 (0) 6 30 37 02 63
+        You need Zope 3 - http://www.z3lab.org/
+        """
+        result = linkifyMailBody(mail_body)
+        wanted_result = """
+        <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>
+        --
+        Tarek Ziadé | Nuxeo R&D (Paris, France)
+        CPS Plateform : <a href="http://www.cps-project.org" target="_blank">http://www.cps-project.org</a>
+        mail: <a href="mailto:tziade@nuxeo.com">tziade@nuxeo.com</a> | tel: +33 (0) 6 30 37 02 63
+        You need Zope 3 - <a href="http://www.z3lab.org/" target="_blank">http://www.z3lab.org/</a>
+        """
+
+        self.assertEquals(result, wanted_result)
+
+        mail_body = """
+        http://www.nuxeo.com
+        --
+        Tarek Ziadé | Nuxeo R&D (Paris, France)
+        CPS Plateform : http://www.cps-project.org
+        mail: tziade@nuxeo.com | tel: +33 (0) 6 30 37 02 63
+        You need Zope 3 - http://www.z3lab.org/
+        """
+        result = linkifyMailBody(mail_body)
+        wanted_result = """
+        <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>
+        --
+        Tarek Ziadé | Nuxeo R&D (Paris, France)
+        CPS Plateform : <a href="http://www.cps-project.org" target="_blank">http://www.cps-project.org</a>
+        mail: <a href="mailto:tziade@nuxeo.com">tziade@nuxeo.com</a> | tel: +33 (0) 6 30 37 02 63
+        You need Zope 3 - <a href="http://www.z3lab.org/" target="_blank">http://www.z3lab.org/</a>
+        """
+
+        self.assertEquals(result, wanted_result)
+
+        result = linkifyMailBody("""
+        <http://www.nuxeo.com>
+        """)
+        self.assertEquals(result, """
+        <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>
+        """)
+
+        mail_body = """
+        <http://www.nuxeo.com>
+        --
+        Tarek Ziadé | Nuxeo R&D (Paris, France)
+        CPS Plateform : <http://www.cps-project.org>
+        mail: <tziade@nuxeo.com> | tel: +33 (0) 6 30 37 02 63
+        You need Zope 3 - <http://www.z3lab.org/>
+        """
+        result = linkifyMailBody(mail_body)
+        wanted_result = """
+        <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>
+        --
+        Tarek Ziadé | Nuxeo R&D (Paris, France)
+        CPS Plateform : <a href="http://www.cps-project.org" target="_blank">http://www.cps-project.org</a>
+        mail: <a href="mailto:tziade@nuxeo.com">tziade@nuxeo.com</a> | tel: +33 (0) 6 30 37 02 63
+        You need Zope 3 - <a href="http://www.z3lab.org/" target="_blank">http://www.z3lab.org/</a>
+        """
+
+        self.assertEquals(result, wanted_result)
+
+
+        result = linkifyMailBody("""
+        <http://www.nuxeo.com>,
+        """)
+        self.assertEquals(result, """
+        <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>,
+        """)
+
+        mail_body = ('Boîtier <http://www.grosbill.com/fr/informatique/boitier-'
+                     'pc/liste.html>, *Carte graphique*')
+
+        result = linkifyMailBody(mail_body)
+        wanted_result = ('Boîtier <a href="http://www.grosbill.com/fr/informati'
+                         'que/boitier-pc/liste.html" target="_blank">http://www'
+                         '.grosbill.com/fr/informatique/boitier-pc/liste.html</a'
+                         '>, *Carte graphique*')
+
+        self.assertEquals(result, wanted_result)
 
     def test_answerSubject(self):
 

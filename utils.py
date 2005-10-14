@@ -532,19 +532,53 @@ def Utf8ToIso(value, codec='ISO-8859-15'):
     else:
         return value
 
-def linkifyMailBody(body, email_sub=r'<a href="mailto:\1">\1</a>'):
+def linkifyMailBody(body, email_sub=r'<a href="mailto:$1">$1</a>'):
     """ replace mails and urls by links
 
     if mail_sub is given, it's used for replacement,
-    so it can be set tolink to an internal mail editor
+    so it can be set to link to an internal mail editor
     """
-    # links
-    # pretty loose, but it's ok
-    http_re = r'(https|ftp|http)(://)([^ \t\n\r\f\v\<]*)'
-    http_sub = r'<a href="\1\2\3" target="_blank">\1\2\3</a>'
-    body = re.sub(http_re, http_sub, body, re.I)
-    email_re = r'([\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4})'
-    return re.sub(email_re, email_sub, body)
+    changed = False
+    linkificators = ((r'(<|^|\b|\(|\()(https|ftp|http)://[^ \b\n<>]*(>|$|\b)?',
+                      '<a href="$1" target="_blank">$1</a>'),
+                     (r'(<)?[\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4}(>)?',
+                      email_sub))
+
+    # first we need to find already link parts to avoid to relink them
+    http_links = r'(<a.*?>).*?(</a>)'
+    http_links = re.compile(http_links, re.MULTILINE and re.I)
+
+    changes = []
+    for pattern, replacer in linkificators:
+        ignore_parts = []
+        for match in http_links.finditer(body):
+            ignore_parts.append((match.start(), match.end()))
+
+        matcher = re.compile(pattern, re.MULTILINE and re.I)
+
+        for match in matcher.finditer(body):
+            start = match.start()
+            end = match.end()
+            # checking that we are not within a link already
+            linkify = True
+            for istart, iend in ignore_parts:
+                if start >= istart and end <= iend:
+                    linkify = False
+                    break
+            if linkify:
+                changed = True
+                text_to_link = body[start:end]
+                linker = text_to_link
+                if linker[0] == '<' and linker[-1] == '>':
+                    linker = linker[1:-1]
+                linked_text = replacer.replace('$1', linker) 
+                changes.append((text_to_link, linked_text))
+
+    for original, changed in changes:
+        body = body.replace(original, changed)
+
+    return body
+
 
 def answerSubject(subject, fwd=False):
     """ prepare reply subject """
