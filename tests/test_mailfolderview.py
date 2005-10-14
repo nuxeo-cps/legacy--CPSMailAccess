@@ -260,9 +260,14 @@ class MailFolderViewTestCase(MailTestCase):
         self.assertNotEqual(ob.getMailBox(), None)
         view = MailFolderView(ob, None)
         view = view.__of__(ob)
+        view.request = ThisFakeRequest()
         view.rename('bolo')
         self.assertEquals(ob.title, 'bolo')
         self.assertEquals(ob.id, 'bolo')
+        expected_url = '/'.join((inbox.absolute_url(),
+                                      'bolo',
+                               'view?msm=cpsma_renamed',))
+        self.assertEquals(view.request.redirected, expected_url)
 
     def test_renametwice(self):
         box = self._getMailBox()
@@ -292,7 +297,7 @@ class MailFolderViewTestCase(MailTestCase):
         view.rename('boloyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy')
         self.assertEquals(ob.title, 'boloyyyyyyyyyyyyyyyy')
         self.assertEquals(ob.id, 'boloyyyyyyyyyyyyyyyy')
-
+ 
     def test_renameredirect(self):
         box = self._getMailBox()
         inbox = box._addFolder('INBOX', 'INBOX')
@@ -308,6 +313,39 @@ class MailFolderViewTestCase(MailTestCase):
                                       new_name,
                                'view?msm=cpsma_renamed',))
         self.assertEquals(view.request.redirected, expected_url)
+
+    def test_rename_redirect_msm(self):
+        # False move: full path but it's a rename, not a move
+        box = self._getMailBox()
+        inbox = box._addFolder('INBOX', 'INBOX')
+        ob = inbox._addFolder('folder', 'INBOX.folder')
+        self.assertNotEqual(ob.getMailBox(), None)
+        view = MailFolderView(ob, None)
+        view = view.__of__(ob)
+        view.request = ThisFakeRequest()
+        new_name = 'safariii'
+        view.rename('INBOX.' + new_name)
+        expected_url = '/'.join((inbox.absolute_url(),
+                                      new_name,
+                               'view?msm=cpsma_renamed',))
+        self.assertEquals(view.request.redirected, expected_url)
+
+    def test_renameredirect_msm2(self):
+        box = self._getMailBox()
+        inbox = box._addFolder('INBOX', 'INBOX')
+        folder = inbox._addFolder('folder', 'INBOX.folder')
+        ob = folder._addFolder('ok', 'INBOX.folder.ok')
+        self.assertNotEqual(ob.getMailBox(), None)
+        view = MailFolderView(ob, None)
+        view = view.__of__(ob)
+        view.request = ThisFakeRequest()
+        new_name = 'ok'
+        view.rename('INBOX.' + new_name)
+        expected_url = '/'.join((inbox.absolute_url(),
+                                      new_name,
+                               'view?msm=cpsma_moved',))
+        self.assertEquals(view.request.redirected, expected_url)
+
 
     def test_rename2times(self):
         box = self._getMailBox()

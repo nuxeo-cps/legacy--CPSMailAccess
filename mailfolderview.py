@@ -77,6 +77,10 @@ class MailFolderView(BaseMailMessageView):
                     mailfolder.absolute_url()+'/view')
             return None
 
+        moved = False
+        if fullname and parts_name[-1] == mailfolder.title:
+            moved = True
+
         if fullname:
             existing_folder = getFolder(mailfolder, new_name)
             if existing_folder is not None:
@@ -112,7 +116,10 @@ class MailFolderView(BaseMailMessageView):
         if self.request is not None:
             resp = self.request.response
             if renamed is not None:
-                psm = 'cpsma_renamed'
+                if moved:
+                    psm = 'cpsma_moved'
+                else:
+                    psm = 'cpsma_renamed'
                 resp.redirect(folder.absolute_url()+'/view?msm=%s' % psm)
             else:
                 psm = 'cpsma_could_not_perform'
