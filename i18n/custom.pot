@@ -463,7 +463,7 @@ msgstr ""
 msgid "cpsm_notify_subject"
 msgstr ""
 
-msgid "cpsm_notify_body"
+msgid "cpsm_notify_body {$mail_subject}"
 msgstr ""
 
 msgid "cpsma_notify_ask"

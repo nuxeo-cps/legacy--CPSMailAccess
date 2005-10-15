@@ -568,7 +568,7 @@ class MailBox(MailBoxBaseCaching):
 
         _notification_subject = translate(self, 'cpsm_notify_subject')
         _notification_subject = _notification_subject.encode('ISO-8859-15')
-        _notification_template = translate(self, 'cpsm_notify_body')
+        _notification_template = translate(self, 'cpsm_notify_body {$mail_subject}')
         _notification_template = _notification_template.encode('ISO-8859-15')
 
         portal_webmail = getToolByName(self, 'portal_webmail')
@@ -577,7 +577,7 @@ class MailBox(MailBoxBaseCaching):
         if isinstance(msg_subject, unicode):
             msg_subject = msg_subject.encode('ISO-8859-15')
         msg_body  = _notification_template
-        msg_body = msg_body.replace('_ORIGINAL_MAIL_SUBJECT_', msg_subject)
+        msg_body = msg_body.replace('{$mail_subject}', msg_subject)
         msg_notif = MailMessage()
         msg_notif.setDirectBody(msg_body)
         msg_notif.setHeader('Subject', _notification_subject)

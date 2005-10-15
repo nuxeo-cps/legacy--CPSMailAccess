@@ -507,8 +507,8 @@ msgid "cpsm_notify_subject"
 msgstr "Read notification"
 
 #, fuzzy
-msgid "cpsm_notify_body"
-msgstr "Your message '_ORIGINAL_MAIL_SUBJECT_' has been read"
+msgid "cpsm_notify_body {$mail_subject}"
+msgstr "Your message '{$mail_subject}' has been read"
 
 #, fuzzy
 msgid "cpsma_notify_ask"

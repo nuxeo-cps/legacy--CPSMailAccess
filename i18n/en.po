@@ -495,8 +495,8 @@ msgstr "both subject and body are empty"
 msgid "cpsm_notify_subject"
 msgstr "Read notification"
 
-msgid "cpsm_notify_body"
-msgstr "Your message '_ORIGINAL_MAIL_SUBJECT_' has been read"
+msgid "cpsm_notify_body {$mail_subject}"
+msgstr "Your message '{$mail_subject}' has been read"
 
 msgid "cpsma_notify_ask"
 msgstr ""

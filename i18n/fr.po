@@ -183,7 +183,7 @@ msgid "cpsma_reply"
 msgstr "Répondre"
 
 msgid "cpsma_reply_all"
-msgstr "Répondre àà tous"
+msgstr "Répondre à tous"
 
 msgid "cpsma_forward"
 msgstr "Faire suivre"
@@ -496,8 +496,8 @@ msgstr "Sujet et corps du message sont vides"
 msgid "cpsm_notify_subject"
 msgstr "Notification de lecture"
 
-msgid "cpsm_notify_body"
-msgstr "Votre message '_ORIGINAL_MAIL_SUBJECT_' a bien été lu."
+msgid "cpsm_notify_body {$mail_subject}"
+msgstr "Votre message '{$mail_subject}' a bien été lu."
 
 msgid "cpsma_notify_ask"
 msgstr ""
@@ -529,7 +529,7 @@ msgid "cpsma_expunged"
 msgstr "Corbeille vidée."
 
 msgid "cps_already_synchronizing"
-msgstr "La boîte est déjàen cours de synchronisation"
+msgstr "La boîte est déjà en cours de synchronisation"
 
 # specific cases: columns headers
 msgid "Attachments"
