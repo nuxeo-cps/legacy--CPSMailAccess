@@ -36,9 +36,6 @@ product_name = __name__.split('.')[0]
 # We need to install this product because the TranslationsTestCase will later on
 # find the .pot and .po files from this installed product.
 
-# CalZope specifics first
-ZopeTestCase.installProduct('CalCore')
-
 ZopeTestCase.installProduct(product_name)
 
 
