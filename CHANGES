@@ -7,9 +7,11 @@ New features:
 - added folder selection in search screen
 - added Brazilian Portuguese translations (Thanks to Mario Olimpio de Menezes
   <mario [at] curiango.ipen.br>)
+- added an option for mail relation indexing
+- added To in search fields
+
 Bug fixes:
 ~~~~~~~~~~
-- 
 - Bad redirection after rename if not a drag'n drop
 - Synchronisation, sometime failed on a non AUTH status
 - checkboxes on webmail configuration screen were persistent
@@ -20,6 +22,9 @@ Bug fixes:
 - the column sort cache was persistent: new sorts were not applied
 - double-click was necessary to see a message
 - attached files with accents were breaking mail editor
+- resolved linkification problems
+- resolved mail indexing problems  (thanks to Steve Meaker for his great feedback)
+- added missing translations
 
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
