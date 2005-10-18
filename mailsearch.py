@@ -28,7 +28,6 @@ from Globals import InitializeClass
 from zope.interface import implements
 from BTrees.OOBTree import OOBTree
 
-from configuration import __file__ as landmark
 from utils import parseDateString, removeHTML, decodeHeader, parseRefs
 from interfaces import IMailCatalog, IMailFolder
 
@@ -39,8 +38,6 @@ from zemantic.query import Query
 
 from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
 from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
-
-stop_words_filename = os.path.join(os.path.dirname(landmark), 'stopwords.txt')
 
 def _unify(elements):
 
