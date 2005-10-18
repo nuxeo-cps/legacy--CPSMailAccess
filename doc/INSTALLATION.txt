@@ -1,0 +1,146 @@
+How to install CPSMailAccess
+
+A - INSTALLATION NOTES
+
+1- Prerequests
+
+To install CPSMailAccess you will need:
+
+    * a working Zope 2.7.x +  CPS 3.3.4 or greater
+    * ZopeX3-3.0.0 : http://www.zope.org/Products/ZopeX3
+    * Five 1.0.1 or greater : http://codespeak.net/z3/five/
+    * TrustedExecutables : http://www.dieter.handshake.de/pyprojects/zope/#TrustedExecutables
+
+*or*
+
+    * Zope 2.8.1 or greater
+    If you have this zope version, go to 5)
+
+
+2 - Zope X3 installation
+
+Please install ZopeX3-3.0.0 on your system (usually in /opt/ZopeX3-3.0.0) with
+the python version you use for Zope2.7 and CPS, e.g.:
+
+./configure --prefix /opt/ZopeX3-3.0.0 --with-python
+/usr/bin/python
+make
+make install
+make check
+
+
+3 - Products setup
+
+Put Five, TrustedExecutables and CPSMailAccess in your $INSTANCE/Products.
+
+Remove CPSWebmail Product from your instance, this is very important, as it might interfer.
+
+4 - Zope 3 <-> Zope 2 path setup
+
+Edit your $INSTANCE/etc/zope.conf to add the following path declarations::
+
+path /opt/ZopeX3-3.0.0/lib/python
+
+path $INSTANCE/Products/CPSMailAccess
+
+5 - Webmail installation
+
+Then you can restart Zope and add an external method in your CPS portal instance to install CPSMailAccess::
+
+id: cpsmailaccess_installer
+
+title: whatever
+
+module name: CPSMailAccess.install
+
+function name: install
+
+And run it.
+B - CONFIGURATION
+
+portal_setup.png
+1 - Portal setup
+After installation, a new action appears in the portal action box. "configure webmail"
+That will lead you to a form where you can set up the webmail parameters that will apply to all users.
+
+For each parameter, if the "portal wide" checkbox is unchecked, that means each user will have to set it up in his or her mailbox. The classical configuration is to let the user set up login and password and signature, so everyone shares the same parameters for IMAP server, SMTP, etc...
+
+Quick parameters review :
+
+    * HOST: name of imap host
+    * Port: port of imap host
+    * SSL ? : tells if the webmail uses Secure socket layer (O or 1)
+    * Connection Type: type of connection, should be left at "IMAP"
+    * Draft Folder name: should be left at INBOX.Drafts
+    * Login: imap login, should be left blank
+    * Maximum depth in folder creation: tells how deep folders can be created
+    * Maximum length for folder names: tells how long can be folder names when they are created
+    * Displayed columns: Displayed columns and order in mail folder view
+    * Password: IMAP password, should be left blank
+    * Sent folder name: should be left at INBOX.Sent
+    * signature: text that will appear in the footer of mails sent
+    * SMTP Host: SMTP host name
+    * SMTP Port: SMTP port name
+    * Trash folder name: should be left at INBOX.Trash
+    * Treeview style : if lotus, the trash, sent and draft
+                       folders appear outside INBOX, if classical, they will be childs of INBOX
+
+
+box_setup.png
+2 - User setup
+
+a - Enable the webmail
+
+Go to your preferences, and change "webmail activated" to "yes". After you have validated  this choice, you will see a new entry in your actions, called "My mails".
+
+b - Configure your box
+
+The first time you click on "My mails" will bring you to the configuration screen after
+ a little while (this is because it tests if your box can be run without any configuration).
+
+There you will need to provide a few informations:
+
+to quickly set your box, you need to provide these parameters :
+
+    * Login: mail server login name
+    * Password: mail server password
+    * Signature: any text
+
+
+submit your changes with the "submit" button
+
+c - First synchronization
+
+the first synchronization takes a big while: all mails from server are fetched and indexed to create a browsing structure into zope.
+
+For big boxes (>30 0000 mails) it can take up to 5 minutes sometimes, depending on the server strength and on the network. But this needs to be done juste once.
+If you don't care about sub folders of your IMAP box, you can even pass this step.
+
+Another good idea would be to clean up the box before synhronizing it.
+
+The beta 2 version of the product will provide an asynchronous system based on zasync to be able to synchronize in the background.
+
+In the Administration panel, click on the "Synchronize the whole box" button. This will launch the work. When the box is synchronized, you will be taken in your INBOX and will be able to start to use  the webmail.
+
+d - Every day synchronization
+
+For now on, everytime you will click on "My Mails" the box will get synchronized.
+The webmail will just synchronize INBOX. This should not last more than a few seconds. You can do a synchronization manually with the "get messages" button.
+
+e - How to use the webmail
+
+please refer to the user manual
+
+
+C - EXTRA NOTES
+
+1 - Using other mail clients
+
+If you are using at the same time the webmail and another mail client, you can have unexpected events. For example, if another mail client filters incoming messages, by marking them as "deleted" and do not expunge them, they will still appear in the webmail and marked as deleted until the mail client is closed.
+
+Trying to work on those "pre-deleted" messages can lead to errors.
+
+2 - Attached files
+
+Attached files gets scanned when you are viewing the mail, so the attach icon won't appear until the mail is viewed.
+
