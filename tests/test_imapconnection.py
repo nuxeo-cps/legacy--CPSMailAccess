@@ -268,13 +268,6 @@ class IMAPConnectionTestCase(MailTestCase):
                                                'BODY.PEEK[HEADER.FIELDS(%s)]'
                                                 % headers])
 
-    def test_patching(self):
-
-        box = self._getMailBox()
-        ob = self.makeConnection()
-
-        ob._patch_imap()
-
     def test_selectMailBox(self):
         ob = self.makeConnection()
         self.assertEquals(ob._getLastSelect(), None)
