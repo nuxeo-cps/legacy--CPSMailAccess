@@ -32,34 +32,6 @@ from zope.app.cache.ram import RAMCache
 from interfaces import IConnection
 from baseconnection import BaseConnection, ConnectionError, SOCKET_ERROR
 
-class IMAP4Timed(IMAP4):
-    def open(self, host = '', port = IMAP4_PORT):
-        """Setup connection to remote server on "host:port"
-            (default: localhost:standard IMAP4 port).
-        This connection will be used by the routines:
-            read, readline, send, shutdown.
-        """
-        self.host = host
-        self.port = port
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(5)
-        self.sock.connect((host, port))
-        self.file = self.sock.makefile('rb')
-
-class IMAP4_SSLTimed(IMAP4_SSL):
-    def open(self, host = '', port = IMAP4_SSL_PORT):
-        """Setup connection to remote server on "host:port".
-            (default: localhost:standard IMAP4 SSL port).
-        This connection will be used by the routines:
-            read, readline, send, shutdown.
-        """
-        self.host = host
-        self.port = port
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(5)
-        self.sock.connect((host, port))
-        self.sslobj = socket.ssl(self.sock, self.keyfile, self.certfile)
-
 class IMAPConnection(BaseConnection):
     """ IMAP4 v1 implementation for Connection
 
@@ -100,9 +72,9 @@ class IMAPConnection(BaseConnection):
         while not connected and failures < 2:
             try:
                 if is_ssl:
-                   self._connection = IMAP4_SSLTimed(host, port)
+                   self._connection = IMAP4_SSL(host, port)
                 else:
-                    self._connection = IMAP4Timed(host, port)
+                    self._connection = IMAP4(host, port)
                 connected = True
             except (IMAP4.abort, socket.error, socket.sslerror):
                 sleep(0.3)
