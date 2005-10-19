@@ -1081,7 +1081,8 @@ class MailBox(MailBoxBaseCaching):
         try:
             private_adressbook = self._searchEntries('.addressbook',
                                                      ['fullname', 'email',
-                                                     'id', 'mails_sent'])
+                                                     'id', 'mails_sent'], 
+						     **{'id': '*'})
         except Unauthorized:
             private_adressbook = []
 
