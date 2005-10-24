@@ -50,7 +50,7 @@
     <metal:block use-macro="here/messagelist_macros/actions_toolbar"/>
     <div class="spacer">
     </div>
-    <form action="zemanticSearchMessage.html" method="get"
+    <form name="search" action="zemanticSearchMessage.html" method="get"
            enctype="multipart/form-data">
       <input type="hidden" name="intersection" value="1"/>
       <div class="searchGroup">
@@ -117,24 +117,28 @@
             Message Date :
             </div>
           </td>
-          <td >
-            <input type="hidden" name="relation_4" value="date"/>
-            <input id="value_4" class="fullwidth" type="text" name="value_4"
-                   tal:attributes="value value_4"/>
+          <td>
+            <div id="date_picker">
+              <input type="hidden" name="relation_4" value="date"/>
+              <input id="value_4" class="fullwidth" type="text" name="value_4"
+                     tal:attributes="value value_4"/>
 
-            <button id="trigger_value_4" style="width: 3em">...</button>
+              <span class="buttonCalendar" onmouseover="setCursor(this)"
+                    id="trigger_value_4" style="width: 3em">...</span>
 
 
-            <script type="text/javascript">
-                Calendar.setup(
-                {
-                   inputField  : 'value_4',
-                   ifFormat    : 'dd/mm/y',
-                   button      : 'trigger_value_4',
-                   mondayFirst : true,
-                   range       : [1970, 2037]
-                });
-            </script>
+              <script type="text/javascript">
+                  document.search.value_0.focus();
+                  Calendar.setup(
+                  {
+                     inputField  : 'value_4',
+                     ifFormat    : 'dd/mm/y',
+                     button      : 'trigger_value_4',
+                     mondayFirst : true,
+                     range       : [1970, 2037]
+                  });
+              </script>
+            </div>
           </td>
         </tr>
         <tr>
@@ -169,12 +173,12 @@
         <input type="text" tal:attributes="name python:'value_'+str(bloc)"/>
       </div>
       -->
-      <input type="submit" 
-	     class="standalone" 
-	     name="search_submitted" 
-	     value="cpsma_search_messages"
-	     i18n:attributes="value"
-	     />
+      <input type="submit"
+         class="standalone"
+         name="search_submitted"
+         value="cpsma_search_messages"
+         i18n:attributes="value"
+         />
 
      </form>
     <tal:block tal:condition="request/search_submitted|python:0">
