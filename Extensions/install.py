@@ -599,6 +599,26 @@ class CPSMailAccessInstaller(CPSInstaller):
             new_version not in self._versions):
             raise Exception('unknown versions')
 
+        # this is done, no matter wich version is currently run
+        wm = self.portal.portal_webmail
+        params = wm.default_connection_params
+        global default_parameters
+
+        for parameter in default_parameters:
+            if not params.has_key(parameter):
+                params[parameter] = default_parameters[parameter]
+
+        for id, box in wm.objectItems():
+            if not isinstance(box, MailBox):
+                continue
+
+            if not hasattr(box, '_connection_params'):
+                setattr(box, '_connection_params', {})
+
+            for item in params.keys():
+                if not box._connection_params.has_key(item):
+                    box._connection_params[item] = params[item]
+
         if old_version == (1, 0, 0, 'b1') and  new_version == (1, 0, 0, 'b2'):
             self.upgrade_b1_to_b2(force)
 
@@ -617,14 +637,6 @@ class CPSMailAccessInstaller(CPSInstaller):
         if (not hasattr(wm, '__version__') or wm.__version__ !=  (1, 0, 0, 'b2')
             or force):
             wm.__version__ = (1, 0, 0, 'b2')
-            params = wm.default_connection_params
-
-            # upgrade for new parameters
-            # XXX will not work if existing parameters type change
-            global default_parameters
-            for parameter in default_parameters:
-                if not params.has_key(parameter):
-                    params[parameter] = default_parameters[parameter]
 
             from Products.CPSMailAccess.smtpmailer import SmtpMailer
 
@@ -635,7 +647,6 @@ class CPSMailAccessInstaller(CPSInstaller):
 
         self.log('upgrading boxes to beta 2')
         from BTrees.OOBTree import OOBTree
-        dp = wm.default_connection_params
 
         for id, box in wm.objectItems():
             if not isinstance(box, MailBox):
@@ -651,13 +662,6 @@ class CPSMailAccessInstaller(CPSInstaller):
             if not hasattr(zcat, '_message_ids'):
                 self.log('    old catalog, upgrading')
                 zcat._message_ids = OOBTree()
-
-            if not hasattr(box, '_connection_params'):
-                setattr(box, '_connection_params', {})
-
-            for item in dp.keys():
-                if not box._connection_params.has_key(item):
-                    box._connection_params[item] = dp[item]
 
 def install(self):
     """Installation is done here.
