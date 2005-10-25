@@ -304,7 +304,7 @@ class CPSMailAccessInstaller(CPSInstaller):
                         },
                     },
                 'id': {
-                    'type': 'User Identifier Widget',
+                    'type': 'Identifier Widget',
                     'data': {
                         'fields': ('id',),
                         'is_required': 1,
