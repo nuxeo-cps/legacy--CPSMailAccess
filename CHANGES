@@ -25,6 +25,7 @@ Bug fixes:
 - resolved linkification problems
 - resolved mail indexing problems  (thanks to Steve Meaker for his great feedback)
 - added missing translations
+- corrected addressbook entries (#977)
 
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
