@@ -97,6 +97,10 @@ class CPSMailAccessInstaller(CPSInstaller):
         # lets add a portal_webmail tool
         if not hasattr(self.portal, 'portal_webmail'):
             manage_addMailTool(self.portal)
+        else:
+            # seems to be already installed,
+            # let's try to upgrade its parameters
+            self.upgrade_parameters()
 
     def setupTypes(self):
         typestool = self.portal.portal_types
@@ -583,23 +587,9 @@ class CPSMailAccessInstaller(CPSInstaller):
         else:
             self.setupBoxes()
 
-    def upgrade(self, new_version, old_version=None, force=False):
-        """ upgrades an existing version of CPSMailAccess
-
-            if old_version is set to None,
-            the upgrader will upgrade from the first existing version
-            to the last one
-        """
-        old_version = self._shorcutName(old_version)
-        new_version = self._shorcutName(new_version)
-
-        if old_version is None:
-            old_version = self._versions[0]
-        if (old_version not in self._versions or
-            new_version not in self._versions):
-            raise Exception('unknown versions')
-
+    def upgrade_parameters(self):
         # this is done, no matter wich version is currently run
+        self.log('checking portal_webmail parameters')
         wm = self.portal.portal_webmail
         params = wm.default_connection_params
         global default_parameters
@@ -618,6 +608,25 @@ class CPSMailAccessInstaller(CPSInstaller):
             for item in params.keys():
                 if not box._connection_params.has_key(item):
                     box._connection_params[item] = params[item]
+
+
+    def upgrade(self, new_version, old_version=None, force=False):
+        """ upgrades an existing version of CPSMailAccess
+
+            if old_version is set to None,
+            the upgrader will upgrade from the first existing version
+            to the last one
+        """
+        old_version = self._shorcutName(old_version)
+        new_version = self._shorcutName(new_version)
+
+        if old_version is None:
+            old_version = self._versions[0]
+        if (old_version not in self._versions or
+            new_version not in self._versions):
+            raise Exception('unknown versions')
+
+        self.upgrade_parameters()
 
         if old_version == (1, 0, 0, 'b1') and  new_version == (1, 0, 0, 'b2'):
             self.upgrade_b1_to_b2(force)
