@@ -19,6 +19,7 @@
 # $Id$
 """ a few utilities
 """
+import os, os.path
 import string, re, md5
 from sgmllib import SGMLParseError
 from threading import Thread
@@ -212,9 +213,22 @@ def mimetype_to_icon_name(mimetype):
     >>> mimetype_to_icon_name('')
     'unknown.png'
     """
+    current_rep = os.path.dirname(__file__)
+    current_skin_rep = os.path.join(current_rep, 'skins', 'mime_icons')
+    try:
+        registered_icons = os.listdir(current_skin_rep)
+    except IOError:
+        registered_icons = []
+
     if mimetype.strip() == '':
         return 'unknown.png'
-    return mimetype.replace('/', '_')+'.png'
+
+    filename = mimetype.replace('/', '_')+'.png'
+
+    if filename in registered_icons:
+        return filename
+    else:
+        return 'unknown.png'
 
 def getFolder(mailbox, folder_name):
     current = mailbox
@@ -550,7 +564,7 @@ def linkifyMailBody(body, email_sub=r'<a href="mailto:\3">\3</a>'):
             raise pattern
 
     return body
-        
+
     # first we need to find already link parts to avoid to relink them
     http_links = r'(<a.*?>).*?(</a>)|(<img.*?>)'
     http_links = re.compile(http_links, re.MULTILINE and re.I)
@@ -578,7 +592,7 @@ def linkifyMailBody(body, email_sub=r'<a href="mailto:\3">\3</a>'):
                 linker = text_to_link
                 if linker[0] == '<' and linker[-1] == '>':
                     linker = linker[1:-1]
-                linked_text = replacer.replace('$1', linker) 
+                linked_text = replacer.replace('$1', linker)
                 changes.append((text_to_link, linked_text))
 
     for original, changed in changes:

@@ -236,7 +236,7 @@ The CPS Team.
         mail: tziade@nuxeo.com | tel: +33 (0) 6 30 37 02 63
         You need Zope 3 - http://www.z3lab.org/
         """
-        
+
         result = linkifyMailBody(mail_body)
         wanted_result = """
         <a href="http://www.nuxeo.com" target="_blank">http://www.nuxeo.com</a>
@@ -298,7 +298,7 @@ The CPS Team.
 
         result = linkifyMailBody('http://some@source')
         self.assertEquals(result, '<a href="http://some@source" target="_blank">http://some@source</a>')
-        
+
 
         result = linkifyMailBody('http://so:me@sou:rce')
         self.assertEquals(result, '<a href="http://so:me@sou:rce" target="_blank">http://so:me@sou:rce</a>')
@@ -398,6 +398,13 @@ ok then"""
         self.assertEquals((2, 'ko'), getHumanReadableSize(3000))
         self.assertEquals((-1, ''), getHumanReadableSize(None))
         self.assertEquals((183, 'o'), getHumanReadableSize('183'))
+
+    def test_mimetype_to_icon_name(self):
+        # if the icon does not exists, unknown.png is returned
+        self.assertEquals('unknown.png', mimetype_to_icon_name('logbkjv'))
+        self.assertEquals('application_pdf.png',
+                          mimetype_to_icon_name('application/pdf'))
+
 
 def test_suite():
     return unittest.TestSuite((
