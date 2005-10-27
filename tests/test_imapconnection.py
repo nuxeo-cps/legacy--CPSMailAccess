@@ -301,6 +301,25 @@ class IMAPConnectionTestCase(MailTestCase):
         state = ob.getState()
         self.assertEquals(state, 'NOAUTH')
 
+    def test_OutlookStructure(self):
+        # it's a mixed-related-alternative
+        ob = self.makeConnection()
+
+        raw_imap = '117 (BODY (((("text" "plain" ("charset" "iso-8859-1") NIL NIL "quoted-printable" 162 18)("text" "html" ("charset" "iso-8859-1") NIL NIL "quoted-printable" 4055 130) "alternative")("image" "jpeg" ("name" "image001.jpg") "<image001.jpg@01C5DA3D.8E2D4980>" NIL "base64" 2796) "related")("application" "msword" ("name" "document.doc") NIL NIL "base64" 110002) "mixed"))'
+
+        extracted = ob._extractResult('BODY', raw_imap)
+
+        waited = ['mixed', ['related', ['alternative', ['text', 'plain', None, None, 'quoted-printable',
+                  162, 18, ['charset', 'iso-8859-1']], ['text', 'html', None, None, 'quoted-printable',
+                  4055, 130, ['charset', 'iso-8859-1']]], ['image', 'jpeg', '<image001.jpg@01c5da3d.8e2d4980>',
+                  None, 'base64', 2796, ['name', 'image001.jpg']]], ['application', 'msword',
+                  None, None, 'base64', 110002, ['name', 'document.doc']]]
+
+        self.assertEquals(extracted, waited)
+
+
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(IMAPConnectionTestCase),

@@ -691,6 +691,31 @@ class MailFolderTestCase(MailTestCase):
         self.assert_(not folder1.isSpecialFolder())
         self.assert_(trash.isSpecialFolder())
 
+    def test_loadMessageStructureFromServer3(self):
+        # XXX will be move in imap class
+        def get_struct(*args, **kw):
+            struct = ['mixed', ['related', ['alternative', ['text', 'plain', None, None, 'quoted-printable',
+                  162, 18, ['charset', 'iso-8859-1']], ['text', 'html', None, None, 'quoted-printable',
+                  4055, 130, ['charset', 'iso-8859-1']]], ['image', 'jpeg', '<image001.jpg@01c5da3d.8e2d4980>',
+                  None, 'base64', 2796, ['name', 'image001.jpg']]], ['application', 'msword',
+                  None, None, 'base64', 110002, ['name', 'document.doc']]]
+
+            return struct
+
+        ob = self.getMailInstance(1)
+        box = self._getMailBox(True)
+        old = box._getconnector().getMessageStructure
+        try:
+            box._getconnector().getMessageStructure = get_struct
+            box._loadMessageStructureFromServer('x', 1, [], {}, 0, ob,
+                                                box._getconnector(), True)
+
+            ct = ob._getStore()['Content-type']
+            self.assertEquals(ct, 'text/html; charset="iso-8859-1"')
+        finally:
+            box._getconnector().getMessageStructure = old
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailFolderTestCase),

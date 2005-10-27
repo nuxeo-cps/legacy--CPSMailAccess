@@ -86,14 +86,14 @@ class MailFolder(BTreeFolder2):
         Shows up in breadcrumbs."""
 
         # GR: title is void if this is the MailBox object on CPSDefault
-        if not self.title: 
-            return self.id 
-        # GR: 'INBOX' is hardcoded in several other places. 
+        if not self.title:
+            return self.id
+        # GR: 'INBOX' is hardcoded in several other places.
         if self.server_name == 'INBOX' or self.isSpecialFolder():
             return translate(self, self.title).encode('iso-8859-15')
         else:
             return self.title
-        
+
 
     def _localGetNextMessageUid(self):
         """ retrieves next id based on local calculation """
@@ -506,6 +506,7 @@ class MailFolder(BTreeFolder2):
 
         part_infos = structure
 
+        # XXX really need to refactor this in an Automata !!!
         if part_infos[0] in ('related', 'relative', 'mixed', 'alternative',
                              'signed'):
             # we don't want to load attached files
@@ -612,6 +613,14 @@ class MailFolder(BTreeFolder2):
         elif part_infos[0] in ('relative', 'signed', 'mixed', 'related'):
             part_infos = part_infos[1]
             part_num = '%s.1' % part_num
+
+            if part_infos[0] == 'alternative':
+                if len(part_infos) > 2:
+                    part_infos = part_infos[2]
+                    part_num = '%s.2' % part_num
+                else:
+                    part_infos = part_infos[1]
+                    part_num = '%s.1' % part_num
         else:
             part_num = str(part_num)
 
