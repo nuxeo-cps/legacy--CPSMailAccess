@@ -21,7 +21,7 @@
     IMAPConnection : IMAP 4 rev 1 implementation for BaseConnection
 
 """
-from zLOG import LOG, INFO
+from zLOG import LOG, DEBUG
 
 import re
 import socket
