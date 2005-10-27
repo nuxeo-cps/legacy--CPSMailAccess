@@ -21,6 +21,8 @@
     IMAPConnection : IMAP 4 rev 1 implementation for BaseConnection
 
 """
+from zLOG import LOG, INFO
+
 import re
 import socket
 from time import sleep
@@ -31,6 +33,27 @@ from zope.app.cache.ram import RAMCache
 
 from interfaces import IConnection
 from baseconnection import BaseConnection, ConnectionError, SOCKET_ERROR
+
+def patch_open(self, host = '', port = IMAP4_SSL_PORT):
+    """ protects webmails from:
+          o timeoutsocket patching
+          o Python SSL+timeout failure
+    """
+    self.host = host
+    self.port = port
+
+    # testing if timeoutsocket has patched socket
+    if hasattr(socket, "_no_timeoutsocket"):
+        self.sock = socket._no_timeoutsocket(socket.AF_INET,
+                                             socket.SOCK_STREAM)
+    else:
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    LOG('SSL connection', DEBUG, 'ssl opening')
+    self.sock.settimeout(None)
+    self.sock.connect((host, port))
+    self.sslobj = socket.ssl(self.sock, self.keyfile, self.certfile)
+    LOG('SSL connection', DEBUG, 'ssl opening done')
 
 class IMAPConnection(BaseConnection):
     """ IMAP4 v1 implementation for Connection
@@ -49,6 +72,7 @@ class IMAPConnection(BaseConnection):
         >>> f.connection_type
         'IMAP'
         """
+        LOG('IMAPConnection', DEBUG, 'init')
         BaseConnection.__init__(self, connection_params)
 
         # instanciate a imap4 object
@@ -69,6 +93,9 @@ class IMAPConnection(BaseConnection):
         failures = 0
         connected = False
 
+        if is_ssl:
+            self._patch_imap()
+
         while not connected and failures < 2:
             try:
                 if is_ssl:
@@ -76,7 +103,8 @@ class IMAPConnection(BaseConnection):
                 else:
                     self._connection = IMAP4(host, port)
                 connected = True
-            except (IMAP4.abort, socket.error, socket.sslerror):
+            except (IMAP4.abort, socket.error, socket.sslerror), e:
+                LOG('Connection failure', DEBUG, str(e))
                 sleep(0.3)
                 failures += 1
 
@@ -88,6 +116,9 @@ class IMAPConnection(BaseConnection):
     #
     # Internal methods
     #
+    def _patch_imap(self):
+        IMAP4_SSL.open = patch_open
+
     def _isSSL(self):
         """
         >>> f = IMAPConnection({'HOST': 'my.host', 'connection_type': 'IMAP'})
