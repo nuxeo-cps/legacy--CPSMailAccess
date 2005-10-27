@@ -1,3 +1,6 @@
+for a complete documentation, please refer to the CPS User Guide,
+created by Steve Meaker here: http://www.cps-project.org/sections/documentation/users/cps-manual-english-pdf/
+
 0) Intro
 1) Architecture
 2) Installation
