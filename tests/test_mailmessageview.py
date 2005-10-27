@@ -182,7 +182,7 @@ class MailMessageViewTestCase(MailTestCase):
         self.assert_(view)
 
         body = view.renderBody()
-        self.assertEquals(body, u'         ezezf<br/> ezf<br/> <b>ezf</b><br/> ef<br/> <br/> ez<br/> <br/> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> ezf<br/>  ')
+        self.assertEquals(body, u'         ezezf<br/> ezf<br/> <strong>ezf</strong><br/> ef<br/> <br/> ez<br/> <br/> <span class="moz-smiley-s6"><span> :-[ </span></span><br/> ezf<br/>  ')
 
     def test_renderHeaderList(self):
         # checks unicoding
