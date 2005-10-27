@@ -459,7 +459,7 @@ class CPSMailAccessInstaller(CPSInstaller):
         existing_fields = memberschema.objectIds()
         pmd = portal.portal_memberdata
 
-        fields = [('webmail_enabled', 'CPS Int Field', 'boolean',
+        fields = [('webmail_enabled', 'CPS Int Field', 'int',
                    'Boolean Widget', 'python:0'),]
 
         for field in fields:
@@ -467,9 +467,9 @@ class CPSMailAccessInstaller(CPSInstaller):
                 memberschema.addField(field[0], field[1],
                                       acl_write_roles_str='Manager, Owner',
                                       default_expr=field[4])
-            if not pmd.hasProperty(field[0]):
-                pmd.manage_addProperty(field[0], '', field[2])
 
+            if not pmd.hasProperty(field[0]):
+                pmd.manage_addProperty(field[0], 0, field[2])
 
         ltool = portal.portal_layouts
         memberlayout = ltool.members
