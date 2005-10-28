@@ -151,7 +151,7 @@ class IMAPConnection(BaseConnection):
         self._respawn()
         try:
             typ, dat = self._connection.login(user, password)
-        except (IMAP4.error, IndexError), e:
+        except (IMAP4.error, IndexError, socket.timeout), e:
             raise ConnectionError(str(e))
 
         # _connection state is AUTH if login succeeded
