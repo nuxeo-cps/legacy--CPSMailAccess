@@ -73,7 +73,8 @@ default_parameters = {'connection_type' : ('IMAP', 1),
             'addressbook' : ('addressbook', 1),
             'read_only_folders': ('', 1),
             'protected_folders': ('INBOX.Sent', 1),
-            'index_relations': (0, 1)
+            'index_relations': (0, 1),
+            'webmail_enabled': ('webmail_enabled:1', -1)
             }
 
 class MailTool(Folder): # UniqueObject
@@ -141,8 +142,17 @@ class MailTool(Folder): # UniqueObject
 
     def setParameters(self, connection_params):
         """ sets the parameters """
+        items = self.default_connection_params.items()
+        fixed_keys = [key for key, value in items if value[1] == -1]
+
         for key in connection_params.keys():
-            self.default_connection_params[key] = connection_params[key]
+            # check for parameters that can't be customized
+            # in submailboxes
+            if key in fixed_keys:
+                self.default_connection_params[key] = \
+                    (connection_params[key][0], -1)
+            else:
+                self.default_connection_params[key] = connection_params[key]
 
     def getConnectionList(self):
         """ connection list getter """
@@ -230,14 +240,27 @@ class MailTool(Folder): # UniqueObject
             return False
         else:
             # XXX Z2:
+            webmail_enabled_conf = \
+                self.default_connection_params['webmail_enabled'][0]
+
+            parts = webmail_enabled_conf.split(':')
+            webmail_enabled_field = parts[0].strip()
+            if len(parts) > 1:
+                value = parts[1].strip()
+            else:
+                value = 1
+
             kw = {'id': user.getId()}
-            dir_results = self._searchEntries('members', ['webmail_enabled'],
+            dir_results = self._searchEntries('members', [webmail_enabled_field],
                                               **kw)
             if len(dir_results) != 1:
                 return False
-            webmail_enabled = dir_results[0][1]['webmail_enabled']
+            webmail_enabled = dir_results[0][1][webmail_enabled_field]
 
-            return webmail_enabled == 1
+            if len(value) > 0 and value[0] == '!':
+                return str(webmail_enabled) != str(value[1:])
+            else:
+                return str(webmail_enabled) == str(value)
 
 
 """ classic Zope 2 interface for class registering

@@ -55,10 +55,12 @@
 
               </textarea>
             </td>
-            <td width="20%">
-              <input type="checkbox"
-                      tal:attributes="name python:'secu_%s' % parameter['name'];
-                                      checked python:parameter['secu']==1 and 1 or  0"/>
+            <td width="20%" tal:define="security parameter/secu">
+              <tal:block tal:condition="python:security!=-1">
+                <input type="checkbox"
+                       tal:attributes="name python:'secu_%s' % parameter['name'];
+                                       checked python:security==1 and 1 or  0"/>
+              </tal:block>
             </td>
           </tr>
           </tal:block>

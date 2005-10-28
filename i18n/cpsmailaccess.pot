@@ -611,3 +611,6 @@ msgstr ""
 
 msgid "cpsma_search_message_to"
 msgstr ""
+
+msgid "webmail_enabled"
+msgstr ""

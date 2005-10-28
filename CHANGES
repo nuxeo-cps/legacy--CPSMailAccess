@@ -9,6 +9,7 @@ New features:
   <mario [at] curiango.ipen.br>)
 - added an option for mail relation indexing
 - added To in search fields
+- Let the manager configure webmail access
 Bug fixes:
 ~~~~~~~~~~
 - Bad redirection after rename if not a drag'n drop
@@ -29,3 +30,4 @@ Bug fixes:
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 - removed rdflib 2.0.6 dependency: integrated within the product
+- cleaned a bit installation/upgrade process

@@ -617,3 +617,6 @@ msgstr "Ask for a read receipt"
 
 msgid "cpsma_search_message_to"
 msgstr "Message sent to"
+
+msgid "webmail_enabled"
+msgstr "Access field (field:value)"

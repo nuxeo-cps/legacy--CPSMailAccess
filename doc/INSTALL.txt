@@ -124,7 +124,16 @@ quick parameters review :
                    that are beenig sent are written. More information below
     o Direct SMTP send ? : if 0, SMTP Folder is used, otherwise,
                            mails are sent directly to the SMTP server
-
+    o Access field (field:value): this let the administrator decide wheter
+                                  the user can use the webmail or not
+                                  by retrieving for the members directory
+                                  the given field value and check
+                                  if its value equals the given value.
+				  Note that you can prefix the value
+                                  by '!' to test that it differs from the value.
+				  This can be useful in some cases. 
+                                  Example:  `accountStatus:!disable`
+				    
 about SMTP Folder:
 
     SMTP Folder is MailDir folder used for asynchronous sends of mails.

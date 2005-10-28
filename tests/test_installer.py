@@ -69,18 +69,18 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
     def _installWebmail(self):
         # installing
         self.installProduct()
-        self.app.portal.cpsmailaccess_installer()
+        self.app.portal.cpsmailaccess_installer(self.app.portal)
 
     def test_install(self):
         self._installWebmail()
         # updating
-        self.app.portal.cpsmailaccess_installer()
+        self.app.portal.cpsmailaccess_installer(self.app.portal)
 
     def test_portlets(self):
         # verify that portlets does not get installed twice
         self._installWebmail()
 
-        self.app.portal.cpsmailaccess_installer()
+        self.app.portal.cpsmailaccess_installer(self.app.portal)
         portlets = getattr(self.app.portal.portal_webmail, '.cps_portlets')
         self.assertEquals(len(portlets.objectIds()), 2)
 
@@ -90,7 +90,7 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
         self.app.portal.portal_webmail.__version__ = 'upgrade me'
 
         # updating
-        self.app.portal.cpsmailaccess_upgrader('beta2')
+        self.app.portal.cpsmailaccess_upgrader(self.app.portal, 'beta2')
 
         # checking version
         self.assertEquals(self.app.portal.portal_webmail.__version__,
@@ -102,7 +102,7 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
         delattr(self.app.portal.portal_webmail, '__version__')
 
         # updating
-        self.app.portal.cpsmailaccess_upgrader('beta2')
+        self.app.portal.cpsmailaccess_upgrader(self.app.portal, 'beta2')
 
         # checking version
         self.assertEquals(self.app.portal.portal_webmail.__version__,
@@ -116,7 +116,7 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
         del pwm.default_connection_params['SSL']
         delattr(self.app.portal.portal_webmail, '__version__')
 
-        self.app.portal.cpsmailaccess_upgrader('beta2')
+        self.app.portal.cpsmailaccess_upgrader(self.app.portal, 'beta2')
         self.assertEquals(pwm.default_connection_params['SSL'], (0, 1))
 
     def test_paramUpgrade(self):
@@ -125,7 +125,7 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
         box = MailBox('my_box')
         pwm = self.app.portal.portal_webmail
         pwm._setObject('box_1', box)
-        self.app.portal.cpsmailaccess_upgrader('beta2')
+        self.app.portal.cpsmailaccess_upgrader(self.app.portal, 'beta2')
         self.assertEquals(pwm.box_1._connection_params['SSL'], (0, 1))
 
 class MailInstaller(CPSTestCase.CPSInstaller):

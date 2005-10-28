@@ -618,3 +618,7 @@ msgstr "Configurer le webmail"
 
 msgid "cpsma_search_message_to"
 msgstr "Message envoyé à"
+
+msgid "webmail_enabled"
+msgstr "Contrôle d'accès (champ:valeur)"
+

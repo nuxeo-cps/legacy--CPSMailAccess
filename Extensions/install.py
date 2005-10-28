@@ -451,6 +451,7 @@ class CPSMailAccessInstaller(CPSInstaller):
     def setupMembersSchemasAndLayouts(self):
         """ adds a checkbox that tells if the user
             has webmail capabilities
+            (for a default configuration)
         """
         self.log(" Setting up schemas and layouts")
         portal = self.portal
@@ -501,7 +502,7 @@ class CPSMailAccessInstaller(CPSInstaller):
     def addWMAction(self):
         """ adds an action in user actions """
         redir = '${portal_url}/portal_webmail/webmailRedirect.html?user_id=${member}'
-        cond = "member and member.getProperty('webmail_enabled', 0)==1"
+        cond = "member and portal.portal_webmail.canHaveMailBox()"
         action = {
                 'id': 'webmail',
                 'name': '_list_mail_',
@@ -610,15 +611,35 @@ class CPSMailAccessInstaller(CPSInstaller):
                     box._connection_params[item] = params[item]
 
 
-    def upgrade(self, new_version, old_version=None, force=False):
+    def upgrade(self, new_version=None, old_version=None, force=False):
         """ upgrades an existing version of CPSMailAccess
 
             if old_version is set to None,
             the upgrader will upgrade from the first existing version
             to the last one
         """
+        if not hasattr(self.portal, 'portal_webmail'):
+            self.install()
+            return None
+
         old_version = self._shorcutName(old_version)
         new_version = self._shorcutName(new_version)
+
+        self.upgrade_parameters()
+
+        # creating a temporary directory for mail storage
+        wm = self.portal.portal_webmail
+        if not hasattr(wm, '_maildeliverer'):
+            self.log('adding Mail deliverer')
+            from Products.CPSMailAccess.smtpmailer import SmtpMailer
+            temp_dir = os.path.dirname(os.tempnam())
+            temp_dir = os.path.join(temp_dir, 'maildir')
+            wm._maildeliverer = SmtpMailer(temp_dir, 1)
+
+        if old_version is None and new_version is None:
+            self.setupTranslations()
+            self.finalize()
+            return None
 
         if old_version is None:
             old_version = self._versions[0]
@@ -626,10 +647,11 @@ class CPSMailAccessInstaller(CPSInstaller):
             new_version not in self._versions):
             raise Exception('unknown versions')
 
-        self.upgrade_parameters()
-
         if old_version == (1, 0, 0, 'b1') and  new_version == (1, 0, 0, 'b2'):
             self.upgrade_b1_to_b2(force)
+
+        self.setupTranslations()
+        self.finalize()
 
     def _shorcutName(self, name):
         if name in ('beta2', 'b2'):
@@ -648,7 +670,6 @@ class CPSMailAccessInstaller(CPSInstaller):
             wm.__version__ = (1, 0, 0, 'b2')
 
             from Products.CPSMailAccess.smtpmailer import SmtpMailer
-
             # creating a temporary directory for mail storage
             temp_dir = os.path.dirname(os.tempnam())
             temp_dir = os.path.join(temp_dir, 'maildir')
@@ -678,17 +699,17 @@ def install(self):
     Called by an external method for instance.
     """
     installer = CPSMailAccessInstaller(self)
-    installer.install()
+    installer.upgrade()
     return installer.logResult()
 
-def upgrade(self, new_version, old_version=None, force=False):
+def upgrade(self, new_version=None, old_version=None, force=False):
     """ upgrades """
     installer = CPSMailAccessInstaller(self)
     installer.upgrade(new_version, old_version, force)
     return installer.logResult()
 
 def upgrade_to_beta2(self):
-    return upgrade(self, 'b2')
+    return upgrade('b2')
 
-def force_to_beta2(self):
-    return upgrade(self, 'b2', force=True)
+def force_to_beta2(context=None):
+    return upgrade('b2', force=True)
