@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- encoding: iso-8859-15 -*-
 # Copyright (C) 2004 Nuxeo SARL <http://nuxeo.com>
 # Author: Florent Guillaume <fg@nuxeo.com>
