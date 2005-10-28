@@ -74,7 +74,9 @@ class IMAPConnection(BaseConnection):
         """
         LOG('IMAPConnection', DEBUG, 'init')
         BaseConnection.__init__(self, connection_params)
+        self._open()
 
+    def _open(self):
         # instanciate a imap4 object
         params = self.connection_params
         host = params['HOST']
@@ -168,15 +170,21 @@ class IMAPConnection(BaseConnection):
         user = self.user
         password = self.password
         if self.logout():
+            self._open()
             self.login(user, password)
 
     def logout(self):
         """ see interface for doc
         """
+        import pdb; pdb.set_trace()
         self._respawn()
-        typ, dat = self._connection.logout()
+        typ = 'NO'
+        retries = 0
+        while retries < 3 and typ == 'NO':
+            typ, dat = self._connection.logout()
+            retries += 1
 
-        if typ == 'BYE' :
+        if typ == 'BYE':
             self.user = None
             self.password = None
             return True
@@ -381,6 +389,9 @@ class IMAPConnection(BaseConnection):
         except IndexError, e:
             raise ConnectionError(str(e))
         except (AttributeError, IMAP4.error, IMAP4_SSL.error), e:
+            raise ConnectionError(str(e))
+        except socket.sslerror, e:
+            self.relog()
             raise ConnectionError(str(e))
 
         if imap_result[0] == 'OK':
