@@ -464,7 +464,7 @@ class MailMessage(Folder):
                     try:
                         data = self._getFile(file['part'])
                     except ConnectionError:
-                        return None
+                        return None, None, None
 
                 cte = file['content-transfer-encoding']
                 content_type = file['mimetype']
