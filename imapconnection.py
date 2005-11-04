@@ -176,7 +176,6 @@ class IMAPConnection(BaseConnection):
     def logout(self):
         """ see interface for doc
         """
-        import pdb; pdb.set_trace()
         self._respawn()
         typ = 'NO'
         retries = 0
