@@ -3,31 +3,10 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- protected folders
-- added folder selection in search screen
-- added Brazilian Portuguese translations (Thanks to Mario Olimpio de Menezes
-  <mario [at] curiango.ipen.br>)
-- added an option for mail relation indexing
-- added To in search fields
-- Let the manager configure webmail access
+-
 Bug fixes:
 ~~~~~~~~~~
-- Bad redirection after rename if not a drag'n drop
-- Synchronization, sometime failed on a non AUTH status
-- checkboxes on webmail configuration screen were persistent
-- translations for mail dates
-- the return receipt was poping up in drafts
-- could not reload mails from drafts
-- Bcc field was not saved in drafts
-- the column sort cache was persistent: new sorts were not applied
-- double-click was necessary to see a message
-- attached files with accents were breaking mail editor
-- resolved linkification problems
-- resolved mail indexing problems  (thanks to Steve Meaker for his great feedback)
-- added missing translations
-- corrected addressbook entries (#977)
-- Removed useless Unix headers on test modules.
+-
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
-- removed rdflib 2.0.6 dependency: integrated within the product
-- cleaned a bit installation/upgrade process
+-
