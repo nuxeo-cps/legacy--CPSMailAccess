@@ -260,9 +260,13 @@ class IMAPConnection(BaseConnection):
                 if isinstance(results, list) or isinstance(results, tuple):
                     raw = results[0]
                 else:
-                    raw =results
+                    raw = results
             except TypeError:
                 return []
+
+            if raw is None:
+                return ''
+
             # todo use regexprs
             if isinstance(raw, tuple):
                 raw = raw[0]
