@@ -575,7 +575,7 @@ class MailFolder(BTreeFolder2):
                             file['size'] = part[5]
                             # we don't want to load the file
                             file['data'] = None
-                            file['part'] = i
+                            file['part'] = '1.%d' % i
                             for sub in part:
                                 if isinstance(sub, list):
                                     if sub[0] == 'name':

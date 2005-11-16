@@ -711,6 +711,9 @@ class MailFolderTestCase(MailTestCase):
 
             ct = ob._getStore()['Content-type']
             self.assertEquals(ct, 'text/html; charset="iso-8859-1"')
+            files = ob.getFileList()
+            self.assertEquals(files[0]['part'], 2)
+            self.assertEquals(files[1]['part'], '1.2')
         finally:
             box._getconnector().getMessageStructure = old
 
