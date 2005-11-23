@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- #1143 removed dependency on CPSDefault.BaseBox
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -

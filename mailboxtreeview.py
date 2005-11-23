@@ -22,7 +22,7 @@
     from the mail box
 """
 # XX see for dependencies
-from Products.CPSDefault.BaseBox import BaseBox
+from Products.CPSBoxes.BaseBox import BaseBox
 from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
 
 from Globals import InitializeClass
