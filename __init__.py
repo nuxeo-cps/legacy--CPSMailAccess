@@ -28,7 +28,11 @@ import mailbox, mailfolder, mailmessage, mailtool, mailboxtreeview
 ## XXX dependencies introduced by the box creation
 from Products.CMFCore.DirectoryView import registerDirectory
 from Products.CMFCore.utils import ContentInit
-from Products.CMFCore.CMFCorePermissions import AddPortalContent
+try:
+    from Products.CMFCore.permissions import AddPortalContent
+except ImportError:
+    # BBB for CMF 1.4, remove this in CPS 3.4.0
+    from Products.CMFCore.CMFCorePermissions import AddPortalContent
 
 contentClasses = (mailboxtreeview.MailBoxTreeView, )
 contentConstructors = (mailboxtreeview.manage_addMailBoxTreeview, )

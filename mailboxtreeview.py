@@ -23,7 +23,11 @@
 """
 # XX see for dependencies
 from Products.CPSBoxes.BaseBox import BaseBox
-from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
+try:
+    from Products.CMFCore.permissions import View, ModifyPortalContent
+except ImportError:
+    # BBB for CMF 1.4, remove this in CPS 3.4.0
+    from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
 
 from Globals import InitializeClass
 
