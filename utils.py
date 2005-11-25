@@ -332,7 +332,9 @@ class HTMLMailSanitizer(HTMLSanitizer):
     """
     tags_to_keep = ('b', 'i', 'strong', 'br', 'p', 'h1', 'h2', 'h3',
                     'h4', 'h5', 'div', 'span', 'table', 'tr', 'th', 'td',
-                    'font', 'style', 'img', 'ul', 'li', 'hr')
+                    'font', 'style', 'img', 'ul', 'li', 'hr',
+                    'em', 'strong','q', 'cite', 'abbr', 'acronym',
+                    'address', 'blockquote')
 
     tolerant_tags = ('br', 'p')
     attributes_to_keep = ('size', 'face', 'class', 'src', 'href', 'type', 'border')

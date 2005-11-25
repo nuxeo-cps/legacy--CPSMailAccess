@@ -8,6 +8,7 @@ Bug fixes:
 ~~~~~~~~~~
 - #1143 removed dependency on CPSDefault.BaseBox
 - Removed deprecation warnings.
+- Added more semantic allowed markup in the HTMLSanitizer.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
