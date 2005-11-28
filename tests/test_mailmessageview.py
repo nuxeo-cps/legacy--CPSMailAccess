@@ -19,6 +19,7 @@
 # $Id$
 from types import StringType, ListType
 import unittest, os
+from StringIO import StringIO
 
 from Testing.ZopeTestCase import installProduct
 from Testing.ZopeTestCase import ZopeTestCase, _print
@@ -36,7 +37,7 @@ from Products.CPSMailAccess.mailsearch import get_uri
 from Products.CPSMailAccess.zemantic.query import Query
 from Products.CPSMailAccess.tests import __file__ as landmark
 
-from basetestcase import MailTestCase
+from basetestcase import MailTestCase, FakeRequest
 
 class FakeFieldStorage:
     file = None
@@ -141,6 +142,26 @@ class MailMessageViewTestCase(MailTestCase):
         file = files[0][0]
         self.assertEquals(file['mimetype'], 'image/gif')
         self.assertEquals(file['filename'], 'SecondPyBansxzner048.gif')
+
+    def test_viewFile_content_disposition(self):
+        # Content-Disposition must be attachment for undertermined MIME type
+        ob = self.getMailInstance(6)
+
+        my_file = StringIO('#!^\x01')
+        storage = FakeFieldStorage()
+        storage.file = my_file
+        storage.filename = 'randomstuff'
+        uploaded = FileUpload(storage)
+        ob.getPhysicalPath = self.fakePhysicalPath
+
+        # need to set up context and request object here
+        view = MailMessageView(ob, FakeRequest())
+        self.assert_(view)
+        ob.attachFile(uploaded)
+
+        got = view.viewFile(filename='randomstuff')
+        self.assertEquals(view.request.response.getHeader('Content-Disposition'),
+                          'attachment; filename=randomstuff')
 
     def test_multipartAlternativeRead(self):
         # lotus note mail message

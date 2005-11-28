@@ -6,6 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
+- #1146 better handling of attached file with non well-specified mime types
 - #1143 removed dependency on CPSDefault.BaseBox
 - Removed deprecation warnings.
 - Added more semantic allowed markup in the HTMLSanitizer.

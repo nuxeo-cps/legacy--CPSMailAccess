@@ -420,8 +420,12 @@ class MailMessageView(BaseMailMessageView):
             if self.request is not None:
                 response = self.request.response
                 response.setHeader('Content-Type', content_type)
-                response.setHeader('Content-Disposition',
-                                   'inline; filename=%s' % filename)
+                if content_type in ['unknown', 'application/octet-stream']:
+                    content_dispo = 'attachment'
+                else:
+                    content_dispo = 'inline'
+                content_dispo += '; filename=%s' % filename    
+                response.setHeader('Content-Disposition', content_dispo)
                 response.setHeader('Content-Length', len(filecontent))
                 response.write(filecontent)
 

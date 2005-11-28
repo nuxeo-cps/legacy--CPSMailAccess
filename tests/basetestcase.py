@@ -142,6 +142,19 @@ class FakePortal(Folder):
         return ('', 'nowhere')
 
 class FakeResponse:
+
+    def __init__(self):
+        self.headers = {}
+
+    def setHeader(self, key, item):
+        self.headers[key] = item
+
+    def write(self, *args):
+        pass
+
+    def getHeader(self, key):
+        return self.headers[key]
+
     def redirect(self, url):
          pass
 
