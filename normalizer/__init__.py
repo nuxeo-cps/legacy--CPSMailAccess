@@ -20,7 +20,31 @@
 """ Normalizer package, largely inspired from TextIndexNG
 """
 import os
-import cmailaccess
+
+try:
+    from cmailaccess import Normalizer
+except ImportError:
+    # python version
+    class Normalizer(object):
+        def __init__(self, converters):
+            self.converters = {}
+            for k, v in converters:
+                if isinstance(k, str):
+                    k = k.decode('ISO-8859-15')
+                if isinstance(v, str):
+                    v = v.decode('ISO-8859-15')
+                self.converters[k] = v
+        def normalize(self, word):
+            if isinstance(word, str):
+                word = word.decode('ISO-8859-15')
+            result = []
+            for i in range(len(word)):
+                char = word[i]
+                if char in self.converters:
+                    result.append(self.converters[char])
+                else:
+                    result.append(char)
+            return u''.join(result)
 
 # XXX we will use various encoding later
 encoding = 'ISO-8859-15'
@@ -42,4 +66,4 @@ def getNormalizer(lang='iso'):
         v = unicode(fields[1], encoding)
         normalizers.append((k, v))
 
-    return cmailaccess.Normalizer(normalizers)
+    return Normalizer(normalizers)

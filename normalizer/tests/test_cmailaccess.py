@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-# $Id:$
+# $Id$
 """ XXX doctest is ran this way to work under Python 2.3
 """
 import os
@@ -39,14 +39,17 @@ def doc_test():
     indexed, in order to be able to find mails with special characters.
 
     the module is installed in the python ran by Zope::
-
-        >>> import cmailaccess
+        >>>
+        >>> try:
+        ...     from cmailaccess import Normalizer
+        ... except ImportError:
+        ...     from Products.CPSMailAccess.normalizer import Normalizer
 
     cmailaccess.Normalizer is an object that takes a sequence of normalizers
     at construction. A normalizer is a two string tuple (actual, normalized)::
 
-        >>> normalizers = [('é', 'e'), ('à', 'a'), ('ù', 'u')]
-        >>> normalizer = cmailaccess.Normalizer(normalizers)
+        >>> converters = [('é', 'e'), ('à', 'a'), ('ù', 'u')]
+        >>> normalizer = Normalizer(converters)
 
     the instance then provide a `normalize(word)` method::
 
