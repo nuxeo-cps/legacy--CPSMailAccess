@@ -46,9 +46,6 @@ class IOZODBTextIndexBackend(Persistent):
     """
 
     def __init__(self):
-        from zLOG import INFO, LOG
-        LOG('IOZODBTextIndexBackend', INFO, 'INIT')
-
         # indexed by [subject][predicate][object] = 1
         self.spo = IOBTree()
 
@@ -96,9 +93,6 @@ class IOZODBTextIndexBackend(Persistent):
         """\
         Add a triple to the store.
         """
-        from zLOG import INFO, LOG
-        LOG('add', INFO, str(predicate))
-        LOG('actual size', INFO, str(self.count))
         f = self.forward
         r = self.reverse
 
@@ -194,9 +188,6 @@ class IOZODBTextIndexBackend(Persistent):
 
     def triples(self, (subject, predicate, object)):
         """A generator over all the triples matching """
-        from zLOG import INFO, LOG
-        LOG('actual size', INFO, str(self.count))
-
         si = pi = oi = ois = Any
         if subject is not Any:
             si = self.reverse[subject]
