@@ -55,6 +55,12 @@ Put Five (Zope 2.7 users) and CPSMailAccess
 WARNING: You must remove the CPSWebmail Product from your instance,
 this is very important, as it might interfer.
 
+run CPSMailAccess installer with::
+  
+  python setup.py install
+
+as root user.
+
 5 - Zope 3 <-> Zope 2 path setup (Zope 2.7 specific)
 
 Edit your $INSTANCE/etc/zope.conf to add the following path declaration::

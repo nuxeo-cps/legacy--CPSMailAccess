@@ -38,6 +38,7 @@ from zemantic.query import Query
 
 from Products.CPSMailAccess.zemantic.rdflib.URIRef import URIRef
 from Products.CPSMailAccess.zemantic.rdflib.Literal import Literal
+from Products.CPSMailAccess.normalizer import getNormalizer
 
 def _unify(elements):
 
@@ -86,6 +87,9 @@ def unifyList(list_):
 def get_uri(portal_object):
     return URIRef(unicode(portal_object.absolute_url())) # zope 2 dependant
 
+# normalizer
+normalizer = getNormalizer()
+
 class ZemanticMessageAdapter:
 
     implements(IRDFThreeTuples)
@@ -115,6 +119,9 @@ class ZemanticMessageAdapter:
                 value = value.decode(self.default_charset)
         return value
 
+    def _normalize(self, word):
+        return normalizer.normalize(word)
+
     def threeTuples(self, index_relations=True):
         """ give zemantic the sequence of relations """
         message = self.context
@@ -142,7 +149,7 @@ class ZemanticMessageAdapter:
                 relation = URIRef(header_name)
                 value = decodeHeader(value)
                 value = self._headerToUnicode(value)
-
+                value = self._normalize(value)
                 if header_name == 'date':
                     # fixed string date indexing
                     cdate = parseDateString(value)
@@ -163,7 +170,7 @@ class ZemanticMessageAdapter:
                 body = removeHTML(body)
 
             body = self._headerToUnicode(body)
-
+            body = self._normalize(body)
             body = Literal(body)
             triples.append((ob_uri, URIRef(u'body'), body))
 

@@ -242,6 +242,26 @@ class MailSearchTestCase(MailTestCase):
         res = ob.query(Query(Any, URIRef(u'folder'), URIRef(u'INBOX.fol')))
         self.assertEquals(len(list(res)), 1)
 
+    def test_normalizing(self):
+
+        message = self.getMailInstance(23)
+        message = message.__of__(self.portal)
+
+        message.setHeader('subject', 'יייייייי')
+
+        message.getPhysicalPath = self.fakeGetPhysicalPath
+        adapted_message = ZemanticMessageAdapter(message, None)
+
+        self.assertEquals(adapted_message._normalize(u'יייי'), u'eeee')
+        self.assertEquals(adapted_message._normalize('יייי'), u'eeee')
+
+        tuple_ = adapted_message.threeTuples()
+        predicates = [predicate for subject, object, predicate in tuple_]
+        predicates.sort()
+
+        self.assertEquals(predicates, [u'_#_orphan_#_', u'aperson@dom.ain',
+                                       u'bperson@dom.ain', u'eeeeeeee'])
+
 
 def test_suite():
     return unittest.TestSuite((

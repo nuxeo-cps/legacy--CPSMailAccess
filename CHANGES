@@ -3,7 +3,7 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
--
+- Added a normalizer for mail search
 Bug fixes:
 ~~~~~~~~~~
 - #1146 better handling of attached file with non well-specified mime types
@@ -12,4 +12,4 @@ Bug fixes:
 - Added more semantic allowed markup in the HTMLSanitizer.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
--
+- Added a dedicated C extension for optimisations

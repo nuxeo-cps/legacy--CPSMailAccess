@@ -25,6 +25,7 @@ from mailmessageview import MailMessageView
 from mailsearch import intersection  as z_intersection
 from mailsearch import unifyList as z_unifyList
 from mailsearch import union as z_union
+from normalizer import getNormalizer
 
 # XXXX todo: outsource ALL zemantic related stuff into mailsearch
 from zemantic.public import Any, Query
@@ -78,6 +79,7 @@ class MailSearchView(BrowserView):
     def zemanticSearchMessages(self, **kw):
         """ zemantic query """
         start = time.time()
+        normalizer = getNormalizer()
         mailbox = self.context
         i = 0
         body_search = False
@@ -103,6 +105,8 @@ class MailSearchView(BrowserView):
                     relation = relation.strip().decode('ISO-8859-15')
                 relation = relation.lower()
                 value = value.strip()
+                value = value.lower()   # don't mixcases
+                value = normalizer.normalize(value)
 
                 if relation == 'body':
                     # special case: mail body is not indexed by zope
