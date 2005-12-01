@@ -78,6 +78,9 @@ class FakeDirectory:
     def createEntry(self, entry):
         pass
 
+    def _searchEntries(self, return_fields, **kw):
+        return self.searchEntries(return_fields, **kw)
+
 
 class FakeDirectories(Folder):
 

@@ -224,9 +224,9 @@ class MailTool(Folder): # UniqueObject
         # acquisition pb not resolved yet
         #return self._getDirectoryPicker().searchEntries(directory_name,
         #    return_fields, **kw)
-        results = dir_.searchEntries(return_fields, **kw)
+        results = dir_._searchEntries(return_fields, **kw)
         if results == [] and kw == {'id': '*'}:
-            results = dir_.searchEntries(return_fields)
+            results = dir_._searchEntries(return_fields)
         return results
 
     def canHaveMailBox(self, user_id=None):

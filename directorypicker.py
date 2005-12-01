@@ -50,7 +50,7 @@ class DirectoryPicker(object):
         """ see interface """
 
         dir_ = self.context[directory_name]
-        return dir_.searchEntries(return_fields, **kw)
+        return dir_._searchEntries(return_fields, **kw)
 
 
 class DirectoryPickerView(BrowserView):

@@ -22,7 +22,8 @@ from Products.CPSMailAccess.directorypicker import DirectoryPicker
 from OFS.Folder import Folder
 
 class FakeDirectory(Folder):
-    pass
+    def _searchEntries(self, return_fields, **kw):
+        return [{'id': 'tarek', 'fullname' : 'Tarek Ziadé', 'email' : 'tz@nuxeo.com'}]
 
 class FakeDirectoryTool(Folder):
 
@@ -32,7 +33,9 @@ class FakeDirectoryTool(Folder):
         return ['members', 'roles', 'groups']
 
     def searchEntries(self, return_fields, **kw):
+        return [{'id': 'tarek', 'fullname' : 'Tarek Ziadé', 'email' : 'tz@nuxeo.com'}]
 
+    def _searchEntries(self, return_fields, **kw):
         return [{'id': 'tarek', 'fullname' : 'Tarek Ziadé', 'email' : 'tz@nuxeo.com'}]
 
 class DirectoryPickerTestCase(MailTestCase):
