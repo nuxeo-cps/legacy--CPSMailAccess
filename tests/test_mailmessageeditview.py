@@ -243,6 +243,16 @@ class MailMessageEditTestCase(MailTestCase):
         # XXX in the test data root box is named INBOX
         self.assertEquals(url, 'nowhere/INBOX/INBOX')
 
+    def test_identyToMsgHeader(self):
+        def getIdentitites():
+            return ({'email': '< tz@nuxeo.com>', 'fullname': '<tarek> '},)
+        mailbox = self._getMailBox()
+        view = MailMessageEdit(mailbox, None)
+        view.getIdentitites = getIdentitites
+
+        msg_from = view._identyToMsgHeader()
+        self.assertEquals(msg_from, 'tarek <tz@nuxeo.com>')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailMessageEditTestCase),

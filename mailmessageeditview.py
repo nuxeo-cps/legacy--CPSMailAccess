@@ -219,15 +219,22 @@ class MailMessageEdit(BrowserView):
 
     def _identyToMsgHeader(self):
         """ takes a directory entry to fit it in From header """
+        def cleanEntry(entry):
+            for element in (' ', '<', '>', ' '):
+                entry = entry.strip(element)
+            return entry
+
         identities = self.getIdentitites()
         if len(identities) > 0:
             identity = identities[0]        # think about multi-identity later
             if identity['email'].strip() == '':
                 email = '?'
             else:
-                email = identity['email'].strip()
+                email = cleanEntry(identity['email'])
+
             if identity['fullname'] != '':
-                return '%s <%s>' %(identity['fullname'], email)
+                fullname = cleanEntry(identity['fullname'])
+                return '%s <%s>' %(fullname, email)
             else:
                 return email
         else:
