@@ -18,8 +18,11 @@
 import unittest
 from zope.testing import doctest
 from basetestcase import MailTestCase
-from Products.CPSMailAccess.directorypicker import DirectoryPicker
+
 from OFS.Folder import Folder
+
+from Products.CPSMailAccess.directorypicker import DirectoryPicker
+from Products.CPSMailAccess.interfaces import IDirectoryPicker
 
 class FakeDirectory(Folder):
     def _searchEntries(self, return_fields, **kw):
@@ -64,6 +67,11 @@ class DirectoryPickerTestCase(MailTestCase):
         # ok now let's get all members entry
         entries = ob.searchEntries('members')
         self.assertNotEquals(entries, None)
+
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IDirectoryPicker, DirectoryPicker))
 
 def test_suite():
     return unittest.TestSuite((

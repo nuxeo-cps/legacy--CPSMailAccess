@@ -19,11 +19,10 @@
 #
 # $Id$
 from zope.interface import Interface
-from zope.app.container.interfaces import IContainer
 from zope.app.traversing.interfaces import ITraverser
 from zope.schema import Field, List, Dict
 
-class IMailFolder(IContainer):
+class IMailFolder(Interface):
     """A container of mail messages and other mail folders.
     """
     server_name = Field(
@@ -59,23 +58,10 @@ class IMailFolder(IContainer):
         """" returns server name
         """
 
-    def setServerName(self, server_name):
+    def setServerName(server_name):
         """" sets server name
              can also hold a synchronization call
              when the name changes
-        """
-
-
-    def _addMessage(uid='', digest=''):
-        """ Mail Message factory for this
-            MailFolder, adds an IMailMessage
-            to it and returns it
-        """
-
-    def _addFolder(uid='', server_name=''):
-        """ Mail Folder factory for this
-            MailFolder, adds an IMailFolder
-            to it and returns it
         """
 
     def childFoldersCount():
@@ -106,37 +92,9 @@ class IContainerFolder(Interface):
     """ Marker interface for folders that allow adding sub folders
     """
 
-class IMailMessage(IContainer):
-    """A mail message.
-
-    It stores the content of a message, this content can be composed of
-    headers, ID, and optionnaly the body.
-    """
-    uid = Field(
-        title=u'Message ID',
-        description=u'Unique identifier for message in its container',
-        default=u'',
-        required=True)
-
-    digest = Field(
-        title=u'Message Digest',
-        description=u'Digest used to uniquely identify message',
-        default=u'',
-        required=False)
-
-    def attachFile(file):
-        """ attacha file to the message
-        """
-
-class IMailBox(IContainer):
+class IMailBox(Interface):
     """ mailboxes gives a few api to synchronize
     """
-    connection_params = List(
-        title=u'Connection parameters',
-        description=u'Connection parameters properties',
-        readonly=False,
-        required=False)
-
     def synchronize():
         """ synchronizes the mailbox and its content
             and its content with the server by recursive calls to synchronizeFolder
@@ -146,15 +104,16 @@ class IMailBox(IContainer):
         """ used to get a server connection object
         """
 
-    def setParameters(connection_params, resync=True):
+    def setParameters(connection_params=None):
         """ sets connections parameters
-            if resync is True, resyncs with the server
         """
 
-    def sendMessage(msg_from, msg_to, msg_subject, msg_body,
-            msg_attachments):
-        """ creates a message, sends it and copy it to Send folder
+    def sendEditorsMessage():
+        """ sends editor message and copy it to Send folder
         """
+
+    def sendNotification(recipient, msg):
+        """ sends notification """
 
     def readDirectoryValue(dirname, id, field):
         """ reads an entry field value from a directory
@@ -170,18 +129,6 @@ class IMailBox(IContainer):
 class IMailTool(Interface):
     """ portal tool
     """
-    mail_catalogs = Dict(
-        title=u'Mail Catalogs',
-        description=u'Catalog for mail search',
-        readonly=False,
-        required=True)
-
-    default_connection_params = List(
-        title=u'Default connection parameters',
-        description=u'Connection parameters properties',
-        readonly=False,
-        required=False)
-
     def listConnectionTypes():
         """ returns a list of founded connection
             types, based on what plugins have been successfully
@@ -333,10 +280,6 @@ class IConnectionWatcher(Interface):
         default=u'',
         required=True)
 
-    def linkConnectionList(connection_list):
-        """ links the connection to watch
-        """
-
     def run():
         """ runs the guard
         """
@@ -360,63 +303,54 @@ class IMessageTraverser(ITraverser):
         """ traverses the message to render the right part
         """
 
-class IMailPart(Interface):
-    """ IMailPart is an adapter that presents a python message object
+class IMailMessage(Interface):
+    """A mail message.
+
+    It stores the content of a message, this content can be composed of
+    headers, ID, and optionnaly the body.
     """
+    def attachFile(file):
+        """ attacha file to the message
+        """
+
     def getRawMessage():
         """ retrieves the raw message
         """
 
-    def getFileInfos():
-        """ returns a dictionnary with info on the file
-            None if not a file
-        """
-    def getCharset(part_index=0):
+    def getCharset():
         """ returns the charset for the given part
-            for single part messages, part_index is 0
         """
 
-    def setCharset(charset, part_index=0):
+    def setCharset(charset):
         """ sets the charset for the given part
-            for single part messages, part_index is 0
         """
 
-    def getContentType(part_index=0):
+    def getContentType():
         """ retrieves the content type
-            for single part messages, part_index is 0
         """
 
-    def setContentType(content_type, part_index=0):
+    def setContentType(content_type):
         """ sets the content type
-            for single part messages, part_index is 0
+            for single part messages
         """
 
-    def getContentTypeParams(part_index=0):
-        """ gets the content type param list as tuple
-            for single part messages, part_index is 0
-        """
-
-    def getParams(part_index=0):
+    def getParams():
         """ gets params in tuple (name, value)
-            for single part messages, part_index is 0
         """
 
-    def getParam(param_name, part_index=0):
+    def getParam(param_name):
         """ gets value for given param
-            for single part messages, part_index is 0
         """
 
-    def setParam(param_name, param_value, part_index=0):
+    def setParam(param_name, param_value):
         """ sets the param to given value
-            for single part messages, part_index is 0
         """
 
-    def delParam(param_name, part_index=0):
+    def delParam(param_name):
         """ deletes the given param
-            for single part messages, part_index is 0
         """
 
-    def setDirectBody(self, content):
+    def setDirectBody(content):
         """ sets a part
         """
 

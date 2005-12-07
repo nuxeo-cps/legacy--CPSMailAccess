@@ -464,6 +464,11 @@ class MailBoxTestCase(MailTestCase):
         finally:
             self.portal.portal_webmail.getMailDeliverer = old_getMailDeliverer
 
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IMailBox, MailBox))
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),

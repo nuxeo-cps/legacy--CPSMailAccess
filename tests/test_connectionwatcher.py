@@ -24,6 +24,7 @@ import os
 from Products.CPSMailAccess.connectionwatcher import ConnectionWatcher
 from Products.CPSMailAccess.connectionlist import ConnectionList
 from Products.CPSMailAccess.dummyconnection import DummyConnection
+from Products.CPSMailAccess.interfaces import IConnectionWatcher
 from time import time,sleep
 
 installProduct('Five')
@@ -78,6 +79,11 @@ class ConnectionWatcherTestCase(ZopeTestCase):
         self.assertEquals(len(connectionwatcher.thread_instances), 2)
         connectionwatcher.cleanThreads()
         self.assertEquals(connectionwatcher.thread_instances, [])
+
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IConnectionWatcher, ConnectionWatcher))
 
 def test_suite():
     return unittest.TestSuite((

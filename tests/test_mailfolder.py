@@ -717,6 +717,10 @@ class MailFolderTestCase(MailTestCase):
         finally:
             box._getconnector().getMessageStructure = old
 
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IMailFolder, MailFolder))
 
 def test_suite():
     return unittest.TestSuite((

@@ -28,6 +28,7 @@ if sys.modules.has_key('imaplib'):
 sys.modules['imaplib'] = fakeimaplib
 
 from Products.CPSMailAccess.imapconnection import makeMailObject, IMAPConnection
+from Products.CPSMailAccess.interfaces import IConnection
 from time import time,sleep
 from basetestcase import MailTestCase
 
@@ -316,7 +317,10 @@ class IMAPConnectionTestCase(MailTestCase):
 
         self.assertEquals(extracted, waited)
 
-
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IConnection, IMAPConnection))
 
 
 def test_suite():

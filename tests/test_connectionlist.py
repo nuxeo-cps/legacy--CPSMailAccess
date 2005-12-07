@@ -25,6 +25,7 @@ from Products.CPSMailAccess.baseconnection import ConnectionError
 from Products.CPSMailAccess.connectionlist import ConnectionList
 from Products.CPSMailAccess.connectionlist import registerConnections, qualifyModule
 from Products.CPSMailAccess.dummyconnection import DummyConnection
+from Products.CPSMailAccess.interfaces import IConnectionList
 from time import time,sleep
 from threading import Thread
 
@@ -172,6 +173,11 @@ class ConnectionListTestCase(ZopeTestCase):
         # this was generating an exception in case
         # the thread was stopped *after* the object deletion
         del my_list
+
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IConnectionList, ConnectionList))
 
 def test_suite():
     return unittest.TestSuite((

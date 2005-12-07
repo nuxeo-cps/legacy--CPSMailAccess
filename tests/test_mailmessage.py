@@ -340,6 +340,10 @@ class MailMessageTestCase(MailTestCase):
         self.assertNotEquals(raw_msg.find('toto'), -1)
         self.assertNotEquals(raw_msg.find('toti'), -1)
 
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IMailMessage, MailMessage))
 
 def test_suite():
     return unittest.TestSuite((

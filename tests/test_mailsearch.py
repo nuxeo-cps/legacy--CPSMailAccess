@@ -22,6 +22,7 @@ from Testing.ZopeTestCase import ZopeTestCase
 import os, sys
 from Products.CPSMailAccess.mailsearch \
     import ZemanticMailCatalog, ZemanticMessageAdapter, intersection, union
+from Products.CPSMailAccess.mailsearch import IMailCatalog
 
 from Testing.ZopeTestCase import installProduct
 from basetestcase import MailTestCase
@@ -262,6 +263,10 @@ class MailSearchTestCase(MailTestCase):
         self.assertEquals(predicates, [u'_#_orphan_#_', u'aperson@dom.ain',
                                        u'bperson@dom.ain', u'eeeeeeee'])
 
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IMailCatalog, ZemanticMailCatalog))
 
 def test_suite():
     return unittest.TestSuite((

@@ -19,7 +19,10 @@ import unittest
 from zope.testing import doctest
 from basetestcase import MailTestCase
 
-from Products.CPSMailAccess.mailfiltering import MailFiltering, ZODBMailBackEnd
+from Products.CPSMailAccess.interfaces import IMailFilteringBackEnd
+from Products.CPSMailAccess.mailfiltering import MailFiltering, \
+                                                 ZODBMailBackEnd, \
+                                                 NormalBackEnd
 
 class MailFilteringTestCase(MailTestCase):
 
@@ -223,6 +226,12 @@ class MailFilteringTestCase(MailTestCase):
         self.assertEquals(ob._filters[1]['value'], 'valuze')
         ob.moveFilter(1,  0)
         self.assertEquals(ob._filters[0]['value'], 'valuze')
+
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IMailFilteringBackEnd, ZODBMailBackEnd))
+        self.failUnless(verifyClass(IMailFilteringBackEnd, NormalBackEnd))
 
 def test_suite():
     return unittest.TestSuite((

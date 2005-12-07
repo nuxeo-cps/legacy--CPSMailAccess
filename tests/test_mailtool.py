@@ -118,6 +118,11 @@ class MailToolTestCase(MailTestCase):
         # should be fine now
         checker
 
+    def test_Interface(self):
+        # make sure the contract is respected
+        from Interface.Verify import verifyClass
+        self.failUnless(verifyClass(IMailTool, MailTool))
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailToolTestCase),
