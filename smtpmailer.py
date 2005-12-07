@@ -54,12 +54,14 @@ def _parseMessage(message):
                 ('hostname', 'X-Zope-Hostname'), ('port', 'X-Zope-Port'),
                 ('username', 'X-Zope-Username'),
                 ('password','X-Zope-Password'))
-
     lines = message.split('\n')
     values = {}
 
     for element in elements:
         values[element[0]] = None
+
+    # removing bccs
+    lines = [line for line in lines if not line.lower().startswith('bcc')]
 
     for line in lines:
         found = False

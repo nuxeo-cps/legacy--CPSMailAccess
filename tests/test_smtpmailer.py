@@ -22,7 +22,8 @@ from Testing.ZopeTestCase import installProduct, ZopeTestCase
 
 from Products.CPSMailAccess import smtpmailer
 from Products.CPSMailAccess.smtpmailer import MailSender, \
-                                              setMailElement, SmtpMailer, mail_sender
+                                              setMailElement, SmtpMailer, \
+                                              mail_sender, _parseMessage
 from Products.CPSMailAccess.tests import __file__ as landmark
 from Products.CPSMailAccess.mailmessage import MailMessage
 
@@ -126,6 +127,12 @@ class SMTPMailerTestCase(MailTestCase):
 
         # stop the thread now
         mailer.stop_sender()
+
+    def test_parseMessage(self):
+        # cleaning up bccs
+        msg = 'Bcc:toto\nCC:titi\nSubject:tata'
+        msg = _parseMessage(msg)
+        self.assert_(msg[1].find('toto') == -1)
 
 def test_suite():
     return unittest.TestSuite((
