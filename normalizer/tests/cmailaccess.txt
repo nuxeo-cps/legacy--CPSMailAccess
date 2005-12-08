@@ -1,0 +1,38 @@
+------------------------
+CPSMailAccess Extensions
+------------------------
+
+$Id$
+
+CPSMailAccess uses a C extension module called `cmailmaccess` to speed up
+some process.
+
+Some code will slowly move into cmailaccess to optimize mail indexing and
+searching.
+
+The first C element is the normalizer, used to clean up words that get
+indexed, in order to be able to find mails with special characters.
+
+the module is installed in the python ran by Zope::
+    >>> try:
+    ...     from cmailaccess import Normalizer
+    ... except ImportError:
+    ...     from Products.CPSMailAccess.normalizer import Normalizer
+
+cmailaccess.Normalizer is an object that takes a sequence of normalizers
+at construction. A normalizer is a two string tuple (actual, normalized)::
+
+    >>> converters = [('י', 'e'), ('א', 'a'), ('ש', 'u')]
+    >>> normalizer = Normalizer(converters)
+
+the instance then provide a `normalize(word)` method::
+
+    >>> normalizer.normalize('יייאא שש')
+    u'eeeaa uu'
+    >>> normalizer.normalize('eeee')
+    u'eeee'
+    >>> normalizer.normalize(u'יייאא שש')
+    u'eeeaa uu'
+    >>> normalizer.normalize(u'eeee')
+    u'eeee'
+
