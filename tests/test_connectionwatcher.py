@@ -82,7 +82,7 @@ class ConnectionWatcherTestCase(ZopeTestCase):
 
     def test_Interface(self):
         # make sure the contract is respected
-        from Interface.Verify import verifyClass
+        from zope.interface.verify import verifyClass
         self.failUnless(verifyClass(IConnectionWatcher, ConnectionWatcher))
 
 def test_suite():

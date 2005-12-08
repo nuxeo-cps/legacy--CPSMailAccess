@@ -229,7 +229,7 @@ class MailFilteringTestCase(MailTestCase):
 
     def test_Interface(self):
         # make sure the contract is respected
-        from Interface.Verify import verifyClass
+        from zope.interface.verify import verifyClass
         self.failUnless(verifyClass(IMailFilteringBackEnd, ZODBMailBackEnd))
         self.failUnless(verifyClass(IMailFilteringBackEnd, NormalBackEnd))
 

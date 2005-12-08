@@ -342,7 +342,7 @@ class MailMessageTestCase(MailTestCase):
 
     def test_Interface(self):
         # make sure the contract is respected
-        from Interface.Verify import verifyClass
+        from zope.interface.verify import verifyClass
         self.failUnless(verifyClass(IMailMessage, MailMessage))
 
 def test_suite():

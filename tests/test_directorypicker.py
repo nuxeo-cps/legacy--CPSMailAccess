@@ -70,7 +70,7 @@ class DirectoryPickerTestCase(MailTestCase):
 
     def test_Interface(self):
         # make sure the contract is respected
-        from Interface.Verify import verifyClass
+        from zope.interface.verify import verifyClass
         self.failUnless(verifyClass(IDirectoryPicker, DirectoryPicker))
 
 def test_suite():
