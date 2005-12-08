@@ -16,16 +16,20 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-# $Id:$
+# $Id$
 """ Normalizer package, largely inspired from TextIndexNG
 """
 import os
+from interfaces import INormalizer
 
 try:
     from cmailaccess import Normalizer
 except ImportError:
-    # python version
+    from zope.interface import implements
+
     class Normalizer(object):
+        implements(INormalizer)
+
         def __init__(self, converters):
             self.converters = {}
             for k, v in converters:
