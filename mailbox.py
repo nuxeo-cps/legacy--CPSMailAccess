@@ -26,6 +26,7 @@ import time
 from email.Utils import parseaddr, formatdate
 
 from zLOG import LOG, DEBUG
+import transaction
 from Globals import InitializeClass
 from ZODB.PersistentMapping import PersistentMapping
 from AccessControl import Unauthorized
@@ -375,8 +376,7 @@ class MailBox(MailBoxBaseCaching):
             (time.time() - start_time))
 
         # now indexing
-        get_transaction().commit()
-        get_transaction().begin()
+        transaction.commit()
         self.indexMails(indexStack, background=False)
         endtime = time.time() - start_time
         LOG('synchro', DEBUG, 'total time : %s seconds' % endtime)
@@ -418,7 +418,7 @@ class MailBox(MailBoxBaseCaching):
                 LOG('synchro', DEBUG, 'indexing %d/%d' %(y, len_))
                 self.indexMessage(item, index_relations)
                 if i == 299:
-                    get_transaction().commit(1)     # used to prevent swapping
+                    transaction.savepoint(optimistic=True) # free memory
                     i = 0
                 else:
                     i += 1

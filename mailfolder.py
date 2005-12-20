@@ -23,7 +23,7 @@
 A MailFolder contains mail messages and other mail folders.
 """
 import thread
-
+import transaction
 from zLOG import LOG, DEBUG
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
@@ -816,8 +816,7 @@ class MailFolder(BTreeFolder2):
             # let the user see results as they are fetched
             if connection_number > 0:
                 try:
-                    get_transaction().commit()
-                    get_transaction().begin()
+                    transaction.commit()
                 except ConflictError:
                     # if the user is changing box parameters
                     # the synchronize commit will raise
@@ -845,8 +844,7 @@ class MailFolder(BTreeFolder2):
         # let the user see results as they are fetched
         if connection_number > 0:
             try:
-                get_transaction().commit()
-                get_transaction().begin()
+                transaction.commit()
             except ConflictError:
                 # if the user is changing box parameters
                 # the synchronize commit will raise
