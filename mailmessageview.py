@@ -113,6 +113,7 @@ class MailMessageView(BaseMailMessageView):
                     continue
                 dmail = mail_element.replace('<', '&lt;')
                 dmail = dmail.replace('>', '&gt;')
+                mail_element = mail_element.encode('utf-8')
 
                 hmail = '<a href="%s/writeTo.html?msg_to=%s">%s</a>' \
                     %(root, quote(mail_element), dmail)
