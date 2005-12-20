@@ -37,30 +37,13 @@ if sys.modules.has_key('imaplib'):
     del sys.modules['imaplib']
 sys.modules['imaplib'] = fakeimaplib
 
-# patching menu registery
-from zope.app.publisher.browser.globalbrowsermenuservice \
-    import GlobalBrowserMenuService
 
-GlobalBrowserMenuService._menuItem = GlobalBrowserMenuService.menuItem
-
-def menuItem(self, menu_id, interface, action, title,
-            description='', filter_string=None, permission=None,
-            extra=None,
-            ):
-    if not self._registry.has_key(menu_id):
-        return
-    else:
-        self._menuItem(menu_id, interface, action, title, description,
-                       filter_string, permission, extra)
-
-GlobalBrowserMenuService.menuItem = menuItem
+installProduct('Five')
+installProduct('zasyncdispatcher')
 
 class MailMessageT(MailMessage):
     def getPhysicalPath(self):
         return str(id(self))
-
-installProduct('Five')
-installProduct('zasyncdispatcher')
 
 class FakeDirectory:
     id_field = 'id'
