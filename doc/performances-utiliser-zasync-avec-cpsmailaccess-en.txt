@@ -1,0 +1,131 @@
+===========================
+zasync and zasyncdispatcher
+===========================
+
+:Revision: $Id$
+
+.. sectnum::    :depth: 4
+.. contents::   :depth: 4
+
+
+Web Requests?
+=============
+
+For each request made to a Zope server, a thread is placed in
+charge.  A maximum number of threads is authorized and specified
+in the Zope configuration file.
+
+In general, the number varies between 2 and 4 threads per
+processor, as a function of the power of the server, and is 4 by
+default.
+
+Increasing the number of threads per processor does not in general
+provide better performance, because the increase in work to
+manage threads covers any gain in speed.
+
+When a request is being processed, the thread used is no longer
+available for new requests.  The server is said to be in a
+"saturated state" when all threads are being used.
+
+When the server is in a saturated state, new requests are forced
+to wait for an available thread.
+
+This behavior does not pose any problem for Web applications that
+execute in "disconnected mode": a thread is in charge of
+calculating and rendering a page very quickly, usually in less
+than a second.
+
+If the request lasts a long time, waiting work is able, in extreme
+cases, to trigger a timeout, usually at the end of a 30 seconds wait
+(this value is configurable).
+
+
+CPSMailAccess: A Specific Case
+==============================
+
+CPSMailAccess is not a classic webmail application: it capitalizes
+on Zope, in the style of client mail desktops, and, for
+performance reasons during execution, the data issues of the IMAP
+server.
+
+This synchronization, which can last several seconds, and
+sometimes more, if it causes of the initialization of a mail
+box, is able to produce timeouts if it is grabbed by several
+simultaneous users, for gross infrastructures.
+
+There is a simple solution for this limitation: zasync.
+
+
+zasync: Asynchronous Handlers
+=============================
+
+Provided that ZEO is installed, zasync is a tool which enables the
+execution of a server-side handler in an asynchronous way: the
+thread in this case renders the page immediately, and the task
+executes in parallel threads.
+
+This technique can be employed by CPSMailAccess to asynchronously
+update emails on the Zope server: the user is able to continue
+his/her work in parallel.
+
+zasync is a producer-consumer thread, composed of two parts:
+
+- A Zope product, which is in charge of storing the commands of
+  handlers.
+
+- A client application, which is in charge of launching the
+  execution of handlers.
+
+The Zope product stores the requests of handlers in a particular
+BTree object, called ZAsyncManager (ZAM).
+
+The client application is an independent Python program, which
+watches the Zope server using a ZEO client connection, and
+interprets requests from handlers stored in the ZAM.
+
+For installation of zasync, refer to the `zasync documentation`_.
+
+
+zasyncdispatcher: Managing Several Zasync Clients
+=================================================
+
+On coarse infrastructure, is is possible to install several zasync
+clients, attaching to each a different ZAM on the server, and thus
+multiplying the power of the system.
+
+zasyncdispatcher supports the management of ZAMs and provides a
+simple load balancing system, in order to offer applications a
+unique entry point in the asynchronous system: it manages the
+storage of demands in the ZAM, in controlling first of all the
+availability of zasync clients and the load of each.
+
+If some zasync client is not accessible, it is possible to specify
+to execute the handlers synchronously in order to avoid faults.
+
+zasyncdispatcher is a Zope container (ZAD), which can be placed in
+the root of the server and to which several ZAMs can be added.
+
+To install a ZAD, refer to to the `zasyncdispatcher documentation`_.
+
+
+CPSMailAccess: Transparent A-synchronization
+============================================
+
+The APIs provided by zasyncdispatcher permit CPSMailAccess to
+automatically detect the presence of a ZAD and to use asynchronous
+mode to update mail boxes in a transparent way.
+
+
+.. _`zasync documentation`:
+    http://www.zope.org/Members/poster/zasync
+.. _`zasyncdispatcher documentation`:
+    http://svn.nuxeo.org/trac/pub/browser/zasyncdispatcher/trunk/
+
+
+.. Emacs
+.. Local Variables:
+.. mode: rst
+.. End:
+.. Vim
+.. vim: set filetype=rst:
+
