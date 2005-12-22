@@ -1,76 +1,90 @@
-$Id$
+============
+Installation
+============
 
-A - INSTALLATION NOTES
-B - CONFIGURATION
-C - EXTRA NOTES
+:Revision: $Id$
+
+.. sectnum::    :depth: 4
+.. contents::   :depth: 4
 
 
-A - INSTALLATION NOTES
-======================
 
-1 - Prerequisites
-2 - zasyncdispatcher installation
-3 - Zope X3 installation (Zope 2.7.x only)
-4 - Products setup
-5 - Zope 3 <-> Zope 2 path setup (Zope 2.7.x only)
-6 - Webmail installation
+INSTALLATION NOTES
+==================
 
-----------
-1- Prerequisites
+Prerequisites
+-------------
 
 To install CPSMailAccess you will need:
 
 - a working Zope 2.7.x + CPS 3.3.4 or greater.
   The installation procedure is simpler with Zope 2.8.x
+
 - Zope 2.7.x specifics:
-   + ZopeX3-3.0.0 : http://www.zope.org/Products/ZopeX3
-   + Five 1.0.1 or greater : http://codespeak.net/z3/five/
+
+  + ZopeX3-3.0.0 : http://www.zope.org/Products/ZopeX3
+
+  + Five 1.0.1 or greater : http://codespeak.net/z3/five/
+
 - rdflib 2.0.6 : http://rdflib.net/
+
 - zasyncdispatcher (optional) http://svn.nuxeo.org/trac/pub/browser/zasyncdispatcher/
 
-2 - zasyncdispatcher installation
 
-If you want to do background synchronisation (ie for big intranets setup)
- CPSMailAccess is compatible with zasyncdispatcher, a small zope product
-  on the top of zasync.
+zasyncdispatcher Installation
+-----------------------------
 
-get it on nuxeo svn:
+If you want to do background synchronization (i.e. for big intranets
+setup) CPSMailAccess is compatible with zasyncdispatcher, a small
+zope product on the top of zasync.
+
+Get it on nuxeo svn::
 
     svn co http://svn.nuxeo.org/pub/zasyncdispatcher/trunk zasyncdispatcher
 
-3 - Zope X3 installation (Zope 2.7.x specific)
 
-Please install ZopeX3-3.0.0 on your system (usually in /opt/ZopeX3-3.0.0) with
-the python version you use for Zope2.7 and CPS, e.g.::
+Zope X3 installation (Zope 2.7.x specific)
+------------------------------------------
+
+Please install ZopeX3-3.0.0 on your system (usually in
+/opt/ZopeX3-3.0.0) with the python version you use for Zope2.7 and
+CPS, e.g.::
 
   $ ./configure --prefix /opt/ZopeX3-3.0.0 --with-python /usr/bin/python
   $ make
   $ make install
   $ make check
 
-4 - Products setup
 
-Put Five (Zope 2.7 users) and CPSMailAccess
+Products Setup
+--------------
 
-WARNING: You must remove the CPSWebmail Product from your instance,
-this is very important, as it might interfer.
+Put Five (Zope 2.7 users) and CPSMailAccess.
 
-run CPSMailAccess installer with::
+**Warning:** You must remove the CPSWebMail Product from your
+instance.  This is very important, as it might interfere.
+
+Run CPSMailAccess installer with::
   
   python setup.py install
 
 as root user.
 
-5 - Zope 3 <-> Zope 2 path setup (Zope 2.7 specific)
 
-Edit your $INSTANCE/etc/zope.conf to add the following path declaration::
+Zope 3 <-> Zope 2 path setup (Zope 2.7 specific)
+------------------------------------------------
+
+Edit your $INSTANCE/etc/zope.conf to add the following path
+declaration::
 
   path /opt/ZopeX3-3.0.0/lib/python
 
-6 - Webmail installation
 
-Then you can restart Zope and add an external method in your CPS portal
-instance to install CPSMailAccess::
+Webmail installation
+--------------------
+
+Then you can restart Zope and add an external method in your CPS
+portal instance to install CPSMailAccess::
 
    Id            : cpsmailaccess_installer
    Title         : whatever
@@ -80,156 +94,169 @@ instance to install CPSMailAccess::
 And run it.
 
 
-B - CONFIGURATION
-=================
+Configuration
+=============
 
-1 - Portal setup
+Portal setup
+------------
 
-2 - User setup
-  a - Enable the webmail
-  b - Configure your box
-  c - First synchronization
-  d - Every day synchronization
-  e - How to use the webmail
+After installation, a new action appears in the portal action box:
+"configure webmail" that will lead you to a form where you can set
+up the webmail parameters that will apply to all users.
 
-------------------
+For each parameter, if the "portal wide" checkbox is unchecked,
+that means each user will have to set it up in his or her mailbox.
+The classical configuration is to let the user set up login and
+password and signature, so everyone shares the same parameters for
+IMAP server, SMTP, etc...
 
-1 - Portal setup
+Quick parameters review :
 
-After installation, a new action appears in the portal action box: "configure
-webmail" that will lead you to a form where you can set up the webmail
-parameters that will apply to all users.
+- HOST: name of imap host
+- Port: port of imap host
+- SSL ? : tells if the webmail uses Secure socket layer (O or 1)
+- Connection Type: type of connection, should be left at "IMAP"
+- Draft Folder name: should be left at INBOX.Drafts
+- Login: imap login, should be left blank
+- Maximum depth in folder creation: tells how deep folders can be created
+- Maximum length for folder names: tells how long can be folder names when
+  they are created
+- Displayed columns: Displayed columns and order in mail folder view
+- Password: IMAP password, should be left blank
+- Sent folder name: should be left at INBOX.Sent
+- signature: text that will appear in the footer of mails sent
+- SMTP Host: SMTP host name
+- SMTP Port: SMTP port name
+- Trash folder name: should be left at INBOX.Trash
+- Treeview style:
 
-For each parameter, if the "portal wide" checkbox is unchecked, that means each
-user will have to set it up in his or her mailbox. The classical configuration
-is to let the user set up login and password and signature, so everyone shares
-the same parameters for IMAP server, SMTP, etc...
+  + if lotus, the trash, sent and draft folders appear outside INBOX
+  + if classical, they will be children of INBOX
 
-quick parameters review :
+- SMTP Folder: This is the server system folder where messages
+  that are being sent are written. More information below.
+- Direct SMTP send ? : if 0, SMTP Folder is used, otherwise,
+  mails are sent directly to the SMTP server.
+- Access field (field:value): this let the administrator decide
+  whether the user can use the webmail or not by retrieving for the
+  members directory the given field value and check if its value
+  equals the given value.
 
-    o HOST: name of imap host
-    o Port: port of imap host
-    o SSL ? : tells if the webmail uses Secure socket layer (O or 1)
-    o Connection Type: type of connection, should be left at "IMAP"
-    o Draft Folder name: should be left at INBOX.Drafts
-    o Login: imap login, should be left blank
-    o Maximum depth in folder creation: tells how deep folders can be created
-    o Maximum length for folder names: tells how long can be folder names when
-      they are created
-    o Displayed columns: Displayed columns and order in mail folder view
-    o Password: IMAP password, should be left blank
-    o Sent folder name: should be left at INBOX.Sent
-    o signature: text that will appear in the footer of mails sent
-    o SMTP Host: SMTP host name
-    o SMTP Port: SMTP port name
-    o Trash folder name: should be left at INBOX.Trash
-    o Treeview style :
-      if lotus, the trash, sent and draft folders appear outside INBOX
-      if classical, they will be childs of INBOX
-    o SMTP Folder: This is the server system folder where messages
-                   that are beenig sent are written. More information below
-    o Direct SMTP send ? : if 0, SMTP Folder is used, otherwise,
-                           mails are sent directly to the SMTP server
-    o Access field (field:value): this let the administrator decide wheter
-                                  the user can use the webmail or not
-                                  by retrieving for the members directory
-                                  the given field value and check
-                                  if its value equals the given value.
-				  Note that you can prefix the value
-                                  by '!' to test that it differs from the value.
-				  This can be useful in some cases. 
-                                  Example:  `accountStatus:!disable`
+  Note that you can prefix the value by '!' to test that it
+  differs from the value.
+
+  This can be useful in some cases.  Example:
+  `accountStatus:!disable`
 				    
-about SMTP Folder:
+About SMTP Folder:
 
-    SMTP Folder is MailDir folder used for asynchronous sends of mails.
-    In order to work you need to provide a path on your system
-    that can be written by the zope process.
+- SMTP Folder is MailDir folder used for asynchronous sends of
+  mails. In order to work you need to provide a path on your
+  system that can be written by the zope process.
 
-    CPSMailAccess will take care of initializing the MailDir the first time,
-    so if you can provide a path where the last part is not existing yet.
+- CPSMailAccess will take care of initializing the MailDir the first time,
+  so if you can provide a path where the last part is not existing yet.
 
-    For example:
+- For example::
 
-          /tmp/foo/bar
+      /tmp/foo/bar
 
-    CPSMailAccess will create the "bar" folder. /tmp/foo path have to exists though.
+- CPSMailAccess will create the "bar" folder. /tmp/foo path have
+  to exists though.
 
-    if bar already exists but is not a MailDir folder structure, it won't work.
+- If bar already exists but is not a MailDir folder structure, it
+  won't work.
 
-    A maildir structure is composed of three sub folders: cur, new and tmp.
-
-
-2 - User setup
-
-a - Enable the webmail
-
-Go to your preferences, and change "webmail activated" to "yes". After you have
-validated this choice, you will see a new entry in your actions, called "My
-mails".
-
-b - Configure your box
-
-The first time you click on "My mails" will bring you to the configuration
-screen after a little while (this is because it tests if your box can be run
-without any configuration).
-
-There you will need to provide a few informations:
-
-to quickly set your box, you need to provide these parameters :
-
-    Login: mail server login name
-    Password: mail server password
-    Signature: any text
-
-submit your changes with the "submit" button
-
-c - First synchronization
-
-The first synchronization takes a big while: all mails from server are fetched
-and indexed to create a browsing structure into zope.
-
-For big boxes (>30 0000 mails) it can take up to 5 minutes sometimes, depending
-on the server strength and on the network. But this needs to be done juste
-once. If you don't care about sub folders of your IMAP box, you can even pass
-this step.
-
-Another good idea would be to clean up the box before synchronizing it.
-
-In the Administration panel, click on the "Synchronize the whole box" button.
-This will launch the work. When the box is synchronized, you will be taken in
-your INBOX and will be able to start to use the webmail.
-
-d - Every day synchronization
-
-For now on, everytime you will click on "My Mails" the box will get
-synchronized. The webmail will just synchronize INBOX. This should not last
-more than a few seconds. You can do a synchronization manually with the "get
-messages" button.
-
-e - How to use the webmail
-
-Please refer to the user manual
+- A maildir structure is composed of three sub folders: cur, new
+  and tmp.
 
 
-C - EXTRA NOTES
-===============
+User setup
+----------
 
-1 - Using other mail client within the same mail account at the same time
+1. Enable the webmail
 
-If you are using at the same time the webmail and another mail client, you can
-have unexpected events. For example, if another mail client filters incoming
-messages, by marking them as "deleted" and do not expunge them, they will still
-appear in the webmail and marked as deleted until the mail client is closed.
+   Go to your preferences, and change "webmail activated" to
+   "yes". After you have validated this choice, you will see a new
+   entry in your actions, called "My mails".
 
-Trying to work on those "pre-deleted" messages can lead to errors.
+2. Configure your box
 
-2 - Attached files
+   The first time you click on "My mails" will bring you to the
+   configuration screen after a little while (this is because it
+   tests if your box can be run without any configuration).
 
-Attached files gets scanned when you are viewing the mail, so the attach icon
-won't appear until the mail is viewed.
+   There you will need to provide a few informations:
 
-3 - Using zasyncdispatcher
+   To quickly set your box, you need to provide these parameters::
 
-CPSMailAccess can be used with zasyncdispatcher: if it founds it,
-synchronizations will be sent to background.
+       Login: mail server login name
+       Password: mail server password
+       Signature: any text
+
+   Submit your changes with the "submit" button.
+
+3. First synchronization
+
+   The first synchronization takes a big while: all mails from
+   server are fetched and indexed to create a browsing structure
+   into zope.
+
+   For big boxes (>30 0000 mails) it can take up to 5 minutes
+   sometimes, depending on the server strength and on the network.
+   But this needs to be done just once. If you don't care about
+   sub folders of your IMAP box, you can even pass this step.
+
+   Another good idea would be to clean up the box before
+   synchronizing it.
+
+   In the Administration panel, click on the "Synchronize the
+   whole box" button. This will launch the work. When the box is
+   synchronized, you will be taken in your INBOX and will be able
+   to start to use the webmail.
+
+4. Every day synchronization
+
+   For now on, every time you will click on "My Mails" the box will
+   get synchronized. The webmail will just synchronize INBOX. This
+   should not last more than a few seconds. You can do a
+   synchronization manually with the "get messages" button.
+
+5. How to use the webmail
+
+   Please refer to the user manual
+
+
+Extra Notes
+===========
+
+1. Using other mail client within the same mail account at the same time
+
+   If you are using at the same time the webmail and another mail
+   client, you can have unexpected events. For example, if another
+   mail client filters incoming messages, by marking them as
+   "deleted" and do not expunge them, they will still appear in
+   the webmail and marked as deleted until the mail client is
+   closed.
+
+   Trying to work on those "pre-deleted" messages can lead to
+   errors.
+
+2. Attached files
+
+   Attached files gets scanned when you are viewing the mail, so
+   the attach icon won't appear until the mail is viewed.
+
+3. Using zasyncdispatcher
+
+   CPSMailAccess can be used with zasyncdispatcher: if it founds
+   it, synchronizations will be sent to background.
+
+
+.. Emacs
+.. Local Variables:
+.. mode: rst
+.. End:
+.. Vim
+.. vim: set filetype=rst:
+
