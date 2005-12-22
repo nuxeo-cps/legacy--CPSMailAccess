@@ -620,3 +620,6 @@ msgstr "Message sent to"
 
 msgid "webmail_enabled"
 msgstr "Access field (field:value)"
+
+msgid "cpsma_miss_sessiondata"
+msgstr "Cannot find needed data in the current session, you might need to reconnect"

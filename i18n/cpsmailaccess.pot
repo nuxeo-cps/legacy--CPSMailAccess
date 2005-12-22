@@ -614,3 +614,6 @@ msgstr ""
 
 msgid "webmail_enabled"
 msgstr ""
+
+msgid "cpsma_miss_sessiondata"
+msgstr ""

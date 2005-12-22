@@ -622,3 +622,8 @@ msgstr "Message envoyé à"
 msgid "webmail_enabled"
 msgstr "Contrôle d'accès (champ:valeur)"
 
+msgid "cpsma_miss_sessiondata"
+msgstr ""
+"Informations manquantes dans la session, "
+"il est peut-être nécessaire de se reconnecter"
+

@@ -546,7 +546,7 @@ class MailBox(MailBoxBaseCaching):
             connection_params = self.wrapConnectionParams(connection_params)
         except Exception, e:
             # bad configuration
-            raise ValueError('Bad configuration parameter: %s' % str(e))
+            raise ValueError(str(e))
 
         connector = wm_tool.getConnection(connection_params, number)
 
@@ -1186,7 +1186,7 @@ class MailBox(MailBoxBaseCaching):
                 # grabbing the value in the session datas
                 value = self._getSessionData(field)
                 if value is None:
-                    raise Exception("No field '%s' found in session" % field)
+                    raise Exception("cpsma_miss_sessiondata")
                 return value
             elif source.lower() == 'request':
                 # grabbing the value in the request datas
