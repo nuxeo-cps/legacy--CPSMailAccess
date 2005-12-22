@@ -1,103 +1,135 @@
--------------------------
+=========================
 zasync et zasyndispatcher
--------------------------
+=========================
+
+:Revision: $Id$
+
+.. sectnum::    :depth: 4
+.. contents::   :depth: 4
+
 
 Requêtes web ?
---------------
+==============
 
-A chaque requête effectuée sur un serveur Zope, un thread prend en charge
-la demande. Un nombre maximum de threads est autorisé, et fixé dans le
-fichier de configuration de Zope.
+A chaque requête effectuée sur un serveur Zope, un thread prend en
+charge la demande. Un nombre maximum de threads est autorisé, et
+fixé dans le fichier de configuration de Zope.
 
-En général ce nombre varie entre 2 et 4 threads par processeur,
-en fonction de la puissance du serveur, et est fixé à 4 par défaut.
+En général ce nombre varie entre 2 et 4 threads par processeur, en
+fonction de la puissance du serveur, et est fixé à 4 par défaut.
 
-Augmenter le nombre de threads/processeur au dela n'offre pas en général
-de meilleurs performances, car le surplus de travail de gestion des
-threads recouvre vite les gains obtenus.
+Augmenter le nombre de threads/processeur au dela n'offre pas en
+général de meilleurs performances, car le surplus de travail de
+gestion des threads recouvre vite les gains obtenus.
 
-Lorsqu'une requête est en cours, le thread consommé n'est plus disponible
-pour de nouvelles requêtes et le serveur est dit en `état de saturation`
-lorsque tout les threads sont en cours d'utilisation.
+Lorsqu'une requête est en cours, le thread consommé n'est plus
+disponible pour de nouvelles requêtes et le serveur est dit en
+`état de saturation` lorsque tout les threads sont en cours
+d'utilisation.
 
-Lorsque le serveur est en état de saturation les nouvelles requêtes sont
-mise en attente d'un thread disponible.
+Lorsque le serveur est en état de saturation les nouvelles
+requêtes sont mise en attente d'un thread disponible.
 
-Ce fonctionnement ne pose aucun problème sur des applications web qui
-fonctionnent en `mode déconnecté`: un thread est en charge de calculer
-une page et rend très vite la main, en général en moins d'une seconde.
+Ce fonctionnement ne pose aucun problème sur des applications web
+qui fonctionnent en `mode déconnecté`: un thread est en charge de
+calculer une page et rend très vite la main, en général en moins
+d'une seconde.
 
-Si la requête dure plus longtemps, les travaux en attente peuvent dans les
-cas extrêmes provoquer un timeout, en général au bout de trente secondes
-d'attente (cette valeur est configurable).
+Si la requête dure plus longtemps, les travaux en attente peuvent
+dans les cas extrêmes provoquer un timeout, en général au bout de
+trente secondes d'attente (cette valeur est configurable).
+
 
 CPSMailAccess: un cas particulier
----------------------------------
+=================================
 
-CPSMailAccess n'est pas un webmail classique: il capitalise dans Zope,
-à la manière des clients mails desktop, et pour des raisons de performances
-en cours d'utilisation, les données issues du serveur IMAP.
+CPSMailAccess n'est pas un webmail classique: il capitalise dans
+Zope, à la manière des clients mails desktop, et pour des raisons
+de performances en cours d'utilisation, les données issues du
+serveur IMAP.
 
-Cette synchronisation qui peut durer plusieurs secondes, et parfois plus,
-si il s'agit de l'initialisation d'une boite mail complète, peut entraîner
-des timeouts si elle est enclenchée par plusieurs utilisateurs simultanément,
-pour de grosses infrastuctures.
+Cette synchronisation qui peut durer plusieurs secondes, et
+parfois plus, si il s'agit de l'initialisation d'une boite mail
+complète, peut entraîner des timeouts si elle est enclenchée par
+plusieurs utilisateurs simultanément, pour de grosses
+infrastuctures.
 
-Il existe une solution simple pour palier à cette limitation: zasync.
+Il existe une solution simple pour palier à cette limitation:
+zasync.
+
 
 zasync: traitements asynchrones
--------------------------------
+===============================
 
-Moyennant la mise en place d'un ZEO, `zasync` est un outil qui permet
-d'exécuter un traitement coté serveur de manière asynchrone: le thread
-dans ce cas rend la main immédiatement, et la tâche est effectuée en
-parallèle des threads frontaux.
+Moyennant la mise en place d'un ZEO, `zasync` est un outil qui
+permet d'exécuter un traitement coté serveur de manière
+asynchrone: le thread dans ce cas rend la main immédiatement, et
+la tâche est effectuée en parallèle des threads frontaux.
 
-Cette technique peut être employée par CPSMailAccess pour désynchroniser
-la mise à jour des mails sur le serveur Zope: l'utilisateur peut continuer
-son travail en parallèle.
+Cette technique peut être employée par CPSMailAccess pour
+désynchroniser la mise à jour des mails sur le serveur Zope:
+l'utilisateur peut continuer son travail en parallèle.
 
-zasync est une file producteurs-consommateur, composé de deux parties:
+zasync est une file producteurs-consommateur, composé de deux
+parties:
 
 - un produit Zope, en charge de stocker les demandes de traitement
-- une application cliente, en charge de lancer l'exécution des traitements
 
-Le produit Zope stocke les demandes de traitements dans un objet BTree
-particulier, appelé ZAsyncManager (ZAM).
+- une application cliente, en charge de lancer l'exécution des
+  traitements
 
-L'application cliente est un programme Python indépendant, qui surveille le
-serveur Zope en s'y connectant comme un client ZEO, et interprète les
-demandes de traitements stockés dans le ZAM.
+Le produit Zope stocke les demandes de traitements dans un objet
+BTree particulier, appelé ZAsyncManager (ZAM).
 
-Pour la mise en place de zasync, se référer à la `documentation de zasync`_
+L'application cliente est un programme Python indépendant, qui
+surveille le serveur Zope en s'y connectant comme un client ZEO,
+et interprète les demandes de traitements stockés dans le ZAM.
+
+Pour la mise en place de zasync, se référer à la `documentation de
+zasync`_
+
 
 zasyncdispatcher: gestion de plusieurs clients zasync
------------------------------------------------------
+=====================================================
 
-Sur de grosses infrastructures, il est possible de mettre en place plusieurs
-clients zasync, en attribuant à chacun un ZAM différent sur le serveur, et
-ainsi démultiplier la puissance du système.
+Sur de grosses infrastructures, il est possible de mettre en place
+plusieurs clients zasync, en attribuant à chacun un ZAM différent
+sur le serveur, et ainsi démultiplier la puissance du système.
 
-`zasyncdispatcher` permet de gérer ces ZAM et propose un système simple
-de load balancing, pour offrir aux applications un point d'entrée unique
-sur le système de désynchronisation: il gère le stockage de la demande
-dans un des ZAM, en contrôlant au préalable la disponibilité des clients
-zasync et la charge de chacun.
+`zasyncdispatcher` permet de gérer ces ZAM et propose un système
+simple de load balancing, pour offrir aux applications un point
+d'entrée unique sur le système de désynchronisation: il gère le
+stockage de la demande dans un des ZAM, en contrôlant au préalable
+la disponibilité des clients zasync et la charge de chacun.
 
-Si aucun client zasync n'est accessible, il peut proposer d'exécuter le
-traitement de manière synchrone pour éviter les défections.
+Si aucun client zasync n'est accessible, il peut proposer
+d'exécuter le traitement de manière synchrone pour éviter les
+défections.
 
-zasyncdispatcher est un conteneur Zope (ZAD), qui peut être placé à la racine
-du serveur et dans lequel plusieurs ZAM peuvent être ajoutés.
+zasyncdispatcher est un conteneur Zope (ZAD), qui peut être placé
+à la racine du serveur et dans lequel plusieurs ZAM peuvent être
+ajoutés.
 
-Pour la mise en place d'un ZAD, se référer à la `documentation de zasyncdispatcher`_
+Pour la mise en place d'un ZAD, se référer à la `documentation de
+zasyncdispatcher`_
+
 
 CPSMailAccess: désynchronisation transparente
----------------------------------------------
+=============================================
 
-Les APIs fournies par zasyncdispatcher permettent à CPSMailAccess de détecter
-la présence d'un ZAD automatiquement et d'utiliser le mode asynchrone pour
-la mise à jour des boites mails de manière transparente.
+Les APIs fournies par zasyncdispatcher permettent à CPSMailAccess
+de détecter la présence d'un ZAD automatiquement et d'utiliser le
+mode asynchrone pour la mise à jour des boites mails de manière
+transparente.
 
 .. _`documentation de zasync`: http://www.zope.org/Members/poster/zasync
 .. _`documentation de zasyncdispatcher`: http://svn.nuxeo.org/trac/pub/browser/zasyncdispatcher/trunk/
+
+
+.. Emacs
+.. Local Variables:
+.. mode: rst
+.. End:
+.. Vim
+.. vim: set filetype=rst:
+
