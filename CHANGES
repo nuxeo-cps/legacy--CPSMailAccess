@@ -5,8 +5,8 @@ New features:
 ~~~~~~~~~~~~~
 - Added a normalizer for mail search
 - Parameters can be taken from sessions as well now.
-  Using {$SESSION.var}.
-  For example, {$SESSION.element} will retrieve "element"
+  Using ${SESSION.var}.
+  For example, ${SESSION.element} will retrieve "element"
 Bug fixes:
 ~~~~~~~~~~
 - #1146 better handling of attached file with non well-specified mime types
