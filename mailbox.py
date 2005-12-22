@@ -1161,8 +1161,17 @@ class MailBox(MailBoxBaseCaching):
             request = self.REQUEST
             if hasattr(request, 'SESSION'):
                 session = request.SESSION
-                if name in session:
+                if name in session.keys(): # session is not a Python 2.4 dict
                     return session[name]
+        return None
+
+    def _getRequestData(self, name):
+        """ retrieve a data from the session """
+        # XXX Z2 version
+        if hasattr(self, 'REQUEST'):
+            request = self.REQUEST
+            if name in request.keys(): # request is not a Python 2.4 dict
+                return request[name]
         return None
 
     def _directoryToParam(self, value):
@@ -1178,6 +1187,12 @@ class MailBox(MailBoxBaseCaching):
                 value = self._getSessionData(field)
                 if value is None:
                     raise Exception("No field '%s' found in session" % field)
+                return value
+            elif source.lower() == 'request':
+                # grabbing the value in the request datas
+                value = self._getRequestData(field)
+                if value is None:
+                    raise Exception("No field '%s' found in request" % field)
                 return value
             else:
                 directory = source

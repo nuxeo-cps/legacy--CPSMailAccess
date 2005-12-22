@@ -7,6 +7,7 @@ New features:
 - Parameters can be taken from sessions as well now.
   Using ${SESSION.var}.
   For example, ${SESSION.element} will retrieve "element"
+- Same feature for REQUEST (${SESSION.element})
 Bug fixes:
 ~~~~~~~~~~
 - #1146 better handling of attached file with non well-specified mime types

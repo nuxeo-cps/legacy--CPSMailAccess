@@ -473,7 +473,6 @@ class MailBoxTestCase(MailTestCase):
         # now datas can also be contained in the session
         class FakeRequest:
             SESSION = {'webmail_login': 'tziade'}
-
         mailbox = self._getMailBox()
         mailbox.REQUEST = FakeRequest()
 
@@ -482,6 +481,17 @@ class MailBoxTestCase(MailTestCase):
 
         self.assertRaises(Exception, mailbox._directoryToParam,
                           '${SESSION.xxxxxxx}')
+
+    def test_directoryToParamForRequest(self):
+        # now datas can also be contained in the request
+        mailbox = self._getMailBox()
+        mailbox.REQUEST = {'webmail_login': 'tziade'}
+
+        res = mailbox._directoryToParam('${REQUEST.webmail_login}')
+        self.assertEquals(res, 'tziade')
+
+        self.assertRaises(Exception, mailbox._directoryToParam,
+                          '${REQUEST.xxxxxxx}')
 
 def test_suite():
     return unittest.TestSuite((
