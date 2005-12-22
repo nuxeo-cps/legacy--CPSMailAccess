@@ -1154,31 +1154,50 @@ class MailBox(MailBoxBaseCaching):
             render[key] = value
         return render
 
+    def _getSessionData(self, name):
+        """ retrieve a data from the session """
+        # XXX Z2 version
+        if hasattr(self, 'REQUEST'):
+            request = self.REQUEST
+            if hasattr(request, 'SESSION'):
+                session = request.SESSION
+                if name in session:
+                    return session[name]
+        return None
+
     def _directoryToParam(self, value):
         """ check if a given parameter has to be taken from a directory """
         id = self.id.replace('box_', '')
         if isinstance(value, str) and value.startswith('${'):
             name = value[2:-1]
             elements = name.split('.')
-            directory = elements[0]
+            source = elements[0]
             field = elements[1]
-            directory_identifier = self._getDirectoryIdField(directory)
-            kw = {directory_identifier : id}
-            entries = self._searchEntries(directory, [field], **kw)
-            if len(entries) > 1:
-                # trying to figure out the user, if doable
-                for entry in entries:
-                    if entry[1][directory_identifier] == id:
-                        if not entry[1].has_key(field):
-                            raise Exception("No field '%s' found in %s" % (field, directory))
-                        return entry[1][field]
-                raise Exception('Directory returned more than one entry')
-            if len(entries) == 0:
-                raise Exception('No entry found in %s for %s' % (directory, id))
-            fields = entries[0][1]
-            if not fields.has_key(field):
-                raise Exception("No field '%s' found in %s" % (field, directory))
-            return fields[field]
+            if source.lower() == 'session':
+                # grabbing the value in the session datas
+                value = self._getSessionData(field)
+                if value is None:
+                    raise Exception("No field '%s' found in session" % field)
+                return value
+            else:
+                directory = source
+                directory_identifier = self._getDirectoryIdField(directory)
+                kw = {directory_identifier : id}
+                entries = self._searchEntries(directory, [field], **kw)
+                if len(entries) > 1:
+                    # trying to figure out the user, if doable
+                    for entry in entries:
+                        if entry[1][directory_identifier] == id:
+                            if not entry[1].has_key(field):
+                                raise Exception("No field '%s' found in %s" % (field, directory))
+                            return entry[1][field]
+                    raise Exception('Directory returned more than one entry')
+                if len(entries) == 0:
+                    raise Exception('No entry found in %s for %s' % (directory, id))
+                fields = entries[0][1]
+                if not fields.has_key(field):
+                    raise Exception("No field '%s' found in %s" % (field, directory))
+                return fields[field]
         return value
 
     def elementIsInTrash(self, element):

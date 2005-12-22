@@ -469,6 +469,20 @@ class MailBoxTestCase(MailTestCase):
         from zope.interface.verify import verifyClass
         self.failUnless(verifyClass(IMailBox, MailBox))
 
+    def test_directoryToParamForSession(self):
+        # now datas can also be contained in the session
+        class FakeRequest:
+            SESSION = {'webmail_login': 'tziade'}
+
+        mailbox = self._getMailBox()
+        mailbox.REQUEST = FakeRequest()
+
+        res = mailbox._directoryToParam('${SESSION.webmail_login}')
+        self.assertEquals(res, 'tziade')
+
+        self.assertRaises(Exception, mailbox._directoryToParam,
+                          '${SESSION.xxxxxxx}')
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(MailBoxTestCase),
