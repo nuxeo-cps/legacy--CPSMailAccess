@@ -30,9 +30,9 @@ from smtplib import SMTPRecipientsRefused
 from Persistence import Persistent
 import Acquisition
 
-from zope.app.mail.mailer import SMTPMailer
-from zope.app.mail.delivery import QueueProcessorThread
-from zope.app.mail.maildir import Maildir
+from mail.mailer import SMTPMailer
+from mail.delivery import QueueProcessorThread
+from mail.maildir import Maildir
 
 
 """

@@ -21,7 +21,7 @@
     A message with a few more things for editor's view
 """
 from email import Message
-from zope.app.cache.ram import RAMCache
+from cache.ram import RAMCache
 from mailmessage import MailMessage
 
 class MailEditorMessage(MailMessage):

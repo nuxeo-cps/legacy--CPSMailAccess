@@ -35,7 +35,6 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.Five.traversable import FiveTraversable
 
 from zope.interface import implements
-from zope.app.cache.ram import RAMCache
 
 from utils import getToolByName, decodeHeader, uniqueId, makeId, getFolder,\
                   createDigest, translate
@@ -49,6 +48,7 @@ from mailsearch import ZemanticMailCatalog, get_uri, union
 from directorypicker import DirectoryPicker
 from baseconnection import has_connection
 from mailfiltering import ZMailFiltering
+from cache.ram import RAMCache
 
 try:
     from Products.zasyncdispatcher import asyncedCall, canAsync

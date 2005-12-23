@@ -32,13 +32,13 @@ from Acquisition import aq_parent, aq_inner, aq_base
 from ZODB.POSException import ConflictError
 
 from zope.interface import implements
-from zope.app.cache.ram import RAMCache
 
 from mailmessage import MailMessage
 from mailexceptions import MailContainerError
 from interfaces import IMailFolder, IMailMessage, IMailBox
 from utils import uniqueId, makeId, createDigestFromList, translate
 from baseconnection import has_connection, ConnectionError
+from cache.ram import RAMCache
 
 folder_locker = {}
 
