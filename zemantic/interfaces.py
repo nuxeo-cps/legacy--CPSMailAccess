@@ -31,10 +31,7 @@ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 </rdf:RDF>
 '''
 
-from zope.i18nmessageid import MessageIDFactory
 from zope.interface import Interface, classImplements, Attribute, Invalid
-
-_ = MessageIDFactory('zemantic')
 
 class IRDFThreeTuples(Interface):
     """ Interface for a component that wants to generate RDF XML."""

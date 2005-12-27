@@ -57,7 +57,10 @@ __docformat__ = 'restructuredtext'
 from zope.interface import Interface, Attribute
 from zope.schema import Object, TextLine, Int, Password, BytesLine
 
-from zope.app.i18n import ZopeMessageIDFactory as _
+try:
+    from zope.app.i18n import ZopeMessageFactory as _
+except ImportError:
+    from zope.app.i18n import ZopeMessageIDFactory as _
 
 
 class IMailDelivery(Interface):
