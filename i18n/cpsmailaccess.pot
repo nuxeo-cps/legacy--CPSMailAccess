@@ -3,22 +3,173 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: default\n"
-"POT-Creation-Date: 2005-10-14 14:24default\n"
+"POT-Creation-Date: 2005-12-29 16:17default\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Your Name <your@email>\n"
 "Language-Team: Name <email>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"Language-code: LL\n"
-"Language-name: Language\n"
-"Preferred-encodings: utf-8 latin1\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-encodings: latin9 utf-8\n"
 "Domain: default\n"
+
+#.   <td class="tr_title">Action</td>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "Action"
+msgstr ""
+
+#.   <td class="tr_title">Action param</td>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "Action param"
+msgstr ""
+
+#.   <span>
+#.           Automatic filters
+#.         </span>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "Automatic filters"
+msgstr ""
+
+#.   <th class="EditAttributeName">Cache name</th>
+#: from ../cache/browser/cacheableedit.pt
+msgid "Cache name"
+msgstr ""
+
+#.   <option value="Cc">Cc</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "Cc"
+msgstr ""
+
+#.   <td class="tr_title">Condition</td>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "Condition"
+msgstr ""
+
+#.   <p condition="view/current_cache_id">
+#.         Currently the object uses
+#.         ${cache_id_or_url (tal omit-tag="not:view/current_cache_url" attributes="href view/current_cache_url" content="view/current_cache_id")}.
+#.       </p>
+#: from ../cache/browser/cacheableedit.pt
+msgid "Currently the object uses ${cache_id_or_url}."
+msgstr ""
+
+#.   <p condition="not: view/current_cache_id">
+#.         Currently there is no cache associated with the object.
+#.       </p>
+#: from ../cache/browser/cacheableedit.pt
+msgid "Currently there is no cache associated with the object."
+msgstr ""
+
+#.   <td class="tr_title">Element</td>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "Element"
+msgstr ""
+
+#.   <th>Entries</th>
+#: from ../cache/browser/ramstats.pt
+msgid "Entries"
+msgstr ""
+
+#.   <span style="font-weight: bold">Errors</span>
+#: from ../cache/browser/cacheableedit.pt ../cache/browser/ramedit.pt
+#: ../cache/browser/ramstats.pt
+msgid "Errors"
+msgstr ""
+
+#.   <span>
+#.           Filters for incoming messages
+#.         </span>
+#.   <a href="filters.html">
+#.               Filters for incoming messages
+#.               </a>
+#: from ../www/mailBoxFiltersView.zpt ../www/mailBoxParametersView.zpt
+msgid "Filters for incoming messages"
+msgstr ""
+
+#.   <a href="#" content="i">Folder</a>
+#: from ../zemantic/browser/commontasks.pt
+msgid "Folder"
+msgstr ""
+
+#.   <th>Hits</th>
+#: from ../cache/browser/ramstats.pt
+msgid "Hits"
+msgstr ""
 
 #.   <block condition="isINBOX">INBOX</block>
 #: from ../skins/boxes_mailaccess.pt
 msgid "INBOX"
+msgstr ""
+
+#.   <th class="EditAttributeName">
+#.             Maximum age of cached entries
+#.           </th>
+#: from ../cache/browser/ramedit.pt
+msgid "Maximum age of cached entries"
+msgstr ""
+
+#.   <th class="EditAttributeName">
+#.             Maximum cached entries
+#.           </th>
+#: from ../cache/browser/ramedit.pt
+msgid "Maximum cached entries"
+msgstr ""
+
+#.   <th>Misses</th>
+#: from ../cache/browser/ramstats.pt
+msgid "Misses"
+msgstr ""
+
+#.   <th>Path</th>
+#: from ../cache/browser/ramstats.pt
+msgid "Path"
+msgstr ""
+
+#.   <span>RAMCache statistics</span>
+#: from ../cache/browser/ramstats.pt
+msgid "RAMCache statistics"
+msgstr ""
+
+#.   <option value="From">Sender</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "Sender"
+msgstr ""
+
+#.   <th>Size, bytes</th>
+#: from ../cache/browser/ramstats.pt
+msgid "Size, bytes"
+msgstr ""
+
+#.   <option value="Subject">Subject</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "Subject"
+msgstr ""
+
+#.   <p>
+#.         This edit form allows you to associate a cache with this object.
+#.       </p>
+#: from ../cache/browser/cacheableedit.pt
+msgid "This edit form allows you to associate a cache with this object."
+msgstr ""
+
+#.   <th class="EditAttributeName">
+#.             Time between cache cleanups
+#.           </th>
+#: from ../cache/browser/ramedit.pt
+msgid "Time between cache cleanups"
+msgstr ""
+
+#.   <option value="To">To</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "To"
+msgstr ""
+
+#.   <td class="tr_title">Value</td>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "Value"
 msgstr ""
 
 #.   <div class="title2">
@@ -28,11 +179,86 @@ msgstr ""
 msgid "Webmail Actions"
 msgstr ""
 
-#.   <div class="title2">
-#.               Attached files
-#.               </div>
-#: from ../skins/boxes_mailaccess.pt
-msgid "cpsma_attached_files"
+#.   <p>You can configure the RAM Cache here.</p>
+#: from ../cache/browser/ramedit.pt
+msgid "You can configure the RAM Cache here."
+msgstr ""
+
+#.   <input name="submit" onclick="saveMessageDatas()" type="submit" class="attach_button" value="attach" onmouseover="setCursor(this);" />
+#: from ../www/mailEditorView.zpt
+msgid "attach"
+msgstr ""
+
+#.   <option value="3">begin with</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "begin with"
+msgstr ""
+
+#.   <option value="1">contains</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "contains"
+msgstr ""
+
+#.   <option value="2">copy to</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "copy to"
+msgstr ""
+
+#.   <div class="message" condition="synchro">
+#.       While the box is beeing synchronized, webmail features are limited to browsing.
+#.       </div>
+#: from ../www/mailFolderView.zpt ../www/mailMessageView.zpt
+msgid "cps_synchronizing"
+msgstr ""
+
+#.   <block>Add recpients</block>
+#: from ../www/mailDirectoryView.zpt
+msgid "cpsma_add_users"
+msgstr ""
+
+#.   <span>Address Book</span>
+#: from ../www/mailBoxView.zpt
+msgid "cpsma_address_book"
+msgstr ""
+
+#.   <span class="link" onclick="popupRecipientPicker()" onmouseover="setCursor(this);">Address books</span>
+#: from ../www/mailEditorView.zpt
+msgid "cpsma_address_books"
+msgstr ""
+
+#.   <span>Attach file</span>
+#: from ../www/mailEditorView.zpt
+msgid "cpsma_attach_file"
+msgstr ""
+
+#.   <block>BCc</block>
+#.   <span>BCc</span>
+#.   <span>
+#.                       Bcc
+#.                       </span>
+#: from ../www/mailDirectoryView.zpt ../www/mailEditorView.zpt
+msgid "cpsma_bcc"
+msgstr ""
+
+#.   <span style="color: red">*body search is mail server-side and thus very slow</span>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_bodysearch_warning"
+msgstr ""
+
+#.   <block>Cc</block>
+#.   <span>Cc</span>
+#.   <span>
+#.                         Cc
+#.                         </span>
+#: from ../www/mailDirectoryView.zpt ../www/mailEditorView.zpt
+msgid "cpsma_cc"
+msgstr ""
+
+#.   <i onmouseover="setCursor(this)" onclick="toggleElementVisibility('selectFolder')">
+#.                  Pick-up folders to search in (not recursive)...
+#.               </i>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_choose_folders"
 msgstr ""
 
 #.   <div class="form_title">
@@ -42,11 +268,233 @@ msgstr ""
 msgid "cpsma_choose_new_folder"
 msgstr ""
 
-#.   <div class="form_title">
-#.           Pickup a folder
-#.         </div>
-#: from ../skins/boxes_mailaccess.pt
-msgid "cpsma_pickup_new_folder"
+#.   <input name="clear" type="submit" class="standalone" value="cpsma_clear_mail_bodies" />
+#: from ../www/mailBoxParametersView.zpt
+msgid "cpsma_clear_mail_bodies"
+msgstr ""
+
+#.   <input name="clear" type="submit" class="standalone" value="cpsma_clear_mail_catalog" />
+#: from ../www/mailBoxParametersView.zpt
+msgid "cpsma_clear_mail_catalog"
+msgstr ""
+
+#.   <input style="float:right" onclick="closeDirectoryPicker()" type="button" class="standalone" value="cpsma_close" />
+#: from ../www/mailDirectoryView.zpt
+msgid "cpsma_close"
+msgstr ""
+
+#.   <span>Configure Mailbox</span>
+#: from ../www/mailBoxView.zpt
+msgid "cpsma_configure_mailbox"
+msgstr ""
+
+#.   <p>First connection</p>
+#: from ../www/mailBoxParametersView.zpt
+msgid "cpsma_first_time"
+msgstr ""
+
+#.   <div class="dlabel">
+#.               Folders
+#.               </div>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_folders"
+msgstr ""
+
+#.   <span>Found</span>
+#: from ../www/mailSearchView.zpt ../www/mailZemanticSearchView.zpt
+msgid "cpsma_found"
+msgstr ""
+
+#.   <div class="message">
+#.             Javascript is disabled, please activate it for enhanced ergonomy.
+#.           </div>
+#: from ../www/mailEditorView.zpt
+msgid "cpsma_js_disabled"
+msgstr ""
+
+#.   <div class="message">
+#.       Your mailbox is beeing synchronized. Please hold on.
+#.       </div>
+#: from ../www/mailProgressView.zpt
+msgid "cpsma_mailbox_beeing_synchronized"
+msgstr ""
+
+#.   <a href="synchronize.html">
+#.           If nothing seems to be loading, click here
+#.           </a>
+#: from ../www/mailProgressView.zpt
+msgid "cpsma_mailbox_force_synchronize"
+msgstr ""
+
+#.   <span>cpsma_mailbox_managment_tasks</span>
+#: from ../www/mailBoxParametersView.zpt
+msgid "cpsma_mailbox_managment_tasks"
+msgstr ""
+
+#.   <span>cpsma_mailbox_parameters</span>
+#: from ../www/mailBoxParametersView.zpt
+msgid "cpsma_mailbox_parameters"
+msgstr ""
+
+#.   <span>cpsma_mailtool_parameters</span>
+#: from ../www/mailToolParametersView.zpt
+msgid "cpsma_mailtool_parameters"
+msgstr ""
+
+#.   <span>
+#.                       Maximum number of results reached, please refine your criterias.
+#.                     </span>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_max_reached"
+msgstr ""
+
+#.   <span>
+#.               message in clipboard</span>
+#: from ../www/messagelist_macros.zpt
+msgid "cpsma_message_in_clipboard"
+msgstr ""
+
+#.   <span>
+#.                   messages in clipboard</span>
+#: from ../www/messagelist_macros.zpt
+msgid "cpsma_messages_in_clipboard"
+msgstr ""
+
+#.   <span>No results where found.</span>
+#.   <div class="dlabel">No results where found.</div>
+#: from ../www/mailSearchView.zpt ../www/mailZemanticSearchView.zpt
+msgid "cpsma_no_results"
+msgstr ""
+
+#.   <span>
+#.                 Personal address book</span>
+#: from ../www/mailAdressBookView.zpt
+msgid "cpsma_personal_address_book"
+msgstr ""
+
+#.   <span>portal wide</span>
+#: from ../www/mailToolParametersView.zpt
+msgid "cpsma_portal_wide"
+msgstr ""
+
+#.   <block>Recipients</block>
+#: from ../www/mailDirectoryView.zpt
+msgid "cpsma_recipients"
+msgstr ""
+
+#.   <input name="reconnect" type="submit" class="standalone" value="cpsma_reconnect" />
+#: from ../www/mailBoxParametersView.zpt
+msgid "cpsma_reconnect"
+msgstr ""
+
+#.   <input name="reindex" type="submit" class="standalone" value="cpsma_reindex_mail_catalog" />
+#: from ../www/mailBoxParametersView.zpt
+msgid "cpsma_reindex_mail_catalog"
+msgstr ""
+
+#.   <span>results</span>
+#: from ../www/mailSearchView.zpt
+msgid "cpsma_results"
+msgstr ""
+
+#.   <span>results in</span>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_results_in"
+msgstr ""
+
+#.   <input name="reindex" type="submit" class="standalone" value="cpsma_resync_all" />
+#: from ../www/mailBoxParametersView.zpt
+msgid "cpsma_resync_all"
+msgstr ""
+
+#.   <span>Search Messages</span>
+#: from ../www/mailBoxView.zpt
+msgid "cpsma_search_message"
+msgstr ""
+
+#.   <div class="dlabel">
+#.               Message Carbon Copy :
+#.               </div>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_search_message_cc"
+msgstr ""
+
+#.   <div class="dlabel">
+#.               Message Contains :
+#.               </div>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_search_message_contains"
+msgstr ""
+
+#.   <div class="dlabel">
+#.               Message Date :
+#.               </div>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_search_message_date"
+msgstr ""
+
+#.   <div class="dlabel">
+#.               Message From :
+#.               </div>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_search_message_from"
+msgstr ""
+
+#.   <div class="dlabel">
+#.                Message Subject :
+#.               </div>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_search_message_subject"
+msgstr ""
+
+#.   <div class="dlabel">
+#.               Message To :
+#.               </div>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_search_message_to"
+msgstr ""
+
+#.   <input name="search_submitted" type="submit" class="standalone" value="cpsma_search_messages" />
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_search_messages"
+msgstr ""
+
+#.   <input name="search_submitted" type="submit" class="standalone" value="cpsma_search_submitted" />
+#: from ../www/mailDirectoryView.zpt
+msgid "cpsma_search_submitted"
+msgstr ""
+
+#.   <span>seconds</span>
+#: from ../www/mailZemanticSearchView.zpt
+msgid "cpsma_seconds"
+msgstr ""
+
+#.   <span>Subject</span>
+#: from ../www/mailEditorView.zpt
+msgid "cpsma_subject"
+msgstr ""
+
+#.   <input name="submit" type="submit" class="standalone" value="cpsma_submit" />
+#: from ../www/mailBoxParametersView.zpt
+msgid "cpsma_submit"
+msgstr ""
+
+#.   <span>Synchronize mailbox</span>
+#: from ../www/mailBoxView.zpt
+msgid "cpsma_synchronize_mailbox"
+msgstr ""
+
+#.   <block>To</block>
+#.   <span>To</span>
+#: from ../www/mailDirectoryView.zpt ../www/mailEditorView.zpt
+msgid "cpsma_to"
+msgstr ""
+
+#.   <span>
+#.           User defined filters
+#.         </span>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "cpsma_userdefined_filters"
 msgstr ""
 
 #.   <div class="title2">
@@ -56,7 +504,44 @@ msgstr ""
 msgid "cpsma_webmail_navigation"
 msgstr ""
 
-msgid "cpsma_personal_address_book"
+#.   <span>Write Message</span>
+#: from ../www/mailBoxView.zpt
+msgid "cpsma_write_message"
+msgstr ""
+
+#.   <option value="2">does not contains</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "does not contains"
+msgstr ""
+
+#.   <option value="4">ends with</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "ends with"
+msgstr ""
+
+#.   <option value="5">is</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "is"
+msgstr ""
+
+#.   <option value="6">isn't</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "isn't"
+msgstr ""
+
+#.   <option value="3">label with</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "label with"
+msgstr ""
+
+#.   <option value="1">move to</option>
+#: from ../www/mailBoxFiltersView.zpt
+msgid "move to"
+msgstr ""
+
+#.   <input name="submit" type="submit" class="standalone" value="submit" />
+#: from ../www/mailToolParametersView.zpt
+msgid "sumbit_mailbox_params"
 msgstr ""
 
 msgid "cpsma_global_address_book"
@@ -65,91 +550,16 @@ msgstr ""
 msgid "cpsma_mailbox_configuration"
 msgstr ""
 
-msgid "cpsma_mailbox_parameters"
-msgstr ""
-
-msgid "cpsma_mailbox_managment_tasks"
-msgstr ""
-
-msgid "cpsma_address_book"
-msgstr ""
-
-msgid "cpsma_configure_mailbox"
-msgstr ""
-
-msgid "cpsma_search_message"
-msgstr ""
-
-msgid "cpsma_write_message"
-msgstr ""
-
-msgid "cpsma_synchronize_mailbox"
-msgstr ""
-
-msgid "cpsma_js_disabled"
-msgstr ""
-
-msgid "cpsma_attach_file"
-msgstr ""
-
 msgid "cpsma_make_selection"
-msgstr ""
-
-msgid "cpsma_messages_in_clipboard"
-msgstr ""
-
-msgid "cpsma_message_in_clipboard"
-msgstr ""
-
-msgid "cpsma_subject"
 msgstr ""
 
 msgid "cpsma_from"
 msgstr ""
 
-msgid "cpsma_mailbox_beeing_synchronized"
-msgstr ""
-
-msgid "cpsma_mailbox_force_synchronize"
-msgstr ""
-
-msgid "cpsma_found"
-msgstr ""
-
-msgid "cpsma_results"
-msgstr ""
-
-msgid "cpsma_no_results"
-msgstr ""
-
-msgid "cpsma_search_message_subject"
-msgstr ""
-
-msgid "cpsma_search_message_from"
-msgstr ""
-
-msgid "cpsma_search_message_cc"
-msgstr ""
-
-msgid "cpsma_search_message_contains"
-msgstr ""
-
-msgid "cpsma_search_message_date"
-msgstr ""
-
 msgid "cpsma_search_message_intersection"
 msgstr ""
 
-msgid "cpsma_results_in"
-msgstr ""
-
-msgid "cpsma_seconds"
-msgstr ""
-
 msgid "cpsma_date"
-msgstr ""
-
-msgid "cpsma_cc"
 msgstr ""
 
 msgid "cpsma_save_message"
@@ -197,22 +607,10 @@ msgstr ""
 msgid "cpsma_getmessages"
 msgstr ""
 
-msgid "cpsma_search_messages"
-msgstr ""
-
-msgid "cpsma_address_books"
-msgstr ""
-
 msgid "cpsma_all_entries"
 msgstr ""
 
 msgid "cpsma_send_a_message"
-msgstr ""
-
-msgid "cpsma_to"
-msgstr ""
-
-msgid "cpsma_bcc"
 msgstr ""
 
 # named parameters
@@ -305,67 +703,13 @@ msgstr ""
 msgid "close"
 msgstr ""
 
-msgid "cpsma_reindex_mail_catalog"
-msgstr ""
-
 msgid "cpsma_objects"
 msgstr ""
 
 msgid "cpsma_filter"
 msgstr ""
 
-msgid "Filters for incoming messages"
-msgstr ""
-
-msgid "Element"
-msgstr ""
-
-msgid "Condition"
-msgstr ""
-
-msgid "Value"
-msgstr ""
-
-msgid "Action"
-msgstr ""
-
-msgid "Action param"
-msgstr ""
-
-msgid "Sender"
-msgstr ""
-
-msgid "To"
-msgstr ""
-
-msgid "Cc"
-msgstr ""
-
-msgid "contains"
-msgstr ""
-
-msgid "does not contains"
-msgstr ""
-
 msgid "begins with"
-msgstr ""
-
-msgid "ends with"
-msgstr ""
-
-msgid "is"
-msgstr ""
-
-msgid "isn't"
-msgstr ""
-
-msgid "move to"
-msgstr ""
-
-msgid "copy to"
-msgstr ""
-
-msgid "label with"
 msgstr ""
 
 msgid "set junk status"
@@ -401,40 +745,13 @@ msgstr ""
 msgid "deselect all"
 msgstr ""
 
-msgid "cps_synchronizing"
-msgstr ""
-
-msgid "cpsma_clear_mail_catalog"
-msgstr ""
-
-msgid "cpsma_submit"
-msgstr ""
-
-msgid "cpsma_resync_all"
-msgstr ""
-
 msgid "cpsma_could_not_send"
 msgstr ""
 
 msgid "cpsma_structure_unknown"
 msgstr ""
 
-msgid "cpsma_reconnect"
-msgstr ""
-
-msgid "cpsma_clear_mail_bodies"
-msgstr ""
-
 msgid "cpsma_failed_send"
-msgstr ""
-
-msgid "cpsma_first_time"
-msgstr ""
-
-msgid "cpsma_mailtool_parameters"
-msgstr ""
-
-msgid "cpsma_portal_wide"
 msgstr ""
 
 msgid "cpsma_could_not_perform"
@@ -465,6 +782,9 @@ msgid "cpsma_confirm_erase"
 msgstr ""
 
 msgid "cpsma_confirm_erase_folder"
+msgstr ""
+
+msgid "cpsma_attached_files"
 msgstr ""
 
 msgid "cpsma_message_saved"
@@ -509,9 +829,6 @@ msgstr ""
 msgid "cpsma_notified"
 msgstr ""
 
-msgid "cpsma_bodysearch_warning"
-msgstr ""
-
 msgid "cpsma_shrink"
 msgstr ""
 
@@ -537,9 +854,6 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-msgid "Subject"
-msgstr ""
-
 msgid "Size"
 msgstr ""
 
@@ -552,22 +866,7 @@ msgstr ""
 msgid "Trash"
 msgstr ""
 
-msgid "attach"
-msgstr ""
-
 msgid "cpsma_ack"
-msgstr ""
-
-msgid "cpsma_search_submitted"
-msgstr ""
-
-msgid "cpsma_close"
-msgstr ""
-
-msgid "cpsma_add_users"
-msgstr ""
-
-msgid "cpsma_recipients"
 msgstr ""
 
 msgid "${from} cpsma_of ${of}"
@@ -585,15 +884,6 @@ msgstr ""
 msgid "cpsma_moved"
 msgstr ""
 
-msgid "cpsma_userdefined_filters"
-msgstr ""
-
-msgid "cpsma_folders"
-msgstr ""
-
-msgid "cpsma_choose_folders"
-msgstr ""
-
 msgid "index_relations"
 msgstr ""
 
@@ -607,9 +897,6 @@ msgid "cpsma_configure_mailtool"
 msgstr ""
 
 msgid "cpsma_return_receipt"
-msgstr ""
-
-msgid "cpsma_search_message_to"
 msgstr ""
 
 msgid "webmail_enabled"
