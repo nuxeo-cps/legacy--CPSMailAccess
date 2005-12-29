@@ -19,6 +19,16 @@ msgstr ""
 "Preferred-encodings: utf-8 latin1\n"
 "Domain: default\n"
 
+# Buttons
+#########
+msgid "button_invalidate_cache"
+msgstr ""
+
+msgid "button_reset"
+msgstr ""
+
+# Others
+########
 msgid "cpsma_personal_address_book"
 msgstr ""
 

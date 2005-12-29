@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: default\n"
-"POT-Creation-Date: 2005-12-29 16:17default\n"
+"POT-Creation-Date: 2005-12-29 17:17default\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Your Name <your@email>\n"
 "Language-Team: Name <email>\n"
@@ -15,6 +15,15 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-encodings: latin9 utf-8\n"
 "Domain: default\n"
+
+#.   <block>
+#.               ${from (tal content="page")}
+#.               cpsma_of
+#.               ${of (tal content="nbpages")}
+#.             </block>
+#: from ../www/messagelist_macros.zpt
+msgid "${from} cpsma_of ${of}"
+msgstr ""
 
 #.   <td class="tr_title">Action</td>
 #: from ../www/mailBoxFiltersView.zpt
@@ -194,9 +203,36 @@ msgstr ""
 msgid "begin with"
 msgstr ""
 
+#.   <input type="submit" name="InvalidateCache.html:method" value="button_invalidate_cache" />
+#: from ../cache/browser/cacheableedit.pt
+msgid "button_invalidate_cache"
+msgstr ""
+
+#.   <input type="reset" value="button_reset" />
+#: from ../cache/browser/ramedit.pt
+msgid "button_reset"
+msgstr ""
+
+#.   <input onmouseover="setCursor(this)" type="submit" class="manage_delete" value="clear" name="action_clear" />
+#: from ../www/messagelist_macros.zpt
+msgid "clear"
+msgstr ""
+
+#.   <img src="cpsma_delete_file.png" onmouseover="setCursor(this)" onclick="toggleElementVisibility('renameFolder')" title="close" alt="close" class="close_rename_form" />
+#.   <img src="cpsma_delete_file.png" onmouseover="setCursor(this)" onclick="toggleElementVisibility('addFolder')" title="close" alt="close" class="close_rename_form" />
+#.   <img src="cpsma_delete_file.png" onmouseover="setCursor(this)" onclick="toggleElementVisibility('moveFolder')" title="close" alt="move" class="close_rename_form" />
+#: from ../www/mailFolderView.zpt
+msgid "close"
+msgstr ""
+
 #.   <option value="1">contains</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "contains"
+msgstr ""
+
+#.   <input onmouseover="setCursor(this)" type="submit" class="manage_copy" value="copy" name="action_copy" />
+#: from ../www/messagelist_macros.zpt
+msgid "copy"
 msgstr ""
 
 #.   <option value="2">copy to</option>
@@ -209,6 +245,11 @@ msgstr ""
 #.       </div>
 #: from ../www/mailFolderView.zpt ../www/mailMessageView.zpt
 msgid "cps_synchronizing"
+msgstr ""
+
+#.   <input type="submit" name="submit" value="cpsma_add" />
+#: from ../www/mailFolderView.zpt
+msgid "cpsma_add"
 msgstr ""
 
 #.   <block>Add recpients</block>
@@ -226,9 +267,26 @@ msgstr ""
 msgid "cpsma_address_books"
 msgstr ""
 
+#.   <span>cpsma_all_entries</span>
+#: from ../www/mailAdressBookView.zpt
+msgid "cpsma_all_entries"
+msgstr ""
+
 #.   <span>Attach file</span>
 #: from ../www/mailEditorView.zpt
 msgid "cpsma_attach_file"
+msgstr ""
+
+#.   <div class="title2">
+#.               Attached files
+#.               </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "cpsma_attached_files"
+msgstr ""
+
+#.   <span>Back to folder</span>
+#: from ../www/messagelist_macros.zpt
+msgid "cpsma_back_to_folder"
 msgstr ""
 
 #.   <block>BCc</block>
@@ -236,7 +294,9 @@ msgstr ""
 #.   <span>
 #.                       Bcc
 #.                       </span>
+#.   <block>Cc :</block>
 #: from ../www/mailDirectoryView.zpt ../www/mailEditorView.zpt
+#: ../www/messagelist_macros.zpt
 msgid "cpsma_bcc"
 msgstr ""
 
@@ -250,8 +310,15 @@ msgstr ""
 #.   <span>
 #.                         Cc
 #.                         </span>
+#.   <block>Cc :</block>
 #: from ../www/mailDirectoryView.zpt ../www/mailEditorView.zpt
+#: ../www/messagelist_macros.zpt
 msgid "cpsma_cc"
+msgstr ""
+
+#.   <input type="submit" name="submit" value="cpsma_change" />
+#: from ../www/mailFolderView.zpt
+msgid "cpsma_change"
 msgstr ""
 
 #.   <i onmouseover="setCursor(this)" onclick="toggleElementVisibility('selectFolder')">
@@ -288,6 +355,23 @@ msgstr ""
 msgid "cpsma_configure_mailbox"
 msgstr ""
 
+#.   <block>Date :</block>
+#: from ../www/messagelist_macros.zpt
+msgid "cpsma_date"
+msgstr ""
+
+#.   <span>Detach</span>
+#: from ../www/messagelist_macros.zpt
+msgid "cpsma_detach"
+msgstr ""
+
+#.   <div class="emptyFolder">
+#.            Empty folder.
+#.           </div>
+#: from ../www/messagelist_macros.zpt
+msgid "cpsma_empty_folder"
+msgstr ""
+
 #.   <p>First connection</p>
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_first_time"
@@ -303,6 +387,17 @@ msgstr ""
 #.   <span>Found</span>
 #: from ../www/mailSearchView.zpt ../www/mailZemanticSearchView.zpt
 msgid "cpsma_found"
+msgstr ""
+
+#.   <block>From :</block>
+#: from ../www/messagelist_macros.zpt
+msgid "cpsma_from"
+msgstr ""
+
+#.   <span>
+#.           Global address book</span>
+#: from ../www/mailAdressBookView.zpt
+msgid "cpsma_global_address_book"
 msgstr ""
 
 #.   <div class="message">
@@ -372,6 +467,13 @@ msgstr ""
 msgid "cpsma_personal_address_book"
 msgstr ""
 
+#.   <div class="form_title">
+#.           Pickup a folder
+#.         </div>
+#: from ../skins/boxes_mailaccess.pt
+msgid "cpsma_pickup_new_folder"
+msgstr ""
+
 #.   <span>portal wide</span>
 #: from ../www/mailToolParametersView.zpt
 msgid "cpsma_portal_wide"
@@ -429,21 +531,30 @@ msgstr ""
 #.   <div class="dlabel">
 #.               Message Date :
 #.               </div>
-#: from ../www/mailZemanticSearchView.zpt
+#.   <th class="mailToolBarElement mailToolBarInsideElement">
+#.                 Date
+#.               </th>
+#: from ../www/mailZemanticSearchView.zpt ../www/messagelist_macros.zpt
 msgid "cpsma_search_message_date"
 msgstr ""
 
 #.   <div class="dlabel">
 #.               Message From :
 #.               </div>
-#: from ../www/mailZemanticSearchView.zpt
+#.   <th class="mailToolBarElement mailToolBarInsideElement">
+#.                 Sender
+#.               </th>
+#: from ../www/mailZemanticSearchView.zpt ../www/messagelist_macros.zpt
 msgid "cpsma_search_message_from"
 msgstr ""
 
 #.   <div class="dlabel">
 #.                Message Subject :
 #.               </div>
-#: from ../www/mailZemanticSearchView.zpt
+#.   <th class="mailToolBarElement mailToolBarInsideElement">
+#.                     Subject
+#.               </th>
+#: from ../www/mailZemanticSearchView.zpt ../www/messagelist_macros.zpt
 msgid "cpsma_search_message_subject"
 msgstr ""
 
@@ -469,8 +580,21 @@ msgstr ""
 msgid "cpsma_seconds"
 msgstr ""
 
+#.   <td class="bold">
+#.                Selection:
+#.              </td>
+#: from ../www/messagelist_macros.zpt
+msgid "cpsma_selection"
+msgstr ""
+
+#.   <img src="cpsma_draft.png" alt="cpsma_send_a_message" title="cpsma_send_a_message" />
+#: from ../www/mailAdressBookView.zpt
+msgid "cpsma_send_a_message"
+msgstr ""
+
 #.   <span>Subject</span>
-#: from ../www/mailEditorView.zpt
+#.   <block>Subject :</block>
+#: from ../www/mailEditorView.zpt ../www/messagelist_macros.zpt
 msgid "cpsma_subject"
 msgstr ""
 
@@ -486,7 +610,9 @@ msgstr ""
 
 #.   <block>To</block>
 #.   <span>To</span>
+#.   <block>To :</block>
 #: from ../www/mailDirectoryView.zpt ../www/mailEditorView.zpt
+#: ../www/messagelist_macros.zpt
 msgid "cpsma_to"
 msgstr ""
 
@@ -507,6 +633,16 @@ msgstr ""
 #.   <span>Write Message</span>
 #: from ../www/mailBoxView.zpt
 msgid "cpsma_write_message"
+msgstr ""
+
+#.   <input onmouseover="setCursor(this)" type="submit" class="manage_cut" value="cut" name="action_cut" />
+#: from ../www/messagelist_macros.zpt
+msgid "cut"
+msgstr ""
+
+#.   <input onmouseover="setCursor(this)" type="submit" class="manage_delete" value="delete" name="action_delete" />
+#: from ../www/messagelist_macros.zpt
+msgid "delete"
 msgstr ""
 
 #.   <option value="2">does not contains</option>
@@ -534,9 +670,24 @@ msgstr ""
 msgid "label with"
 msgstr ""
 
+#.   <img src="cpsma_delete_file.png" onmouseover="setCursor(this)" onclick="toggleElementVisibility('moveFolder')" title="close" alt="move" class="close_rename_form" />
+#: from ../www/mailFolderView.zpt
+msgid "move"
+msgstr ""
+
 #.   <option value="1">move to</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "move to"
+msgstr ""
+
+#.   <input onmouseover="setCursor(this)" type="submit" class="manage_paste" value="paste" name="action_paste" />
+#: from ../www/messagelist_macros.zpt
+msgid "paste"
+msgstr ""
+
+#.   <input onmouseover="setCursor(this)" type="button" class="manage_selectall" value="select all" name="selectall" attributes="onclick function_call" />
+#: from ../www/messagelist_macros.zpt
+msgid "select all"
 msgstr ""
 
 #.   <input name="submit" type="submit" class="standalone" value="submit" />
@@ -544,7 +695,9 @@ msgstr ""
 msgid "sumbit_mailbox_params"
 msgstr ""
 
-msgid "cpsma_global_address_book"
+#.   <img src="cpsma_draft.png" alt="cpsma_send_a_message" title="cpsma_send_a_message" />
+#: from ../www/mailAdressBookView.zpt
+msgid "title"
 msgstr ""
 
 msgid "cpsma_mailbox_configuration"
@@ -553,13 +706,7 @@ msgstr ""
 msgid "cpsma_make_selection"
 msgstr ""
 
-msgid "cpsma_from"
-msgstr ""
-
 msgid "cpsma_search_message_intersection"
-msgstr ""
-
-msgid "cpsma_date"
 msgstr ""
 
 msgid "cpsma_save_message"
@@ -605,12 +752,6 @@ msgid "cpsma_configure"
 msgstr ""
 
 msgid "cpsma_getmessages"
-msgstr ""
-
-msgid "cpsma_all_entries"
-msgstr ""
-
-msgid "cpsma_send_a_message"
 msgstr ""
 
 # named parameters
@@ -675,34 +816,6 @@ msgstr ""
 msgid "cpsma_failed_synchro"
 msgstr ""
 
-msgid "cpsma_add"
-msgstr ""
-
-msgid "cpsma_change"
-msgstr ""
-
-# content toolbar action
-msgid "copy"
-msgstr ""
-
-msgid "cut"
-msgstr ""
-
-msgid "paste"
-msgstr ""
-
-msgid "delete"
-msgstr ""
-
-msgid "clear"
-msgstr ""
-
-msgid "move"
-msgstr ""
-
-msgid "close"
-msgstr ""
-
 msgid "cpsma_objects"
 msgstr ""
 
@@ -731,15 +844,6 @@ msgid "label_personal_addressbook"
 msgstr ""
 
 msgid "addressbook"
-msgstr ""
-
-msgid "cpsma_back_to_folder"
-msgstr ""
-
-msgid "cpsma_detach"
-msgstr ""
-
-msgid "select all"
 msgstr ""
 
 msgid "deselect all"
@@ -782,9 +886,6 @@ msgid "cpsma_confirm_erase"
 msgstr ""
 
 msgid "cpsma_confirm_erase_folder"
-msgstr ""
-
-msgid "cpsma_attached_files"
 msgstr ""
 
 msgid "cpsma_message_saved"
@@ -832,9 +933,6 @@ msgstr ""
 msgid "cpsma_shrink"
 msgstr ""
 
-msgid "cpsma_empty_folder"
-msgstr ""
-
 msgid "cpsma_expunged"
 msgstr ""
 
@@ -867,9 +965,6 @@ msgid "Trash"
 msgstr ""
 
 msgid "cpsma_ack"
-msgstr ""
-
-msgid "${from} cpsma_of ${of}"
 msgstr ""
 
 msgid "cpsma_send_message"
