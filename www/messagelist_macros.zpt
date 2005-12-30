@@ -43,7 +43,7 @@
                                            id action/id;
                                            onmouseover python:'setCursor(this)'">
                        <a tal:attributes="href action/action">
-                        <img i18n:attributes="title alt"
+                        <img i18n:attributes="title; alt"
                              tal:attributes="src action/icon;
                              title action/long_title;
                              alt action/long_title;"/>
@@ -55,7 +55,7 @@
                       <div tal:attributes="id action/id;
                                             onclick action/onclick|nothing;
                                            onmouseover python:'setCursor(this)'">
-                        <img i18n:attributes="title alt"
+                        <img i18n:attributes="title; alt"
                              tal:attributes="src action/icon;
                              title action/long_title;
                              alt action/long_title;"/>

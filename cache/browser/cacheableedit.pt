@@ -43,11 +43,11 @@
         </tr>
       </table>
 
-      <input type="submit" name="ChangeCaching.html:method" value="Save Changes"
-             i18n:attributes="value save-changes-button" />
+      <input type="submit" name="ChangeCaching.html:method" value="button_change"
+             i18n:attributes="value" />
       <input type="submit" name="InvalidateCache.html:method"
-             value="Invalidate Cached Value" 
-             i18n:attributes="value invalidate-cache-button" />
+             value="button_invalidate_cache" 
+             i18n:attributes="value" />
 
     </form>
     <div tal:content="options/message|nothing" i18n:translate="" />

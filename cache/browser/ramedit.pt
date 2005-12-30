@@ -49,9 +49,9 @@
       </tr>
     </table>
 
-    <input type="submit" name="editAction.html:method" value="Save Changes" 
-           i18n:attributes="value save-changes-button" />
-    <input type="reset" value="Reset" i18n:attributes="value reset-button" />
+    <input type="submit" name="editAction.html:method" value="button_change" 
+           i18n:attributes="value" />
+    <input type="reset" value="button_reset" i18n:attributes="value" />
   </form>
   <div tal:content="options/message|nothing" i18n:translate="" />
 

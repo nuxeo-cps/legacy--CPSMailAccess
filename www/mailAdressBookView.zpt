@@ -34,7 +34,7 @@
                                     msg_to python:'%s <%s>' % (fullname, email)">
                 <a tal:attributes="href python:'writeTo.html?msg_to='+msg_to">
                 <img src="cpsma_draft.png"
-                     i18n:attributes="title alt"
+                     i18n:attributes="title; alt"
                      title="cpsma_send_a_message" alt="cpsma_send_a_message"/>
                 </a>
                 &#160;

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: en\n"
-"POT-Creation-Date: 2005-12-29 17:17default\n"
+"POT-Creation-Date: 2005-12-30 12:52default\n"
 "PO-Revision-Date: 2005-03-26 17:26+0200\n"
 "Last-Translator: tarek <tziade@nuxeo.com>\n"
 "Language-Team: francais <fr@li.org>\n"

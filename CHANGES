@@ -14,6 +14,7 @@ Bug fixes:
 - #1143 removed dependency on CPSDefault.BaseBox
 - Removed deprecation warnings.
 - Added more semantic allowed markup in the HTMLSanitizer.
+- Made CPSMailAccess i18n files work with the update_pos script.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 - Added a dedicated C extension for optimisations

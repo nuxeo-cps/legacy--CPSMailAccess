@@ -168,7 +168,7 @@
                      <a tal:attributes="href action/action;
                                         target action/target|nothing">
                        <center>
-                         <img i18n:attributes="title alt"
+                         <img i18n:attributes="title; alt"
                               tal:attributes="src action/icon;
                                     title action/long_title;
                                     alt action/long_title;

@@ -42,7 +42,7 @@
             alt="close"
             onmouseover="setCursor(this)"
             onclick="toggleElementVisibility('renameFolder')"
-            i18n:attributes="title alt" />
+            i18n:attributes="title; alt" />
 
      <form action="rename.html" method="post" class="rename_form"
           tal:define="max_size_reached_msg python:chr(34)+max_size_reached+chr(34);
@@ -62,7 +62,7 @@
             alt="close"
             onmouseover="setCursor(this)"
             onclick="toggleElementVisibility('addFolder')"
-	    i18n:attributes="title alt"/>
+	    i18n:attributes="title; alt"/>
 
      <form action="addFolder.html" method="post" class="rename_form"
           tal:define="max_size_reached_msg python:chr(34)+max_size_reached+chr(34);
@@ -79,7 +79,7 @@
              title="close" alt="move"
              onmouseover="setCursor(this)"
              onclick="toggleElementVisibility('moveFolder')"
-             i18n:attributes="alt title"/>
+             i18n:attributes="alt; title"/>
 
       <div class="rename_form">
         <metal:block use-macro="here/boxes_mailaccess/macros/basebox_moveview"/>
