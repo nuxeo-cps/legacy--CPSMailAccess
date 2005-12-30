@@ -1,5 +1,5 @@
 <metal:block metal:use-macro="here/main_template/macros/master">
-  <metal:block fill-slot="css_slot">
+  <metal:block fill-slot="style_slot">
     <style type="text/css" media="all"
       tal:content="string:@import url(${context/portal_url}/++resource++cpsmailaccess.css);"/>
     <style type="text/css" media="all"
