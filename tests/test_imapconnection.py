@@ -322,6 +322,63 @@ class IMAPConnectionTestCase(MailTestCase):
         from zope.interface.verify import verifyClass
         self.failUnless(verifyClass(IConnection, IMAPConnection))
 
+    def test_list_COURIER(self):
+        def listing(*args, **kw):
+            return ('OK', ['(\\HasNoChildren) "." "INBOX.ZCM-ZC"',
+                    '(\\HasNoChildren) "." "INBOX.zope-checkins"',
+                    '(\\HasNoChildren) "." "INBOX.Listes Z3"',
+                    '(\\HasNoChildren) "." "INBOX.[BCEAO]"',
+                    '(\\HasNoChildren) "." "INBOX.Listes CPS"',
+                    '(\\HasNoChildren) "." "INBOX.Liste Python"',
+                    '(\\HasNoChildren) "." "INBOX.Logs Web"',
+                    '(\\HasNoChildren) "." "INBOX.[interne]"'])
+
+        ob = self.makeConnection()
+        old = ob._connection.list
+        ob._connection.list = listing
+        try:
+            res = ob.list()
+            wanted = [{'Attributes': ['HasNoChildren'],
+                       'Name': 'INBOX.ZCM-ZC'},
+                      {'Attributes': ['HasNoChildren'],
+                       'Name': 'INBOX.zope-checkins'},
+                      {'Attributes': ['HasNoChildren'],
+                       'Name': 'INBOX.Listes Z3'},
+                      {'Attributes': ['HasNoChildren'],
+                        'Name': 'INBOX.[BCEAO]'},
+                      {'Attributes': ['HasNoChildren'],
+                       'Name': 'INBOX.Listes CPS'},
+                      {'Attributes': ['HasNoChildren'],
+                       'Name': 'INBOX.Liste Python'},
+                      {'Attributes': ['HasNoChildren'],
+                       'Name': 'INBOX.Logs Web'},
+                      {'Attributes': ['HasNoChildren'],
+                       'Name': 'INBOX.[interne]'}]
+
+            self.assertEquals(res, wanted)
+        finally:
+            ob._connection.list = old
+
+    def test_list_FREE(self):
+        def listing(*args, **kw):
+            return ('OK', ['() "/" INBOX/sent-mail', '() "/" INBOX/Friends',
+                    '() "/" INBOX/Job', '() "/" INBOX/HR',
+                    '() "/" "INBOX/Plone E2M"'])
+
+        ob = self.makeConnection()
+        old = ob._connection.list
+        ob._connection.list = listing
+        try:
+            res = ob.list()
+            wanted = [{'Attributes': [], 'Name': 'INBOX.sent-mail'},
+                      {'Attributes': [], 'Name': 'INBOX.Friends'},
+                      {'Attributes': [], 'Name': 'INBOX.Job'},
+                      {'Attributes': [], 'Name': 'INBOX.HR'},
+                      {'Attributes': [], 'Name': 'INBOX.Plone E2M'}]
+
+            self.assertEquals(res, wanted)
+        finally:
+            ob._connection.list = old
 
 def test_suite():
     return unittest.TestSuite((

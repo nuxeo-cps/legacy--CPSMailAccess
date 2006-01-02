@@ -199,6 +199,7 @@ class IMAPConnection(BaseConnection):
         """
         self._respawn()
         result = []
+        separators = (' "." ', ' "/" ')
         imap_list = self._connection.list(directory, pattern)
         if imap_list[0] == 'OK':
             for element in imap_list[1]:
@@ -207,18 +208,22 @@ class IMAPConnection(BaseConnection):
                     continue
                 folder = {}
                 folder_attributes = []
-                parts = element.split(' "." ')
-                # first part contains attributes
-                attributes = parts[0].strip('(')
-                attributes = attributes.strip(')')
-                attributes = attributes.split('\\')
-                for attribute in attributes:
-                    if attribute:
-                        folder_attributes.append(attribute)
-                # second part contains folder name
-                folder['Attributes'] = folder_attributes
-                folder['Name'] = parts[1].strip('"')
-                result.append(folder)
+                for sep in separators:
+                    if element.find(sep) == -1:
+                        continue
+
+                    parts = element.split(sep)
+                    # first part contains attributes
+                    attributes = parts[0].strip('(')
+                    attributes = attributes.strip(')')
+                    attributes = attributes.split('\\')
+                    for attribute in attributes:
+                        if attribute:
+                            folder_attributes.append(attribute)
+                    # second part contains folder name
+                    folder['Attributes'] = folder_attributes
+                    folder['Name'] = parts[1].strip('"').replace('/', '.')
+                    result.append(folder)
         return result
 
     def getacl(self, mailbox):
