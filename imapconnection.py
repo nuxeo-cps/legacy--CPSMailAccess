@@ -199,7 +199,7 @@ class IMAPConnection(BaseConnection):
         """
         self._respawn()
         result = []
-        separator_pattern = re.compile(r'(.*) "(\W)\" (.*)')
+        separator_pattern = re.compile(r'(.*) "(\W)" (.*)')
 
         imap_list = self._connection.list(directory, pattern)
         if imap_list[0] == 'OK':
