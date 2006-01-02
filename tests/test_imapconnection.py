@@ -361,8 +361,8 @@ class IMAPConnectionTestCase(MailTestCase):
 
     def test_list_FREE(self):
         def listing(*args, **kw):
-            return ('OK', ['() "/" INBOX/sent-mail', '() "/" INBOX/Friends',
-                    '() "/" INBOX/Job', '() "/" INBOX/HR',
+            return ('OK', ['() "/" INBOX/sent-mail', '() "." INBOX.Friends',
+                    '() "/" INBOX/Job', '() "*" INBOX*HR',
                     '() "/" "INBOX/Plone E2M"'])
 
         ob = self.makeConnection()

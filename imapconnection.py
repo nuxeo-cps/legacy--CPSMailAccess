@@ -199,7 +199,8 @@ class IMAPConnection(BaseConnection):
         """
         self._respawn()
         result = []
-        separators = (' "." ', ' "/" ')
+        separator_pattern = re.compile(r'(.*) "(\W)\" (.*)')
+
         imap_list = self._connection.list(directory, pattern)
         if imap_list[0] == 'OK':
             for element in imap_list[1]:
@@ -208,22 +209,31 @@ class IMAPConnection(BaseConnection):
                     continue
                 folder = {}
                 folder_attributes = []
-                for sep in separators:
-                    if element.find(sep) == -1:
-                        continue
 
-                    parts = element.split(sep)
-                    # first part contains attributes
-                    attributes = parts[0].strip('(')
-                    attributes = attributes.strip(')')
-                    attributes = attributes.split('\\')
-                    for attribute in attributes:
-                        if attribute:
-                            folder_attributes.append(attribute)
-                    # second part contains folder name
-                    folder['Attributes'] = folder_attributes
-                    folder['Name'] = parts[1].strip('"').replace('/', '.')
-                    result.append(folder)
+                parts = separator_pattern.findall(element)
+                if len(parts) != 1:
+                    continue
+
+                parts = parts[0]
+
+                separator = parts[1]
+
+                # first part contains attributes
+                attributes = parts[0].strip('(')
+                attributes = attributes.strip(')')
+                attributes = attributes.split('\\')
+                for attribute in attributes:
+                    if attribute:
+                        folder_attributes.append(attribute)
+                folder['Attributes'] = folder_attributes
+
+                # second part contains folder name
+                folder['Name'] = parts[2].strip('"')
+
+                # unifiying separator
+                if separator != '.':
+                    folder['Name'] = folder['Name'].replace(separator, '.')
+                result.append(folder)
         return result
 
     def getacl(self, mailbox):
