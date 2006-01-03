@@ -1,24 +1,19 @@
-# # translation of fr.po to francais
-# Gettext Message File for default.
-# Your Name <your@email>, Year
-# emmanuel <tziade@nuxeo.com>, 2004.
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: CPSMailAccess Italian Translation\n"
-"POT-Creation-Date: 2006-01-03 14:42default\n"
-"PO-Revision-Date: 2005-11-10 09:10+0100\n"
-"Last-Translator: Stefano Schintu <schintu@gmail.com>\n"
-"Language-Team: CPS Italian <schintu@gmail.com>\n"
+"Project-Id-Version: CPSMailAccess-de 3.3.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-12-30 12:52default\n"
+"PO-Revision-Date: 2005-10-23 20:09+0200\n"
+"Last-Translator: Georg Hennemann <georg.hennemann@dhl.com>\n"
+"Language-Team: German <rheinland@dzug.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language-Code: it\n"
-"Language-Name: Italian\n"
-"Preferred-encodings: latin9 utf-8\n"
+"Plural-Forms: nplurals=1; plural=0;Content-Type: text/plain; charset=ISO-"
+"8859-15\n"
+"Language-Name: German\n"
+"Language-Code: de\n"
 "Domain: default\n"
-"X-Generator: KBabel 1.3.1\n"
-"X-Poedit-Language: Italian\n"
-"X-Poedit-Country: ITALY\n"
 
 #.   <block>
 #.               ${from (tal content="page")}
@@ -27,17 +22,17 @@ msgstr ""
 #.             </block>
 #: from ../www/messagelist_macros.zpt
 msgid "${from} cpsma_of ${of}"
-msgstr "Pagina ${from} di ${of}"
+msgstr "Page ${from} of ${of}"
 
 #.   <td class="tr_title">Action</td>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "Action"
-msgstr "Azione"
+msgstr "Aktion"
 
 #.   <td class="tr_title">Action param</td>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "Action param"
-msgstr "Parametro"
+msgstr "Parameter"
 
 #.   <span>
 #.           Automatic filters
@@ -59,7 +54,7 @@ msgstr "Cc"
 #.   <td class="tr_title">Condition</td>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "Condition"
-msgstr "Condizione"
+msgstr "Bedingung"
 
 #.   <p condition="view/current_cache_id">
 #.         Currently the object uses
@@ -79,7 +74,7 @@ msgstr ""
 #.   <td class="tr_title">Element</td>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "Element"
-msgstr "Elementi"
+msgstr "Elemente"
 
 #.   <th>Entries</th>
 #: from ../cache/browser/ramstats.pt
@@ -100,7 +95,7 @@ msgstr ""
 #.               </a>
 #: from ../www/mailBoxFiltersView.zpt ../www/mailBoxParametersView.zpt
 msgid "Filters for incoming messages"
-msgstr "Filtri per i messaggi in arrivo"
+msgstr "Filter für eingehende Nachrichten"
 
 #.   <a href="#" content="i">Folder</a>
 #: from ../zemantic/browser/commontasks.pt
@@ -111,12 +106,12 @@ msgstr ""
 #: from ../cache/browser/ramstats.pt
 #, fuzzy
 msgid "Hits"
-msgstr "est"
+msgstr "is"
 
 #.   <block condition="isINBOX">INBOX</block>
 #: from ../skins/boxes_mailaccess.pt
 msgid "INBOX"
-msgstr "Posta in arrivo"
+msgstr ""
 
 #.   <th class="EditAttributeName">
 #.             Maximum age of cached entries
@@ -139,9 +134,8 @@ msgstr ""
 
 #.   <th>Path</th>
 #: from ../cache/browser/ramstats.pt
-#, fuzzy
 msgid "Path"
-msgstr "attacher"
+msgstr ""
 
 #.   <span>RAMCache statistics</span>
 #: from ../cache/browser/ramstats.pt
@@ -151,7 +145,7 @@ msgstr ""
 #.   <option value="From">Sender</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "Sender"
-msgstr "Mittente"
+msgstr "Sender"
 
 #.   <th>Size, bytes</th>
 #: from ../cache/browser/ramstats.pt
@@ -161,7 +155,7 @@ msgstr ""
 #.   <option value="Subject">Subject</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "Subject"
-msgstr "Oggetto"
+msgstr "Subjekt"
 
 #.   <p>
 #.         This edit form allows you to associate a cache with this object.
@@ -180,19 +174,19 @@ msgstr ""
 #.   <option value="To">To</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "To"
-msgstr "A"
+msgstr "An"
 
 #.   <td class="tr_title">Value</td>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "Value"
-msgstr "Valore"
+msgstr "Wert"
 
 #.   <div class="title2">
 #.                   Webmail Actions
 #.              </div>
 #: from ../skins/boxes_mailaccess.pt
 msgid "Webmail Actions"
-msgstr "Azioni sulla webmail"
+msgstr ""
 
 #.   <p>You can configure the RAM Cache here.</p>
 #: from ../cache/browser/ramedit.pt
@@ -202,13 +196,13 @@ msgstr ""
 #.   <input name="submit" onclick="saveMessageDatas()" type="submit" class="attach_button" value="attach" onmouseover="setCursor(this);" />
 #: from ../www/mailEditorView.zpt
 msgid "attach"
-msgstr "allega"
+msgstr ""
 
 #.   <option value="3">begin with</option>
 #: from ../www/mailBoxFiltersView.zpt
 #, fuzzy
 msgid "begin with"
-msgstr "commence par"
+msgstr "begins with"
 
 #.   <input type="submit" name="InvalidateCache.html:method" value="button_invalidate_cache" />
 #: from ../cache/browser/cacheableedit.pt
@@ -223,79 +217,80 @@ msgstr ""
 #.   <input onmouseover="setCursor(this)" type="submit" class="manage_delete" value="clear" name="action_clear" />
 #: from ../www/messagelist_macros.zpt
 msgid "clear"
-msgstr "pulisci"
+msgstr "Zurücksetzen"
 
 #.   <img src="cpsma_delete_file.png" onmouseover="setCursor(this)" onclick="toggleElementVisibility('renameFolder')" title="close" alt="close" class="close_rename_form" />
 #.   <img src="cpsma_delete_file.png" onmouseover="setCursor(this)" onclick="toggleElementVisibility('addFolder')" title="close" alt="close" class="close_rename_form" />
 #.   <img src="cpsma_delete_file.png" onmouseover="setCursor(this)" onclick="toggleElementVisibility('moveFolder')" title="close" alt="move" class="close_rename_form" />
 #: from ../www/mailFolderView.zpt
+#, fuzzy
 msgid "close"
-msgstr "chiudi"
+msgstr "close"
 
 #.   <option value="1">contains</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "contains"
-msgstr "contiene"
+msgstr "enthält"
 
 # content toolbar action
 #.   <input onmouseover="setCursor(this)" type="submit" class="manage_copy" value="copy" name="action_copy" />
 #: from ../www/messagelist_macros.zpt
 msgid "copy"
-msgstr "copia"
+msgstr "Kopieren"
 
 #.   <option value="2">copy to</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "copy to"
-msgstr "copia in"
+msgstr "kopiere nach"
 
 #.   <div class="message" condition="synchro">
 #.       While the box is beeing synchronized, webmail features are limited to browsing.
 #.       </div>
 #: from ../www/mailFolderView.zpt ../www/mailMessageView.zpt
 msgid "cps_synchronizing"
-msgstr "In fase di sincronizzazione."
+msgstr "Synchronisiere."
 
 #.   <input type="submit" name="submit" value="cpsma_add" />
 #: from ../www/mailFolderView.zpt
 msgid "cpsma_add"
-msgstr "Aggiungi"
+msgstr "Hinzufügen"
 
 #.   <block>Add recpients</block>
 #: from ../www/mailDirectoryView.zpt
 msgid "cpsma_add_users"
-msgstr "Aggiungi destinatari"
+msgstr "Add recipients"
 
 #.   <span>Address Book</span>
 #: from ../www/mailBoxView.zpt
 msgid "cpsma_address_book"
-msgstr "Rubrica"
+msgstr "Adressbuch"
 
 #.   <span class="link" onclick="popupRecipientPicker()" onmouseover="setCursor(this);">Address books</span>
 #: from ../www/mailEditorView.zpt
 msgid "cpsma_address_books"
-msgstr "Rubriche"
+msgstr "Adress Bücher"
 
 #.   <span>cpsma_all_entries</span>
 #: from ../www/mailAdressBookView.zpt
 msgid "cpsma_all_entries"
-msgstr "Tutte le voci"
+msgstr "Alle  Einträge"
 
 #.   <span>Attach file</span>
 #: from ../www/mailEditorView.zpt
 msgid "cpsma_attach_file"
-msgstr "Allega un file"
+msgstr "Datei anfügen"
 
 #.   <div class="title2">
 #.               Attached files
 #.               </div>
 #: from ../skins/boxes_mailaccess.pt
 msgid "cpsma_attached_files"
-msgstr "File allegati"
+msgstr "Attached files"
 
 #.   <span>Back to folder</span>
 #: from ../www/messagelist_macros.zpt
 msgid "cpsma_back_to_folder"
-msgstr "Torna alla cartella"
+msgstr "Zurück zum Folder"
 
 #.   <block>BCc</block>
 #.   <span>BCc</span>
@@ -311,9 +306,7 @@ msgstr "Bcc"
 #.   <span style="color: red">*body search is mail server-side and thus very slow</span>
 #: from ../www/mailZemanticSearchView.zpt
 msgid "cpsma_bodysearch_warning"
-msgstr ""
-"*la ricerca nel corpo del messaggio avviene lato server e pertanto potrebbe "
-"essere molto lenta"
+msgstr "*body search is mail server-side and thus very slow"
 
 #.   <block>Cc</block>
 #.   <span>Cc</span>
@@ -329,103 +322,103 @@ msgstr "Cc"
 #.   <input type="submit" name="submit" value="cpsma_change" />
 #: from ../www/mailFolderView.zpt
 msgid "cpsma_change"
-msgstr "Modifica"
+msgstr "Ändern"
 
 #.   <i onmouseover="setCursor(this)" onclick="toggleElementVisibility('selectFolder')">
 #.                  Pick-up folders to search in (not recursive)...
 #.               </i>
 #: from ../www/mailZemanticSearchView.zpt
 msgid "cpsma_choose_folders"
-msgstr "Seleziona le cartelle dove eseguire la ricerca (non ricorsiva)"
+msgstr "Pick-up folders to search in (not recursive)..."
 
 #.   <div class="form_title">
 #.           Choose a new parent folder
 #.         </div>
 #: from ../skins/boxes_mailaccess.pt
 msgid "cpsma_choose_new_folder"
-msgstr "Seleziona una nuova cartella madre"
+msgstr "Wählen Sie einen neuen Folder Namen"
 
 #.   <input name="clear" type="submit" class="standalone" value="cpsma_clear_mail_bodies" />
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_clear_mail_bodies"
-msgstr "Corpi dei messaggi rimossi dalla cache"
+msgstr "Löschen der zwischengespeicherten Emails"
 
 #.   <input name="clear" type="submit" class="standalone" value="cpsma_clear_mail_catalog" />
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_clear_mail_catalog"
-msgstr "Ripulisci il catalogo dei messaggi"
+msgstr "Zurücksetzen des Mail Katalogs"
 
 #.   <input style="float:right" onclick="closeDirectoryPicker()" type="button" class="standalone" value="cpsma_close" />
 #: from ../www/mailDirectoryView.zpt
 msgid "cpsma_close"
-msgstr "Aggiorna"
+msgstr "Update"
 
 #.   <span>Configure Mailbox</span>
 #: from ../www/mailBoxView.zpt
 msgid "cpsma_configure_mailbox"
-msgstr "Configura la casella di posta"
+msgstr "Konfiguration Mailbox"
 
 #.   <block>Date :</block>
 #: from ../www/messagelist_macros.zpt
 msgid "cpsma_date"
-msgstr "Data"
+msgstr "Datum"
 
 #.   <span>Detach</span>
 #: from ../www/messagelist_macros.zpt
 msgid "cpsma_detach"
-msgstr "Stacca"
+msgstr "Lösen"
 
 #.   <div class="emptyFolder">
 #.            Empty folder.
 #.           </div>
 #: from ../www/messagelist_macros.zpt
 msgid "cpsma_empty_folder"
-msgstr "Svuota la cartella"
+msgstr "Empty folder"
 
 #.   <p>First connection</p>
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_first_time"
 msgstr ""
-"E' la prima volta che lanci la webmail. Per favore, imposta i tuoi parametri."
-"<br/>In caso di difficoltà, problemi o dubbi sei pregato di far riferimento "
-"alla documentazione."
+"Es ist das erste Mal das Sie Webmail starten.Bitte geben Sie zunächst Ihre "
+"Parameter ein </br>Falls Sie Fragen haben schauen Sie in die Dokumentation."
 
 #.   <div class="dlabel">
 #.               Folders
 #.               </div>
 #: from ../www/mailZemanticSearchView.zpt
 msgid "cpsma_folders"
-msgstr "Cartelle"
+msgstr "Folders"
 
 #.   <span>Found</span>
 #: from ../www/mailSearchView.zpt ../www/mailZemanticSearchView.zpt
 msgid "cpsma_found"
-msgstr "Trovato"
+msgstr "Treffer"
 
 #.   <block>From :</block>
 #: from ../www/messagelist_macros.zpt
 msgid "cpsma_from"
-msgstr "Da"
+msgstr "Von"
 
 #.   <span>
 #.           Global address book</span>
 #: from ../www/mailAdressBookView.zpt
 msgid "cpsma_global_address_book"
-msgstr "Rubrica pubblica"
+msgstr "Öffentliches Adressbuch"
 
 #.   <div class="message">
 #.             Javascript is disabled, please activate it for enhanced ergonomy.
 #.           </div>
 #: from ../www/mailEditorView.zpt
 msgid "cpsma_js_disabled"
-msgstr "Javascript non è attivato."
+msgstr ""
+"Javascript ist nicht aktiviert, es werden ggfs einige Fuktionen fehlen."
 
 #.   <div class="message">
 #.       Your mailbox is beeing synchronized. Please hold on.
 #.       </div>
 #: from ../www/mailProgressView.zpt
 msgid "cpsma_mailbox_beeing_synchronized"
-msgstr "La casella di posta è in fase di sincronizzazione"
+msgstr "Mailbox wird gerade syncronisiert"
 
 #.   <a href="synchronize.html">
 #.           If nothing seems to be loading, click here
@@ -433,23 +426,22 @@ msgstr "La casella di posta è in fase di sincronizzazione"
 #: from ../www/mailProgressView.zpt
 msgid "cpsma_mailbox_force_synchronize"
 msgstr ""
-"Se non sembra che capiti niente, forza la sincronizzazione utilizzando il "
-"seguente collegamento."
+"Falls nichts passiert, forcieren Sie die Syncronisation über diesen Link"
 
 #.   <span>cpsma_mailbox_managment_tasks</span>
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_mailbox_managment_tasks"
-msgstr "Amministrazione"
+msgstr "Administration"
 
 #.   <span>cpsma_mailbox_parameters</span>
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_mailbox_parameters"
-msgstr "Parametri della casella di posta"
+msgstr "Mailbox Parameter"
 
 #.   <span>cpsma_mailtool_parameters</span>
 #: from ../www/mailToolParametersView.zpt
 msgid "cpsma_mailtool_parameters"
-msgstr "Configurazione della webmail"
+msgstr "Webmail Konfiguration"
 
 #.   <span>
 #.                       Maximum number of results reached, please refine your criterias.
@@ -457,78 +449,79 @@ msgstr "Configurazione della webmail"
 #: from ../www/mailZemanticSearchView.zpt
 #, fuzzy
 msgid "cpsma_max_reached"
-msgstr "Taille maximum autorisée atteinte"
+msgstr "Element renamed"
 
 #.   <span>
 #.               message in clipboard</span>
 #: from ../www/messagelist_macros.zpt
 msgid "cpsma_message_in_clipboard"
-msgstr "messaggio negli appunti"
+msgstr "Nachricht im Zwischenspeicher"
 
 #.   <span>
 #.                   messages in clipboard</span>
 #: from ../www/messagelist_macros.zpt
 msgid "cpsma_messages_in_clipboard"
-msgstr "messaggi negli appunti"
+msgstr "Nachrichten sind im Zwischenspeicher"
 
 #.   <span>No results where found.</span>
 #.   <div class="dlabel">No results where found.</div>
 #: from ../www/mailSearchView.zpt ../www/mailZemanticSearchView.zpt
 msgid "cpsma_no_results"
-msgstr "Nessun risultato."
+msgstr "Kein Ergebnis."
 
 #.   <span>
 #.                 Personal address book</span>
 #: from ../www/mailAdressBookView.zpt
 msgid "cpsma_personal_address_book"
-msgstr "Rubrica personale"
+msgstr "Persönliches Adressbuch"
 
 #.   <div class="form_title">
 #.           Pickup a folder
 #.         </div>
 #: from ../skins/boxes_mailaccess.pt
+#, fuzzy
 msgid "cpsma_pickup_new_folder"
-msgstr "Selziona un nuovo nome per la cartella"
+msgstr "Pick up a new folder name"
 
 #.   <span>portal wide</span>
 #: from ../www/mailToolParametersView.zpt
 msgid "cpsma_portal_wide"
-msgstr "In tutto il portale"
+msgstr "portalweit"
 
 #.   <block>Recipients</block>
 #: from ../www/mailDirectoryView.zpt
 msgid "cpsma_recipients"
-msgstr "Destinatari"
+msgstr "Recipients"
 
 #.   <input name="reconnect" type="submit" class="standalone" value="cpsma_reconnect" />
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_reconnect"
-msgstr "Riconnettiti al server di posta"
+msgstr "Neuverbindung zum Mail Server"
 
 #.   <input name="reindex" type="submit" class="standalone" value="cpsma_reindex_mail_catalog" />
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_reindex_mail_catalog"
-msgstr "Rindicizza il catalogo della casella di posta"
+msgstr "Reindizieren des Mail Katalogs"
 
 #.   <span>results</span>
 #: from ../www/mailSearchView.zpt
 msgid "cpsma_results"
-msgstr "risultati"
+msgstr "Ergebnisse"
 
 #.   <span>results in</span>
 #: from ../www/mailZemanticSearchView.zpt
 msgid "cpsma_results_in"
-msgstr "risultati in"
+msgstr "ergibt"
 
 #.   <input name="reindex" type="submit" class="standalone" value="cpsma_resync_all" />
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_resync_all"
-msgstr "Sincronizza l'intera casella di posta"
+msgstr "Synchronisiere die gesamte Mailbox."
 
 #.   <span>Search Messages</span>
 #: from ../www/mailBoxView.zpt
 msgid "cpsma_search_message"
-msgstr "Ricerca"
+msgstr "Suche Nachrichten"
 
 #.   <div class="dlabel">
 #.               Message Carbon Copy :
@@ -542,7 +535,7 @@ msgstr "Cc"
 #.               </div>
 #: from ../www/mailZemanticSearchView.zpt
 msgid "cpsma_search_message_contains"
-msgstr "Corpo"
+msgstr "Text"
 
 #.   <div class="dlabel">
 #.               Message Date :
@@ -552,7 +545,7 @@ msgstr "Corpo"
 #.               </th>
 #: from ../www/mailZemanticSearchView.zpt ../www/messagelist_macros.zpt
 msgid "cpsma_search_message_date"
-msgstr "Data"
+msgstr "Datum"
 
 #.   <div class="dlabel">
 #.               Message From :
@@ -562,7 +555,7 @@ msgstr "Data"
 #.               </th>
 #: from ../www/mailZemanticSearchView.zpt ../www/messagelist_macros.zpt
 msgid "cpsma_search_message_from"
-msgstr "Autore"
+msgstr "Autor"
 
 #.   <div class="dlabel">
 #.                Message Subject :
@@ -572,29 +565,30 @@ msgstr "Autore"
 #.               </th>
 #: from ../www/mailZemanticSearchView.zpt ../www/messagelist_macros.zpt
 msgid "cpsma_search_message_subject"
-msgstr "Oggetto"
+msgstr "Subjekt"
 
 #.   <div class="dlabel">
 #.               Message To :
 #.               </div>
 #: from ../www/mailZemanticSearchView.zpt
+#, fuzzy
 msgid "cpsma_search_message_to"
-msgstr "Messaggio inviato a"
+msgstr "Message sent to"
 
 #.   <input name="search_submitted" type="submit" class="standalone" value="cpsma_search_messages" />
 #: from ../www/mailZemanticSearchView.zpt
 msgid "cpsma_search_messages"
-msgstr "Ricerca"
+msgstr "Suchen"
 
 #.   <input name="search_submitted" type="submit" class="standalone" value="cpsma_search_submitted" />
 #: from ../www/mailDirectoryView.zpt
 msgid "cpsma_search_submitted"
-msgstr "Ricerca più destinatari"
+msgstr "Search more recipients"
 
 #.   <span>seconds</span>
 #: from ../www/mailZemanticSearchView.zpt
 msgid "cpsma_seconds"
-msgstr "secondi"
+msgstr "Sekunden"
 
 #.   <td class="bold">
 #.                Selection:
@@ -602,28 +596,28 @@ msgstr "secondi"
 #: from ../www/messagelist_macros.zpt
 #, fuzzy
 msgid "cpsma_selection"
-msgstr "Faire une sélection"
+msgstr "Make a selection"
 
 #.   <img src="cpsma_draft.png" alt="cpsma_send_a_message" title="cpsma_send_a_message" />
 #: from ../www/mailAdressBookView.zpt
 msgid "cpsma_send_a_message"
-msgstr "Invia un messaggio"
+msgstr "Sende Nachricht"
 
 #.   <span>Subject</span>
 #.   <block>Subject :</block>
 #: from ../www/mailEditorView.zpt ../www/messagelist_macros.zpt
 msgid "cpsma_subject"
-msgstr "Oggetto"
+msgstr "Subjekt"
 
 #.   <input name="submit" type="submit" class="standalone" value="cpsma_submit" />
 #: from ../www/mailBoxParametersView.zpt
 msgid "cpsma_submit"
-msgstr "Invia"
+msgstr "Absenden"
 
 #.   <span>Synchronize mailbox</span>
 #: from ../www/mailBoxView.zpt
 msgid "cpsma_synchronize_mailbox"
-msgstr "Sincronizza con il server"
+msgstr "Synchronisation mit dem Server"
 
 #.   <block>To</block>
 #.   <span>To</span>
@@ -631,87 +625,88 @@ msgstr "Sincronizza con il server"
 #: from ../www/mailDirectoryView.zpt ../www/mailEditorView.zpt
 #: ../www/messagelist_macros.zpt
 msgid "cpsma_to"
-msgstr "A"
+msgstr "An"
 
 #.   <span>
 #.           User defined filters
 #.         </span>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "cpsma_userdefined_filters"
-msgstr "Filtri definiti dall'utente"
+msgstr "User defined filters"
 
 #.   <div class="title2">
 #.               Webmail Navigation
 #.               </div>
 #: from ../skins/boxes_mailaccess.pt
 msgid "cpsma_webmail_navigation"
-msgstr "Navigazione nella webmail"
+msgstr "Dossiers de mails"
 
 #.   <span>Write Message</span>
 #: from ../www/mailBoxView.zpt
 msgid "cpsma_write_message"
-msgstr "Componi"
+msgstr "Erstellen"
 
 #.   <input onmouseover="setCursor(this)" type="submit" class="manage_cut" value="cut" name="action_cut" />
 #: from ../www/messagelist_macros.zpt
 msgid "cut"
-msgstr "taglia"
+msgstr "Ausschneiden"
 
 #.   <input onmouseover="setCursor(this)" type="submit" class="manage_delete" value="delete" name="action_delete" />
 #: from ../www/messagelist_macros.zpt
 msgid "delete"
-msgstr "elimina"
+msgstr "Löschen"
 
 #.   <option value="2">does not contains</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "does not contains"
-msgstr "non contiene"
+msgstr "enthält nicht"
 
 #.   <option value="4">ends with</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "ends with"
-msgstr "finisce con"
+msgstr "endet mit"
 
 #.   <option value="5">is</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "is"
-msgstr "è"
+msgstr "ist"
 
 #.   <option value="6">isn't</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "isn't"
-msgstr "non è"
+msgstr "ist nicht"
 
 #.   <option value="3">label with</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "label with"
-msgstr "etichetta con"
+msgstr "markiere mit"
 
 #.   <img src="cpsma_delete_file.png" onmouseover="setCursor(this)" onclick="toggleElementVisibility('moveFolder')" title="close" alt="move" class="close_rename_form" />
 #: from ../www/mailFolderView.zpt
+#, fuzzy
 msgid "move"
-msgstr "sposta"
+msgstr "move"
 
 #.   <option value="1">move to</option>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "move to"
-msgstr "sposta in"
+msgstr "verschiebe nach"
 
 #.   <input onmouseover="setCursor(this)" type="submit" class="manage_paste" value="paste" name="action_paste" />
 #: from ../www/messagelist_macros.zpt
 msgid "paste"
-msgstr "incolla"
+msgstr "Einfügen"
 
 #.   <input onmouseover="setCursor(this)" type="button" class="manage_selectall" value="select all" name="selectall" attributes="onclick function_call" />
 #: from ../www/messagelist_macros.zpt
 msgid "select all"
-msgstr "seleziona tutto"
+msgstr "Alle auswählen"
 
 #.   <input name="submit" type="submit" class="standalone" value="submit" />
 #: from ../www/mailToolParametersView.zpt
 #, fuzzy
 msgid "sumbit_mailbox_params"
-msgstr "Paramètres de la boîte"
+msgstr "Mailbox parameters"
 
 #.   <img src="cpsma_draft.png" alt="cpsma_send_a_message" title="cpsma_send_a_message" />
 #: from ../www/mailAdressBookView.zpt
@@ -719,309 +714,317 @@ msgid "title"
 msgstr ""
 
 msgid "cpsma_mailbox_configuration"
-msgstr "Configura"
+msgstr "Konfiguration"
 
 msgid "cpsma_make_selection"
-msgstr "Fai una selezione"
+msgstr "Wählen sie"
 
 msgid "cpsma_search_message_intersection"
-msgstr "Intersezione"
+msgstr "Intersektion"
 
 msgid "cpsma_save_message"
-msgstr "Salva"
+msgstr "Sichern"
 
 msgid "cpsma_init_editor"
-msgstr "Cancella"
+msgstr "Abbrechen"
 
 msgid "cpsma_empty_trash"
-msgstr "Svuota il cestino"
+msgstr "Mülleimer leeren"
 
 msgid "cpsma_add_subfolder"
-msgstr "Aggiungi una sottocartella"
+msgstr "Subfolder anlegen"
 
 msgid "cpsma_move_folder"
-msgstr "Sposta la cartella"
+msgstr "Folder bewegen"
 
 msgid "cpsma_rename_folder"
-msgstr "Rinomina la cartella"
+msgstr "Folder umbenennen"
 
 msgid "cpsma_delete_folder"
-msgstr "Elimina la cartella"
+msgstr "Folder löschen"
 
 msgid "cpsma_manage_content"
-msgstr "Gestisci il contenuto"
+msgstr "Inhalte verwalten"
 
 msgid "cpsma_reply"
-msgstr "Rispondi"
+msgstr "Antwort"
 
 msgid "cpsma_reply_all"
-msgstr "Rispondi a tutti"
+msgstr "Allen Antworten"
 
 msgid "cpsma_forward"
-msgstr "Inoltra"
+msgstr "Weiterleiten"
 
 msgid "cpsma_load_message"
-msgstr "Carica il messaggio"
+msgstr "Nachricht hochladen"
 
 msgid "cpsma_delete_message"
-msgstr "Elimina il messaggio"
+msgstr "Nachricht löschen"
 
 msgid "cpsma_configure"
-msgstr "Configura"
+msgstr "Konfigurieren"
 
 msgid "cpsma_getmessages"
-msgstr "Scarica i messaggi"
+msgstr "Hole Nachrichten"
 
 # named parameters
 msgid "HOST"
-msgstr "Host"
+msgstr "Host Rechner"
 
 msgid "PORT"
-msgstr "Porta"
+msgstr "Port"
 
 msgid "SSL"
-msgstr "SSL?"
+msgstr "SSL ?"
 
 msgid "cache_level"
-msgstr "Livello di cache"
+msgstr "Cache Level"
 
 msgid "connection_type"
-msgstr "Tipo di connessione"
+msgstr "Verbindungs Typ"
 
 msgid "draft_folder_name"
-msgstr "Nome della cartella bozze"
+msgstr "Draft Folder Name"
 
 msgid "login"
 msgstr "Login"
 
 msgid "max_folder_depth"
-msgstr "Profondità massima nella creazione delle cartelle"
+msgstr "Maximale Tiefe bei Folder Erstellung"
 
 msgid "max_folder_size"
-msgstr "Lunghezza massima dei nomi delle cartelle"
+msgstr "Maximale Länge bei Folder Namen"
 
 msgid "message_list_cols"
-msgstr "Colonne mostrate"
+msgstr "Angezeigte Spalten"
 
 msgid "password"
-msgstr "Password"
+msgstr "Passwort"
 
 msgid "sent_folder_name"
-msgstr "Nome della cartella della posta inviata"
+msgstr "Sende Folder Namen"
 
 msgid "smtp_host"
-msgstr "Server SMTP"
+msgstr "SMTP Host"
 
 msgid "smtp_port"
-msgstr "Porta SMTP"
+msgstr "SMTP Port"
 
 msgid "maildir"
-msgstr "Cartella SMTP"
+msgstr "SMTP Folder"
 
 msgid "direct_smtp"
-msgstr "Invio diretto al server SMTP?"
+msgstr "Direktes Versenden über SMTP ?"
 
 msgid "trash_folder_name"
-msgstr "Nome della cartella del cestino"
+msgstr "Müll Folder Name"
 
 msgid "treeview_style"
-msgstr "Stile vista ad albero"
+msgstr "Baumhierarchie Ansichts Stil"
 
 msgid "cpsma_synchronized"
-msgstr "Sincronizzata"
+msgstr "Synchronisiert"
 
 msgid "cpsma_failed_synchro"
 msgstr ""
-"Impossibile sincronizzare la casella di posta. Verifica i tuoi parametri."
+"Mailbox konnte nicht synchronisiert werden. Überprüfen Sie ihre Parameter."
 
 msgid "cpsma_objects"
-msgstr "Messaggi indicizzati"
+msgstr "Indizierte Nachrichten"
 
 msgid "cpsma_filter"
-msgstr "Filtra"
+msgstr "Filter"
 
 msgid "begins with"
-msgstr "inizia con"
+msgstr "beginnt mit"
 
 msgid "set junk status"
-msgstr "junk?"
+msgstr "Junk ?"
 
 msgid "Need an action param"
-msgstr "Questa azione necessita di un parametro"
+msgstr "Diese Aktion benötigt einen Parameter"
 
 msgid "_list_mail_"
-msgstr "I miei messaggi"
+msgstr "Meine Emails"
 
 msgid "label_webmail_enabled"
-msgstr "Webmail attivata"
+msgstr "Webmail ist aktiviert"
 
 msgid "label_address_book"
-msgstr "Rubrica"
+msgstr "Adressbuch"
 
 msgid "label_personal_addressbook"
-msgstr "Rubrica personale"
+msgstr "Persönliches Adressbuch"
 
 msgid "addressbook"
-msgstr "Cartella della rubrica"
+msgstr "Adressen Verzeichnis"
 
 msgid "deselect all"
-msgstr "deseleziona tutto"
+msgstr "Alle abwählen"
 
 msgid "cpsma_could_not_send"
-msgstr "Impossibile inviare il messaggio. Verifica la tua configurazione SMTP"
+msgstr ""
+"Email konnte nicht versandt werden, bitte überprüfen Sie Ihre SMTP "
+"Konfiguration"
 
 msgid "cpsma_structure_unknown"
 msgstr ""
-"Struttura del messaggio sconosciuta o messaggio spostato da un altro client "
-"di posta elettronica"
+"Unbekannte Nachrichtenstruktur oder Nachricht von nicht kompatiblen Mail "
+"Client"
 
 msgid "cpsma_failed_send"
-msgstr "Impossibile inviare il messaggio"
+msgstr "Konnte die Nachricht nicht versenden"
 
 msgid "cpsma_could_not_perform"
-msgstr "Non è stato possibile eseguire l'operazione sul server di posta"
+msgstr "Die Operation konnte auf diesem Mail Server nicht ausgeführt werden"
 
 msgid "instant_load"
-msgstr "Impossibile scaricare il corpo del messaggio"
+msgstr "Konnte den Email Text nicht laden"
 
 msgid "cpsma_no_private"
-msgstr "Privato non consentito"
+msgstr "Kein Privates gestattet"
 
 msgid "cpsma_max_size_reached"
-msgstr "Dimensione massima raggiunta"
+msgstr ""
 
 msgid "cpsma_msgs_sent_to_trash"
-msgstr "Messaggi inviati al cestino."
+msgstr "Messages sent to Trash."
 
 msgid "cpsma_msg_sent_to_trash"
-msgstr "Messaggio inviato al cestino."
+msgstr "Message sent to Trash."
 
 msgid "cpsma_folder_sent_to_trash"
-msgstr "Cartella inviata al cestino."
+msgstr "Folder sent to the Trash."
 
 msgid "cpsma_message_sent"
-msgstr "Messaggio inviato."
+msgstr "Message sent."
 
 msgid "cpsma_confirm_erase"
-msgstr "Sei sicuro?"
+msgstr "Are you sure ?"
 
 msgid "cpsma_confirm_erase_folder"
-msgstr "Sei sicuro di voler eliminare la cartella?"
+msgstr "Are you sure you want to erase the folder ?"
 
 msgid "cpsma_message_saved"
-msgstr "Messaggio salvato nelle bozze"
+msgstr "Message saved in drafts"
 
 msgid "cpsma_message_saved_no_subject"
-msgstr "Per salvare il messaggio è necessario inserire l'oggetto"
+msgstr "Subject is needed inorder to save the message"
 
 msgid "cpsma_message_saved_no_recipient"
-msgstr "Per salvare il messaggio è necessario inserire il destinatario"
+msgstr "Recipient is needed inorder to save the message"
 
 msgid "cpsma_message_sending"
-msgstr "Sto inviando il messaggio..."
+msgstr "Sending the message..."
 
 msgid "cpsma_message_saving"
-msgstr "Sto salvando il messaggio..."
+msgstr "Saving the message..."
 
 msgid "cpsm_not_valid_mail"
-msgstr "Indirizzo email non valido"
+msgstr "Invalid email address"
 
 msgid "cpsm_empty_subjet_body"
-msgstr "sia l'oggetto che il corpo sono vuoti"
+msgstr "both subject and body are empty"
 
 msgid "cpsm_notify_subject"
-msgstr "Notifica di lettura"
+msgstr "Read notification"
 
+#, fuzzy
 msgid "cpsm_notify_body {$mail_subject}"
-msgstr "Il tuo messaggio '{$mail_subject}' è stato letto"
+msgstr "Your message '{$mail_subject}' has been read"
 
 msgid "cpsma_notify_ask"
 msgstr ""
-"Il mittente ha richiesto una notifica dell'avvenuta lettura del messaggio. "
-"Vuoi inviare la notifica al mittente?"
+"The sender asked to be notified when you read this mail, do you want to "
+"notify him or her ?"
 
 msgid "cpsma_notify_remove"
-msgstr ""
-"Voui rimuovere permanentemente l'etichetta di notifica da questo messaggio?"
+msgstr "Do you want to definitly remove the notification flag from this mail ?"
 
 msgid "cpsma_notify_processing"
-msgstr "Notifica in corso..."
+msgstr "Notification in process..."
 
 msgid "cpsma_notification_sent"
-msgstr "Notifica inviata."
+msgstr "Notification sent."
 
 msgid "cpsma_notified"
-msgstr "Notifica inviata."
+msgstr "Notification sent."
 
 msgid "cpsma_shrink"
-msgstr "Espandi"
+msgstr "Shrink"
 
 msgid "cpsma_expunged"
-msgstr "Il cestino è stato svuotato."
+msgstr "Trash expunged."
 
 msgid "cps_already_synchronizing"
-msgstr "Questa casella di posta è già in fase di sincronizzazione"
+msgstr "The box is already beeing synchronized"
 
 # specific cases: columns headers
 msgid "Attachments"
-msgstr "Allegati"
+msgstr ""
 
 msgid "Icon"
-msgstr "Icona"
+msgstr ""
 
 msgid "From"
-msgstr "Da"
+msgstr ""
 
+#, fuzzy
 msgid "Date"
-msgstr "Data"
+msgstr "Date"
 
 msgid "Size"
-msgstr "Dimensione"
+msgstr ""
 
 msgid "Drafts"
-msgstr "Bozze"
+msgstr ""
 
 msgid "Sent"
-msgstr "Inviato"
+msgstr ""
 
 msgid "Trash"
-msgstr "Cestino"
+msgstr ""
 
 msgid "cpsma_ack"
-msgstr "Richiedi una ricevuta di consegna"
+msgstr "Ask for return receipt"
 
 msgid "cpsma_send_message"
-msgstr "Invia il messaggio"
+msgstr "Send the message"
 
 msgid "cpsma_renamed"
-msgstr "Elemento rinominato"
+msgstr "Element renamed"
 
 msgid "cpsma_could_not_rename"
-msgstr "Impossibile rinominare"
+msgstr "Could not rename"
 
 msgid "cpsma_moved"
-msgstr "Elemento spostato"
+msgstr "Element moved"
 
 msgid "index_relations"
-msgstr "Indice dei filoni"
+msgstr ""
 
+#, fuzzy
 msgid "protected_folders"
-msgstr "Cartelle protette"
+msgstr "Protected folders"
 
+#, fuzzy
 msgid "read_only_folders"
-msgstr "Cartelle in sola lettura"
+msgstr "Read-only folders"
 
 msgid "cpsma_configure_mailtool"
-msgstr "Configura la webmail"
+msgstr "Konfiguration Webmail"
 
 msgid "cpsma_return_receipt"
-msgstr "Richiedi una ricevuta di lettura"
+msgstr "Ask for a read receipt"
 
+#, fuzzy
 msgid "webmail_enabled"
-msgstr "Webmail attivata"
+msgstr "Access field (field:value)"
 
 #, fuzzy
 msgid "cpsma_miss_sessiondata"
 msgstr ""
-"Informations manquantes dans la session, il est peut-être nécessaire de se "
-"reconnecter"
+"Cannot find needed data in the current session, you might need to reconnect"
+
+#~ msgid "cpsm_notify_body"
+#~ msgstr "Your message '_ORIGINAL_MAIL_SUBJECT_' has been read"
