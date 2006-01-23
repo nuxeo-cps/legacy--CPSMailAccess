@@ -1,4 +1,29 @@
 *******************************************
+** CPSMailAccess V1.3.0 [R1 build 2006/01/23-17:28 by fermigier]
+** SVN URL: https://svn.nuxeo.org/pub/CPSMailAccess/trunk Revision: 31976
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+- Added a normalizer for mail search
+- Parameters can be taken from sessions as well now.
+  Using ${SESSION.var}.
+  For example, ${SESSION.element} will retrieve "element"
+- Same feature for REQUEST (${SESSION.element})
+Bug fixes:
+~~~~~~~~~~
+- #1146 better handling of attached file with non well-specified mime types
+- #1143 removed dependency on CPSDefault.BaseBox
+- Removed deprecation warnings.
+- Added more semantic allowed markup in the HTMLSanitizer.
+- Made CPSMailAccess i18n files work with the update_pos script.
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- Added a dedicated C extension for optimisations
+- CPS css_slot was renamed style_slot to comply with later CMF/Zope 3 standard.
+
+*******************************************
 ** CPSMailAccess V1.2.0 [R1 build 2005/11/07-15:27 by fguillaume]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSMailAccess/trunk Revision: 29132
 Requires:
