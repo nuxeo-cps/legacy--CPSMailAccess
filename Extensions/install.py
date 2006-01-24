@@ -34,8 +34,7 @@ from Products.CPSMailAccess.mailbox import MailBox
 
 # XXX AT: is it a test on CPSSubscriptions presence/install?
 try:
-  from Products.CPSSubscriptions.CPSSubscriptionsPermissions import \
-     CanNotifyContent
+  from Products.CPSSubscriptions.permissions import CanNotifyContent
   CPSSubscriptions = 1
 except ImportError:
   CPSSubscriptions = 0
