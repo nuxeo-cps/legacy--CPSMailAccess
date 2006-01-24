@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Removed dependency to CPSSubscriptions for install
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
