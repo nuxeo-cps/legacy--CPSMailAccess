@@ -22,13 +22,9 @@
     there's no regression when installing
     CPSMailAccess from scratch
 """
-import unittest, os
-from Testing import ZopeTestCase
-from Testing.ZopeTestCase import installProduct, _print
-from Products.CPSDefault.tests import CPSTestCase
-
-from AccessControl.SecurityManagement \
-    import newSecurityManager, noSecurityManager
+import unittest
+from Testing.ZopeTestCase import installProduct
+from Products.CPSDefault.tests.CPSTestCase import CPSTestCase, MANAGER_ID
 
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
 from OFS.ObjectManager import BadRequestException
@@ -36,20 +32,15 @@ from OFS.ObjectManager import BadRequestException
 installProduct('Five')
 installProduct('CPSMailAccess')
 
-class MailInstallerTestCase(CPSTestCase.CPSTestCase):
+class MailInstallerTestCase(CPSTestCase):
 
-    def _setup(self):
-        if self._configure_portal:
-            self.login()
+    def afterSetUp(self):
+        CPSTestCase.afterSetUp(self)
+        self.login(MANAGER_ID)
 
-    def login(self):
-        uf = self.app.acl_users
-        user = uf.getUserById('CPSTestCase').__of__(uf)
-        newSecurityManager(None, user)
-
-    def logout(self):
-        noSecurityManager()
-        get_transaction().commit()
+    def beforeTearDown(self):
+        CPSTestCase.beforeTearDown(self)
+        self.logout()
 
     def installProduct(self):
         installer = ExternalMethod('cpsmailaccess_installer', '',
@@ -128,26 +119,8 @@ class MailInstallerTestCase(CPSTestCase.CPSTestCase):
         self.app.portal.cpsmailaccess_upgrader(self.app.portal, 'beta2')
         self.assertEquals(pwm.box_1._connection_params['SSL'], (0, 1))
 
-class MailInstaller(CPSTestCase.CPSInstaller):
-
-    def install(self, portal_id):
-        self.addUser()
-        self.login()
-        self.addPortal(portal_id)
-        self.fixupTranslationServices(portal_id)
-        self.logout()
-
-def setupPortal(PortalInstaller=MailInstaller):
-    # Create a CPS site in the test (demo-) storage
-    app = ZopeTestCase.app()
-    # PortalTestCase expects object to be called "portal", not "cps"
-    if hasattr(app, 'portal'):
-        app.manage_delObjects(['portal'])
-    MailInstaller(app).install('portal')
-
-setupPortal(MailInstaller)
 
 def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(MailInstallerTestCase),
-        ))
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(MailInstallerTestCase))
+    return suite

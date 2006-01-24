@@ -25,12 +25,14 @@ import os
 from OFS.ObjectManager import BadRequestException
 
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
+from Products.CMFCore.utils import getToolByName
 from Products.CPSInstaller.CPSInstaller import CPSInstaller
 from Products.CPSMailAccess.mailtool import manage_addMailTool,\
                                             default_parameters
 from Products.CPSMailAccess.permissions import permissions
 from Products.CPSMailAccess.mailbox import MailBox
 
+# XXX AT: is it a test on CPSSubscriptions presence/install?
 try:
   from Products.CPSSubscriptions.CPSSubscriptionsPermissions import \
      CanNotifyContent
@@ -531,6 +533,11 @@ class CPSMailAccessInstaller(CPSInstaller):
         # we don't want to see notify_content in the webmail
         if CPSSubscriptions == 0:
             return
+
+        # check CPSSubscriptions is installed
+        stool = getToolByName(self.portal, 'portal_subscriptions', None)
+        if stool is None:
+          return
 
         ptypes = "('Portal', 'CPSMailAccess Message', 'CPSMailAccess Box', 'CPSMailAccess Folder')"
         condition = "object.portal_type not in %s" % ptypes
