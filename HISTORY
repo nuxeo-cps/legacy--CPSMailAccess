@@ -1,4 +1,20 @@
 *******************************************
+** CPSMailAccess V1.3.1 [R1 build 2006/02/17-20:28 by fermigier]
+** SVN URL: https://svn.nuxeo.org/pub/CPSMailAccess/trunk Revision: 32986
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+- Removed dependency to CPSSubscriptions for install
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
+*******************************************
 ** CPSMailAccess V1.3.0 [R1 build 2006/01/23-17:28 by fermigier]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSMailAccess/trunk Revision: 31976
 Requires:
