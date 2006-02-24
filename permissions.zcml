@@ -1,24 +1,25 @@
-<configure xmlns="http://namespaces.zope.org/zope"
-           xmlns:five="http://namespaces.zope.org/five"
-           xmlns:browser="http://namespaces.zope.org/browser">
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="cpsmailaccess">
 
   <permission
-   id="cpsmailaccess.ViewMailBox"
-   title="View mailbox"
-    />
+      id="cpsmailaccess.ViewMailBox"
+      title="View mailbox"
+      />
 
   <permission
-   id="cpsmailaccess.SendMails"
-   title="Send mails"
-    />
+      id="cpsmailaccess.SendMails"
+      title="Send mails"
+      />
 
   <permission
-   id="cpsmailaccess.ConfigureMailBox"
-   title="Configure mailbox"
-    />
+      id="cpsmailaccess.ConfigureMailBox"
+      title="Configure mailbox"
+      />
 
   <permission
-   id="cpsmailaccess.ManageMailTool"
-   title="Manage MailTool"
-    />
+      id="cpsmailaccess.ManageMailTool"
+      title="Manage MailTool"
+      />
+
 </configure>
