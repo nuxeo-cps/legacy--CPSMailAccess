@@ -231,6 +231,29 @@ class MailTool(Folder): # UniqueObject
 
     def canHaveMailBox(self, user_id=None):
         """ check wheter the user can use the webmail """
+        def _compareValues(value1, value2):
+            """ compares values
+
+            >>> _compareValues('1', True)
+            True
+            >>> _compareValues('1', 1)
+            True
+            >>> _compareValues(1, 1)
+            True
+            """
+            def _normalize(value):
+                if isinstance(value, bool):
+                    value = str(int(value))
+                elif isinstance(value, str):
+                    value = int(value)
+                return str(value).strip()
+
+            if type(value1) != type(value2):
+                value1 = _normalize(value1)
+                value2 = _normalize(value2)
+
+            return value1 == value2
+
         if user_id is None:
             user = getAuthenticatedMember(self)
         else:
@@ -251,16 +274,17 @@ class MailTool(Folder): # UniqueObject
                 value = 1
 
             kw = {'id': user.getId()}
-            dir_results = self._searchEntries('members', [webmail_enabled_field],
-                                              **kw)
+            dir_results = self._searchEntries('members',
+                                              [webmail_enabled_field], **kw)
             if len(dir_results) != 1:
                 return False
+
             webmail_enabled = dir_results[0][1][webmail_enabled_field]
 
             if len(value) > 0 and value[0] == '!':
-                return str(webmail_enabled) != str(value[1:])
+                return not _compareValues(webmail_enabled, value[1:])
             else:
-                return str(webmail_enabled) == str(value)
+                return _compareValues(webmail_enabled, value)
 
 
 """ classic Zope 2 interface for class registering
