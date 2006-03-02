@@ -6,7 +6,8 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- #1414: RFC says: a space must be inserted between HEADER.FIELDS and the list,
+  Thanks to Tiksin
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -

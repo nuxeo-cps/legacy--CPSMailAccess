@@ -704,7 +704,7 @@ class MailFolder(BTreeFolder2):
                    'In-Reply-To', 'Content-Type', 'References',
                    'Disposition-Notification-To']
 
-        fetch_str = '(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS(%s)])' \
+        fetch_str = '(FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS (%s)])' \
                      % ' '.join(headers)
 
         LOG('_synchronizeFolder', DEBUG, 'bloc %s' % str(bloc))
