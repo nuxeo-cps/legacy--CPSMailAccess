@@ -29,12 +29,12 @@
  <f id="identifier" v="webmail_files"/>
  <f id="javascript" v=""/>
  <f id="js_render_method" v=""/>
- <f id="order" v="0"/>
+ <f id="order" v="1"/>
  <f id="portlet" v=""/>
  <f id="preview"/>
  <f id="provider" v=""/>
  <f id="render_method" v="portlets_attached_files"/>
- <f id="slot" v="right"/>
+ <f id="slot" v="treeview"/>
  <f id="slot_override" v="0"/>
  <f id="visibility_range" v="0-0"/>
 </object>

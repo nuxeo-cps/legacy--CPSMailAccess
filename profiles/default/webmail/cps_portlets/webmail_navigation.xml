@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<object name="webmail_files" meta_type="CPS Portlet"
+<object name="webmail_navigation" meta_type="CPS Portlet"
    portal_type="Custom Portlet">
  <f id="Contributors">
   <e v="admin"/>
@@ -17,7 +17,7 @@
  <f id="Rights" v=""/>
  <f id="Source" v=""/>
  <f id="Subject"/>
- <f id="Title" v="Attached Files"/>
+ <f id="Title" v="Webmail navigation"/>
  <f id="allow_discussion" v="False"/>
  <f id="cache_cleanup_date" v="0.0"/>
  <f id="cache_params"/>
@@ -26,15 +26,15 @@
   <e v="no-cache"/>
  </f>
  <f id="disable_override" v="0"/>
- <f id="identifier" v="webmail_files"/>
+ <f id="identifier" v="webmail_navigation"/>
  <f id="javascript" v=""/>
  <f id="js_render_method" v=""/>
  <f id="order" v="0"/>
  <f id="portlet" v=""/>
  <f id="preview"/>
  <f id="provider" v=""/>
- <f id="render_method" v="portlets_attached_files"/>
- <f id="slot" v="right"/>
+ <f id="render_method" v="portlets_treeview"/>
+ <f id="slot" v="treeview"/>
  <f id="slot_override" v="0"/>
  <f id="visibility_range" v="0-0"/>
 </object>
