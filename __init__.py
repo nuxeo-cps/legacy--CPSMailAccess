@@ -38,7 +38,7 @@ except ImportError:
     # BBB for CMF 1.4, remove this in CPS 3.4.0
     from Products.CMFCore.CMFCorePermissions import AddPortalContent
 
-from Products.GenericSetup import BASE
+from Products.GenericSetup import EXTENSION
 from Products.GenericSetup import profile_registry
 
 from Products.CPSCore.interfaces import ICPSSite
@@ -85,5 +85,5 @@ def initialize(context):
                                      "Profile for CPSMailAccess.",
                                      'profiles/default',
                                      'CPSMailAccess',
-                                     BASE,
+                                     EXTENSION,
                                      for_=ICPSSite)
