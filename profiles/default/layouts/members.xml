@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<object name="members" meta_type="CPS Layout">
+ <property name="layout_create_method"></property>
+ <property name="layout_edit_method"></property>
+ <property name="layout_view_method"></property>
+ <property name="style_prefix">layout_dir_</property>
+ <property name="flexible_widgets"/>
+ <property name="validate_values_expr"></property>
+ <widget name="confirm" meta_type="Password Widget">
+  <property name="fields">
+   <element value="confirm"/>
+  </property>
+  <property name="label">label_password_confirm</property>
+  <property name="label_edit">label_password_confirm</property>
+  <property name="description">Password confirmation when editing</property>
+  <property name="is_i18n">True</property>
+  <property name="hidden_layout_modes">
+   <element value="view"/>
+   <element value="search"/>
+  </property>
+  <property name="hidden_readonly_layout_modes">
+   <element value="edit"/>
+  </property>
+  <property name="hidden_empty">True</property>
+  <property name="display_width">20</property>
+  <property name="size_max">0</property>
+  <property name="password_widget">password</property>
+ </widget>
+ <widget name="email" meta_type="Email Widget">
+  <property name="fields">
+   <element value="email"/>
+  </property>
+  <property name="is_required">True</property>
+  <property name="label">label_email</property>
+  <property name="label_edit">label_email</property>
+  <property name="description">Member email</property>
+  <property name="is_i18n">True</property>
+  <property name="display_width">30</property>
+  <property name="size_max">0</property>
+ </widget>
+ <widget name="fullname" meta_type="String Widget">
+  <property name="fields">
+   <element value="fullname"/>
+  </property>
+  <property name="label">label_full_name</property>
+  <property name="label_edit">label_full_name</property>
+  <property name="description">Member full name</property>
+  <property name="is_i18n">True</property>
+  <property name="hidden_layout_modes">
+   <element value="create"/>
+   <element value="edit"/>
+   <element value="search"/>
+  </property>
+  <property name="display_width">30</property>
+ </widget>
+ <widget name="givenName" meta_type="String Widget">
+  <property name="fields">
+   <element value="givenName"/>
+  </property>
+  <property name="label">label_first_name</property>
+  <property name="label_edit">label_first_name</property>
+  <property name="description">Member first name</property>
+  <property name="is_i18n">True</property>
+ </widget>
+ <widget name="groups" meta_type="MultiSelect Widget">
+  <property name="fields">
+   <element value="groups"/>
+  </property>
+  <property name="label">label_groups</property>
+  <property name="label_edit">label_groups</property>
+  <property name="description">Member groups</property>
+  <property name="is_i18n">True</property>
+  <property name="vocabulary">groups</property>
+  <property name="size">7</property>
+ </widget>
+ <widget name="homeless" meta_type="Boolean Widget">
+  <property name="fields">
+   <element value="homeless"/>
+  </property>
+  <property name="label">cpsdir_label_homeless</property>
+  <property name="label_edit">cpsdir_label_homeless</property>
+  <property name="description">Homeless ?</property>
+  <property name="help">cpsdir_help_homeless</property>
+  <property name="is_i18n">True</property>
+  <property name="label_false">cpsschemas_label_true</property>
+  <property name="label_true">cpsschemas_label_false</property>
+ </widget>
+ <widget name="id" meta_type="User Identifier Widget">
+  <property name="fields">
+   <element value="id"/>
+  </property>
+  <property name="is_required">True</property>
+  <property name="label">label_user_name</property>
+  <property name="label_edit">label_user_name</property>
+  <property name="description">Member login</property>
+  <property name="is_i18n">True</property>
+  <property name="readonly_layout_modes">
+   <element value="edit"/>
+  </property>
+ </widget>
+ <widget name="password" meta_type="Password Widget">
+  <property name="fields">
+   <element value="password"/>
+  </property>
+  <property name="label">label_password</property>
+  <property name="label_edit">label_password</property>
+  <property name="description">Member password</property>
+  <property name="is_i18n">True</property>
+  <property name="hidden_layout_modes">
+   <element value="view"/>
+   <element value="search"/>
+  </property>
+  <property name="hidden_readonly_layout_modes">
+   <element value="edit"/>
+  </property>
+  <property name="hidden_empty">True</property>
+  <property name="display_width">20</property>
+  <property name="size_max">0</property>
+ </widget>
+ <widget name="roles" meta_type="Generic MultiSelect Widget">
+  <property name="fields">
+   <element value="roles"/>
+  </property>
+  <property name="label">label_roles</property>
+  <property name="label_edit">label_roles</property>
+  <property name="description">Member roles</property>
+  <property name="is_i18n">True</property>
+  <property name="vocabulary">global_roles</property>
+  <property name="translated">True</property>
+  <property name="render_format">checkbox</property>
+ </widget>
+ <widget name="sn" meta_type="String Widget">
+  <property name="fields">
+   <element value="sn"/>
+  </property>
+  <property name="is_required">True</property>
+  <property name="label">label_last_name</property>
+  <property name="label_edit">label_last_name</property>
+  <property name="description">Member last name</property>
+  <property name="is_i18n">True</property>
+ </widget>
+ <widget name="webmail_enabled" meta_type="Boolean Widget">
+  <property name="fields">
+   <element value="webmail_enabled"/>
+  </property>
+  <property name="label">label_webmail_enabled</property>
+  <property name="label_edit">label_webmail_enabled</property>
+  <property name="is_i18n">True</property>
+ </widget>
+ <table>
+  <row>
+   <cell name="id" ncols="2"/>
+  </row>
+  <row>
+   <cell name="password" ncols="2"/>
+  </row>
+  <row>
+   <cell name="confirm" ncols="2"/>
+  </row>
+  <row>
+   <cell name="givenName"/>
+   <cell name="sn"/>
+  </row>
+  <row>
+   <cell name="fullname" ncols="2"/>
+  </row>
+  <row>
+   <cell name="email" ncols="2"/>
+  </row>
+  <row>
+   <cell name="roles"/>
+   <cell name="groups"/>
+  </row>
+  <row>
+   <cell name="homeless" ncols="2"/>
+  </row>
+  <row>
+   <cell name="webmail_enabled" ncols="2"/>
+  </row>
+ </table>
+</object>

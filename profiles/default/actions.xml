@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<object name="portal_actions" meta_type="CMF Actions Tool">
+ <action-provider name="portal_actions">
+  <action title="_list_mail_" action_id="webmail" category="user"
+     condition_expr="python:member and portal.portal_webmail.canHaveMailBox()"
+     url_expr="string:${portal_url}/portal_webmail/webmailRedirect.html?user_id=${member}"
+     visible="True">
+   <permission>View</permission>
+  </action>
+  <action title="cpsma_configure_mailtool" action_id="webmail_global"
+     category="global" condition_expr="member"
+     url_expr="string:${portal_url}/portal_webmail/configure.html"
+     visible="True">
+   <permission>Manage MailTool</permission>
+  </action>
+ </action-provider>
+
+</object>

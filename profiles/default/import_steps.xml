@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<import-steps>
+ <import-step id="webmail" version="20060302-01"
+              handler="Products.CPSMailAccess.exportimport.importCPSMailAccess"
+              title="CPSMailAccess">
+  <dependency step="toolset"/>
+  <dependency step="portlets"/>
+  Import CPSMailAccess.
+ </import-step>
+</import-steps>

@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<object name="Localizer">
+ <object name="default" meta_type="MessageCatalog"/>
+</object>

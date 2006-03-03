@@ -17,14 +17,7 @@ Prerequisites
 
 To install CPSMailAccess you will need:
 
-- a working Zope 2.7.x + CPS 3.3.4 or greater.
-  The installation procedure is simpler with Zope 2.8.x
-
-- Zope 2.7.x specifics:
-
-  + ZopeX3-3.0.0 : http://www.zope.org/Products/ZopeX3
-
-  + Five 1.0.1 or greater : http://codespeak.net/z3/five/
+- a working Zope 2.9.x + CPS 3.4.0 or greater
 
 - rdflib 2.0.6 : http://rdflib.net/
 
@@ -42,56 +35,25 @@ Get it on nuxeo svn::
 
     svn co http://svn.nuxeo.org/pub/zasyncdispatcher/trunk zasyncdispatcher
 
-
-Zope X3 installation (Zope 2.7.x specific)
-------------------------------------------
-
-Please install ZopeX3-3.0.0 on your system (usually in
-/opt/ZopeX3-3.0.0) with the python version you use for Zope2.7 and
-CPS, e.g.::
-
-  $ ./configure --prefix /opt/ZopeX3-3.0.0 --with-python /usr/bin/python
-  $ make
-  $ make install
-  $ make check
-
-
 Products Setup
 --------------
 
-Put Five (Zope 2.7 users) and CPSMailAccess.
+Extract CPSMailAccess into your Products directory
 
 **Warning:** You must remove the CPSWebMail Product from your
 instance.  This is very important, as it might interfere.
 
 Run CPSMailAccess installer with::
-  
+
   python setup.py install
 
 as root user.
 
-
-Zope 3 <-> Zope 2 path setup (Zope 2.7 specific)
-------------------------------------------------
-
-Edit your $INSTANCE/etc/zope.conf to add the following path
-declaration::
-
-  path /opt/ZopeX3-3.0.0/lib/python
-
-
 Webmail installation
 --------------------
 
-Then you can restart Zope and add an external method in your CPS
-portal instance to install CPSMailAccess::
-
-   Id            : cpsmailaccess_installer
-   Title         : whatever
-   Module Name   : CPSMailAccess.install
-   Function Name : install
-
-And run it.
+To install CPSMailAccess, go to portal_setup and to the profiles tab.
+Choose `CPSMailAccess` profile and import it.
 
 
 Configuration
@@ -147,7 +109,7 @@ Quick parameters review :
 
   This can be useful in some cases.  Example:
   `accountStatus:!disable`
-				    
+
 About SMTP Folder:
 
 - SMTP Folder is MailDir folder used for asynchronous sends of

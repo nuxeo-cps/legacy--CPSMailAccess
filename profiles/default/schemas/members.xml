@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<object name="members" meta_type="CPS Schema">
+ <field name="confirm" meta_type="CPS Password Field">
+  <property name="read_ignore_storage">True</property>
+  <property name="write_ignore_storage">True</property>
+ </field>
+ <field name="email" meta_type="CPS String Field">
+  <property name="acl_write_roles">Manager; Owner</property>
+ </field>
+ <field name="fullname" meta_type="CPS String Field">
+  <property name="acl_write_roles">Nobody</property>
+  <property name="read_ignore_storage">True</property>
+  <property
+     name="read_process_expr">python:(givenName + " " + sn).strip() or id</property>
+  <property name="read_process_dependent_fields">
+   <element value="givenName"/>
+   <element value="sn"/>
+   <element value="id"/>
+  </property>
+  <property name="write_ignore_storage">True</property>
+ </field>
+ <field name="givenName" meta_type="CPS String Field">
+  <property name="acl_write_roles">Manager; Owner</property>
+ </field>
+ <field name="groups" meta_type="CPS String List Field">
+  <property name="acl_write_roles">Manager</property>
+ </field>
+ <field name="homeless" meta_type="CPS Int Field">
+  <property name="default_expr">python: 0</property>
+  <property name="acl_write_roles">Manager</property>
+ </field>
+ <field name="id" meta_type="CPS String Field"/>
+ <field name="password" meta_type="CPS Password Field">
+  <property name="acl_write_roles">Manager; Owner</property>
+ </field>
+ <field name="roles" meta_type="CPS String List Field">
+  <property name="default_expr">python: ['Member',]</property>
+  <property name="acl_write_roles">Manager</property>
+ </field>
+ <field name="sn" meta_type="CPS String Field">
+  <property name="acl_write_roles">Manager; Owner</property>
+ </field>
+ <field name="webmail_enabled" meta_type="CPS Int Field"/>
+</object>

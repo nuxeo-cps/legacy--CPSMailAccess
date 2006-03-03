@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<object name="portal_webmail" meta_type="CPSMailAccess Tool">
+ <parameter name="HOST">
+  <values>
+   <value type="str">localhost</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="PORT">
+  <values>
+   <value type="int">143</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="SSL">
+  <values>
+   <value type="int">0</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="addressbook">
+  <values>
+   <value type="str">addressbook</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="connection_type">
+  <values>
+   <value type="str">IMAP</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="direct_smtp">
+  <values>
+   <value type="int">1</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="draft_folder_name">
+  <values>
+   <value type="str">INBOX.Drafts</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="index_relations">
+  <values>
+   <value type="int">0</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="login">
+  <values>
+   <value type="str"></value>
+   <value type="int">0</value>
+  </values>
+ </parameter>
+ <parameter name="max_folder_depth">
+  <values>
+   <value type="int">2</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="max_folder_size">
+  <values>
+   <value type="int">20</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="message_list_cols">
+  <values>
+   <value type="str">Attachments, Icon, From, Date, Subject, Size</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="password">
+  <values>
+   <value type="str"></value>
+   <value type="int">0</value>
+  </values>
+ </parameter>
+ <parameter name="protected_folders">
+  <values>
+   <value type="str">INBOX.Sent</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="read_only_folders">
+  <values>
+   <value type="str"></value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="sent_folder_name">
+  <values>
+   <value type="str">INBOX.Sent</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="signature">
+  <values>
+   <value type="str"></value>
+   <value type="int">0</value>
+  </values>
+ </parameter>
+ <parameter name="smtp_host">
+  <values>
+   <value type="str">localhost</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="smtp_port">
+  <values>
+   <value type="int">25</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="trash_folder_name">
+  <values>
+   <value type="str">INBOX.Trash</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="treeview_style">
+  <values>
+   <value type="str">lotus</value>
+   <value type="int">1</value>
+  </values>
+ </parameter>
+ <parameter name="webmail_enabled">
+  <values>
+   <value type="str">webmail_enabled:1</value>
+   <value type="int">-1</value>
+  </values>
+ </parameter>
+</object>

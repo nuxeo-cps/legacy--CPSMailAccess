@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<object name="webmail_files" meta_type="CPS Portlet"
+   portal_type="Custom Portlet">
+ <f id="Contributors">
+  <e v="admin"/>
+ </f>
+ <f id="Coverage" v=""/>
+ <f id="CreationDate" v="20060303085629Z"/>
+ <f id="Creator" v="admin"/>
+ <f id="Description" v=""/>
+ <f id="EffectiveDate" v=""/>
+ <f id="ExpirationDate" v=""/>
+ <f id="Format" v="text/html"/>
+ <f id="Language" v=""/>
+ <f id="ModificationDate" v="20060303085629Z"/>
+ <f id="Relation" v=""/>
+ <f id="Rights" v=""/>
+ <f id="Source" v=""/>
+ <f id="Subject"/>
+ <f id="Title" v="Attached Files"/>
+ <f id="allow_discussion" v="False"/>
+ <f id="cache_cleanup_date" v="0.0"/>
+ <f id="cache_params"/>
+ <f id="cache_timeout" v="0"/>
+ <f id="custom_cache_params">
+  <e v="no-cache"/>
+ </f>
+ <f id="disable_override" v="0"/>
+ <f id="identifier" v="webmail_files"/>
+ <f id="javascript" v=""/>
+ <f id="js_render_method" v=""/>
+ <f id="order" v="0"/>
+ <f id="portlet" v=""/>
+ <f id="preview"/>
+ <f id="provider" v=""/>
+ <f id="render_method" v="portlets_attached_files"/>
+ <f id="slot" v="right"/>
+ <f id="slot_override" v="0"/>
+ <f id="visibility_range" v="0-0"/>
+</object>

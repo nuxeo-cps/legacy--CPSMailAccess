@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<object name="portal_layouts" meta_type="CPS Layouts Tool">
+ <property name="title"></property>
+ <object name="addressbook" meta_type="CPS Layout"/>
+ <object name="addressbook_search" meta_type="CPS Layout"/>
+ <object name="members" meta_type="CPS Layout"/>
+</object>

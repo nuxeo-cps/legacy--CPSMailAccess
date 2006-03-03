@@ -1,8 +1,6 @@
 $Id$
 
-CPSUtil >= 0.8.0
-CPSInstaller
-CPS >= 3.3.4
+CPS >= 3.4.O
 
-# (Zope-2.7.3+, Zope X3.0.0, Five 0.3+) OR Zope-2.8.1+
+# Zope-2.9+
 

@@ -16,14 +16,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
-
 import os, sys
 
 # add CPSMailAccess to the python path
 product_dir = os.path.split(__file__)[0]
 sys.path.insert(0, product_dir)
 
-import mailbox, mailfolder, mailmessage, mailtool, mailboxtreeview
+import mailbox
+import mailfolder
+import mailmessage
+import mailtool
+import mailboxtreeview
+from interfaces import IMailTool
 
 ## XXX dependencies introduced by the box creation
 from Products.CMFCore.DirectoryView import registerDirectory
@@ -33,6 +37,11 @@ try:
 except ImportError:
     # BBB for CMF 1.4, remove this in CPS 3.4.0
     from Products.CMFCore.CMFCorePermissions import AddPortalContent
+
+from Products.GenericSetup import BASE
+from Products.GenericSetup import profile_registry
+
+from Products.CPSCore.interfaces import ICPSSite
 
 contentClasses = (mailboxtreeview.MailBoxTreeView, )
 contentConstructors = (mailboxtreeview.manage_addMailBoxTreeview, )
@@ -70,3 +79,11 @@ def initialize(context):
                 permission = AddPortalContent,
                 extra_constructors = contentConstructors,
                 fti = fti).initialize(context)
+
+    profile_registry.registerProfile('default',
+                                     'CPSMailAccess',
+                                     "Profile for CPSMailAccess.",
+                                     'profiles/default',
+                                     'CPSMailAccess',
+                                     BASE,
+                                     for_=ICPSSite)

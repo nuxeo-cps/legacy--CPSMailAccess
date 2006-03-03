@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<object name="MailBoxTreeView" meta_type="Factory-based Type Information"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">portal_type_MailBoxTreeView_title</property>
+ <property
+    name="description">portal_type_MailBoxTreeView_description</property>
+ <property name="content_icon">box.png</property>
+ <property name="content_meta_type">MailBoxTreeView</property>
+ <property name="product">CPSMailAccess</property>
+ <property name="factory">manage_addMailBoxTreeview</property>
+ <property name="immediate_view">basebox_edit_form</property>
+ <property name="global_allow">True</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <property name="cps_is_searchable">False</property>
+ <property name="cps_proxy_type"></property>
+ <property name="cps_display_as_document_in_listing">False</property>
+ <property name="cps_is_portalbox">True</property>
+ <alias from="(Default)" to="mailboxtreeview_view"/>
+ <alias from="view" to="mailboxtreeview_view"/>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${object_url}/mailboxtreeview_view" visible="True">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" action_id="edit" category="object" condition_expr=""
+    url_expr="string:${object_url}/basebox_edit_form" visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+</object>
