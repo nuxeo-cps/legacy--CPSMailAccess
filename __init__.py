@@ -84,9 +84,9 @@ def initialize(context):
                 fti = fti).initialize(context)
 
     profile_registry.registerProfile('default',
-                                     'CPSMailAccess',
+                                     'CPS MailAccess',
                                      "Profile for CPSMailAccess.",
                                      'profiles/default',
-                                     'CPS MailAccess',
+                                     'CPSMailAccess',
                                      EXTENSION,
                                      for_=ICPSSite)
