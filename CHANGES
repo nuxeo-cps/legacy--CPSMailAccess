@@ -6,7 +6,7 @@ New features:
 - Added Spanish translation.
 Bug fixes:
 ~~~~~~~~~~
--
+- fixed a makeId unicode issue
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
