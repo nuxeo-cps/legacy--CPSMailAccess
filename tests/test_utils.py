@@ -407,6 +407,9 @@ ok then"""
         self.assertEquals('application_pdf.png',
                           mimetype_to_icon_name('application/pdf'))
 
+    def test_makeId(self):
+        self.assertEquals(makeId('IN BOXÈ'), 'IN_BOXe')
+        self.assertEquals(makeId(u'INÈBOX'), 'INeBOX')
 
 def test_suite():
     return unittest.TestSuite((

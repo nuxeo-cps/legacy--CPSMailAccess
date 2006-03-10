@@ -46,9 +46,11 @@ _translation_table = string.maketrans(
 _ok_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_."
 
 
-def makeId(s, lower=0):
+def makeId(string, lower=0, encoding='ISO-8859-15'):
     "Make id from string"
-    id = s.translate(_translation_table)
+    if isinstance(string, unicode):
+        string = string.encode(encoding)
+    id = string.translate(_translation_table)
     id = id.replace('Æ', 'AE')
     id = id.replace('æ', 'ae')
     id = id.replace('¼', 'OE')
