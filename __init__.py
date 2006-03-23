@@ -25,6 +25,8 @@ import os, sys
 product_dir = os.path.split(__file__)[0]
 sys.path.insert(0, product_dir)
 
+import permissions # for global role mapping
+
 import mailbox
 import mailfolder
 import mailmessage

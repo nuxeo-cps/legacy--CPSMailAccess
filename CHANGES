@@ -7,6 +7,7 @@ New features:
 Bug fixes:
 ~~~~~~~~~~
 - fixed a makeId unicode issue
+- #1566: global role-permission mapping wasn't loaded
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
--
+- extension layer of CPSDefault: CPSMailAccessLayer

@@ -25,7 +25,9 @@
 import unittest
 from Testing.ZopeTestCase import installProduct
 from Products.CPSDefault.tests.CPSTestCase import CPSTestCase, MANAGER_ID
+from Products.CPSDefault.tests.CPSTestCase import ExtensionProfileLayerClass
 
+from Products.CMFCore.utils import _checkPermission
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
 from OFS.ObjectManager import BadRequestException
 
@@ -120,7 +122,41 @@ class MailInstallerTestCase(CPSTestCase):
         self.assertEquals(pwm.box_1._connection_params['SSL'], (0, 1))
 
 
+class CPSMailAccessLayerClass(ExtensionProfileLayerClass):
+    extension_ids = ('CPSMailAccess:default',)
+
+CPSMailAccessLayer = CPSMailAccessLayerClass(
+    __name__,
+    'CPSMailAccessLayer'
+    )
+
+class MailAccessProfileTestCase(CPSTestCase):
+    layer = CPSMailAccessLayer
+
+    def afterSetUp(self):
+        self.login('manager')
+        self.user_id = 'mailaccess_user'
+
+        dtool = self.portal.portal_directories
+        mdir = dtool['members']
+        mdir._createEntry({'id': self.user_id, 'roles': ('Member',)})
+
+        self.mailtool = self.portal.portal_webmail
+
+    def berforeTearDown(self):
+        self.logout()
+        mdir._deleteEntry(self.user_id)
+
+    def test_userAccess(self):
+       self.login(self.user_id)
+       mbox = self.mailtool.addMailBox(self.user_id)
+       # We do not want to import the permission, might define the mapping
+       # and this is part of what's been tested
+       self.assert_(_checkPermission('View mailbox', mbox))
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MailInstallerTestCase))
+    suite.addTest(unittest.makeSuite(MailAccessProfileTestCase))
     return suite
