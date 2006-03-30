@@ -24,6 +24,8 @@ from xml.dom.minidom import Element
 from zope.component import adapts
 from zope.interface import implements
 
+from ZODB.PersistentMapping import PersistentMapping
+
 from Products.CMFCore.utils import getToolByName
 from Products.GenericSetup.utils import XMLAdapterBase
 from Products.GenericSetup.utils import ObjectManagerHelpers
@@ -148,7 +150,7 @@ class CPSMailAccessXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
 
     def _initCPSMailAccessProperties(self, node):
         portal_webmail = self.context
-        loaded_params = {}
+        loaded_params = PersistentMapping()
 
         for child in node.childNodes:
             if child.nodeName != 'parameter':
