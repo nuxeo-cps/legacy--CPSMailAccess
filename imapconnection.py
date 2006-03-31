@@ -25,6 +25,11 @@ from zLOG import LOG, DEBUG
 
 import re
 import socket
+try:
+    import socket.sslerror as sslerror
+except ImportError:
+    import socket.error as sslerror
+
 from time import sleep
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
 
@@ -105,7 +110,7 @@ class IMAPConnection(BaseConnection):
                 else:
                     self._connection = IMAP4(host, port)
                 connected = True
-            except (IMAP4.abort, socket.error, socket.sslerror), e:
+            except (IMAP4.abort, socket.error, sslerror), e:
                 LOG('Connection failure', DEBUG, str(e))
                 sleep(0.3)
                 failures += 1
@@ -408,7 +413,7 @@ class IMAPConnection(BaseConnection):
             raise ConnectionError(str(e))
         except (AttributeError, IMAP4.error, IMAP4_SSL.error), e:
             raise ConnectionError(str(e))
-        except socket.sslerror, e:
+        except sslerror, e:
             self.relog()
             raise ConnectionError(str(e))
 
@@ -456,7 +461,7 @@ class IMAPConnection(BaseConnection):
         self._selectMailBox(mailbox)
         try:
             imap_result =  self._connection.uid('search', charset, *criteria)
-        except (self._connection.error, socket.error, socket.sslerror), e:
+        except (self._connection.error, socket.error, sslerror), e:
             raise ConnectionError(str(e))
 
         if imap_result[0] == 'NO':
