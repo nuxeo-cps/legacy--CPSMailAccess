@@ -26,9 +26,9 @@ from zLOG import LOG, DEBUG
 import re
 import socket
 try:
-    import socket.sslerror as sslerror
+    from socket import sslerror as sslerror
 except ImportError:
-    import socket.error as sslerror
+    from socket import error as sslerror
 
 from time import sleep
 from imaplib import IMAP4, IMAP4_SSL, IMAP4_PORT, IMAP4_SSL_PORT
