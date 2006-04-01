@@ -45,15 +45,27 @@ class MailMessageT(MailMessage):
     def getPhysicalPath(self):
         return str(id(self))
 
+_missing = object()
+
 class FakeDirectory:
     id_field = 'id'
 
-    def searchEntries(self, return_fields=None, **kw):
-        return [('tziade', {'email': 'tz@nuxeo.com',
+    entries = {'tziade': {'email': 'tz@nuxeo.com',
                  'givenName': 'Tarek', 'sn' : 'Ziadé',
                  'webmail_login' : 'tziade',
                  'webmail_enabled' :1,
-                 'webmail_password' : 'do_not_reveal_it_please'})]
+                 'webmail_password' : 'do_not_reveal_it_please'},
+                 'CPSTestCase': {'webmail_enabled': 1}
+               }
+
+    def searchEntries(self, return_fields=None, **kw):
+        return self.entries.items()
+
+    def _getEntry(self, id, default=_missing):
+        if default is _missing:
+            return self.entries[id]
+        else:
+            return self.entries.get(id, default)
 
     def hasEntry(self, id):
         return False
@@ -64,11 +76,24 @@ class FakeDirectory:
     def _searchEntries(self, return_fields, **kw):
         return self.searchEntries(return_fields, **kw)
 
+class AltFakeDirectory(FakeDirectory):
+    entries = {'user': {'email': 'basic.user@nuxeo.com',
+                        'givenName': 'Basic',
+                        'sn': 'User',
+                        'webmail_enabled': 1
+                        }}
+
+class FakeUserFolder:
+
+    meta_type = 'CPS User Folder'
+
+    users_dir = 'members'
 
 class FakeDirectories(Folder):
 
     members = FakeDirectory()
     adressbook = FakeDirectory()
+    alt_members = AltFakeDirectory()
 
     def __init__(self, id=None):
         Folder.__init__(self, id)
@@ -97,6 +122,7 @@ class FakeLocalizer:
 class FakePortal(Folder):
 
     portal_directories = FakeDirectories('portal_directories')
+    acl_users = FakeUserFolder()
     portal_url = FakePortalUrl()
     Localizer = FakeLocalizer()
     portal_webmail = MailTool()

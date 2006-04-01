@@ -900,13 +900,23 @@ class MailBox(MailBoxBaseCaching):
         """ see interface
 
         XXXX need to be in mailtool
+        implementation details: this is like a getEntry with return fields
+        'members' is a special dir that always correspond to the main users
+        dir in CPSUserFolder. This *assumes* that acl_users is a CPS User Folder
         """
-        kw = {'id' : id}
-        results = self._searchEntries(dirname, return_fields=fields, **kw)
-        if len(results) == 1:
-            return results[0][1]
-        else:
+        #XXX Z2/CPS3
+        dtool = getToolByName(self, 'portal_directories')
+        if dirname == 'members':
+            aclu = self.acl_users
+            # using interface would be a mess for unit tests
+            assert(aclu.meta_type == 'CPS User Folder')
+            dirname = aclu.users_dir
+        cdir = dtool[dirname]
+        results = cdir._getEntry(id, default=None)
+        if results is None:
             return None
+        return dict( (key, value) for key, value in results.items()
+                     if key in fields)
 
     def getDirectoryList(self):
         """ see interface """
@@ -1196,23 +1206,13 @@ class MailBox(MailBoxBaseCaching):
                 return value
             else:
                 directory = source
-                directory_identifier = self._getDirectoryIdField(directory)
-                kw = {directory_identifier : id}
-                entries = self._searchEntries(directory, [field], **kw)
-                if len(entries) > 1:
-                    # trying to figure out the user, if doable
-                    for entry in entries:
-                        if entry[1][directory_identifier] == id:
-                            if not entry[1].has_key(field):
-                                raise Exception("No field '%s' found in %s" % (field, directory))
-                            return entry[1][field]
-                    raise Exception('Directory returned more than one entry')
-                if len(entries) == 0:
-                    raise Exception('No entry found in %s for %s' % (directory, id))
-                fields = entries[0][1]
-                if not fields.has_key(field):
+                res = self.readDirectoryValue(directory, id, [field])
+                if res is None:
+                    raise Exception('No entry found in %s for %s' % (
+                        directory, id))
+                if res == {}:
                     raise Exception("No field '%s' found in %s" % (field, directory))
-                return fields[field]
+                return res[field]
         return value
 
     def elementIsInTrash(self, element):

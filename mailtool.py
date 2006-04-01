@@ -216,19 +216,6 @@ class MailTool(Folder): # UniqueObject
         mailbox_name = makeId('box_%s' % user_id)
         return hasattr(self, mailbox_name)
 
-    def _searchEntries(self, directory_name, return_fields=None, **kw):
-        """ search for entries
-        """
-        portal_directories = getToolByName(self, 'portal_directories')
-        dir_ = portal_directories[directory_name]
-        # acquisition pb not resolved yet
-        #return self._getDirectoryPicker().searchEntries(directory_name,
-        #    return_fields, **kw)
-        results = dir_._searchEntries(return_fields, **kw)
-        if results == [] and kw == {'id': '*'}:
-            results = dir_._searchEntries(return_fields)
-        return results
-
     def canHaveMailBox(self, user_id=None):
         """ check wheter the user can use the webmail """
         def _compareValues(value1, value2):
@@ -273,13 +260,17 @@ class MailTool(Folder): # UniqueObject
             else:
                 value = 1
 
-            kw = {'id': user.getId()}
-            dir_results = self._searchEntries('members',
-                                              [webmail_enabled_field], **kw)
-            if len(dir_results) != 1:
+            #XXX assumes and enforces that we have a CPS User Folder
+            aclu = self.acl_users
+            assert(aclu.meta_type == 'CPS User Folder')
+            dtool = getToolByName(self, 'portal_directories')
+            mdir = dtool[aclu.users_dir]
+            # user can be defined upper in Zope
+            try:
+                entry = mdir._getEntry(user.getId())
+            except KeyError:
                 return False
-
-            webmail_enabled = dir_results[0][1][webmail_enabled_field]
+            webmail_enabled = entry.get(webmail_enabled_field, 0)
 
             if len(value) > 0 and value[0] == '!':
                 return not _compareValues(webmail_enabled, value[1:])

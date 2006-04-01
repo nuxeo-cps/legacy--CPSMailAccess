@@ -183,10 +183,23 @@ class MailBoxTestCase(MailTestCase):
     def test_readDirectoryValue(self):
 
         mailbox = self._getMailBox()
-        res = mailbox.readDirectoryValue('members', 'tziade', ['fullname'])
+        results = mailbox.readDirectoryValue('members', 'tziade', ['sn'])
         self.assert_(isinstance(results, dict))
+        self.assertEquals(results.get('sn'), 'Ziadé')
 
-    def test_readDirectoryValue(self):
+        results = mailbox.readDirectoryValue('members', 'tziade', ['nonexist'])
+        self.assertEquals(results, {})
+
+        # testing what happens if members directory is not members
+        aclu = self.portal.acl_users
+        aclu.users_dir = 'alt_members'
+
+        results = mailbox.readDirectoryValue('members', 'user', ['givenName'])
+        self.assertEquals(results, {'givenName': 'Basic'})
+
+        aclu.users_dir = 'members'
+
+    def test_readDirectoryValue2(self):
 
         mailbox = self._getMailBox()
         res = mailbox.getIdentitites()
@@ -196,6 +209,7 @@ class MailBoxTestCase(MailTestCase):
     def test_directoryToParam(self):
         mailbox = self._getMailBox()
 
+        mailbox.id = 'box_tziade'
         res = mailbox._directoryToParam('${members.webmail_login}')
         self.assertEquals(res, 'tziade')
 
@@ -421,9 +435,11 @@ class MailBoxTestCase(MailTestCase):
 
         mailbox.indexMails([], background=True)
 
-    def test_directoryToParam2(self):
+    def oldtest_directoryToParam2(self):
         # sometimes, we get more than
         # one entry for specific directories, like ldapdirs
+        # GR disactivated because can't happen with getEntry. id is unique and
+        # there's no substring behaviour
         def _searchEntries(*args, **kw):
             return [(1, {'id': '_xx'}), (2, {'id': '_xxx'})]
 
