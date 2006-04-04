@@ -21,6 +21,7 @@
   hold connections and to hold
 """
 import os
+import tempfile
 import thread
 
 from OFS.Folder import Folder
@@ -102,7 +103,7 @@ class MailTool(Folder): # UniqueObject
         direct_smtp = self.default_connection_params['direct_smtp'][0]
 
         # creating a temporary directory for mail storage
-        temp_dir = os.path.dirname(os.tempnam())
+        temp_dir = os.path.dirname(tempfile.mkstemp()[1])
         temp_dir = os.path.join(temp_dir, 'maildir')
         self._maildeliverer = SmtpMailer(temp_dir, direct_smtp,
                                          on_send_mail = '_checkCanSendMails')

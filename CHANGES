@@ -16,3 +16,4 @@ Bug fixes:
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 - extension layer of CPSDefault: CPSMailAccessLayer
+- removed os.tempnam call, using tempfile module instead
