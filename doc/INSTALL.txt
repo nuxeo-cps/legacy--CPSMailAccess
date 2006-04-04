@@ -21,20 +21,6 @@ To install CPSMailAccess you will need:
 
 - rdflib 2.0.6 : http://rdflib.net/
 
-- zasyncdispatcher (optional) http://svn.nuxeo.org/trac/pub/browser/zasyncdispatcher/
-
-
-zasyncdispatcher Installation
------------------------------
-
-If you want to do background synchronization (i.e. for big intranets
-setup) CPSMailAccess is compatible with zasyncdispatcher, a small
-zope product on the top of zasync.
-
-Get it on nuxeo svn::
-
-    svn co http://svn.nuxeo.org/pub/zasyncdispatcher/trunk zasyncdispatcher
-
 Products Setup
 --------------
 
@@ -208,12 +194,6 @@ Extra Notes
 
    Attached files gets scanned when you are viewing the mail, so
    the attach icon won't appear until the mail is viewed.
-
-3. Using zasyncdispatcher
-
-   CPSMailAccess can be used with zasyncdispatcher: if it founds
-   it, synchronizations will be sent to background.
-
 
 .. Emacs
 .. Local Variables:
