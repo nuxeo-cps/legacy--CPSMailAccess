@@ -19,8 +19,6 @@ To install CPSMailAccess you will need:
 
 - a working Zope 2.9.x + CPS 3.4.0 or greater
 
-- rdflib 2.0.6 : http://rdflib.net/
-
 Products Setup
 --------------
 
