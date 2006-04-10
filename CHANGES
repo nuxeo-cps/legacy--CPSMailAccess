@@ -13,6 +13,7 @@ Bug fixes:
 - fixed a makeId unicode issue
 - #1566: global role-permission mapping wasn't loaded
 - #1425: use same members directory and id field as CPSUserFolder
+- Updated brazilian portugese translations (thanks to mo.menezes@gmail.com).
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 - extension layer of CPSDefault: CPSMailAccessLayer

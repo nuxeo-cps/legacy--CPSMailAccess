@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
 "POT-Creation-Date: 2006-01-03 14:42default\n"
-"PO-Revision-Date: 2005-12-19 15:43-0200\n"
+"PO-Revision-Date: 2006-04-03 15:30-0300\n"
 "Last-Translator: Mario Olimpio de Menezes <mario@ipen.br>\n"
 "Language-Team: portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -42,12 +42,12 @@ msgstr "Parâmetro"
 #.         </span>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "Automatic filters"
-msgstr ""
+msgstr "Filtros Automáticos"
 
 #.   <th class="EditAttributeName">Cache name</th>
 #: from ../cache/browser/cacheableedit.pt
 msgid "Cache name"
-msgstr ""
+msgstr "Nome do cache"
 
 #.   <option value="Cc">Cc</option>
 #: from ../www/mailBoxFiltersView.zpt
@@ -65,30 +65,30 @@ msgstr "Condição"
 #.       </p>
 #: from ../cache/browser/cacheableedit.pt
 msgid "Currently the object uses ${cache_id_or_url}."
-msgstr ""
+msgstr "Atualmente o objeto usa ${cache_id_or_url}."
 
 #.   <p condition="not: view/current_cache_id">
 #.         Currently there is no cache associated with the object.
 #.       </p>
 #: from ../cache/browser/cacheableedit.pt
 msgid "Currently there is no cache associated with the object."
-msgstr ""
+msgstr "Atualmente não existe cache associado com este objeto."
 
 #.   <td class="tr_title">Element</td>
 #: from ../www/mailBoxFiltersView.zpt
 msgid "Element"
-msgstr "Elementos"
+msgstr "Elemento"
 
 #.   <th>Entries</th>
 #: from ../cache/browser/ramstats.pt
 msgid "Entries"
-msgstr ""
+msgstr "Entradas"
 
 #.   <span style="font-weight: bold">Errors</span>
 #: from ../cache/browser/cacheableedit.pt ../cache/browser/ramedit.pt
 #: ../cache/browser/ramstats.pt
 msgid "Errors"
-msgstr ""
+msgstr "Erros"
 
 #.   <span>
 #.           Filters for incoming messages
@@ -103,13 +103,12 @@ msgstr "Filtros para mensagens chegando."
 #.   <a href="#" content="i">Folder</a>
 #: from ../zemantic/browser/commontasks.pt
 msgid "Folder"
-msgstr ""
+msgstr "Pasta"
 
 #.   <th>Hits</th>
 #: from ../cache/browser/ramstats.pt
-#, fuzzy
 msgid "Hits"
-msgstr "is"
+msgstr "Acertos"
 
 #.   <block condition="isINBOX">INBOX</block>
 #: from ../skins/boxes_mailaccess.pt
@@ -121,29 +120,29 @@ msgstr "Caixa de Entrada"
 #.           </th>
 #: from ../cache/browser/ramedit.pt
 msgid "Maximum age of cached entries"
-msgstr ""
+msgstr "Tempo de vida máximo das entradas do cache"
 
 #.   <th class="EditAttributeName">
 #.             Maximum cached entries
 #.           </th>
 #: from ../cache/browser/ramedit.pt
 msgid "Maximum cached entries"
-msgstr ""
+msgstr "Número máximo de entradas do cache"
 
 #.   <th>Misses</th>
 #: from ../cache/browser/ramstats.pt
 msgid "Misses"
-msgstr ""
+msgstr "Erros"
 
 #.   <th>Path</th>
 #: from ../cache/browser/ramstats.pt
 msgid "Path"
-msgstr ""
+msgstr "Caminho"
 
 #.   <span>RAMCache statistics</span>
 #: from ../cache/browser/ramstats.pt
 msgid "RAMCache statistics"
-msgstr ""
+msgstr "Estatísticas do RAMCache"
 
 #.   <option value="From">Sender</option>
 #: from ../www/mailBoxFiltersView.zpt
@@ -153,7 +152,7 @@ msgstr "Remetente"
 #.   <th>Size, bytes</th>
 #: from ../cache/browser/ramstats.pt
 msgid "Size, bytes"
-msgstr ""
+msgstr "Tamanho, bytes"
 
 #.   <option value="Subject">Subject</option>
 #: from ../www/mailBoxFiltersView.zpt
@@ -166,13 +165,14 @@ msgstr "Assunto"
 #: from ../cache/browser/cacheableedit.pt
 msgid "This edit form allows you to associate a cache with this object."
 msgstr ""
+"Este formulário de edição permite que você associe um cache com este objeto."
 
 #.   <th class="EditAttributeName">
 #.             Time between cache cleanups
 #.           </th>
 #: from ../cache/browser/ramedit.pt
 msgid "Time between cache cleanups"
-msgstr ""
+msgstr "Intervalo entre limpezas do cache."
 
 #.   <option value="To">To</option>
 #: from ../www/mailBoxFiltersView.zpt
@@ -194,7 +194,7 @@ msgstr "Ações do Wemail"
 #.   <p>You can configure the RAM Cache here.</p>
 #: from ../cache/browser/ramedit.pt
 msgid "You can configure the RAM Cache here."
-msgstr ""
+msgstr "Você pode configurar o RAM Cache aqui."
 
 #.   <input name="submit" onclick="saveMessageDatas()" type="submit" class="attach_button" value="attach" onmouseover="setCursor(this);" />
 #: from ../www/mailEditorView.zpt
@@ -203,21 +203,20 @@ msgstr "Anexar"
 
 #.   <option value="3">begin with</option>
 #: from ../www/mailBoxFiltersView.zpt
-#, fuzzy
 msgid "begin with"
-msgstr "begins with"
+msgstr "começa com"
 
 # Buttons
 # ########
 #.   <input type="submit" name="InvalidateCache.html:method" value="button_invalidate_cache" />
 #: from ../cache/browser/cacheableedit.pt
 msgid "button_invalidate_cache"
-msgstr ""
+msgstr "Invalidar"
 
 #.   <input type="reset" value="button_reset" />
 #: from ../cache/browser/ramedit.pt
 msgid "button_reset"
-msgstr ""
+msgstr "Redefinir"
 
 #.   <input onmouseover="setCursor(this)" type="submit" class="manage_delete" value="clear" name="action_clear" />
 #: from ../www/messagelist_macros.zpt
@@ -452,9 +451,10 @@ msgstr "Configuração do Webmail."
 #.                       Maximum number of results reached, please refine your criterias.
 #.                     </span>
 #: from ../www/mailZemanticSearchView.zpt
-#, fuzzy
 msgid "cpsma_max_reached"
-msgstr "Element renamed"
+msgstr ""
+"Número máximo de resultados atingido; por favor, refine seus critérios de "
+"busca."
 
 #.   <span>
 #.               message in clipboard</span>
@@ -575,9 +575,8 @@ msgstr "Assunto"
 #.               Message To :
 #.               </div>
 #: from ../www/mailZemanticSearchView.zpt
-#, fuzzy
 msgid "cpsma_search_message_to"
-msgstr "Message sent to"
+msgstr "Mensagem Para: "
 
 #.   <input name="search_submitted" type="submit" class="standalone" value="cpsma_search_messages" />
 #: from ../www/mailZemanticSearchView.zpt
@@ -598,9 +597,8 @@ msgstr "segundos"
 #.                Selection:
 #.              </td>
 #: from ../www/messagelist_macros.zpt
-#, fuzzy
 msgid "cpsma_selection"
-msgstr "Make a selection"
+msgstr "Seleção:"
 
 #.   <img src="cpsma_draft.png" alt="cpsma_send_a_message" title="cpsma_send_a_message" />
 #: from ../www/mailAdressBookView.zpt
@@ -707,14 +705,13 @@ msgstr "selecionar tudo"
 
 #.   <input name="submit" type="submit" class="standalone" value="submit" />
 #: from ../www/mailToolParametersView.zpt
-#, fuzzy
 msgid "sumbit_mailbox_params"
-msgstr "Mailbox parameters"
+msgstr "Parâmetros da caixa de mensagens"
 
 #.   <img src="cpsma_draft.png" alt="cpsma_send_a_message" title="cpsma_send_a_message" />
 #: from ../www/mailAdressBookView.zpt
 msgid "title"
-msgstr ""
+msgstr "título"
 
 msgid "cpsma_mailbox_configuration"
 msgstr "Configurar"
@@ -1015,11 +1012,10 @@ msgstr "Configurar webmail"
 msgid "cpsma_return_receipt"
 msgstr "Solicitar notificação de leitura."
 
-#, fuzzy
 msgid "webmail_enabled"
-msgstr "Access field (field:value)"
+msgstr "Campo de acesso (campo:valor)"
 
-#, fuzzy
 msgid "cpsma_miss_sessiondata"
 msgstr ""
-"Cannot find needed data in the current session, you might need to reconnect"
+"Não foi possível encontrar os dados necessários na sessão atual; pode ser "
+"necessário reconectar"
