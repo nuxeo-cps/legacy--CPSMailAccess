@@ -3,18 +3,10 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- Added Spanish translation.
+-
 Bug fixes:
 ~~~~~~~~~~
-- Profile import would replace the settings PersistentDict with a 
-  non-persistent dict, making it impossible to persistently change the
-  portal_webmail parameters. Exporting and importing the portal_webmail tool
-  will resolve this.
-- fixed a makeId unicode issue
-- #1566: global role-permission mapping wasn't loaded
-- #1425: use same members directory and id field as CPSUserFolder
-- Updated brazilian portugese translations (thanks to mo.menezes@gmail.com).
+-
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
-- extension layer of CPSDefault: CPSMailAccessLayer
-- removed os.tempnam call, using tempfile module instead
+-
