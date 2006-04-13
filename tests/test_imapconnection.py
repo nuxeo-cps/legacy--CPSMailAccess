@@ -256,6 +256,15 @@ class IMAPConnectionTestCase(MailTestCase):
         self.assertEquals(res, 37)
         self.assertEquals(text[2:37], 'ui(uoihuoiih(jhhghg(ohouh)  )guo)ig')
 
+    def test_findClosingParenthesis2(self):
+        box = self._getMailBox()
+        ob = self.makeConnection()
+        text = ('129,(BODY ("text" "plain" ("charset" "us-ascii") '
+                '"1143151408-1-xxxx@xxxx" NIL "7bit" 19901 279) UID 2979)')
+        res = ob._findClosingParenthesis (text, 5)
+        self.assertEquals(res, 94)
+
+
     def test_extractCommands(self):
         box = self._getMailBox()
         ob = self.makeConnection()

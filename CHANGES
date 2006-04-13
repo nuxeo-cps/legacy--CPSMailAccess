@@ -6,7 +6,8 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- #1584 : made CPSMailAccess work with Communigate IMAP server, thanks to 
+B.asil
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -

@@ -338,7 +338,7 @@ class IMAPConnection(BaseConnection):
 
             if cindexstart != -1:
                 cindexstop = self._findClosingParenthesis(results, cindexstart)
-                result = results[cindexstart:cindexstop]
+                result = results[cindexstart:cindexstop + 1]
             else:
                 result = results
 
@@ -374,16 +374,15 @@ class IMAPConnection(BaseConnection):
     def _findClosingParenthesis(self, text, start):
         """ closing-finder pattern """
         opened = 0
-        i = start + 1
+        i = start
         while i < len(text):
             char = text[i]
             if char == '(':
                 opened += 1
             elif char == ')':
+                opened -= 1
                 if opened == 0:
                     return i
-                else:
-                    opened -= 1
             i+=1
         return -1
 
